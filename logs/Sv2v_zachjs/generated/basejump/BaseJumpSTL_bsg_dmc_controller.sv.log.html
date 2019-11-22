@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v</a>
-time_elapsed: 0.638s
-ram usage: 15256 KB
+time_elapsed: 0.631s
+ram usage: 15264 KB
 </pre>
 <pre class="log">
 
@@ -373,11 +373,12 @@ module bsg_dmc_controller (
 	always @(posedge dfi_clk_i)
 		if (dfi_clk_sync_rst_i)
 			refr_tick &lt;= 0;
-		else if (((cstate == IDLE) &amp;&amp; (nstate == REFR)))
+		else if (((cstate == IDLE) &amp;&amp; (nstate == REFR))) begin
 			if (|open_bank)
 				refr_tick &lt;= 1;
 			else
 				refr_tick &lt;= 0;
+		end
 		else if ((((cstate == REFR) &amp;&amp; (refr_tick != 0)) &amp;&amp; push_refr_cmd))
 			refr_tick &lt;= (refr_tick - 1);
 	always @(*)
@@ -403,13 +404,14 @@ module bsg_dmc_controller (
 	always @(posedge dfi_clk_i)
 		if (dfi_clk_sync_rst_i)
 			ldst_tick &lt;= 0;
-		else if (((cstate == IDLE) &amp;&amp; (nstate == LDST)))
+		else if (((cstate == IDLE) &amp;&amp; (nstate == LDST))) begin
 			if ((open_bank[bank_addr] &amp;&amp; (open_row[bank_addr] == row_addr)))
 				ldst_tick &lt;= 0;
 			else if (open_bank[bank_addr])
 				ldst_tick &lt;= 2;
 			else
 				ldst_tick &lt;= 1;
+		end
 		else if ((((cstate == LDST) &amp;&amp; (ldst_tick != 0)) &amp;&amp; push_ldst_cmd))
 			ldst_tick &lt;= (ldst_tick - 1);
 	always @(*)

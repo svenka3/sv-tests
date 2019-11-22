@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_snpdp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_snpdp.v</a>
-time_elapsed: 0.089s
-ram usage: 10964 KB
+time_elapsed: 0.073s
+ram usage: 10912 KB
 </pre>
 <pre class="log">
 
@@ -46,7 +46,7 @@ module sctag_snpdp (
 );
 	output so;
 	output [39:0] snpq_arbdp_addr_px2;
-	output [21:0] snpq_arbdp_inst_px2;
+	output [(22 - 1):0] snpq_arbdp_inst_px2;
 	output [63:0] snpq_arbdp_data_px2;
 	output snpdp_rq_winv_s1;
 	output [39:6] rdmatag_wr_addr_s2;
@@ -65,8 +65,8 @@ module sctag_snpdp (
 	input snpctl_wr_ptr;
 	input snpctl_rd_ptr;
 	input [1:0] rdmad_wr_entry_s2;
-	wire [21:0] instr0;
-	wire [21:0] instr1;
+	wire [(22 - 1):0] instr0;
+	wire [(22 - 1):0] instr1;
 	wire [39:0] addr0;
 	wire [39:0] addr1;
 	wire [63:0] data0;
@@ -82,10 +82,10 @@ module sctag_snpdp (
 		.enb_l(~snp_hdr1_wen0_s0),
 		.tmb_l(~se)
 	);
-	dff_s #(19) ff_instr0(
+	dff_s #((22 - 3)) ff_instr0(
 		.din(jbi_req_buf[26:8]),
 		.clk(clk_1),
-		.q(instr0[18:0]),
+		.q(instr0[(22 - 4):0]),
 		.se(se),
 		.si(),
 		.so()
@@ -99,7 +99,7 @@ module sctag_snpdp (
 	dff_s #(2) ff_instr0_entry(
 		.din(rdmad_wr_entry_s2[1:0]),
 		.clk(clk_2),
-		.q(instr0[20:19]),
+		.q(instr0[(22 - 2):(22 - 3)]),
 		.se(se),
 		.si(),
 		.so()
@@ -107,7 +107,7 @@ module sctag_snpdp (
 	dff_s #(1) ff_instr0_poison(
 		.din(jbi_req_buf[27]),
 		.clk(clk_1),
-		.q(instr0[21]),
+		.q(instr0[(22 - 1)]),
 		.se(se),
 		.si(),
 		.so()
@@ -168,10 +168,10 @@ module sctag_snpdp (
 		.enb_l(~snp_hdr1_wen1_s0),
 		.tmb_l(~se)
 	);
-	dff_s #(19) ff_instr1(
+	dff_s #((22 - 3)) ff_instr1(
 		.din(jbi_req_buf[26:8]),
 		.clk(clk_7),
-		.q(instr1[18:0]),
+		.q(instr1[(22 - 4):0]),
 		.se(se),
 		.si(),
 		.so()
@@ -185,7 +185,7 @@ module sctag_snpdp (
 	dff_s #(2) ff_instr1_entry(
 		.din(rdmad_wr_entry_s2[1:0]),
 		.clk(clk_8),
-		.q(instr1[20:19]),
+		.q(instr1[(22 - 2):(22 - 3)]),
 		.se(se),
 		.si(),
 		.so()
@@ -193,7 +193,7 @@ module sctag_snpdp (
 	dff_s #(1) ff_instr1_poison(
 		.din(jbi_req_buf[27]),
 		.clk(clk_7),
-		.q(instr1[21]),
+		.q(instr1[(22 - 1)]),
 		.se(se),
 		.si(),
 		.so()
@@ -257,8 +257,8 @@ module sctag_snpdp (
 	);
 	mux2ds #(1) mux_snpdp_rq_winv_s1(
 		.dout(snpdp_rq_winv_s1),
-		.in0(instr0[18]),
-		.in1(instr1[18]),
+		.in0(instr0[(22 - 4)]),
+		.in1(instr1[(22 - 4)]),
 		.sel0(~snpctl_wr_ptr),
 		.sel1(snpctl_wr_ptr)
 	);
@@ -271,9 +271,9 @@ module sctag_snpdp (
 		.so()
 	);
 	mux2ds #(22) mux_instr_px2(
-		.dout(snpq_arbdp_inst_px2[21:0]),
-		.in0(instr0[21:0]),
-		.in1(instr1[21:0]),
+		.dout(snpq_arbdp_inst_px2[(22 - 1):0]),
+		.in0(instr0[(22 - 1):0]),
+		.in1(instr1[(22 - 1):0]),
 		.sel0(~snpctl_rd_ptr_d1),
 		.sel1(snpctl_rd_ptr_d1)
 	);

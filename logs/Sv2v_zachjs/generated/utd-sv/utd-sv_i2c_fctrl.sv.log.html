@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/i2c_fctrl.v.html" target="file-frame">third_party/tests/utd-sv/i2c_fctrl.v</a>
-time_elapsed: 0.089s
-ram usage: 11876 KB
+time_elapsed: 0.098s
+ram usage: 11816 KB
 </pre>
 <pre class="log">
 
@@ -48,10 +48,10 @@ module i2c_fctrl (
 	input cpu_clk;
 	input tx_sync;
 	input rx_sync;
-	input [7:0] cpx_iob_grant_cx2;
-	input [7:0] int_buf_cpx_req;
-	input [7:0] io_buf_cpx_req;
-	input [7:0] iob_cpx_req_next;
+	input [(8 - 1):0] cpx_iob_grant_cx2;
+	input [(8 - 1):0] int_buf_cpx_req;
+	input [(8 - 1):0] io_buf_cpx_req;
+	input [(8 - 1):0] iob_cpx_req_next;
 	output int_buf_sel_next;
 	output io_buf_sel_next;
 	output int_buf_rd;
@@ -62,11 +62,11 @@ module i2c_fctrl (
 	input [4:0] io_buf_tail_s;
 	output [4:0] io_buf_head_f;
 	output int_buf_wr;
-	output [3:0] int_buf_tail_ptr;
-	output [3:0] int_buf_head_ptr;
-	output [3:0] io_buf_head_ptr;
-	wire [7:0] cpx_buf_full;
-	wire [7:0] cpx_iob_grant;
+	output [(4 - 1):0] int_buf_tail_ptr;
+	output [(4 - 1):0] int_buf_head_ptr;
+	output [(4 - 1):0] io_buf_head_ptr;
+	wire [(8 - 1):0] cpx_buf_full;
+	wire [(8 - 1):0] cpx_iob_grant;
 	wire cpu_mondo_rdwr_d2;
 	wire [4:0] int_buf_tail;
 	wire [4:0] int_buf_tail_plus;
@@ -154,7 +154,7 @@ module i2c_fctrl (
 	);
 	assign cpu_mondo_rdwr_d2 = (cpu_mondo_rd_d2 | cpu_mondo_wr_d2);
 	assign int_buf_wr = cpu_mondo_rdwr_d2;
-	dffrle_ns #(5) int_buf_tail_ff(
+	dffrle_ns #((4 + 1)) int_buf_tail_ff(
 		.din(int_buf_tail_plus),
 		.rst_l(cpu_rst_l),
 		.en(int_buf_wr),
@@ -162,10 +162,10 @@ module i2c_fctrl (
 		.q(int_buf_tail)
 	);
 	assign int_buf_tail_plus = (int_buf_tail + 5&#39;b1);
-	assign int_buf_tail_ptr = int_buf_tail[3:0];
+	assign int_buf_tail_ptr = int_buf_tail[(4 - 1):0];
 	assign int_buf_tail_plus10 = (int_buf_tail + 5&#39;b01010);
-	assign int_buf_hit_hwm = (((int_buf_tail_plus10[4] != int_buf_head[4]) &amp; (int_buf_tail_plus10[3:0] &gt;= int_buf_head[3:0])) | ((int_buf_tail_plus10[4] == int_buf_head[4]) &amp; (int_buf_tail_plus10[3:0] &lt;= int_buf_head[3:0])));
-	dffrl_ns #(5) int_buf_head_prev_ff(
+	assign int_buf_hit_hwm = (((int_buf_tail_plus10[4] != int_buf_head[4]) &amp; (int_buf_tail_plus10[(4 - 1):0] &gt;= int_buf_head[(4 - 1):0])) | ((int_buf_tail_plus10[4] == int_buf_head[4]) &amp; (int_buf_tail_plus10[(4 - 1):0] &lt;= int_buf_head[(4 - 1):0])));
+	dffrl_ns #((4 + 1)) int_buf_head_prev_ff(
 		.din(int_buf_head),
 		.clk(cpu_clk),
 		.rst_l(cpu_rst_l),
@@ -173,7 +173,7 @@ module i2c_fctrl (
 	);
 	assign int_buf_head_plus1 = (int_buf_head_prev + 4&#39;b1);
 	assign int_buf_head = (int_buf_head_inc ? int_buf_head_plus1 : int_buf_head_prev);
-	assign int_buf_head_ptr = int_buf_head[3:0];
+	assign int_buf_head_ptr = int_buf_head[(4 - 1):0];
 	assign int_buf_empty = (int_buf_head == int_buf_tail);
 	dff_ns #(1) int_buf_empty_prev_ff(
 		.din((int_buf_empty | ~cpu_rst_l)),
@@ -189,7 +189,7 @@ module i2c_fctrl (
 		.rst_l(cpu_rst_l),
 		.q(int_buf_vld)
 	);
-	dffrl_ns #(5) io_buf_head_prev_ff(
+	dffrl_ns #((4 + 1)) io_buf_head_prev_ff(
 		.din(io_buf_head),
 		.clk(cpu_clk),
 		.rst_l(cpu_rst_l),
@@ -197,15 +197,15 @@ module i2c_fctrl (
 	);
 	assign io_buf_head_plus1 = (io_buf_head_prev + 5&#39;b1);
 	assign io_buf_head = (io_buf_head_inc ? io_buf_head_plus1 : io_buf_head_prev);
-	assign io_buf_head_ptr = io_buf_head[3:0];
-	dffrle_ns #(5) io_buf_head_f_ff(
+	assign io_buf_head_ptr = io_buf_head[(4 - 1):0];
+	dffrle_ns #((4 + 1)) io_buf_head_f_ff(
 		.din(io_buf_head),
 		.rst_l(cpu_rst_l),
 		.en(tx_sync),
 		.clk(cpu_clk),
 		.q(io_buf_head_f)
 	);
-	dffrle_ns #(5) io_buf_tail_ff(
+	dffrle_ns #((4 + 1)) io_buf_tail_ff(
 		.din(io_buf_tail_s),
 		.rst_l(cpu_rst_l),
 		.en(rx_sync),

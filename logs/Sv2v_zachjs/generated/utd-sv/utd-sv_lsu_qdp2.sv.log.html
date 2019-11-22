@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/lsu_qdp2.v.html" target="file-frame">third_party/tests/utd-sv/lsu_qdp2.v</a>
-time_elapsed: 0.290s
-ram usage: 14388 KB
+time_elapsed: 0.331s
+ram usage: 14460 KB
 </pre>
 <pre class="log">
 
@@ -103,7 +103,7 @@ module lsu_qdp2 (
 	input dfq_byp_ff_en;
 	input dfq_rd_vld_d1;
 	input [151:0] dfq_rdata;
-	input [144:0] cpx_spc_data_cx;
+	input [(145 - 1):0] cpx_spc_data_cx;
 	input [69:0] stb_rdata_ramd_buf;
 	input stb_rdata_ramd_b74_buf;
 	input [14:9] stb_rdata_ramc_buf;
@@ -128,7 +128,7 @@ module lsu_qdp2 (
 	output [151:0] dfq_wdata;
 	output [1:0] dfq_tid;
 	output [143:0] lsu_dcache_fill_data_e;
-	output [143:0] lsu_ifill_pkt;
+	output [(144 - 1):0] lsu_ifill_pkt;
 	output [107:0] lsu_pcx_fwd_pkt;
 	output lsu_cpx_pkt_strm_ack;
 	output lsu_cpx_pkt_vld;
@@ -165,9 +165,9 @@ module lsu_qdp2 (
 	output [1:0] lsu_st_dcfill_size_e;
 	wire [13:0] cpx_cpulo_inv_data;
 	wire [13:0] cpx_cpuhi_inv_data;
-	wire [82:0] stb_dfq_data_in;
+	wire [(83 - 1):0] stb_dfq_data_in;
 	wire [151:0] dfq_byp_mx_data;
-	wire [150:0] dfq_byp_ff_data;
+	wire [(151 - 1):0] dfq_byp_ff_data;
 	wire [127:0] st_dcfill_data;
 	wire [63:0] dcache_wr_data;
 	wire [127:0] ldinv_dcfill_data;
@@ -179,7 +179,7 @@ module lsu_qdp2 (
 	wire clk;
 	wire [13:0] lsu_cpu_inv_data;
 	assign clk = rclk;
-	assign stb_dfq_data_in[82:0] = {lsu_stb_pcx_rvld_d1, stb_rdata_ramd_b74_buf, 2&#39;b00, 3&#39;b000, stb_rdata_ramd_buf[69:68], {stb_rdata_ramc_buf[14:9], stb_rdata_ramd_buf[67:64]}, stb_rdata_ramd_buf[63:0]};
+	assign stb_dfq_data_in[(83 - 1):0] = {lsu_stb_pcx_rvld_d1, stb_rdata_ramd_b74_buf, 2&#39;b00, 3&#39;b000, stb_rdata_ramd_buf[69:68], {stb_rdata_ramc_buf[14:9], stb_rdata_ramd_buf[67:64]}, stb_rdata_ramd_buf[63:0]};
 	wire [3:0] clk_stb_data;
 	wire [82:0] stb_dfq_pkt_data0;
 	wire [82:0] stb_dfq_pkt_data1;
@@ -241,7 +241,7 @@ module lsu_qdp2 (
 		.si(),
 		.so()
 	);
-	mux4ds #(83) stb_data_mx(
+	mux4ds #((82 + 1)) stb_data_mx(
 		.in0(stb_dfq_pkt_data0[82:0]),
 		.in1(stb_dfq_pkt_data1[82:0]),
 		.in2(stb_dfq_pkt_data2[82:0]),
@@ -277,16 +277,16 @@ module lsu_qdp2 (
 	wire [151:0] dfq_st_data;
 	wire [151:0] dfq_cpx_raw_wdata;
 	wire [1:0] cpx_st_ack_addr_b54;
-	assign dfq_cpx_raw_wdata[151:0] = {lsu_cpx_spc_inv_vld, lsu_cpxpkt_type_dcd_cx[5:0], cpx_spc_data_cx[144:0]};
-	assign dfq_st_data[151:0] = {lsu_cpx_spc_inv_vld, lsu_cpxpkt_type_dcd_cx[5:0], cpx_spc_data_cx[144:87], cpx_st_ack_addr_b54[1:0], cpx_st_dcfill_wrway[1:0], stb_dcfill_data_mx[82:0]};
-	mux2ds #(152) dfq_st_data_mx(
+	assign dfq_cpx_raw_wdata[151:0] = {lsu_cpx_spc_inv_vld, lsu_cpxpkt_type_dcd_cx[5:0], cpx_spc_data_cx[(145 - 1):0]};
+	assign dfq_st_data[151:0] = {lsu_cpx_spc_inv_vld, lsu_cpxpkt_type_dcd_cx[5:0], cpx_spc_data_cx[(145 - 1):87], cpx_st_ack_addr_b54[1:0], cpx_st_dcfill_wrway[1:0], stb_dcfill_data_mx[82:0]};
+	mux2ds #((151 + 1)) dfq_st_data_mx(
 		.in0(dfq_st_data[151:0]),
 		.in1(dfq_cpx_raw_wdata[151:0]),
 		.sel0(lsu_cpx_stack_dcfill_vld),
 		.sel1(~lsu_cpx_stack_dcfill_vld),
 		.dout(dfq_wdata[151:0])
 	);
-	mux2ds #(152) dfq_byp_mx(
+	mux2ds #((151 + 1)) dfq_byp_mx(
 		.in0(dfq_rdata[151:0]),
 		.in1(dfq_cpx_raw_wdata[151:0]),
 		.sel0(dfq_rd_vld_d1),
@@ -297,13 +297,13 @@ module lsu_qdp2 (
 	assign lsu_dfq_byp_tid[1:0] = dfq_byp_mx_data[135:134];
 	assign lsu_dfq_byp_flush = dfq_byp_mx_data[136];
 	assign lsu_dfq_byp_invwy_vld = dfq_byp_mx_data[133];
-	assign lsu_dfq_byp_type[5:3] = dfq_byp_mx_data[150:148];
-	assign lsu_dfq_byp_type[2] = (dfq_byp_mx_data[147] &amp; dfq_rd_vld_d1);
-	assign lsu_dfq_byp_type[1:0] = dfq_byp_mx_data[146:145];
+	assign lsu_dfq_byp_type[5:3] = dfq_byp_mx_data[(151 - 1):(151 - 3)];
+	assign lsu_dfq_byp_type[2] = (dfq_byp_mx_data[(151 - 4)] &amp; dfq_rd_vld_d1);
+	assign lsu_dfq_byp_type[1:0] = dfq_byp_mx_data[(151 - 5):(151 - 6)];
 	assign lsu_dfq_byp_binit_st = dfq_byp_mx_data[125];
 	assign lsu_dfq_byp_stack_adr_b54[1:0] = dfq_byp_mx_data[86:85];
 	assign lsu_dfq_byp_stack_wrway[1:0] = dfq_byp_mx_data[84:83];
-	assign lsu_ifill_pkt[143:0] = dfq_byp_mx_data[143:0];
+	assign lsu_ifill_pkt[(144 - 1):0] = dfq_byp_mx_data[(144 - 1):0];
 	assign lsu_dfq_byp_atm = dfq_byp_mx_data[129];
 	clken_buf dfq_byp_ff_en_clken(
 		.clk(clk_dfq_byp_ff_en),
@@ -312,8 +312,8 @@ module lsu_qdp2 (
 		.tmb_l(~se)
 	);
 	dff_s #(151) dfq_data_stg(
-		.din(dfq_byp_mx_data[150:0]),
-		.q(dfq_byp_ff_data[150:0]),
+		.din(dfq_byp_mx_data[(151 - 1):0]),
+		.q(dfq_byp_ff_data[(151 - 1):0]),
 		.clk(clk_dfq_byp_ff_en),
 		.se(1&#39;b0),
 		.si(),
@@ -322,18 +322,18 @@ module lsu_qdp2 (
 	assign dfq_tid[1:0] = dfq_byp_ff_data[135:134];
 	output lsu_cpx_pkt_ifill_type;
 	output lsu_cpx_pkt_atomic;
-	assign lsu_cpx_pkt_ifill_type = dfq_byp_ff_data[149];
+	assign lsu_cpx_pkt_ifill_type = dfq_byp_ff_data[(151 - 2)];
 	assign lsu_cpx_pkt_tid[1:0] = dfq_byp_ff_data[135:134];
 	assign lsu_cpx_pkt_vld = dfq_byp_ff_data[144];
 	assign lsu_cpx_pkt_atm_st_cmplt = dfq_byp_ff_data[129];
 	assign lsu_cpx_pkt_invwy[1:0] = dfq_byp_ff_data[132:131];
-	assign lsu_cpx_pkt_strm_ack = dfq_byp_ff_data[146];
+	assign lsu_cpx_pkt_strm_ack = dfq_byp_ff_data[(151 - 5)];
 	assign lsu_cpx_pkt_inv_pa[4:0] = dfq_byp_ff_data[116:112];
 	assign lsu_cpx_pkt_atomic = (dfq_byp_ff_data[129] | dfq_byp_ff_data[131]);
 	assign lsu_cpx_pkt_binit_st = dfq_byp_ff_data[125];
 	assign lsu_cpx_pkt_prefetch = dfq_byp_ff_data[128];
 	assign lsu_cpx_pkt_prefetch2 = dfq_byp_ff_data[128];
-	assign lsu_cpx_pkt_perror_iinv = dfq_byp_ff_data[124];
+	assign lsu_cpx_pkt_perror_iinv = dfq_byp_ff_data[(123 + 1)];
 	assign lsu_cpx_pkt_perror_dinv = dfq_byp_ff_data[123];
 	assign lsu_cpx_pkt_perror_set[1:0] = dfq_byp_ff_data[122:121];
 	assign lsu_cpx_pkt_ld_err[1:0] = dfq_byp_ff_data[138:137];
@@ -437,7 +437,7 @@ module lsu_qdp2 (
 		.dout(dcache_wr_data[63:0])
 	);
 	assign st_dcfill_data[127:0] = {dcache_wr_data[63:0], dcache_wr_data[63:0]};
-	assign st_dcfill_addr[10:0] = {dfq_byp_ff_data[116:112], dfq_byp_ff_data[86:85], dfq_byp_ff_data[67:64]};
+	assign st_dcfill_addr[10:0] = {dfq_byp_ff_data[116:112], dfq_byp_ff_data[86:85], dfq_byp_ff_data[(64 + 3):64]};
 	assign lsu_st_way_e[1:0] = dfq_byp_ff_data[84:83];
 	assign lsu_st_dcfill_size_e[1:0] = dfq_byp_ff_data[75:74];
 	assign ldinv_dcfill_data[127:0] = dfq_byp_ff_data[127:0];
@@ -454,7 +454,7 @@ module lsu_qdp2 (
 		.parity_out(dcache_wr_parity[15:0])
 	);
 	wire ld_unc_error;
-	assign ld_unc_error = (dfq_byp_ff_data[138] &amp; dfq_byp_ff_data[150]);
+	assign ld_unc_error = (dfq_byp_ff_data[138] &amp; dfq_byp_ff_data[(151 - 1)]);
 	wire [15:0] parity_byte_flip;
 	assign parity_byte_flip[15:0] = (dcache_wr_parity[15:0] ^ {16 {ld_unc_error}});
 	wire [15:0] diagnstc_wr_parity;
@@ -494,8 +494,8 @@ module lsu_qdp2 (
 	);
 	wire [63:0] l2fill_data_e;
 	mux2ds #(64) half_sel(
-		.in0(lsu_dcfill_data[127:64]),
-		.in1(lsu_dcfill_data[63:0]),
+		.in0(lsu_dcfill_data[127:(0 + 64)]),
+		.in1(lsu_dcfill_data[(0 + 63):0]),
 		.sel0(lsu_dfill_data_sel_hi),
 		.sel1(~lsu_dfill_data_sel_hi),
 		.dout(l2fill_data_e[63:0])
