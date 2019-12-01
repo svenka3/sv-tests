@@ -499,7 +499,7 @@
 <a name="l-15"></a><span class="kn">import</span> <span class="nn">ariane_pkg::*</span><span class="p">;</span>
 <a name="l-16"></a>
 <a name="l-17"></a><span class="k">module</span> <span class="n">load_store_unit</span> <span class="p">#(</span>
-<a name="l-18"></a>    <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="no">ASID_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
+<a name="l-18"></a>    <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">ASID_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
 <a name="l-19"></a>    <span class="k">parameter</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ariane_cfg_t</span> <span class="n">ArianeCfg</span> <span class="o">=</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ArianeDefaultConfig</span>
 <a name="l-20"></a><span class="p">)(</span>
 <a name="l-21"></a>    <span class="k">input</span>  <span class="k">logic</span>                     <span class="n">clk_i</span><span class="p">,</span>
@@ -512,12 +512,12 @@
 <a name="l-28"></a>    <span class="k">output</span> <span class="k">logic</span>                     <span class="n">lsu_ready_o</span><span class="p">,</span>              <span class="c1">// FU is ready e.g. not busy</span>
 <a name="l-29"></a>    <span class="k">input</span>  <span class="k">logic</span>                     <span class="n">lsu_valid_i</span><span class="p">,</span>              <span class="c1">// Input is valid</span>
 <a name="l-30"></a>
-<a name="l-31"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="no">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">load_trans_id_o</span><span class="p">,</span>          <span class="c1">// ID of scoreboard entry at which to write back</span>
+<a name="l-31"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">load_trans_id_o</span><span class="p">,</span>          <span class="c1">// ID of scoreboard entry at which to write back</span>
 <a name="l-32"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">load_result_o</span><span class="p">,</span>
 <a name="l-33"></a>    <span class="k">output</span> <span class="k">logic</span>                     <span class="n">load_valid_o</span><span class="p">,</span>
 <a name="l-34"></a>    <span class="k">output</span> <span class="n">exception_t</span>               <span class="n">load_exception_o</span><span class="p">,</span>         <span class="c1">// to WB, signal exception status LD exception</span>
 <a name="l-35"></a>
-<a name="l-36"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="no">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">store_trans_id_o</span><span class="p">,</span>         <span class="c1">// ID of scoreboard entry at which to write back</span>
+<a name="l-36"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">store_trans_id_o</span><span class="p">,</span>         <span class="c1">// ID of scoreboard entry at which to write back</span>
 <a name="l-37"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">store_result_o</span><span class="p">,</span>
 <a name="l-38"></a>    <span class="k">output</span> <span class="k">logic</span>                     <span class="n">store_valid_o</span><span class="p">,</span>
 <a name="l-39"></a>    <span class="k">output</span> <span class="n">exception_t</span>               <span class="n">store_exception_o</span><span class="p">,</span>        <span class="c1">// to WB, signal exception status ST exception</span>
@@ -537,7 +537,7 @@
 <a name="l-53"></a>    <span class="k">input</span>  <span class="k">logic</span>                     <span class="n">sum_i</span><span class="p">,</span>                    <span class="c1">// From CSR register file</span>
 <a name="l-54"></a>    <span class="k">input</span>  <span class="k">logic</span>                     <span class="n">mxr_i</span><span class="p">,</span>                    <span class="c1">// From CSR register file</span>
 <a name="l-55"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">43</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">satp_ppn_i</span><span class="p">,</span>               <span class="c1">// From CSR register file</span>
-<a name="l-56"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">ASID_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>    <span class="n">asid_i</span><span class="p">,</span>                   <span class="c1">// From CSR register file</span>
+<a name="l-56"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">ASID_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>    <span class="n">asid_i</span><span class="p">,</span>                   <span class="c1">// From CSR register file</span>
 <a name="l-57"></a>    <span class="k">input</span>  <span class="k">logic</span>                     <span class="n">flush_tlb_i</span><span class="p">,</span>
 <a name="l-58"></a>    <span class="c1">// Performance counters</span>
 <a name="l-59"></a>    <span class="k">output</span> <span class="k">logic</span>                     <span class="n">itlb_miss_o</span><span class="p">,</span>
@@ -585,10 +585,10 @@
 <a name="l-101"></a>    <span class="k">logic</span>                     <span class="n">dtlb_hit</span><span class="p">;</span>
 <a name="l-102"></a>
 <a name="l-103"></a>    <span class="k">logic</span>                     <span class="n">ld_valid</span><span class="p">;</span>
-<a name="l-104"></a>    <span class="k">logic</span> <span class="p">[</span><span class="no">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ld_trans_id</span><span class="p">;</span>
+<a name="l-104"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ld_trans_id</span><span class="p">;</span>
 <a name="l-105"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">ld_result</span><span class="p">;</span>
 <a name="l-106"></a>    <span class="k">logic</span>                     <span class="n">st_valid</span><span class="p">;</span>
-<a name="l-107"></a>    <span class="k">logic</span> <span class="p">[</span><span class="no">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">st_trans_id</span><span class="p">;</span>
+<a name="l-107"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">st_trans_id</span><span class="p">;</span>
 <a name="l-108"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">st_result</span><span class="p">;</span>
 <a name="l-109"></a>
 <a name="l-110"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">page_offset</span><span class="p">;</span>
@@ -602,9 +602,9 @@
 <a name="l-118"></a>    <span class="c1">// MMU e.g.: TLBs/PTW</span>
 <a name="l-119"></a>    <span class="c1">// -------------------</span>
 <a name="l-120"></a>    <span class="n">mmu</span> <span class="p">#(</span>
-<a name="l-121"></a>        <span class="p">.</span><span class="no">INSTR_TLB_ENTRIES</span>      <span class="p">(</span> <span class="mh">16</span>                     <span class="p">),</span>
-<a name="l-122"></a>        <span class="p">.</span><span class="no">DATA_TLB_ENTRIES</span>       <span class="p">(</span> <span class="mh">16</span>                     <span class="p">),</span>
-<a name="l-123"></a>        <span class="p">.</span><span class="no">ASID_WIDTH</span>             <span class="p">(</span> <span class="no">ASID_WIDTH</span>             <span class="p">),</span>
+<a name="l-121"></a>        <span class="p">.</span><span class="n">INSTR_TLB_ENTRIES</span>      <span class="p">(</span> <span class="mh">16</span>                     <span class="p">),</span>
+<a name="l-122"></a>        <span class="p">.</span><span class="n">DATA_TLB_ENTRIES</span>       <span class="p">(</span> <span class="mh">16</span>                     <span class="p">),</span>
+<a name="l-123"></a>        <span class="p">.</span><span class="n">ASID_WIDTH</span>             <span class="p">(</span> <span class="n">ASID_WIDTH</span>             <span class="p">),</span>
 <a name="l-124"></a>        <span class="p">.</span><span class="n">ArianeCfg</span>              <span class="p">(</span> <span class="n">ArianeCfg</span>              <span class="p">)</span>
 <a name="l-125"></a>    <span class="p">)</span> <span class="n">i_mmu</span> <span class="p">(</span>
 <a name="l-126"></a>            <span class="c1">// misaligned bypass</span>
@@ -693,7 +693,7 @@
 <a name="l-209"></a>    <span class="c1">// ----------------------------</span>
 <a name="l-210"></a>    <span class="n">shift_reg</span> <span class="p">#(</span>
 <a name="l-211"></a>        <span class="p">.</span><span class="n">dtype</span> <span class="p">(</span> <span class="k">logic</span><span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">ld_valid</span><span class="p">)</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">ld_trans_id</span><span class="p">)</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">ld_result</span><span class="p">)</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">ld_ex</span><span class="p">)</span> <span class="o">-</span> <span class="mh">1</span><span class="o">:</span> <span class="mh">0</span><span class="p">]),</span>
-<a name="l-212"></a>        <span class="p">.</span><span class="n">Depth</span> <span class="p">(</span> <span class="no">NR_LOAD_PIPE_REGS</span> <span class="p">)</span>
+<a name="l-212"></a>        <span class="p">.</span><span class="n">Depth</span> <span class="p">(</span> <span class="n">NR_LOAD_PIPE_REGS</span> <span class="p">)</span>
 <a name="l-213"></a>    <span class="p">)</span> <span class="n">i_pipe_reg_load</span> <span class="p">(</span>
 <a name="l-214"></a>        <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-215"></a>        <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
@@ -703,7 +703,7 @@
 <a name="l-219"></a>
 <a name="l-220"></a>    <span class="n">shift_reg</span> <span class="p">#(</span>
 <a name="l-221"></a>        <span class="p">.</span><span class="n">dtype</span> <span class="p">(</span> <span class="k">logic</span><span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">st_valid</span><span class="p">)</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">st_trans_id</span><span class="p">)</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">st_result</span><span class="p">)</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">st_ex</span><span class="p">)</span> <span class="o">-</span> <span class="mh">1</span><span class="o">:</span> <span class="mh">0</span><span class="p">]),</span>
-<a name="l-222"></a>        <span class="p">.</span><span class="n">Depth</span> <span class="p">(</span> <span class="no">NR_STORE_PIPE_REGS</span> <span class="p">)</span>
+<a name="l-222"></a>        <span class="p">.</span><span class="n">Depth</span> <span class="p">(</span> <span class="n">NR_STORE_PIPE_REGS</span> <span class="p">)</span>
 <a name="l-223"></a>    <span class="p">)</span> <span class="n">i_pipe_reg_store</span> <span class="p">(</span>
 <a name="l-224"></a>        <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-225"></a>        <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
@@ -767,27 +767,27 @@
 <a name="l-283"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">valid</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-284"></a>            <span class="k">case</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">operator</span><span class="p">)</span>
 <a name="l-285"></a>                <span class="c1">// double word</span>
-<a name="l-286"></a>                <span class="no">LD</span><span class="p">,</span> <span class="no">SD</span><span class="p">,</span> <span class="no">FLD</span><span class="p">,</span> <span class="no">FSD</span><span class="p">,</span>
-<a name="l-287"></a>                <span class="no">AMO_LRD</span><span class="p">,</span> <span class="no">AMO_SCD</span><span class="p">,</span>
-<a name="l-288"></a>                <span class="no">AMO_SWAPD</span><span class="p">,</span> <span class="no">AMO_ADDD</span><span class="p">,</span> <span class="no">AMO_ANDD</span><span class="p">,</span> <span class="no">AMO_ORD</span><span class="p">,</span>
-<a name="l-289"></a>                <span class="no">AMO_XORD</span><span class="p">,</span> <span class="no">AMO_MAXD</span><span class="p">,</span> <span class="no">AMO_MAXDU</span><span class="p">,</span> <span class="no">AMO_MIND</span><span class="p">,</span>
+<a name="l-286"></a>                <span class="n">LD</span><span class="p">,</span> <span class="n">SD</span><span class="p">,</span> <span class="n">FLD</span><span class="p">,</span> <span class="n">FSD</span><span class="p">,</span>
+<a name="l-287"></a>                <span class="n">AMO_LRD</span><span class="p">,</span> <span class="n">AMO_SCD</span><span class="p">,</span>
+<a name="l-288"></a>                <span class="n">AMO_SWAPD</span><span class="p">,</span> <span class="n">AMO_ADDD</span><span class="p">,</span> <span class="n">AMO_ANDD</span><span class="p">,</span> <span class="n">AMO_ORD</span><span class="p">,</span>
+<a name="l-289"></a>                <span class="n">AMO_XORD</span><span class="p">,</span> <span class="n">AMO_MAXD</span><span class="p">,</span> <span class="n">AMO_MAXDU</span><span class="p">,</span> <span class="n">AMO_MIND</span><span class="p">,</span>
 <a name="l-290"></a>                <span class="nl">AMO_MINDU:</span> <span class="k">begin</span>
 <a name="l-291"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-292"></a>                        <span class="n">data_misaligned</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-293"></a>                    <span class="k">end</span>
 <a name="l-294"></a>                <span class="k">end</span>
 <a name="l-295"></a>                <span class="c1">// word</span>
-<a name="l-296"></a>                <span class="no">LW</span><span class="p">,</span> <span class="no">LWU</span><span class="p">,</span> <span class="no">SW</span><span class="p">,</span> <span class="no">FLW</span><span class="p">,</span> <span class="no">FSW</span><span class="p">,</span>
-<a name="l-297"></a>                <span class="no">AMO_LRW</span><span class="p">,</span> <span class="no">AMO_SCW</span><span class="p">,</span>
-<a name="l-298"></a>                <span class="no">AMO_SWAPW</span><span class="p">,</span> <span class="no">AMO_ADDW</span><span class="p">,</span> <span class="no">AMO_ANDW</span><span class="p">,</span> <span class="no">AMO_ORW</span><span class="p">,</span>
-<a name="l-299"></a>                <span class="no">AMO_XORW</span><span class="p">,</span> <span class="no">AMO_MAXW</span><span class="p">,</span> <span class="no">AMO_MAXWU</span><span class="p">,</span> <span class="no">AMO_MINW</span><span class="p">,</span>
+<a name="l-296"></a>                <span class="n">LW</span><span class="p">,</span> <span class="n">LWU</span><span class="p">,</span> <span class="n">SW</span><span class="p">,</span> <span class="n">FLW</span><span class="p">,</span> <span class="n">FSW</span><span class="p">,</span>
+<a name="l-297"></a>                <span class="n">AMO_LRW</span><span class="p">,</span> <span class="n">AMO_SCW</span><span class="p">,</span>
+<a name="l-298"></a>                <span class="n">AMO_SWAPW</span><span class="p">,</span> <span class="n">AMO_ADDW</span><span class="p">,</span> <span class="n">AMO_ANDW</span><span class="p">,</span> <span class="n">AMO_ORW</span><span class="p">,</span>
+<a name="l-299"></a>                <span class="n">AMO_XORW</span><span class="p">,</span> <span class="n">AMO_MAXW</span><span class="p">,</span> <span class="n">AMO_MAXWU</span><span class="p">,</span> <span class="n">AMO_MINW</span><span class="p">,</span>
 <a name="l-300"></a>                <span class="nl">AMO_MINWU:</span> <span class="k">begin</span>
 <a name="l-301"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-302"></a>                        <span class="n">data_misaligned</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-303"></a>                    <span class="k">end</span>
 <a name="l-304"></a>                <span class="k">end</span>
 <a name="l-305"></a>                <span class="c1">// half word</span>
-<a name="l-306"></a>                <span class="no">LH</span><span class="p">,</span> <span class="no">LHU</span><span class="p">,</span> <span class="no">SH</span><span class="p">,</span> <span class="no">FLH</span><span class="p">,</span> <span class="nl">FSH:</span> <span class="k">begin</span>
+<a name="l-306"></a>                <span class="n">LH</span><span class="p">,</span> <span class="n">LHU</span><span class="p">,</span> <span class="n">SH</span><span class="p">,</span> <span class="n">FLH</span><span class="p">,</span> <span class="nl">FSH:</span> <span class="k">begin</span>
 <a name="l-307"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-308"></a>                        <span class="n">data_misaligned</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-309"></a>                    <span class="k">end</span>
@@ -799,16 +799,16 @@
 <a name="l-315"></a>
 <a name="l-316"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_misaligned</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-317"></a>
-<a name="l-318"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="no">LOAD</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-318"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="n">LOAD</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-319"></a>                <span class="n">misaligned_exception</span> <span class="o">=</span> <span class="p">{</span>
-<a name="l-320"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="no">LD_ADDR_MISALIGNED</span><span class="p">,</span>
+<a name="l-320"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="n">LD_ADDR_MISALIGNED</span><span class="p">,</span>
 <a name="l-321"></a>                    <span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">,</span>
 <a name="l-322"></a>                    <span class="mh">1</span><span class="mb">&#39;b1</span>
 <a name="l-323"></a>                <span class="p">};</span>
 <a name="l-324"></a>
-<a name="l-325"></a>            <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="no">STORE</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-325"></a>            <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="n">STORE</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-326"></a>                <span class="n">misaligned_exception</span> <span class="o">=</span> <span class="p">{</span>
-<a name="l-327"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="no">ST_ADDR_MISALIGNED</span><span class="p">,</span>
+<a name="l-327"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="n">ST_ADDR_MISALIGNED</span><span class="p">,</span>
 <a name="l-328"></a>                    <span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">,</span>
 <a name="l-329"></a>                    <span class="mh">1</span><span class="mb">&#39;b1</span>
 <a name="l-330"></a>                <span class="p">};</span>
@@ -818,16 +818,16 @@
 <a name="l-334"></a>        <span class="c1">// we work with SV39, so if VM is enabled, check that all bits [63:38] are equal</span>
 <a name="l-335"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">en_ld_st_translation_i</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">((</span><span class="o">&amp;</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">38</span><span class="p">])</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span> <span class="o">||</span> <span class="p">(</span><span class="o">|</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">38</span><span class="p">])</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">))</span> <span class="k">begin</span>
 <a name="l-336"></a>
-<a name="l-337"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="no">LOAD</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-337"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="n">LOAD</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-338"></a>                <span class="n">misaligned_exception</span> <span class="o">=</span> <span class="p">{</span>
-<a name="l-339"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="no">LD_ACCESS_FAULT</span><span class="p">,</span>
+<a name="l-339"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="n">LD_ACCESS_FAULT</span><span class="p">,</span>
 <a name="l-340"></a>                    <span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">,</span>
 <a name="l-341"></a>                    <span class="mh">1</span><span class="mb">&#39;b1</span>
 <a name="l-342"></a>                <span class="p">};</span>
 <a name="l-343"></a>
-<a name="l-344"></a>            <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="no">STORE</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-344"></a>            <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">fu</span> <span class="o">==</span> <span class="n">STORE</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-345"></a>                <span class="n">misaligned_exception</span> <span class="o">=</span> <span class="p">{</span>
-<a name="l-346"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="no">ST_ACCESS_FAULT</span><span class="p">,</span>
+<a name="l-346"></a>                    <span class="n">riscv</span><span class="o">::</span><span class="n">ST_ACCESS_FAULT</span><span class="p">,</span>
 <a name="l-347"></a>                    <span class="n">lsu_ctrl</span><span class="p">.</span><span class="n">vaddr</span><span class="p">,</span>
 <a name="l-348"></a>                    <span class="mh">1</span><span class="mb">&#39;b1</span>
 <a name="l-349"></a>                <span class="p">};</span>

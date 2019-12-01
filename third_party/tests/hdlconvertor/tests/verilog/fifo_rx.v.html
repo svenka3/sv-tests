@@ -419,24 +419,24 @@
 <a name="l-32"></a><span class="c1">//-FHDR------------------------------------------------------------------------</span>
 <a name="l-33"></a><span class="k">module</span> <span class="n">fifo_rx</span>
 <a name="l-34"></a><span class="p">#(</span>
-<a name="l-35"></a>	<span class="k">parameter</span> <span class="k">integer</span> <span class="no">DWIDTH</span> <span class="o">=</span> <span class="mh">9</span><span class="p">,</span>
-<a name="l-36"></a>	<span class="k">parameter</span> <span class="k">integer</span> <span class="no">AWIDTH</span> <span class="o">=</span> <span class="mh">6</span>
+<a name="l-35"></a>	<span class="k">parameter</span> <span class="k">integer</span> <span class="n">DWIDTH</span> <span class="o">=</span> <span class="mh">9</span><span class="p">,</span>
+<a name="l-36"></a>	<span class="k">parameter</span> <span class="k">integer</span> <span class="n">AWIDTH</span> <span class="o">=</span> <span class="mh">6</span>
 <a name="l-37"></a><span class="p">)</span>
 <a name="l-38"></a>
 <a name="l-39"></a><span class="p">(</span>
 <a name="l-40"></a>	<span class="k">input</span> <span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="p">,</span> <span class="n">wr_en</span><span class="p">,</span> <span class="n">rd_en</span><span class="p">,</span>
-<a name="l-41"></a>	<span class="k">input</span> <span class="p">[</span><span class="no">DWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_in</span><span class="p">,</span>
+<a name="l-41"></a>	<span class="k">input</span> <span class="p">[</span><span class="n">DWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_in</span><span class="p">,</span>
 <a name="l-42"></a>	<span class="k">output</span> <span class="k">reg</span> <span class="n">f_full</span><span class="p">,</span><span class="n">f_empty</span><span class="p">,</span>
 <a name="l-43"></a>	<span class="k">output</span> <span class="k">reg</span> <span class="n">open_slot_fct</span><span class="p">,</span>
 <a name="l-44"></a>	<span class="k">output</span> <span class="k">reg</span> <span class="n">overflow_credit_error</span><span class="p">,</span>
-<a name="l-45"></a>	<span class="k">output</span> <span class="p">[</span><span class="no">DWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_out</span><span class="p">,</span>
-<a name="l-46"></a>	<span class="k">output</span> <span class="k">reg</span> <span class="p">[</span><span class="no">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">counter</span>
+<a name="l-45"></a>	<span class="k">output</span> <span class="p">[</span><span class="n">DWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_out</span><span class="p">,</span>
+<a name="l-46"></a>	<span class="k">output</span> <span class="k">reg</span> <span class="p">[</span><span class="n">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">counter</span>
 <a name="l-47"></a><span class="p">);</span>
 <a name="l-48"></a>
-<a name="l-49"></a>	<span class="k">reg</span> <span class="p">[</span><span class="no">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wr_ptr</span><span class="p">;</span>
-<a name="l-50"></a>	<span class="k">reg</span> <span class="p">[</span><span class="no">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rd_ptr</span><span class="p">;</span>
+<a name="l-49"></a>	<span class="k">reg</span> <span class="p">[</span><span class="n">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wr_ptr</span><span class="p">;</span>
+<a name="l-50"></a>	<span class="k">reg</span> <span class="p">[</span><span class="n">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rd_ptr</span><span class="p">;</span>
 <a name="l-51"></a>
-<a name="l-52"></a>	<span class="k">reg</span> <span class="p">[</span><span class="no">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">credit_counter</span><span class="p">;</span>
+<a name="l-52"></a>	<span class="k">reg</span> <span class="p">[</span><span class="n">AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">credit_counter</span><span class="p">;</span>
 <a name="l-53"></a>
 <a name="l-54"></a>	<span class="k">reg</span>  <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">state_data_write</span><span class="p">;</span>
 <a name="l-55"></a>	<span class="k">reg</span>  <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">next_state_data_write</span><span class="p">;</span>
@@ -626,7 +626,7 @@
 <a name="l-239"></a>		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">reset</span><span class="p">)</span>
 <a name="l-240"></a>		<span class="k">begin</span>
 <a name="l-241"></a>			<span class="n">state_data_write</span> <span class="o">&lt;=</span> <span class="mh">2</span><span class="mi">&#39;d0</span><span class="p">;</span>
-<a name="l-242"></a>			<span class="n">wr_ptr</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="no">AWIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
+<a name="l-242"></a>			<span class="n">wr_ptr</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">AWIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
 <a name="l-243"></a>		<span class="k">end</span>
 <a name="l-244"></a>		<span class="k">else</span>
 <a name="l-245"></a>		<span class="k">begin</span>
@@ -665,7 +665,7 @@
 <a name="l-278"></a>		<span class="n">f_full</span>  <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-279"></a>		<span class="n">f_empty</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-280"></a>		<span class="n">overflow_credit_error</span><span class="o">&lt;=</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-281"></a>		<span class="n">counter</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="no">AWIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>	
+<a name="l-281"></a>		<span class="n">counter</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">AWIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>	
 <a name="l-282"></a>	<span class="k">end</span>
 <a name="l-283"></a>	<span class="k">else</span>
 <a name="l-284"></a>	<span class="k">begin</span>
@@ -714,7 +714,7 @@
 <a name="l-327"></a>	<span class="k">begin</span>
 <a name="l-328"></a>		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">reset</span><span class="p">)</span>
 <a name="l-329"></a>		<span class="k">begin</span>
-<a name="l-330"></a>			<span class="n">rd_ptr</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="no">AWIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
+<a name="l-330"></a>			<span class="n">rd_ptr</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">AWIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
 <a name="l-331"></a>			<span class="n">state_data_read</span> <span class="o">&lt;=</span> <span class="mh">2</span><span class="mi">&#39;d0</span><span class="p">;</span>
 <a name="l-332"></a>		<span class="k">end</span>
 <a name="l-333"></a>		<span class="k">else</span>

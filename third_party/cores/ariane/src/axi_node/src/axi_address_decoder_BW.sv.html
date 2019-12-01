@@ -136,37 +136,37 @@
 <a name="l-42"></a>
 <a name="l-43"></a><span class="k">module</span> <span class="n">axi_address_decoder_BW</span>
 <a name="l-44"></a><span class="p">#(</span>
-<a name="l-45"></a>    <span class="k">parameter</span>  <span class="no">N_TARG_PORT</span>     <span class="o">=</span> <span class="mh">3</span><span class="p">,</span>
-<a name="l-46"></a>    <span class="k">parameter</span>  <span class="no">AXI_ID_IN</span>       <span class="o">=</span> <span class="mh">3</span><span class="p">,</span>
-<a name="l-47"></a>    <span class="k">parameter</span>  <span class="no">AXI_ID_OUT</span>      <span class="o">=</span> <span class="no">AXI_ID_IN</span><span class="o">+</span><span class="n">$clog2</span><span class="p">(</span><span class="no">N_TARG_PORT</span><span class="p">)</span>
+<a name="l-45"></a>    <span class="k">parameter</span>  <span class="n">N_TARG_PORT</span>     <span class="o">=</span> <span class="mh">3</span><span class="p">,</span>
+<a name="l-46"></a>    <span class="k">parameter</span>  <span class="n">AXI_ID_IN</span>       <span class="o">=</span> <span class="mh">3</span><span class="p">,</span>
+<a name="l-47"></a>    <span class="k">parameter</span>  <span class="n">AXI_ID_OUT</span>      <span class="o">=</span> <span class="n">AXI_ID_IN</span><span class="o">+</span><span class="n">$clog2</span><span class="p">(</span><span class="n">N_TARG_PORT</span><span class="p">)</span>
 <a name="l-48"></a><span class="p">)</span>
 <a name="l-49"></a><span class="p">(</span>
 <a name="l-50"></a>  <span class="c1">//AXI BACKWARD write response bus -----------------------------------------------------//</span>
-<a name="l-51"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">AXI_ID_OUT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">bid_i</span><span class="p">,</span>
+<a name="l-51"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">AXI_ID_OUT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">bid_i</span><span class="p">,</span>
 <a name="l-52"></a>  <span class="k">input</span>  <span class="k">logic</span>                             <span class="n">bvalid_i</span><span class="p">,</span>
 <a name="l-53"></a>  <span class="k">output</span> <span class="k">logic</span>                             <span class="n">bready_o</span><span class="p">,</span>
 <a name="l-54"></a>  <span class="c1">// To BW ALLOC --&gt; FROM BW DECODER</span>
-<a name="l-55"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="no">N_TARG_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">bvalid_o</span><span class="p">,</span>
-<a name="l-56"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">N_TARG_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">bready_i</span>
+<a name="l-55"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">N_TARG_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">bvalid_o</span><span class="p">,</span>
+<a name="l-56"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_TARG_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">bready_i</span>
 <a name="l-57"></a><span class="p">);</span>
 <a name="l-58"></a>
-<a name="l-59"></a>  <span class="k">logic</span> <span class="p">[</span><span class="no">N_TARG_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">req_mask</span><span class="p">;</span>
-<a name="l-60"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="no">N_TARG_PORT</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="no">ROUTING</span><span class="p">;</span>
+<a name="l-59"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_TARG_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">req_mask</span><span class="p">;</span>
+<a name="l-60"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">N_TARG_PORT</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">ROUTING</span><span class="p">;</span>
 <a name="l-61"></a>
 <a name="l-62"></a>
-<a name="l-63"></a>  <span class="k">assign</span> <span class="no">ROUTING</span> <span class="o">=</span> <span class="n">bid_i</span><span class="p">[</span><span class="no">AXI_ID_IN</span><span class="o">+</span> <span class="n">$clog2</span><span class="p">(</span><span class="no">N_TARG_PORT</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span> <span class="no">AXI_ID_IN</span><span class="p">];</span>
+<a name="l-63"></a>  <span class="k">assign</span> <span class="n">ROUTING</span> <span class="o">=</span> <span class="n">bid_i</span><span class="p">[</span><span class="n">AXI_ID_IN</span><span class="o">+</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">N_TARG_PORT</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span> <span class="n">AXI_ID_IN</span><span class="p">];</span>
 <a name="l-64"></a>
 <a name="l-65"></a>  <span class="k">always_comb</span>
 <a name="l-66"></a>  <span class="k">begin</span>
 <a name="l-67"></a>      <span class="n">req_mask</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-68"></a>      <span class="n">req_mask</span><span class="p">[</span><span class="no">ROUTING</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-68"></a>      <span class="n">req_mask</span><span class="p">[</span><span class="n">ROUTING</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-69"></a>  <span class="k">end</span>
 <a name="l-70"></a>
 <a name="l-71"></a>  <span class="k">always_comb</span>
 <a name="l-72"></a>  <span class="k">begin</span>
 <a name="l-73"></a>      <span class="k">if</span><span class="p">(</span><span class="n">bvalid_i</span><span class="p">)</span>
 <a name="l-74"></a>      <span class="k">begin</span>
-<a name="l-75"></a>      <span class="n">bvalid_o</span> <span class="o">=</span> <span class="p">{</span><span class="no">N_TARG_PORT</span><span class="p">{</span><span class="n">bvalid_i</span><span class="p">}}</span> <span class="o">&amp;</span> <span class="n">req_mask</span><span class="p">;</span>
+<a name="l-75"></a>      <span class="n">bvalid_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">N_TARG_PORT</span><span class="p">{</span><span class="n">bvalid_i</span><span class="p">}}</span> <span class="o">&amp;</span> <span class="n">req_mask</span><span class="p">;</span>
 <a name="l-76"></a>      <span class="k">end</span>
 <a name="l-77"></a>      <span class="k">else</span>
 <a name="l-78"></a>      <span class="k">begin</span>

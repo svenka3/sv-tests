@@ -345,27 +345,27 @@
 <a name="l-40"></a><span class="c1">// ============================================================================= //</span>
 <a name="l-41"></a>
 <a name="l-42"></a><span class="k">module</span> <span class="n">axi_BW_allocator</span> <span class="p">#(</span>
-<a name="l-43"></a>    <span class="k">parameter</span>                   <span class="no">AXI_USER_W</span>     <span class="o">=</span> <span class="mh">6</span><span class="p">,</span>
-<a name="l-44"></a>    <span class="k">parameter</span>                   <span class="no">N_INIT_PORT</span>    <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-45"></a>    <span class="k">parameter</span>                   <span class="no">N_TARG_PORT</span>    <span class="o">=</span> <span class="mh">7</span><span class="p">,</span>
-<a name="l-46"></a>    <span class="k">parameter</span>                   <span class="no">AXI_DATA_W</span>     <span class="o">=</span> <span class="mh">64</span><span class="p">,</span>
-<a name="l-47"></a>    <span class="k">parameter</span>                   <span class="no">AXI_ID_IN</span>      <span class="o">=</span> <span class="mh">16</span><span class="p">,</span>
-<a name="l-48"></a>    <span class="k">parameter</span>                   <span class="no">AXI_ID_OUT</span>     <span class="o">=</span> <span class="no">AXI_ID_IN</span> <span class="o">+</span> <span class="n">$clog2</span><span class="p">(</span><span class="no">N_TARG_PORT</span><span class="p">)</span>
+<a name="l-43"></a>    <span class="k">parameter</span>                   <span class="n">AXI_USER_W</span>     <span class="o">=</span> <span class="mh">6</span><span class="p">,</span>
+<a name="l-44"></a>    <span class="k">parameter</span>                   <span class="n">N_INIT_PORT</span>    <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
+<a name="l-45"></a>    <span class="k">parameter</span>                   <span class="n">N_TARG_PORT</span>    <span class="o">=</span> <span class="mh">7</span><span class="p">,</span>
+<a name="l-46"></a>    <span class="k">parameter</span>                   <span class="n">AXI_DATA_W</span>     <span class="o">=</span> <span class="mh">64</span><span class="p">,</span>
+<a name="l-47"></a>    <span class="k">parameter</span>                   <span class="n">AXI_ID_IN</span>      <span class="o">=</span> <span class="mh">16</span><span class="p">,</span>
+<a name="l-48"></a>    <span class="k">parameter</span>                   <span class="n">AXI_ID_OUT</span>     <span class="o">=</span> <span class="n">AXI_ID_IN</span> <span class="o">+</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">N_TARG_PORT</span><span class="p">)</span>
 <a name="l-49"></a><span class="p">)(</span>
 <a name="l-50"></a>  <span class="k">input</span>  <span class="k">logic</span>                                                          <span class="n">clk</span><span class="p">,</span>
 <a name="l-51"></a>  <span class="k">input</span>  <span class="k">logic</span>                                                          <span class="n">rst_n</span><span class="p">,</span>
 <a name="l-52"></a>
 <a name="l-53"></a>  <span class="c1">//AXI BACKWARD read data bus ----------------------------------------------</span>
-<a name="l-54"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="no">AXI_ID_OUT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                        <span class="n">bid_i</span><span class="p">,</span>
-<a name="l-55"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                  <span class="n">bresp_i</span><span class="p">,</span>
-<a name="l-56"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="no">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                        <span class="n">buser_i</span><span class="p">,</span>   <span class="c1">//last transfer in burst</span>
-<a name="l-57"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">bvalid_i</span><span class="p">,</span>  <span class="c1">//slave data valid</span>
-<a name="l-58"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="no">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">bready_o</span><span class="p">,</span>   <span class="c1">//master ready to accept</span>
+<a name="l-54"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">AXI_ID_OUT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                        <span class="n">bid_i</span><span class="p">,</span>
+<a name="l-55"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                  <span class="n">bresp_i</span><span class="p">,</span>
+<a name="l-56"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                        <span class="n">buser_i</span><span class="p">,</span>   <span class="c1">//last transfer in burst</span>
+<a name="l-57"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">bvalid_i</span><span class="p">,</span>  <span class="c1">//slave data valid</span>
+<a name="l-58"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">bready_o</span><span class="p">,</span>   <span class="c1">//master ready to accept</span>
 <a name="l-59"></a>
 <a name="l-60"></a>  <span class="c1">//AXI BACKWARD read data bus ----------------------------------------------</span>
-<a name="l-61"></a>  <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                         <span class="n">bid_o</span><span class="p">,</span>
+<a name="l-61"></a>  <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                         <span class="n">bid_o</span><span class="p">,</span>
 <a name="l-62"></a>  <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                  <span class="n">bresp_o</span><span class="p">,</span>
-<a name="l-63"></a>  <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">buser_o</span><span class="p">,</span>   <span class="c1">//last transfer in burst</span>
+<a name="l-63"></a>  <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">buser_o</span><span class="p">,</span>   <span class="c1">//last transfer in burst</span>
 <a name="l-64"></a>  <span class="k">output</span>  <span class="k">logic</span>                                                         <span class="n">bvalid_o</span><span class="p">,</span>  <span class="c1">//slave data valid</span>
 <a name="l-65"></a>  <span class="k">input</span>   <span class="k">logic</span>                                                         <span class="n">bready_i</span><span class="p">,</span>   <span class="c1">//master ready to accept</span>
 <a name="l-66"></a>
@@ -377,32 +377,32 @@
 <a name="l-72"></a>
 <a name="l-73"></a>  <span class="k">input</span>   <span class="k">logic</span>                                                         <span class="n">error_req_i</span><span class="p">,</span>
 <a name="l-74"></a>  <span class="k">output</span>  <span class="k">logic</span>                                                         <span class="n">error_gnt_o</span><span class="p">,</span>
-<a name="l-75"></a>  <span class="k">input</span>   <span class="k">logic</span> <span class="p">[</span><span class="no">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">error_user_i</span><span class="p">,</span>
-<a name="l-76"></a>  <span class="k">input</span>   <span class="k">logic</span> <span class="p">[</span><span class="no">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                         <span class="n">error_id_i</span>
+<a name="l-75"></a>  <span class="k">input</span>   <span class="k">logic</span> <span class="p">[</span><span class="n">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                        <span class="n">error_user_i</span><span class="p">,</span>
+<a name="l-76"></a>  <span class="k">input</span>   <span class="k">logic</span> <span class="p">[</span><span class="n">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                         <span class="n">error_id_i</span>
 <a name="l-77"></a><span class="p">);</span>
 <a name="l-78"></a>
-<a name="l-79"></a><span class="k">localparam</span>      <span class="no">AUX_WIDTH</span> <span class="o">=</span> <span class="mh">2</span> <span class="o">+</span> <span class="no">AXI_USER_W</span><span class="p">;</span>
+<a name="l-79"></a><span class="k">localparam</span>      <span class="n">AUX_WIDTH</span> <span class="o">=</span> <span class="mh">2</span> <span class="o">+</span> <span class="n">AXI_USER_W</span><span class="p">;</span>
 <a name="l-80"></a>
 <a name="l-81"></a>
-<a name="l-82"></a><span class="k">logic</span> <span class="p">[</span><span class="no">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="no">AUX_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                  <span class="no">AUX_VECTOR_IN</span><span class="p">;</span>
-<a name="l-83"></a><span class="k">logic</span> <span class="p">[</span><span class="no">AUX_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                   <span class="no">AUX_VECTOR_OUT</span><span class="p">;</span>
-<a name="l-84"></a><span class="k">logic</span> <span class="p">[</span><span class="no">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="no">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                  <span class="n">bid_int</span><span class="p">;</span>
+<a name="l-82"></a><span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">AUX_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                  <span class="n">AUX_VECTOR_IN</span><span class="p">;</span>
+<a name="l-83"></a><span class="k">logic</span> <span class="p">[</span><span class="n">AUX_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                   <span class="n">AUX_VECTOR_OUT</span><span class="p">;</span>
+<a name="l-84"></a><span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                  <span class="n">bid_int</span><span class="p">;</span>
 <a name="l-85"></a>
 <a name="l-86"></a><span class="k">genvar</span> <span class="n">i</span><span class="p">;</span>
 <a name="l-87"></a>
 <a name="l-88"></a><span class="k">logic</span> <span class="p">[</span><span class="mh">9</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                             <span class="n">outstanding_counter</span><span class="p">;</span>
 <a name="l-89"></a><span class="k">logic</span>                                                                   <span class="n">decr_req</span><span class="p">;</span>
-<a name="l-90"></a><span class="k">logic</span>   <span class="p">[</span><span class="no">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                <span class="n">error_user_S</span><span class="p">;</span>
-<a name="l-91"></a><span class="k">logic</span>   <span class="p">[</span><span class="no">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                 <span class="n">error_id_S</span><span class="p">;</span>
+<a name="l-90"></a><span class="k">logic</span>   <span class="p">[</span><span class="n">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                <span class="n">error_user_S</span><span class="p">;</span>
+<a name="l-91"></a><span class="k">logic</span>   <span class="p">[</span><span class="n">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                 <span class="n">error_id_S</span><span class="p">;</span>
 <a name="l-92"></a>
-<a name="l-93"></a><span class="k">enum</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                <span class="p">{</span><span class="no">OPERATIVE</span><span class="p">,</span> <span class="no">ERROR_SINGLE</span><span class="p">,</span> <span class="no">ERROR_BURST</span><span class="p">}</span> <span class="no">CS</span><span class="p">,</span> <span class="no">NS</span><span class="p">;</span>
+<a name="l-93"></a><span class="k">enum</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                <span class="p">{</span><span class="n">OPERATIVE</span><span class="p">,</span> <span class="n">ERROR_SINGLE</span><span class="p">,</span> <span class="n">ERROR_BURST</span><span class="p">}</span> <span class="n">CS</span><span class="p">,</span> <span class="n">NS</span><span class="p">;</span>
 <a name="l-94"></a>
 <a name="l-95"></a>
 <a name="l-96"></a>
 <a name="l-97"></a><span class="c1">// Output of the arbiter, to be multiplexed in the FSM</span>
-<a name="l-98"></a><span class="k">logic</span> <span class="p">[</span><span class="no">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                   <span class="n">arb_bid</span><span class="p">;</span>
+<a name="l-98"></a><span class="k">logic</span> <span class="p">[</span><span class="n">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                   <span class="n">arb_bid</span><span class="p">;</span>
 <a name="l-99"></a><span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                             <span class="n">arb_bresp</span><span class="p">;</span>
-<a name="l-100"></a><span class="k">logic</span> <span class="p">[</span><span class="no">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                  <span class="n">arb_buser</span><span class="p">;</span>
+<a name="l-100"></a><span class="k">logic</span> <span class="p">[</span><span class="n">AXI_USER_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                                  <span class="n">arb_buser</span><span class="p">;</span>
 <a name="l-101"></a><span class="k">logic</span>                                                                   <span class="n">arb_bvalid</span><span class="p">;</span>
 <a name="l-102"></a><span class="k">logic</span>                                                                   <span class="n">arb_bready</span><span class="p">;</span>
 <a name="l-103"></a>
@@ -410,7 +410,7 @@
 <a name="l-105"></a>
 <a name="l-106"></a>
 <a name="l-107"></a>
-<a name="l-108"></a><span class="k">assign</span> <span class="p">{</span><span class="n">arb_buser</span><span class="p">,</span> <span class="n">arb_bresp</span><span class="p">}</span> <span class="o">=</span> <span class="no">AUX_VECTOR_OUT</span><span class="p">;</span>
+<a name="l-108"></a><span class="k">assign</span> <span class="p">{</span><span class="n">arb_buser</span><span class="p">,</span> <span class="n">arb_bresp</span><span class="p">}</span> <span class="o">=</span> <span class="n">AUX_VECTOR_OUT</span><span class="p">;</span>
 <a name="l-109"></a>
 <a name="l-110"></a>
 <a name="l-111"></a><span class="c1">// -------------------------------------------------------------------------   //</span>
@@ -481,11 +481,11 @@
 <a name="l-176"></a><span class="k">begin</span>
 <a name="l-177"></a>  <span class="k">if</span><span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span>
 <a name="l-178"></a>  <span class="k">begin</span>
-<a name="l-179"></a>    <span class="no">CS</span> <span class="o">&lt;=</span> <span class="no">OPERATIVE</span><span class="p">;</span>
+<a name="l-179"></a>    <span class="n">CS</span> <span class="o">&lt;=</span> <span class="n">OPERATIVE</span><span class="p">;</span>
 <a name="l-180"></a>  <span class="k">end</span>
 <a name="l-181"></a>  <span class="k">else</span>
 <a name="l-182"></a>  <span class="k">begin</span>
-<a name="l-183"></a>    <span class="no">CS</span> <span class="o">&lt;=</span> <span class="no">NS</span><span class="p">;</span>
+<a name="l-183"></a>    <span class="n">CS</span> <span class="o">&lt;=</span> <span class="n">NS</span><span class="p">;</span>
 <a name="l-184"></a>  <span class="k">end</span>
 <a name="l-185"></a><span class="k">end</span>
 <a name="l-186"></a>
@@ -502,43 +502,43 @@
 <a name="l-197"></a>  <span class="n">error_gnt_o</span>      <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-198"></a>
 <a name="l-199"></a>
-<a name="l-200"></a>  <span class="k">case</span><span class="p">(</span><span class="no">CS</span><span class="p">)</span>
+<a name="l-200"></a>  <span class="k">case</span><span class="p">(</span><span class="n">CS</span><span class="p">)</span>
 <a name="l-201"></a>
-<a name="l-202"></a>    <span class="no">OPERATIVE</span> <span class="o">:</span>
+<a name="l-202"></a>    <span class="n">OPERATIVE</span> <span class="o">:</span>
 <a name="l-203"></a>    <span class="k">begin</span>
 <a name="l-204"></a>        <span class="n">error_gnt_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-205"></a>
 <a name="l-206"></a>        <span class="k">if</span><span class="p">((</span><span class="n">error_req_i</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">outstanding_trans_o</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">))</span>
 <a name="l-207"></a>        <span class="k">begin</span>
-<a name="l-208"></a>            <span class="no">NS</span> <span class="o">=</span> <span class="no">ERROR_SINGLE</span><span class="p">;</span>
+<a name="l-208"></a>            <span class="n">NS</span> <span class="o">=</span> <span class="n">ERROR_SINGLE</span><span class="p">;</span>
 <a name="l-209"></a>        <span class="k">end</span>
 <a name="l-210"></a>        <span class="k">else</span>
 <a name="l-211"></a>        <span class="k">begin</span>
-<a name="l-212"></a>          <span class="no">NS</span> <span class="o">=</span> <span class="no">OPERATIVE</span><span class="p">;</span>
+<a name="l-212"></a>          <span class="n">NS</span> <span class="o">=</span> <span class="n">OPERATIVE</span><span class="p">;</span>
 <a name="l-213"></a>        <span class="k">end</span>
 <a name="l-214"></a>    <span class="k">end</span>
 <a name="l-215"></a>
 <a name="l-216"></a>
-<a name="l-217"></a>    <span class="no">ERROR_SINGLE</span> <span class="o">:</span>
+<a name="l-217"></a>    <span class="n">ERROR_SINGLE</span> <span class="o">:</span>
 <a name="l-218"></a>    <span class="k">begin</span>
 <a name="l-219"></a>        <span class="n">arb_bready</span>  <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-220"></a>        <span class="n">error_gnt_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-221"></a>        <span class="n">bresp_o</span>     <span class="o">=</span> <span class="n">axi_pkg</span><span class="o">::</span><span class="no">RESP_DECERR</span><span class="p">;</span>
+<a name="l-221"></a>        <span class="n">bresp_o</span>     <span class="o">=</span> <span class="n">axi_pkg</span><span class="o">::</span><span class="n">RESP_DECERR</span><span class="p">;</span>
 <a name="l-222"></a>        <span class="n">bvalid_o</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-223"></a>        <span class="n">buser_o</span>     <span class="o">=</span> <span class="n">error_user_S</span><span class="p">;</span>
 <a name="l-224"></a>        <span class="n">bid_o</span>       <span class="o">=</span> <span class="n">error_id_S</span><span class="p">;</span>
 <a name="l-225"></a>
 <a name="l-226"></a>        <span class="k">if</span><span class="p">(</span><span class="n">bready_i</span><span class="p">)</span>
-<a name="l-227"></a>          <span class="no">NS</span> <span class="o">=</span> <span class="no">OPERATIVE</span><span class="p">;</span>
+<a name="l-227"></a>          <span class="n">NS</span> <span class="o">=</span> <span class="n">OPERATIVE</span><span class="p">;</span>
 <a name="l-228"></a>        <span class="k">else</span>
-<a name="l-229"></a>          <span class="no">NS</span> <span class="o">=</span> <span class="no">ERROR_SINGLE</span><span class="p">;</span>
+<a name="l-229"></a>          <span class="n">NS</span> <span class="o">=</span> <span class="n">ERROR_SINGLE</span><span class="p">;</span>
 <a name="l-230"></a>    <span class="k">end</span>
 <a name="l-231"></a>
 <a name="l-232"></a>
 <a name="l-233"></a>
 <a name="l-234"></a>    <span class="k">default</span> <span class="o">:</span>
 <a name="l-235"></a>    <span class="k">begin</span>
-<a name="l-236"></a>        <span class="no">NS</span>             <span class="o">=</span> <span class="no">OPERATIVE</span><span class="p">;</span>
+<a name="l-236"></a>        <span class="n">NS</span>             <span class="o">=</span> <span class="n">OPERATIVE</span><span class="p">;</span>
 <a name="l-237"></a>        <span class="n">error_gnt_o</span>      <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-238"></a>    <span class="k">end</span>
 <a name="l-239"></a>
@@ -552,43 +552,43 @@
 <a name="l-247"></a>
 <a name="l-248"></a><span class="k">generate</span>
 <a name="l-249"></a>
-<a name="l-250"></a>  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="no">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-<a name="l-251"></a>  <span class="k">begin</span> <span class="o">:</span> <span class="no">AUX_VECTOR_BINDING</span>
-<a name="l-252"></a>      <span class="k">assign</span> <span class="no">AUX_VECTOR_IN</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span>  <span class="p">{</span> <span class="n">buser_i</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">bresp_i</span><span class="p">[</span><span class="n">i</span><span class="p">]};</span>
+<a name="l-250"></a>  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<a name="l-251"></a>  <span class="k">begin</span> <span class="o">:</span> <span class="n">AUX_VECTOR_BINDING</span>
+<a name="l-252"></a>      <span class="k">assign</span> <span class="n">AUX_VECTOR_IN</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span>  <span class="p">{</span> <span class="n">buser_i</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">bresp_i</span><span class="p">[</span><span class="n">i</span><span class="p">]};</span>
 <a name="l-253"></a>  <span class="k">end</span>
 <a name="l-254"></a>
-<a name="l-255"></a>  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="no">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-<a name="l-256"></a>  <span class="k">begin</span> <span class="o">:</span> <span class="no">BID_VECTOR_BINDING</span>
-<a name="l-257"></a>      <span class="k">assign</span> <span class="n">bid_int</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span>  <span class="n">bid_i</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="no">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-255"></a>  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<a name="l-256"></a>  <span class="k">begin</span> <span class="o">:</span> <span class="n">BID_VECTOR_BINDING</span>
+<a name="l-257"></a>      <span class="k">assign</span> <span class="n">bid_int</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span>  <span class="n">bid_i</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">AXI_ID_IN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
 <a name="l-258"></a>  <span class="k">end</span>
 <a name="l-259"></a>
 <a name="l-260"></a>
 <a name="l-261"></a>
-<a name="l-262"></a><span class="k">if</span><span class="p">(</span><span class="no">N_INIT_PORT</span> <span class="o">==</span> <span class="mh">1</span><span class="p">)</span>
-<a name="l-263"></a><span class="k">begin</span> <span class="o">:</span> <span class="no">DIRECT_BINDING</span>
+<a name="l-262"></a><span class="k">if</span><span class="p">(</span><span class="n">N_INIT_PORT</span> <span class="o">==</span> <span class="mh">1</span><span class="p">)</span>
+<a name="l-263"></a><span class="k">begin</span> <span class="o">:</span> <span class="n">DIRECT_BINDING</span>
 <a name="l-264"></a>    <span class="k">assign</span> <span class="n">arb_bvalid</span>     <span class="o">=</span> <span class="n">bvalid_i</span><span class="p">;</span>
-<a name="l-265"></a>    <span class="k">assign</span> <span class="no">AUX_VECTOR_OUT</span> <span class="o">=</span> <span class="no">AUX_VECTOR_IN</span><span class="p">;</span>
+<a name="l-265"></a>    <span class="k">assign</span> <span class="n">AUX_VECTOR_OUT</span> <span class="o">=</span> <span class="n">AUX_VECTOR_IN</span><span class="p">;</span>
 <a name="l-266"></a>    <span class="k">assign</span> <span class="n">arb_bid</span>        <span class="o">=</span> <span class="n">bid_int</span><span class="p">;</span>
 <a name="l-267"></a>    <span class="k">assign</span> <span class="n">bready_o</span>       <span class="o">=</span> <span class="n">bready_i</span><span class="p">;</span>
 <a name="l-268"></a><span class="k">end</span>
 <a name="l-269"></a><span class="k">else</span>
-<a name="l-270"></a><span class="k">begin</span> <span class="o">:</span> <span class="no">ARBITER</span>
+<a name="l-270"></a><span class="k">begin</span> <span class="o">:</span> <span class="n">ARBITER</span>
 <a name="l-271"></a>
 <a name="l-272"></a>  <span class="n">axi_node_arbiter</span> <span class="p">#(</span>
-<a name="l-273"></a>    <span class="p">.</span><span class="no">AUX_WIDTH</span>  <span class="p">(</span><span class="no">AUX_WIDTH</span><span class="p">),</span>
-<a name="l-274"></a>    <span class="p">.</span><span class="no">ID_WIDTH</span>   <span class="p">(</span><span class="no">AXI_ID_IN</span><span class="p">),</span>
-<a name="l-275"></a>    <span class="p">.</span><span class="no">N_MASTER</span>   <span class="p">(</span><span class="no">N_INIT_PORT</span><span class="p">)</span>
+<a name="l-273"></a>    <span class="p">.</span><span class="n">AUX_WIDTH</span>  <span class="p">(</span><span class="n">AUX_WIDTH</span><span class="p">),</span>
+<a name="l-274"></a>    <span class="p">.</span><span class="n">ID_WIDTH</span>   <span class="p">(</span><span class="n">AXI_ID_IN</span><span class="p">),</span>
+<a name="l-275"></a>    <span class="p">.</span><span class="n">N_MASTER</span>   <span class="p">(</span><span class="n">N_INIT_PORT</span><span class="p">)</span>
 <a name="l-276"></a>  <span class="p">)</span> <span class="n">i_arbiter</span> <span class="p">(</span>
 <a name="l-277"></a>    <span class="p">.</span><span class="n">clk_i</span>        <span class="p">(</span><span class="n">clk</span><span class="p">),</span>
 <a name="l-278"></a>    <span class="p">.</span><span class="n">rst_ni</span>       <span class="p">(</span><span class="n">rst_n</span><span class="p">),</span>
 <a name="l-279"></a>
 <a name="l-280"></a>    <span class="p">.</span><span class="n">inp_id_i</span>     <span class="p">(</span><span class="n">bid_int</span><span class="p">),</span>
-<a name="l-281"></a>    <span class="p">.</span><span class="n">inp_aux_i</span>    <span class="p">(</span><span class="no">AUX_VECTOR_IN</span><span class="p">),</span>
+<a name="l-281"></a>    <span class="p">.</span><span class="n">inp_aux_i</span>    <span class="p">(</span><span class="n">AUX_VECTOR_IN</span><span class="p">),</span>
 <a name="l-282"></a>    <span class="p">.</span><span class="n">inp_valid_i</span>  <span class="p">(</span><span class="n">bvalid_i</span><span class="p">),</span>
 <a name="l-283"></a>    <span class="p">.</span><span class="n">inp_ready_o</span>  <span class="p">(</span><span class="n">bready_o</span><span class="p">),</span>
 <a name="l-284"></a>
 <a name="l-285"></a>    <span class="p">.</span><span class="n">oup_id_o</span>     <span class="p">(</span><span class="n">arb_bid</span><span class="p">),</span>
-<a name="l-286"></a>    <span class="p">.</span><span class="n">oup_aux_o</span>    <span class="p">(</span><span class="no">AUX_VECTOR_OUT</span><span class="p">),</span>
+<a name="l-286"></a>    <span class="p">.</span><span class="n">oup_aux_o</span>    <span class="p">(</span><span class="n">AUX_VECTOR_OUT</span><span class="p">),</span>
 <a name="l-287"></a>    <span class="p">.</span><span class="n">oup_valid_o</span>  <span class="p">(</span><span class="n">arb_bvalid</span><span class="p">),</span>
 <a name="l-288"></a>    <span class="p">.</span><span class="n">oup_ready_i</span>  <span class="p">(</span><span class="n">arb_bready</span><span class="p">)</span>
 <a name="l-289"></a>  <span class="p">);</span>

@@ -164,30 +164,30 @@
 <a name="l-20"></a><span class="c1">/// Burst accesses are not yet supported and DO NOT produce an error.</span>
 <a name="l-21"></a><span class="k">module</span> <span class="n">axi_to_axi_lite</span> <span class="p">#(</span>
 <a name="l-22"></a>  <span class="c1">/// Maximum number of outstanding reads.</span>
-<a name="l-23"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="no">NUM_PENDING_RD</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
+<a name="l-23"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">NUM_PENDING_RD</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
 <a name="l-24"></a>  <span class="c1">/// Maximum number of outstanding writes.</span>
-<a name="l-25"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="no">NUM_PENDING_WR</span> <span class="o">=</span> <span class="mh">1</span>
+<a name="l-25"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">NUM_PENDING_WR</span> <span class="o">=</span> <span class="mh">1</span>
 <a name="l-26"></a><span class="p">)(</span>
 <a name="l-27"></a>  <span class="k">input</span> <span class="k">logic</span>     <span class="n">clk_i</span><span class="p">,</span>
 <a name="l-28"></a>  <span class="k">input</span> <span class="k">logic</span>     <span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-29"></a>  <span class="k">input</span> <span class="k">logic</span>     <span class="n">testmode_i</span><span class="p">,</span>
-<a name="l-30"></a>  <span class="no">AXI_BUS</span><span class="p">.</span><span class="n">Slave</span>   <span class="n">in</span><span class="p">,</span>
-<a name="l-31"></a>  <span class="no">AXI_LITE</span><span class="p">.</span><span class="n">Master</span> <span class="n">out</span>
+<a name="l-30"></a>  <span class="n">AXI_BUS</span><span class="p">.</span><span class="n">Slave</span>   <span class="n">in</span><span class="p">,</span>
+<a name="l-31"></a>  <span class="n">AXI_LITE</span><span class="p">.</span><span class="n">Master</span> <span class="n">out</span>
 <a name="l-32"></a><span class="p">);</span>
 <a name="l-33"></a>
-<a name="l-34"></a>  <span class="no">`ifndef</span> <span class="no">SYNTHESIS</span>
+<a name="l-34"></a>  <span class="no">`ifndef</span> <span class="n">SYNTHESIS</span>
 <a name="l-35"></a>  <span class="k">initial</span> <span class="k">begin</span>
-<a name="l-36"></a>    <span class="k">assert</span><span class="p">(</span><span class="no">NUM_PENDING_RD</span> <span class="o">&gt;</span> <span class="mh">0</span><span class="p">);</span>
-<a name="l-37"></a>    <span class="k">assert</span><span class="p">(</span><span class="no">NUM_PENDING_WR</span> <span class="o">&gt;</span> <span class="mh">0</span><span class="p">);</span>
-<a name="l-38"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="no">AXI_ADDR_WIDTH</span> <span class="o">==</span> <span class="n">out</span><span class="p">.</span><span class="no">AXI_ADDR_WIDTH</span><span class="p">);</span>
-<a name="l-39"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="no">AXI_DATA_WIDTH</span> <span class="o">==</span> <span class="n">out</span><span class="p">.</span><span class="no">AXI_DATA_WIDTH</span><span class="p">);</span>
+<a name="l-36"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">NUM_PENDING_RD</span> <span class="o">&gt;</span> <span class="mh">0</span><span class="p">);</span>
+<a name="l-37"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">NUM_PENDING_WR</span> <span class="o">&gt;</span> <span class="mh">0</span><span class="p">);</span>
+<a name="l-38"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">AXI_ADDR_WIDTH</span> <span class="o">==</span> <span class="n">out</span><span class="p">.</span><span class="n">AXI_ADDR_WIDTH</span><span class="p">);</span>
+<a name="l-39"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">AXI_DATA_WIDTH</span> <span class="o">==</span> <span class="n">out</span><span class="p">.</span><span class="n">AXI_DATA_WIDTH</span><span class="p">);</span>
 <a name="l-40"></a>  <span class="k">end</span>
 <a name="l-41"></a>  <span class="no">`endif</span>
 <a name="l-42"></a>
 <a name="l-43"></a>  <span class="c1">// Round the maximum number of pending transactions up to the next power of</span>
 <a name="l-44"></a>  <span class="c1">// two. This is required by the implementation of the FIFO.</span>
-<a name="l-45"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="no">DEPTH_FIFO_RD</span> <span class="o">=</span> <span class="mh">2</span><span class="o">**</span><span class="n">$clog2</span><span class="p">(</span><span class="no">NUM_PENDING_RD</span><span class="p">);</span>
-<a name="l-46"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="no">DEPTH_FIFO_WR</span> <span class="o">=</span> <span class="mh">2</span><span class="o">**</span><span class="n">$clog2</span><span class="p">(</span><span class="no">NUM_PENDING_WR</span><span class="p">);</span>
+<a name="l-45"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">DEPTH_FIFO_RD</span> <span class="o">=</span> <span class="mh">2</span><span class="o">**</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_PENDING_RD</span><span class="p">);</span>
+<a name="l-46"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">DEPTH_FIFO_WR</span> <span class="o">=</span> <span class="mh">2</span><span class="o">**</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_PENDING_WR</span><span class="p">);</span>
 <a name="l-47"></a>
 <a name="l-48"></a>  <span class="c1">// The transaction information that will be stored locally.</span>
 <a name="l-49"></a>  <span class="k">typedef</span> <span class="k">struct</span> <span class="k">packed</span> <span class="p">{</span>
@@ -214,7 +214,7 @@
 <a name="l-70"></a>  <span class="n">meta_rd_t</span> <span class="n">meta_rd</span><span class="p">;</span>
 <a name="l-71"></a>  <span class="n">meta_wr_t</span> <span class="n">meta_wr</span><span class="p">;</span>
 <a name="l-72"></a>
-<a name="l-73"></a>  <span class="n">fifo</span> <span class="p">#(.</span><span class="n">dtype</span><span class="p">(</span><span class="n">meta_rd_t</span><span class="p">),</span> <span class="p">.</span><span class="no">DEPTH</span><span class="p">(</span><span class="no">DEPTH_FIFO_RD</span><span class="p">))</span> <span class="n">i_fifo_rd</span> <span class="p">(</span>
+<a name="l-73"></a>  <span class="n">fifo</span> <span class="p">#(.</span><span class="n">dtype</span><span class="p">(</span><span class="n">meta_rd_t</span><span class="p">),</span> <span class="p">.</span><span class="n">DEPTH</span><span class="p">(</span><span class="n">DEPTH_FIFO_RD</span><span class="p">))</span> <span class="n">i_fifo_rd</span> <span class="p">(</span>
 <a name="l-74"></a>    <span class="p">.</span><span class="n">clk_i</span>       <span class="p">(</span> <span class="n">clk_i</span>      <span class="p">),</span>
 <a name="l-75"></a>    <span class="p">.</span><span class="n">rst_ni</span>      <span class="p">(</span> <span class="n">rst_ni</span>     <span class="p">),</span>
 <a name="l-76"></a>    <span class="p">.</span><span class="n">testmode_i</span>  <span class="p">(</span> <span class="n">testmode_i</span> <span class="p">),</span>
@@ -232,7 +232,7 @@
 <a name="l-88"></a>    <span class="p">.</span><span class="n">pop_i</span>   <span class="p">(</span> <span class="n">in</span><span class="p">.</span><span class="n">r_valid</span> <span class="o">&amp;</span> <span class="n">in</span><span class="p">.</span><span class="n">r_ready</span> <span class="o">&amp;</span> <span class="n">in</span><span class="p">.</span><span class="n">r_last</span> <span class="p">)</span>
 <a name="l-89"></a>  <span class="p">);</span>
 <a name="l-90"></a>
-<a name="l-91"></a>  <span class="n">fifo</span> <span class="p">#(.</span><span class="n">dtype</span><span class="p">(</span><span class="n">meta_wr_t</span><span class="p">),</span> <span class="p">.</span><span class="no">DEPTH</span><span class="p">(</span><span class="no">DEPTH_FIFO_WR</span><span class="p">))</span> <span class="n">i_fifo_wr</span> <span class="p">(</span>
+<a name="l-91"></a>  <span class="n">fifo</span> <span class="p">#(.</span><span class="n">dtype</span><span class="p">(</span><span class="n">meta_wr_t</span><span class="p">),</span> <span class="p">.</span><span class="n">DEPTH</span><span class="p">(</span><span class="n">DEPTH_FIFO_WR</span><span class="p">))</span> <span class="n">i_fifo_wr</span> <span class="p">(</span>
 <a name="l-92"></a>    <span class="p">.</span><span class="n">clk_i</span>        <span class="p">(</span> <span class="n">clk_i</span>      <span class="p">),</span>
 <a name="l-93"></a>    <span class="p">.</span><span class="n">rst_ni</span>       <span class="p">(</span> <span class="n">rst_ni</span>     <span class="p">),</span>
 <a name="l-94"></a>    <span class="p">.</span><span class="n">testmode_i</span>   <span class="p">(</span> <span class="n">testmode_i</span> <span class="p">),</span>

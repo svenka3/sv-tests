@@ -98,7 +98,7 @@
 <a name="l-8"></a>
 <a name="l-9"></a><span class="k">module</span> <span class="n">scr1_pipe_mprf</span> <span class="p">(</span>
 <a name="l-10"></a>    <span class="c1">// Common</span>
-<a name="l-11"></a><span class="no">`ifdef</span> <span class="no">SCR1_MPRF_RST_EN</span>
+<a name="l-11"></a><span class="no">`ifdef</span> <span class="n">SCR1_MPRF_RST_EN</span>
 <a name="l-12"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">rst_n</span><span class="p">,</span>
 <a name="l-13"></a><span class="no">`endif</span> <span class="c1">// SCR1_MPRF_RST_EN</span>
 <a name="l-14"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">clk</span><span class="p">,</span>
@@ -117,7 +117,7 @@
 <a name="l-27"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-28"></a><span class="c1">// Local types declaration</span>
 <a name="l-29"></a><span class="c1">//-------------------------------------------------------------------------------</span>
-<a name="l-30"></a><span class="no">`ifdef</span> <span class="no">SCR1_RVE_EXT</span>
+<a name="l-30"></a><span class="no">`ifdef</span> <span class="n">SCR1_RVE_EXT</span>
 <a name="l-31"></a><span class="n">type_scr1_mprf_v</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">15</span><span class="p">]</span>     <span class="n">mprf_int</span><span class="p">;</span>
 <a name="l-32"></a><span class="no">`else</span> <span class="c1">// ~SCR1_RVE_EXT</span>
 <a name="l-33"></a><span class="n">type_scr1_mprf_v</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">31</span><span class="p">]</span>     <span class="n">mprf_int</span><span class="p">;</span>
@@ -132,7 +132,7 @@
 <a name="l-42"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-43"></a><span class="c1">// Write MPRF</span>
 <a name="l-44"></a><span class="c1">//-------------------------------------------------------------------------------</span>
-<a name="l-45"></a><span class="no">`ifdef</span> <span class="no">SCR1_MPRF_RST_EN</span>
+<a name="l-45"></a><span class="no">`ifdef</span> <span class="n">SCR1_MPRF_RST_EN</span>
 <a name="l-46"></a>
 <a name="l-47"></a><span class="k">always_ff</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">rst_n</span><span class="p">,</span> <span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-48"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
@@ -155,13 +155,13 @@
 <a name="l-65"></a><span class="no">`endif</span> <span class="c1">// SCR1_MPRF_RST_EN</span>
 <a name="l-66"></a>
 <a name="l-67"></a>
-<a name="l-68"></a><span class="no">`ifdef</span> <span class="no">SCR1_SIM_ENV</span>
-<a name="l-69"></a><span class="no">`ifndef</span> <span class="no">VERILATOR</span>
+<a name="l-68"></a><span class="no">`ifdef</span> <span class="n">SCR1_SIM_ENV</span>
+<a name="l-69"></a><span class="no">`ifndef</span> <span class="n">VERILATOR</span>
 <a name="l-70"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-71"></a><span class="c1">// Assertion</span>
 <a name="l-72"></a><span class="c1">//-------------------------------------------------------------------------------</span>
-<a name="l-73"></a><span class="no">`ifdef</span> <span class="no">SCR1_MPRF_RST_EN</span>
-<a name="l-74"></a><span class="no">SCR1_SVA_MPRF_WRITEX</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
+<a name="l-73"></a><span class="no">`ifdef</span> <span class="n">SCR1_MPRF_RST_EN</span>
+<a name="l-74"></a><span class="n">SCR1_SVA_MPRF_WRITEX</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-75"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
 <a name="l-76"></a>    <span class="n">exu2mprf_w_req</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">({</span><span class="n">exu2mprf_rd_addr</span><span class="p">,</span> <span class="p">(</span><span class="o">|</span><span class="n">exu2mprf_rd_addr</span> <span class="o">?</span> <span class="n">exu2mprf_rd_data</span> <span class="o">:</span> <span class="no">`SCR1_XLEN</span><span class="mi">&#39;d0</span><span class="p">)})</span>
 <a name="l-77"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;MPRF error: unknown values&quot;</span><span class="p">);</span>

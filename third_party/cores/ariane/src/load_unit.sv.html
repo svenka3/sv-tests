@@ -394,7 +394,7 @@
 <a name="l-25"></a>    <span class="k">output</span> <span class="k">logic</span>                     <span class="n">pop_ld_o</span><span class="p">,</span>
 <a name="l-26"></a>    <span class="c1">// load unit output port</span>
 <a name="l-27"></a>    <span class="k">output</span> <span class="k">logic</span>                     <span class="n">valid_o</span><span class="p">,</span>
-<a name="l-28"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="no">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">trans_id_o</span><span class="p">,</span>
+<a name="l-28"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">trans_id_o</span><span class="p">,</span>
 <a name="l-29"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">result_o</span><span class="p">,</span>
 <a name="l-30"></a>    <span class="k">output</span> <span class="n">exception_t</span>               <span class="n">ex_o</span><span class="p">,</span>
 <a name="l-31"></a>    <span class="c1">// MMU -&gt; Address Translation</span>
@@ -410,13 +410,13 @@
 <a name="l-41"></a>    <span class="k">input</span> <span class="n">dcache_req_o_t</span>             <span class="n">req_port_i</span><span class="p">,</span>
 <a name="l-42"></a>    <span class="k">output</span> <span class="n">dcache_req_i_t</span>            <span class="n">req_port_o</span>
 <a name="l-43"></a><span class="p">);</span>
-<a name="l-44"></a>    <span class="k">enum</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="p">{</span> <span class="no">IDLE</span><span class="p">,</span> <span class="no">WAIT_GNT</span><span class="p">,</span> <span class="no">SEND_TAG</span><span class="p">,</span> <span class="no">WAIT_PAGE_OFFSET</span><span class="p">,</span>
-<a name="l-45"></a>                       <span class="no">ABORT_TRANSACTION</span><span class="p">,</span> <span class="no">WAIT_TRANSLATION</span><span class="p">,</span> <span class="no">WAIT_FLUSH</span>
+<a name="l-44"></a>    <span class="k">enum</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="p">{</span> <span class="n">IDLE</span><span class="p">,</span> <span class="n">WAIT_GNT</span><span class="p">,</span> <span class="n">SEND_TAG</span><span class="p">,</span> <span class="n">WAIT_PAGE_OFFSET</span><span class="p">,</span>
+<a name="l-45"></a>                       <span class="n">ABORT_TRANSACTION</span><span class="p">,</span> <span class="n">WAIT_TRANSLATION</span><span class="p">,</span> <span class="n">WAIT_FLUSH</span>
 <a name="l-46"></a>                     <span class="p">}</span> <span class="n">state_d</span><span class="p">,</span> <span class="n">state_q</span><span class="p">;</span>
 <a name="l-47"></a>    <span class="c1">// in order to decouple the response interface from the request interface we need a</span>
 <a name="l-48"></a>    <span class="c1">// a queue which can hold all outstanding memory requests</span>
 <a name="l-49"></a>    <span class="k">struct</span> <span class="k">packed</span> <span class="p">{</span>
-<a name="l-50"></a>        <span class="k">logic</span> <span class="p">[</span><span class="no">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">trans_id</span><span class="p">;</span>
+<a name="l-50"></a>        <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">trans_id</span><span class="p">;</span>
 <a name="l-51"></a>        <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">address_offset</span><span class="p">;</span>
 <a name="l-52"></a>        <span class="n">fu_op</span>                     <span class="n">operator</span><span class="p">;</span>
 <a name="l-53"></a>    <span class="p">}</span> <span class="n">load_data_d</span><span class="p">,</span> <span class="n">load_data_q</span><span class="p">,</span> <span class="n">in_data</span><span class="p">;</span>
@@ -432,11 +432,11 @@
 <a name="l-63"></a>    <span class="k">assign</span> <span class="n">in_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">trans_id</span><span class="p">,</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">operator</span><span class="p">};</span>
 <a name="l-64"></a>    <span class="c1">// output address</span>
 <a name="l-65"></a>    <span class="c1">// we can now output the lower 12 bit as the index to the cache</span>
-<a name="l-66"></a>    <span class="k">assign</span> <span class="n">req_port_o</span><span class="p">.</span><span class="n">address_index</span> <span class="o">=</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">DCACHE_INDEX_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-66"></a>    <span class="k">assign</span> <span class="n">req_port_o</span><span class="p">.</span><span class="n">address_index</span> <span class="o">=</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">DCACHE_INDEX_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
 <a name="l-67"></a>    <span class="c1">// translation from last cycle, again: control is handled in the FSM</span>
-<a name="l-68"></a>    <span class="k">assign</span> <span class="n">req_port_o</span><span class="p">.</span><span class="n">address_tag</span>   <span class="o">=</span> <span class="n">paddr_i</span><span class="p">[</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">DCACHE_TAG_WIDTH</span>     <span class="o">+</span>
-<a name="l-69"></a>                                              <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">DCACHE_INDEX_WIDTH</span><span class="o">-</span><span class="mh">1</span> <span class="o">:</span>
-<a name="l-70"></a>                                              <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">DCACHE_INDEX_WIDTH</span><span class="p">];</span>
+<a name="l-68"></a>    <span class="k">assign</span> <span class="n">req_port_o</span><span class="p">.</span><span class="n">address_tag</span>   <span class="o">=</span> <span class="n">paddr_i</span><span class="p">[</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">DCACHE_TAG_WIDTH</span>     <span class="o">+</span>
+<a name="l-69"></a>                                              <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">DCACHE_INDEX_WIDTH</span><span class="o">-</span><span class="mh">1</span> <span class="o">:</span>
+<a name="l-70"></a>                                              <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">DCACHE_INDEX_WIDTH</span><span class="p">];</span>
 <a name="l-71"></a>    <span class="c1">// directly output an exception</span>
 <a name="l-72"></a>    <span class="k">assign</span> <span class="n">ex_o</span> <span class="o">=</span> <span class="n">ex_i</span><span class="p">;</span>
 <a name="l-73"></a>
@@ -469,18 +469,18 @@
 <a name="l-100"></a>                        <span class="n">req_port_o</span><span class="p">.</span><span class="n">data_req</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-101"></a>                        <span class="c1">// we got no data grant so wait for the grant before sending the tag</span>
 <a name="l-102"></a>                        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">req_port_i</span><span class="p">.</span><span class="n">data_gnt</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-103"></a>                            <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_GNT</span><span class="p">;</span>
+<a name="l-103"></a>                            <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
 <a name="l-104"></a>                        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-105"></a>                            <span class="k">if</span> <span class="p">(</span><span class="n">dtlb_hit_i</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-106"></a>                                <span class="c1">// we got a grant and a hit on the DTLB so we can send the tag in the next cycle</span>
-<a name="l-107"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="no">SEND_TAG</span><span class="p">;</span>
+<a name="l-107"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="n">SEND_TAG</span><span class="p">;</span>
 <a name="l-108"></a>                                <span class="n">pop_ld_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-109"></a>                            <span class="k">end</span> <span class="k">else</span>
-<a name="l-110"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="no">ABORT_TRANSACTION</span><span class="p">;</span>
+<a name="l-110"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="n">ABORT_TRANSACTION</span><span class="p">;</span>
 <a name="l-111"></a>                        <span class="k">end</span>
 <a name="l-112"></a>                    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-113"></a>                        <span class="c1">// wait for the store buffer to train and the page offset to not match anymore</span>
-<a name="l-114"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_PAGE_OFFSET</span><span class="p">;</span>
+<a name="l-114"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_PAGE_OFFSET</span><span class="p">;</span>
 <a name="l-115"></a>                    <span class="k">end</span>
 <a name="l-116"></a>                <span class="k">end</span>
 <a name="l-117"></a>            <span class="k">end</span>
@@ -489,7 +489,7 @@
 <a name="l-120"></a>            <span class="nl">WAIT_PAGE_OFFSET:</span> <span class="k">begin</span>
 <a name="l-121"></a>                <span class="c1">// we make a new request as soon as the page offset does not match anymore</span>
 <a name="l-122"></a>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">page_offset_matches_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-123"></a>                    <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_GNT</span><span class="p">;</span>
+<a name="l-123"></a>                    <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
 <a name="l-124"></a>                <span class="k">end</span>
 <a name="l-125"></a>            <span class="k">end</span>
 <a name="l-126"></a>
@@ -500,14 +500,14 @@
 <a name="l-131"></a>                <span class="n">req_port_o</span><span class="p">.</span><span class="n">kill_req</span>  <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-132"></a>                <span class="n">req_port_o</span><span class="p">.</span><span class="n">tag_valid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-133"></a>                <span class="c1">// redo the request by going back to the wait gnt state</span>
-<a name="l-134"></a>                <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_TRANSLATION</span><span class="p">;</span>
+<a name="l-134"></a>                <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_TRANSLATION</span><span class="p">;</span>
 <a name="l-135"></a>            <span class="k">end</span>
 <a name="l-136"></a>
 <a name="l-137"></a>            <span class="nl">WAIT_TRANSLATION:</span> <span class="k">begin</span>
 <a name="l-138"></a>                <span class="n">translation_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-139"></a>                <span class="c1">// we&#39;ve got a hit and we can continue with the request process</span>
 <a name="l-140"></a>                <span class="k">if</span> <span class="p">(</span><span class="n">dtlb_hit_i</span><span class="p">)</span>
-<a name="l-141"></a>                    <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_GNT</span><span class="p">;</span>
+<a name="l-141"></a>                    <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
 <a name="l-142"></a>            <span class="k">end</span>
 <a name="l-143"></a>
 <a name="l-144"></a>            <span class="nl">WAIT_GNT:</span> <span class="k">begin</span>
@@ -519,17 +519,17 @@
 <a name="l-150"></a>                <span class="k">if</span> <span class="p">(</span><span class="n">req_port_i</span><span class="p">.</span><span class="n">data_gnt</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-151"></a>                    <span class="c1">// so we send the tag in the next cycle</span>
 <a name="l-152"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">dtlb_hit_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-153"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="no">SEND_TAG</span><span class="p">;</span>
+<a name="l-153"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="n">SEND_TAG</span><span class="p">;</span>
 <a name="l-154"></a>                        <span class="n">pop_ld_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-155"></a>                    <span class="k">end</span> <span class="k">else</span> <span class="c1">// should we not have hit on the TLB abort this transaction an retry later</span>
-<a name="l-156"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="no">ABORT_TRANSACTION</span><span class="p">;</span>
+<a name="l-156"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="n">ABORT_TRANSACTION</span><span class="p">;</span>
 <a name="l-157"></a>                <span class="k">end</span>
 <a name="l-158"></a>                <span class="c1">// otherwise we keep waiting on our grant</span>
 <a name="l-159"></a>            <span class="k">end</span>
 <a name="l-160"></a>            <span class="c1">// we know for sure that the tag we want to send is valid</span>
 <a name="l-161"></a>            <span class="nl">SEND_TAG:</span> <span class="k">begin</span>
 <a name="l-162"></a>                <span class="n">req_port_o</span><span class="p">.</span><span class="n">tag_valid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-163"></a>                <span class="n">state_d</span> <span class="o">=</span> <span class="no">IDLE</span><span class="p">;</span>
+<a name="l-163"></a>                <span class="n">state_d</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
 <a name="l-164"></a>                <span class="c1">// we can make a new request here if we got one</span>
 <a name="l-165"></a>                <span class="k">if</span> <span class="p">(</span><span class="n">valid_i</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-166"></a>                    <span class="c1">// start the translation process even though we do not know if the addresses match</span>
@@ -541,19 +541,19 @@
 <a name="l-172"></a>                        <span class="n">req_port_o</span><span class="p">.</span><span class="n">data_req</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-173"></a>                        <span class="c1">// we got no data grant so wait for the grant before sending the tag</span>
 <a name="l-174"></a>                        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">req_port_i</span><span class="p">.</span><span class="n">data_gnt</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-175"></a>                            <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_GNT</span><span class="p">;</span>
+<a name="l-175"></a>                            <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
 <a name="l-176"></a>                        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-177"></a>                            <span class="c1">// we got a grant so we can send the tag in the next cycle</span>
 <a name="l-178"></a>                            <span class="k">if</span> <span class="p">(</span><span class="n">dtlb_hit_i</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-179"></a>                                <span class="c1">// we got a grant and a hit on the DTLB so we can send the tag in the next cycle</span>
-<a name="l-180"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="no">SEND_TAG</span><span class="p">;</span>
+<a name="l-180"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="n">SEND_TAG</span><span class="p">;</span>
 <a name="l-181"></a>                                <span class="n">pop_ld_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-182"></a>                            <span class="k">end</span> <span class="k">else</span> <span class="c1">// we missed on the TLB -&gt; wait for the translation</span>
-<a name="l-183"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="no">ABORT_TRANSACTION</span><span class="p">;</span>
+<a name="l-183"></a>                                <span class="n">state_d</span> <span class="o">=</span> <span class="n">ABORT_TRANSACTION</span><span class="p">;</span>
 <a name="l-184"></a>                        <span class="k">end</span>
 <a name="l-185"></a>                    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-186"></a>                        <span class="c1">// wait for the store buffer to train and the page offset to not match anymore</span>
-<a name="l-187"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_PAGE_OFFSET</span><span class="p">;</span>
+<a name="l-187"></a>                        <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_PAGE_OFFSET</span><span class="p">;</span>
 <a name="l-188"></a>                    <span class="k">end</span>
 <a name="l-189"></a>                <span class="k">end</span>
 <a name="l-190"></a>                <span class="c1">// ----------</span>
@@ -571,7 +571,7 @@
 <a name="l-202"></a>                <span class="n">req_port_o</span><span class="p">.</span><span class="n">kill_req</span>  <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-203"></a>                <span class="n">req_port_o</span><span class="p">.</span><span class="n">tag_valid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-204"></a>                <span class="c1">// we&#39;ve killed the current request so we can go back to idle</span>
-<a name="l-205"></a>                <span class="n">state_d</span> <span class="o">=</span> <span class="no">IDLE</span><span class="p">;</span>
+<a name="l-205"></a>                <span class="n">state_d</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
 <a name="l-206"></a>            <span class="k">end</span>
 <a name="l-207"></a>
 <a name="l-208"></a>        <span class="k">endcase</span>
@@ -579,7 +579,7 @@
 <a name="l-210"></a>        <span class="c1">// we got an exception</span>
 <a name="l-211"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">ex_i</span><span class="p">.</span><span class="n">valid</span> <span class="o">&amp;&amp;</span> <span class="n">valid_i</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-212"></a>            <span class="c1">// the next state will be the idle state</span>
-<a name="l-213"></a>            <span class="n">state_d</span> <span class="o">=</span> <span class="no">IDLE</span><span class="p">;</span>
+<a name="l-213"></a>            <span class="n">state_d</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
 <a name="l-214"></a>            <span class="c1">// pop load - but only if we are not getting an rvalid in here - otherwise we will over-write an incoming transaction</span>
 <a name="l-215"></a>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">req_port_i</span><span class="p">.</span><span class="n">data_rvalid</span><span class="p">)</span>
 <a name="l-216"></a>                <span class="n">pop_ld_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
@@ -592,7 +592,7 @@
 <a name="l-223"></a>
 <a name="l-224"></a>        <span class="c1">// if we just flushed and the queue is not empty or we are getting an rvalid this cycle wait in a extra stage</span>
 <a name="l-225"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">flush_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-226"></a>            <span class="n">state_d</span> <span class="o">=</span> <span class="no">WAIT_FLUSH</span><span class="p">;</span>
+<a name="l-226"></a>            <span class="n">state_d</span> <span class="o">=</span> <span class="n">WAIT_FLUSH</span><span class="p">;</span>
 <a name="l-227"></a>        <span class="k">end</span>
 <a name="l-228"></a>    <span class="k">end</span>
 <a name="l-229"></a>
@@ -605,7 +605,7 @@
 <a name="l-236"></a>        <span class="c1">// output the queue data directly, the valid signal is set corresponding to the process above</span>
 <a name="l-237"></a>        <span class="n">trans_id_o</span> <span class="o">=</span> <span class="n">load_data_q</span><span class="p">.</span><span class="n">trans_id</span><span class="p">;</span>
 <a name="l-238"></a>        <span class="c1">// we got an rvalid and are currently not flushing and not aborting the request</span>
-<a name="l-239"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">req_port_i</span><span class="p">.</span><span class="n">data_rvalid</span> <span class="o">&amp;&amp;</span> <span class="n">state_q</span> <span class="o">!=</span> <span class="no">WAIT_FLUSH</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-239"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">req_port_i</span><span class="p">.</span><span class="n">data_rvalid</span> <span class="o">&amp;&amp;</span> <span class="n">state_q</span> <span class="o">!=</span> <span class="n">WAIT_FLUSH</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-240"></a>            <span class="c1">// we killed the request</span>
 <a name="l-241"></a>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">req_port_o</span><span class="p">.</span><span class="n">kill_req</span><span class="p">)</span>
 <a name="l-242"></a>                <span class="n">valid_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
@@ -622,7 +622,7 @@
 <a name="l-253"></a>            <span class="n">valid_o</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
 <a name="l-254"></a>            <span class="n">trans_id_o</span> <span class="o">=</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">trans_id</span><span class="p">;</span>
 <a name="l-255"></a>        <span class="c1">// if we are waiting for the translation to finish do not give a valid signal yet</span>
-<a name="l-256"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">state_q</span> <span class="o">==</span> <span class="no">WAIT_TRANSLATION</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-256"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">state_q</span> <span class="o">==</span> <span class="n">WAIT_TRANSLATION</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-257"></a>            <span class="n">valid_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-258"></a>        <span class="k">end</span>
 <a name="l-259"></a>
@@ -632,7 +632,7 @@
 <a name="l-263"></a>    <span class="c1">// latch physical address for the tag cycle (one cycle after applying the index)</span>
 <a name="l-264"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-265"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-266"></a>            <span class="n">state_q</span>     <span class="o">&lt;=</span> <span class="no">IDLE</span><span class="p">;</span>
+<a name="l-266"></a>            <span class="n">state_q</span>     <span class="o">&lt;=</span> <span class="n">IDLE</span><span class="p">;</span>
 <a name="l-267"></a>            <span class="n">load_data_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-268"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-269"></a>            <span class="n">state_q</span>     <span class="o">&lt;=</span> <span class="n">state_d</span><span class="p">;</span>
@@ -669,10 +669,10 @@
 <a name="l-300"></a>
 <a name="l-301"></a>
 <a name="l-302"></a>    <span class="c1">// prepare these signals for faster selection in the next cycle</span>
-<a name="l-303"></a>    <span class="k">assign</span> <span class="n">signed_d</span>  <span class="o">=</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span>  <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LW</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LH</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LB</span><span class="p">};</span>
-<a name="l-304"></a>    <span class="k">assign</span> <span class="n">fp_sign_d</span> <span class="o">=</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span>  <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">FLW</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">FLH</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">FLB</span><span class="p">};</span>
-<a name="l-305"></a>    <span class="k">assign</span> <span class="n">idx_d</span>     <span class="o">=</span> <span class="p">(</span><span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LW</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">FLW</span><span class="p">})</span> <span class="o">?</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">+</span> <span class="mh">3</span> <span class="o">:</span>
-<a name="l-306"></a>                       <span class="p">(</span><span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LH</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">FLH</span><span class="p">})</span> <span class="o">?</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">+</span> <span class="mh">1</span> <span class="o">:</span>
+<a name="l-303"></a>    <span class="k">assign</span> <span class="n">signed_d</span>  <span class="o">=</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span>  <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LW</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LH</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LB</span><span class="p">};</span>
+<a name="l-304"></a>    <span class="k">assign</span> <span class="n">fp_sign_d</span> <span class="o">=</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span>  <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">FLW</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">FLH</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">FLB</span><span class="p">};</span>
+<a name="l-305"></a>    <span class="k">assign</span> <span class="n">idx_d</span>     <span class="o">=</span> <span class="p">(</span><span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LW</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">FLW</span><span class="p">})</span> <span class="o">?</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">+</span> <span class="mh">3</span> <span class="o">:</span>
+<a name="l-306"></a>                       <span class="p">(</span><span class="n">load_data_d</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LH</span><span class="p">,</span>  <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">FLH</span><span class="p">})</span> <span class="o">?</span> <span class="n">load_data_d</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">+</span> <span class="mh">1</span> <span class="o">:</span>
 <a name="l-307"></a>                                                                                          <span class="n">load_data_d</span><span class="p">.</span><span class="n">address_offset</span><span class="p">;</span>
 <a name="l-308"></a>
 <a name="l-309"></a>
@@ -692,9 +692,9 @@
 <a name="l-323"></a>    <span class="c1">// result mux</span>
 <a name="l-324"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-325"></a>        <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">load_data_q</span><span class="p">.</span><span class="n">operator</span><span class="p">)</span>
-<a name="l-326"></a>            <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LW</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LWU</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="nl">FLW:</span>    <span class="n">result_o</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">32</span><span class="p">{</span><span class="n">sign_bit</span><span class="p">}},</span> <span class="n">shifted_data</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-327"></a>            <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LH</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LHU</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="nl">FLH:</span>    <span class="n">result_o</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">48</span><span class="p">{</span><span class="n">sign_bit</span><span class="p">}},</span> <span class="n">shifted_data</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-328"></a>            <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LB</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LBU</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="nl">FLB:</span>    <span class="n">result_o</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">56</span><span class="p">{</span><span class="n">sign_bit</span><span class="p">}},</span> <span class="n">shifted_data</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-326"></a>            <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LW</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LWU</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="nl">FLW:</span>    <span class="n">result_o</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">32</span><span class="p">{</span><span class="n">sign_bit</span><span class="p">}},</span> <span class="n">shifted_data</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-327"></a>            <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LH</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LHU</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="nl">FLH:</span>    <span class="n">result_o</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">48</span><span class="p">{</span><span class="n">sign_bit</span><span class="p">}},</span> <span class="n">shifted_data</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-328"></a>            <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LB</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LBU</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="nl">FLB:</span>    <span class="n">result_o</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">56</span><span class="p">{</span><span class="n">sign_bit</span><span class="p">}},</span> <span class="n">shifted_data</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
 <a name="l-329"></a>            <span class="k">default</span><span class="o">:</span>    <span class="n">result_o</span> <span class="o">=</span> <span class="n">shifted_data</span><span class="p">;</span>
 <a name="l-330"></a>        <span class="k">endcase</span>
 <a name="l-331"></a>    <span class="k">end</span>
@@ -717,14 +717,14 @@
 <a name="l-348"></a><span class="c1">///////////////////////////////////////////////////////</span>
 <a name="l-349"></a>
 <a name="l-350"></a><span class="c1">//pragma translate_off</span>
-<a name="l-351"></a><span class="no">`ifndef</span> <span class="no">VERILATOR</span>
+<a name="l-351"></a><span class="no">`ifndef</span> <span class="n">VERILATOR</span>
 <a name="l-352"></a>    <span class="c1">// check invalid offsets</span>
 <a name="l-353"></a>    <span class="nl">addr_offset0:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_ni</span><span class="p">)</span>
-<a name="l-354"></a>        <span class="n">valid_o</span> <span class="o">|-&gt;</span>  <span class="p">(</span><span class="n">load_data_q</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LW</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LWU</span><span class="p">})</span> <span class="o">|-&gt;</span> <span class="n">load_data_q</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">&lt;</span> <span class="mh">5</span><span class="p">)</span> <span class="k">else</span> <span class="n">$fatal</span> <span class="p">(</span><span class="mh">1</span><span class="p">,</span><span class="s">&quot;invalid address offset used with {LW, LWU}&quot;</span><span class="p">);</span>
+<a name="l-354"></a>        <span class="n">valid_o</span> <span class="o">|-&gt;</span>  <span class="p">(</span><span class="n">load_data_q</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LW</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LWU</span><span class="p">})</span> <span class="o">|-&gt;</span> <span class="n">load_data_q</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">&lt;</span> <span class="mh">5</span><span class="p">)</span> <span class="k">else</span> <span class="n">$fatal</span> <span class="p">(</span><span class="mh">1</span><span class="p">,</span><span class="s">&quot;invalid address offset used with {LW, LWU}&quot;</span><span class="p">);</span>
 <a name="l-355"></a>    <span class="nl">addr_offset1:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_ni</span><span class="p">)</span>
-<a name="l-356"></a>        <span class="n">valid_o</span> <span class="o">|-&gt;</span>  <span class="p">(</span><span class="n">load_data_q</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LH</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LHU</span><span class="p">})</span> <span class="o">|-&gt;</span> <span class="n">load_data_q</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">&lt;</span> <span class="mh">7</span><span class="p">)</span> <span class="k">else</span> <span class="n">$fatal</span> <span class="p">(</span><span class="mh">1</span><span class="p">,</span><span class="s">&quot;invalid address offset used with {LH, LHU}&quot;</span><span class="p">);</span>
+<a name="l-356"></a>        <span class="n">valid_o</span> <span class="o">|-&gt;</span>  <span class="p">(</span><span class="n">load_data_q</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LH</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LHU</span><span class="p">})</span> <span class="o">|-&gt;</span> <span class="n">load_data_q</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">&lt;</span> <span class="mh">7</span><span class="p">)</span> <span class="k">else</span> <span class="n">$fatal</span> <span class="p">(</span><span class="mh">1</span><span class="p">,</span><span class="s">&quot;invalid address offset used with {LH, LHU}&quot;</span><span class="p">);</span>
 <a name="l-357"></a>    <span class="nl">addr_offset2:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_ni</span><span class="p">)</span>
-<a name="l-358"></a>        <span class="n">valid_o</span> <span class="o">|-&gt;</span>  <span class="p">(</span><span class="n">load_data_q</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LB</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="no">LBU</span><span class="p">})</span> <span class="o">|-&gt;</span> <span class="n">load_data_q</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="p">)</span> <span class="k">else</span> <span class="n">$fatal</span> <span class="p">(</span><span class="mh">1</span><span class="p">,</span><span class="s">&quot;invalid address offset used with {LB, LBU}&quot;</span><span class="p">);</span>
+<a name="l-358"></a>        <span class="n">valid_o</span> <span class="o">|-&gt;</span>  <span class="p">(</span><span class="n">load_data_q</span><span class="p">.</span><span class="n">operator</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LB</span><span class="p">,</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">LBU</span><span class="p">})</span> <span class="o">|-&gt;</span> <span class="n">load_data_q</span><span class="p">.</span><span class="n">address_offset</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="p">)</span> <span class="k">else</span> <span class="n">$fatal</span> <span class="p">(</span><span class="mh">1</span><span class="p">,</span><span class="s">&quot;invalid address offset used with {LB, LBU}&quot;</span><span class="p">);</span>
 <a name="l-359"></a><span class="no">`endif</span>
 <a name="l-360"></a><span class="c1">//pragma translate_on</span>
 <a name="l-361"></a>
