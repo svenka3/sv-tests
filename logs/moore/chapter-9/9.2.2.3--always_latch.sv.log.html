@@ -7,7 +7,7 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: always_latch check
 should_fail: 0
 tags: 9.2.2.3
@@ -16,20 +16,42 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-9/9.2.2.3--always_latch.sv.html" target="file-frame">tests/chapter-9/9.2.2.3--always_latch.sv</a>
-time_elapsed: 0.004s
-ram usage: 9660 KB
+time_elapsed: 0.005s
+ram usage: 9640 KB
 </pre>
 <pre class="log">
 
-compiler bug: lowering of type `reg` not implemented
-  --&gt; <a href="../../../tests/chapter-9/9.2.2.3--always_latch.sv.html#l-10" target="file-frame">tests/chapter-9/9.2.2.3--always_latch.sv:10</a>:2-5:
-   | 
-   |     reg q = 0;
-   |     ^^^       
+proc %always_tb.always_latch.227.0 (i32$ %a, i32$ %b) -&gt; (i1$ %q) {
+0:
+    br %body
+body:
+    %a1 = prb i32$ %a
+    %1 = const i32 0
+    %2 = neq i32 %a1, %1
+    br %2, %if_false, %if_true
+check:
+    wait %body, %a, %b
+if_true:
+    %b1 = prb i32$ %b
+    %3 = exts i1, i32 %b1, 0, 1
+    %4 = const time 0s 1d
+    drv i1$ %q, %3, %4
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    br %check
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
+entity @always_tb () -&gt; () {
+    %0 = const i32 0
+    %a = sig i32 %0
+    %1 = const i32 0
+    %b = sig i32 %1
+    %2 = const i32 0
+    %q = sig i32 %2
+    inst %always_tb.always_latch.227.0 (i32$ %a, i32$ %b) -&gt; (i32$ %q)
+}
 
 </pre>
 </body>

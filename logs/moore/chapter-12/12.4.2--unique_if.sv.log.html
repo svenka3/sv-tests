@@ -7,7 +7,7 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: A module testing unique-if statement
 should_fail: 0
 tags: 12.4.2
@@ -16,20 +16,53 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-12/12.4.2--unique_if.sv.html" target="file-frame">tests/chapter-12/12.4.2--unique_if.sv</a>
-time_elapsed: 0.005s
-ram usage: 9620 KB
+time_elapsed: 0.006s
+ram usage: 9732 KB
 </pre>
 <pre class="log">
 
-compiler bug: lowering of type `reg [1:0]` not implemented
-  --&gt; <a href="../../../tests/chapter-12/12.4.2--unique_if.sv.html#l-9" target="file-frame">tests/chapter-12/12.4.2--unique_if.sv:9</a>:2-11:
-   | 
-   |     reg [1:0] b = 0;
-   |     ^^^^^^^^^       
+proc %if_tb.always.225.0 (i4$ %a) -&gt; (i2$ %b) {
+0:
+    %1 = const i32 0
+    %a1 = prb i4$ %a
+    %2 = inss i32 %1, i4 %a1, 0, 4
+    %3 = const i32 0
+    %4 = eq i32 %2, %3
+    br %4, %if_false, %if_true
+if_true:
+    %5 = const i32 1
+    %6 = exts i2, i32 %5, 0, 2
+    %7 = const time 0s 1e
+    drv i2$ %b, %6, %7
+    br %if_exit
+if_false:
+    %8 = const i32 0
+    %a2 = prb i4$ %a
+    %9 = inss i32 %8, i4 %a2, 0, 4
+    %10 = const i32 1
+    %11 = eq i32 %9, %10
+    br %11, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %12 = const i32 2
+    %13 = exts i2, i32 %12, 0, 2
+    %14 = const time 0s 1e
+    drv i2$ %b, %13, %14
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    br %if_exit
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
+entity @if_tb () -&gt; () {
+    %0 = const i32 0
+    %a = sig i32 %0
+    %1 = const i32 0
+    %b = sig i32 %1
+    inst %if_tb.always.225.0 (i32$ %a) -&gt; (i32$ %b)
+}
 
 </pre>
 </body>
