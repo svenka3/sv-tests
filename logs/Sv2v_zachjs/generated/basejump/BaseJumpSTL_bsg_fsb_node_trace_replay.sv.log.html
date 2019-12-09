@@ -7,170 +7,21 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_fsb
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_fsb
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v</a>
-time_elapsed: 0.091s
-ram usage: 11412 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v</a>
+time_elapsed: 0.009s
+ram usage: 9656 KB
 </pre>
 <pre class="log">
 
-module bsg_fsb_node_trace_replay (
-	clk_i,
-	reset_i,
-	en_i,
-	v_i,
-	data_i,
-	ready_o,
-	v_o,
-	data_o,
-	yumi_i,
-	rom_addr_o,
-	rom_data_i,
-	done_o,
-	error_o
-);
-	localparam [3:0] eNop = 4&#39;d0;
-	localparam [3:0] eSend = 4&#39;d1;
-	localparam [3:0] eReceive = 4&#39;d2;
-	localparam [3:0] eDone = 4&#39;d3;
-	localparam [3:0] eFinish = 4&#39;d4;
-	localparam [3:0] eCycleDec = 4&#39;d5;
-	localparam [3:0] eCycleInit = 4&#39;d6;
-	parameter ring_width_p = 80;
-	parameter rom_addr_width_p = 6;
-	parameter counter_width_p = ((ring_width_p &lt; 16) ? ring_width_p : 16);
-	input clk_i;
-	input reset_i;
-	input en_i;
-	input v_i;
-	input [(ring_width_p - 1):0] data_i;
-	output reg ready_o;
-	output reg v_o;
-	output wire [(ring_width_p - 1):0] data_o;
-	input yumi_i;
-	output [(rom_addr_width_p - 1):0] rom_addr_o;
-	input [((ring_width_p + 4) - 1):0] rom_data_i;
-	output wire done_o;
-	output wire error_o;
-	reg [(counter_width_p - 1):0] cycle_ctr_r;
-	reg [(counter_width_p - 1):0] cycle_ctr_n;
-	reg [(rom_addr_width_p - 1):0] addr_r;
-	wire [(rom_addr_width_p - 1):0] addr_n;
-	reg done_r;
-	reg done_n;
-	reg error_r;
-	reg error_n;
-	assign rom_addr_o = addr_r;
-	assign data_o = rom_data_i[0+:ring_width_p];
-	assign done_o = done_r;
-	assign error_o = error_r;
-	always @(posedge clk_i)
-		if (reset_i) begin
-			addr_r &lt;= 0;
-			done_r &lt;= 0;
-			error_r &lt;= 0;
-			cycle_ctr_r &lt;= 16&#39;b1;
-		end
-		else begin
-			addr_r &lt;= addr_n;
-			done_r &lt;= done_n;
-			error_r &lt;= error_n;
-			cycle_ctr_r &lt;= cycle_ctr_n;
-		end
-	wire [3:0] op;
-	assign op = rom_data_i[ring_width_p+:4];
-	reg instr_completed;
-	assign addr_n = (instr_completed ? (addr_r + 1&#39;b1) : addr_r);
-	always @(*) begin
-		v_o = 1&#39;b0;
-		ready_o = done_r;
-		done_n = done_r;
-		if (((!done_r &amp; en_i) &amp; ~reset_i))
-			case (op)
-				eSend: v_o = 1&#39;b1;
-				eReceive: ready_o = 1&#39;b1;
-				eDone: done_n = 1&#39;b1;
-				default: ;
-			endcase
-	end
-	always @(*) begin
-		instr_completed = 1&#39;b0;
-		error_n = error_r;
-		cycle_ctr_n = cycle_ctr_r;
-		if (((!done_r &amp; en_i) &amp; ~reset_i))
-			case (op)
-				eNop: instr_completed = 1&#39;b1;
-				eSend:
-					if (yumi_i)
-						instr_completed = 1&#39;b1;
-				eReceive:
-					if (v_i) begin
-						instr_completed = 1&#39;b1;
-						if ((error_r == 0))
-							error_n = (data_i != data_o);
-					end
-				eDone: instr_completed = 1&#39;b1;
-				eFinish: instr_completed = 1&#39;b1;
-				eCycleDec: begin
-					cycle_ctr_n = (cycle_ctr_r - 1&#39;b1);
-					instr_completed = ~|cycle_ctr_r;
-				end
-				eCycleInit: begin
-					cycle_ctr_n = rom_data_i[(counter_width_p - 1):0];
-					instr_completed = 1;
-				end
-				default: ;
-			endcase
-	end
-	always @(negedge clk_i)
-		if (((instr_completed &amp; ~reset_i) &amp; ~done_r)) begin
-			case (op)
-				eSend:
-					$display(&#34;### bsg_fsb_node_trace_replay SEND %d&#39;b%b (%m)&#34;, ring_width_p, data_o);
-				eReceive:
-					if ((data_i !== data_o)) begin
-						$display(&#34;############################################################################&#34;);
-						$display(&#34;### bsg_fsb_node_trace_replay RECEIVE unmatched (%m) &#34;);
-						$display(&#34;###    &#34;);
-						$display(&#34;### FAIL (trace mismatch) = %h&#34;, data_i);
-						$display(&#34;###              expected = %h\n&#34;, data_o);
-						$display(&#34;###              diff     = %h\n&#34;, (data_o ^ data_i));
-						$display(&#34;############################################################################&#34;);
-						$finish;
-					end
-					else
-						$display(&#34;### bsg_fsb_node_trace_replay RECEIVE matched %h (%m)&#34;, data_o);
-				eDone: begin
-					$display(&#34;############################################################################&#34;);
-					$display(&#34;###### bsg_fsb_node_trace_replay DONE done_o=1 (trace finished addr=%x) (%m)&#34;, rom_addr_o);
-					$display(&#34;############################################################################&#34;);
-				end
-				eFinish: begin
-					$display(&#34;############################################################################&#34;);
-					$display(&#34;###### bsg_fsb_node_trace_replay FINISH (trace finished; CALLING $finish) (%m)&#34;);
-					$display(&#34;############################################################################&#34;);
-					$finish;
-				end
-				eCycleDec:
-					$display(&#34;### bsg_fsb_node_trace_replay CYCLE DEC cycle_ctr_r = %x (%m)&#34;, cycle_ctr_r);
-				eCycleInit:
-					$display(&#34;### bsg_fsb_node_trace_replay CYCLE INIT = %x (%m)&#34;, cycle_ctr_n);
-				default: ;
-			endcase
-			case (op)
-				eNop, eSend, eReceive, eDone, eFinish, eCycleDec, eCycleInit:
-					;
-				default: $display(&#34;### bsg_fsb_node_trace_replay UNKNOWN op %x (%m)\n&#34;, op);
-			endcase
-		end
-endmodule
+<a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v.html#l-1" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v:1</a>:25: Lexical error: Could not find file &#34;bsg_defines.v&#34;, included from &#34;<a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v</a>&#34;
 
 </pre>
 </body>

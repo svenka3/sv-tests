@@ -7,115 +7,21 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_tag
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_tag
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v</a>
-time_elapsed: 0.084s
-ram usage: 11580 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v</a>
+time_elapsed: 0.014s
+ram usage: 9592 KB
 </pre>
 <pre class="log">
 
-module bsg_tag_trace_replay (
-	clk_i,
-	reset_i,
-	en_i,
-	rom_addr_o,
-	rom_data_i,
-	valid_i,
-	data_i,
-	ready_o,
-	valid_o,
-	en_r_o,
-	tag_data_o,
-	yumi_i,
-	done_o,
-	error_o
-);
-	parameter rom_addr_width_p = -1;
-	parameter rom_data_width_p = -1;
-	parameter num_masters_p = 0;
-	parameter num_clients_p = -1;
-	parameter max_payload_width_p = -1;
-	input clk_i;
-	input reset_i;
-	input en_i;
-	output [(rom_addr_width_p - 1):0] rom_addr_o;
-	input [(rom_data_width_p - 1):0] rom_data_i;
-	input valid_i;
-	input [(max_payload_width_p - 1):0] data_i;
-	output ready_o;
-	output valid_o;
-	output [(((1 &gt; num_masters_p) ? 1 : num_masters_p) - 1):0] en_r_o;
-	output tag_data_o;
-	input yumi_i;
-	output done_o;
-	output error_o;
-	localparam trace_ring_width_lp = (rom_data_width_p - 4);
-	localparam lg_max_payload_width_lp = (((max_payload_width_p + 1) == 1) ? 1 : $clog2((max_payload_width_p + 1)));
-	localparam bsg_tag_header_width_lp = ((((((((((num_clients_p == 1) ? 1 : $clog2(num_clients_p)) - 1) &gt;= 0) ? ((num_clients_p == 1) ? 1 : $clog2(num_clients_p)) : (2 - ((num_clients_p == 1) ? 1 : $clog2(num_clients_p)))) + 1) + (((lg_max_payload_width_lp - 1) &gt;= 0) ? lg_max_payload_width_lp : (2 - lg_max_payload_width_lp))) - 1) &gt;= 0) ? (((((((num_clients_p == 1) ? 1 : $clog2(num_clients_p)) - 1) &gt;= 0) ? ((num_clients_p == 1) ? 1 : $clog2(num_clients_p)) : (2 - ((num_clients_p == 1) ? 1 : $clog2(num_clients_p)))) + 1) + (((lg_max_payload_width_lp - 1) &gt;= 0) ? lg_max_payload_width_lp : (2 - lg_max_payload_width_lp))) : (2 - (((((((num_clients_p == 1) ? 1 : $clog2(num_clients_p)) - 1) &gt;= 0) ? ((num_clients_p == 1) ? 1 : $clog2(num_clients_p)) : (2 - ((num_clients_p == 1) ? 1 : $clog2(num_clients_p)))) + 1) + (((lg_max_payload_width_lp - 1) &gt;= 0) ? lg_max_payload_width_lp : (2 - lg_max_payload_width_lp)))));
-	wire tr_valid_lo;
-	wire [(trace_ring_width_lp - 1):0] tr_data_lo;
-	wire tr_yumi_li;
-	bsg_fsb_node_trace_replay #(
-		.ring_width_p(trace_ring_width_lp),
-		.rom_addr_width_p(rom_addr_width_p)
-	) trace_replay(
-		.clk_i(clk_i),
-		.reset_i(reset_i),
-		.en_i(en_i),
-		.v_i(valid_i),
-		.data_i(sv2v_cast_F473F(data_i)),
-		.ready_o(ready_o),
-		.v_o(tr_valid_lo),
-		.data_o(tr_data_lo),
-		.yumi_i(tr_yumi_li),
-		.rom_addr_o(rom_addr_o),
-		.rom_data_i(rom_data_i),
-		.done_o(done_o),
-		.error_o(error_o)
-	);
-	wire [(bsg_tag_header_width_lp - 1):0] header_n = tr_data_lo[max_payload_width_p+:bsg_tag_header_width_lp];
-	wire [(max_payload_width_p - 1):0] payload_n = tr_data_lo[0+:max_payload_width_p];
-	wire [((trace_ring_width_lp + 2) - 1):0] data_n = {1&#39;b0, payload_n, header_n, 1&#39;b1};
-	wire piso_ready_lo;
-	assign tr_yumi_li = (piso_ready_lo &amp; tr_valid_lo);
-	bsg_parallel_in_serial_out #(
-		.width_p(1),
-		.els_p((trace_ring_width_lp + 2))
-	) trace_piso(
-		.clk_i(clk_i),
-		.reset_i(reset_i),
-		.valid_i(tr_valid_lo),
-		.data_i(data_n),
-		.ready_o(piso_ready_lo),
-		.valid_o(valid_o),
-		.data_o(tag_data_o),
-		.yumi_i(yumi_i)
-	);
-	generate
-		if ((num_masters_p == 0)) begin
-			assign en_r_o = 1&#39;bz;
-		end
-		else begin
-			bsg_dff_en #(.width_p(num_masters_p)) en_reg(
-				.clk_i(clk_i),
-				.en_i((tr_valid_lo &amp; piso_ready_lo)),
-				.data_i(tr_data_lo[(max_payload_width_p + bsg_tag_header_width_lp)+:num_masters_p]),
-				.data_o(en_r_o)
-			);
-		end
-	endgenerate
-	function automatic [((rom_data_width_p - 4) - 1):0] sv2v_cast_F473F;
-		input reg [((rom_data_width_p - 4) - 1):0] inp;
-		sv2v_cast_F473F = inp;
-	endfunction
-endmodule
+<a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v.html#l-55" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v:55</a>:23: Lexical error: Undefined macro: BSG_MAX
 
 </pre>
 </body>

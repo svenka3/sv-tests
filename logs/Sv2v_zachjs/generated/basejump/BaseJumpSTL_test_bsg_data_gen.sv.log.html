@@ -7,63 +7,21 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_test
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_test
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v</a>
-time_elapsed: 0.056s
-ram usage: 10984 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v</a>
+time_elapsed: 0.019s
+ram usage: 9628 KB
 </pre>
 <pre class="log">
 
-module test_bsg_data_gen (
-	clk_i,
-	reset_i,
-	yumi_i,
-	o
-);
-	parameter channel_width_p = &#34;inv&#34;;
-	parameter num_channels_p = -1;
-	parameter debug_p = 0;
-	input clk_i;
-	input reset_i;
-	input yumi_i;
-	output [((channel_width_p * num_channels_p) - 1):0] o;
-	reg [(channel_width_p - 1):0] data_r;
-	always @(posedge clk_i)
-		if (reset_i)
-			data_r &lt;= 0;
-		else if (yumi_i)
-			data_r &lt;= (data_r + 1);
-	wire [((channel_width_p * num_channels_p) - 1):0] send_data;
-	localparam lg_ring_bytes_lp = $clog2(num_channels_p);
-	localparam ring_width = (((lg_ring_bytes_lp - 1) &gt; 0) ? (lg_ring_bytes_lp - 1) : 0);
-	wire [ring_width:0] ring_bytes = sv2v_cast_420FA(num_channels_p);
-	genvar i;
-	generate
-		if ((num_channels_p &gt; 1)) for (i = 0; (i &lt; num_channels_p); i = (i + 1)) begin
-			wire [(lg_ring_bytes_lp - 1):0] my_id = i[(lg_ring_bytes_lp - 1):0];
-			if ((lg_ring_bytes_lp &lt; channel_width_p)) assign send_data[(i * channel_width_p)+:channel_width_p] = {my_id, data_r[0+:(channel_width_p - lg_ring_bytes_lp)]};
-			else assign send_data[(i * channel_width_p)+:channel_width_p] = data_r[0+:channel_width_p];
-		end
-		else assign send_data[0+:channel_width_p] = data_r;
-	endgenerate
-	assign o = send_data;
-	generate
-		if (debug_p) always @(negedge clk_i)
-			if (yumi_i)
-				$display(&#34;## test_bsg_data_gen %m %x&#34;, o);
-	endgenerate
-	function automatic [(((($clog2(num_channels_p) - 1) &gt; 0) ? ($clog2(num_channels_p) - 1) : 0) - 1):0] sv2v_cast_420FA;
-		input reg [(((($clog2(num_channels_p) - 1) &gt; 0) ? ($clog2(num_channels_p) - 1) : 0) - 1):0] inp;
-		sv2v_cast_420FA = inp;
-	endfunction
-endmodule
+<a href="../../../../third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v.html#l-1" target="file-frame">third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v:1</a>:25: Lexical error: Could not find file &#34;bsg_defines.v&#34;, included from &#34;<a href="../../../../third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v</a>&#34;
 
 </pre>
 </body>
