@@ -7,21 +7,41 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_decode.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_decode.v</a>
-time_elapsed: 0.010s
-ram usage: 9596 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_decode.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_decode.v</a>
+time_elapsed: 0.048s
+ram usage: 10772 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_decode.v.html#l-9" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_decode.v:9</a>:25: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_decode (
+	i,
+	o
+);
+	parameter num_out_p = &#34;inv&#34;;
+	input [(((num_out_p == 1) ? 1 : $clog2(num_out_p)) - 1):0] i;
+	output wire [(num_out_p - 1):0] o;
+	generate
+		if ((num_out_p == 1)) begin
+			wire unused = i;
+			assign o = 1&#39;b1;
+		end
+		else begin
+			assign o = sv2v_cast_4BA5D((1&#39;b1 &lt;&lt; i));
+		end
+	endgenerate
+	function automatic [(num_out_p - 1):0] sv2v_cast_4BA5D;
+		input reg [(num_out_p - 1):0] inp;
+		sv2v_cast_4BA5D = inp;
+	endfunction
+endmodule
 
 </pre>
 </body>

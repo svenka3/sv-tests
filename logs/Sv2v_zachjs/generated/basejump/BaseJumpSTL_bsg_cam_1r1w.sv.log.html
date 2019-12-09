@@ -7,21 +7,123 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_mem
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_mem
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v</a>
-time_elapsed: 0.013s
-ram usage: 9632 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v</a>
+time_elapsed: 0.072s
+ram usage: 11276 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v.html#l-23" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v:23</a>:56: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_cam_1r1w (
+	clk_i,
+	reset_i,
+	en_i,
+	w_v_i,
+	w_set_not_clear_i,
+	w_addr_i,
+	w_data_i,
+	r_v_i,
+	r_data_i,
+	r_v_o,
+	r_addr_o,
+	empty_v_o,
+	empty_addr_o
+);
+	parameter els_p = &#34;inv&#34;;
+	parameter width_p = &#34;inv&#34;;
+	parameter multiple_entries_p = &#34;inv&#34;;
+	parameter find_empty_entry_p = &#34;inv&#34;;
+	localparam lg_els_lp = ((els_p == 1) ? 1 : $clog2(els_p));
+	input clk_i;
+	input reset_i;
+	input en_i;
+	input w_v_i;
+	input w_set_not_clear_i;
+	input [(lg_els_lp - 1):0] w_addr_i;
+	input [(width_p - 1):0] w_data_i;
+	input r_v_i;
+	input [(width_p - 1):0] r_data_i;
+	output wire r_v_o;
+	output wire [(lg_els_lp - 1):0] r_addr_o;
+	output wire empty_v_o;
+	output wire [(lg_els_lp - 1):0] empty_addr_o;
+	reg [(width_p - 1):0] mem [0:(els_p - 1)];
+	wire [(els_p - 1):0] match_array;
+	wire [(els_p - 1):0] empty_array;
+	reg [(els_p - 1):0] valid;
+	wire matched;
+	wire empty_found;
+	assign r_v_o = ((en_i &amp; r_v_i) &amp; matched);
+	assign empty_v_o = (en_i &amp; empty_found);
+	always @(posedge clk_i)
+		if (reset_i) begin : fi
+			valid &lt;= 1&#39;sb0;
+		end
+		else if ((en_i &amp;&amp; w_v_i)) begin : fi2
+			valid[w_addr_i] &lt;= w_set_not_clear_i;
+			mem[w_addr_i] &lt;= w_data_i;
+		end
+	genvar i;
+	generate
+		for (i = 0; (i &lt; els_p); i = (i + 1)) begin : rof
+			assign match_array[i] = (((~reset_i &amp; en_i) &amp; (mem[i] == r_data_i)) &amp; valid[i]);
+			assign empty_array[i] = ((~reset_i &amp; en_i) &amp; ~valid[i]);
+		end
+	endgenerate
+	generate
+		if (multiple_entries_p) begin : fi3
+			bsg_priority_encode #(
+				.width_p(els_p),
+				.lo_to_hi_p(1)
+			) pe(
+				.i(match_array),
+				.addr_o(r_addr_o),
+				.v_o(matched)
+			);
+		end
+		else begin : fi4
+			bsg_encode_one_hot #(
+				.width_p(els_p),
+				.lo_to_hi_p(1)
+			) ohe(
+				.i(match_array),
+				.addr_o(r_addr_o),
+				.v_o(matched)
+			);
+		end
+	endgenerate
+	generate
+		if (find_empty_entry_p) begin : fi5
+			bsg_priority_encode #(
+				.width_p(els_p),
+				.lo_to_hi_p(1)
+			) epe(
+				.i(empty_array),
+				.addr_o(empty_addr_o),
+				.v_o(empty_found)
+			);
+		end
+		else begin : fi6
+			assign empty_v_o = 1&#39;b0;
+			assign empty_addr_o = 1&#39;sb0;
+		end
+	endgenerate
+	always @(negedge clk_i) begin
+		if ((((~multiple_entries_p &amp; ~reset_i) &amp; en_i) &amp; r_v_i)) begin : fi_debug1
+			
+		end
+		if (((~reset_i &amp; en_i) &amp; w_v_i)) begin : fi_debug2
+			
+		end
+	end
+endmodule
 
 </pre>
 </body>

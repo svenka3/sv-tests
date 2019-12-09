@@ -7,21 +7,358 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v</a>
-time_elapsed: 0.012s
-ram usage: 9636 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v</a>
+time_elapsed: 0.273s
+ram usage: 12540 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v.html#l-33" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v:33</a>:70: Lexical error: Undefined macro: BSG_MIN
+module bsg_rr_f2f_input (
+	clk,
+	reset,
+	valid_i,
+	data_i,
+	data_head_o,
+	valid_head_o,
+	go_channels_i,
+	go_cnt_i,
+	yumi_o
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter num_in_p = 0;
+	parameter middle_meet_p = 0;
+	parameter middle_meet_data_lp = (middle_meet_p * width_p);
+	parameter min_in_middle_meet_p = ((num_in_p &lt; middle_meet_p) ? num_in_p : middle_meet_p);
+	input clk;
+	input reset;
+	input [(num_in_p - 1):0] valid_i;
+	input [(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_i;
+	output [(((middle_meet_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((middle_meet_p - 1) &gt;= 0) ? middle_meet_p : (2 - middle_meet_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((middle_meet_p - 1) &gt;= 0) ? middle_meet_p : (2 - middle_meet_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (middle_meet_p - 1)) ? (2 - middle_meet_p) : middle_meet_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((middle_meet_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (middle_meet_p - 1)) ? (2 - middle_meet_p) : middle_meet_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((middle_meet_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((middle_meet_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((middle_meet_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((middle_meet_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_head_o;
+	output [(middle_meet_p - 1):0] valid_head_o;
+	input [(min_in_middle_meet_p - 1):0] go_channels_i;
+	input [($clog2((min_in_middle_meet_p + 1)) - 1):0] go_cnt_i;
+	output [(num_in_p - 1):0] yumi_o;
+	wire [(((num_in_p == 1) ? 1 : $clog2(num_in_p)) - 1):0] iptr_r;
+	wire [(((num_in_p == 1) ? 1 : $clog2(num_in_p)) - 1):0] iptr_r_data;
+	wire [((width_p * num_in_p) - 1):0] data_i_flat = {&gt;&gt; 1{data_i}};
+	wire [((width_p * middle_meet_p) - 1):0] data_head_o_flat;
+	bsg_make_2D_array #(
+		.width_p(width_p),
+		.items_p(middle_meet_p)
+	) bm2Da(
+		.i(data_head_o_flat),
+		.o(data_head_o)
+	);
+	wire [(num_in_p - 1):0] valid_head_o_pretrunc;
+	bsg_rotate_right #(.width_p(num_in_p)) valid_rr(
+		.data_i(valid_i),
+		.rot_i(iptr_r),
+		.o(valid_head_o_pretrunc)
+	);
+	wire [(((2 * width_p) * num_in_p) - 1):0] data_head_o_flat_pretrunc = ({2 {data_i_flat}} &gt;&gt; (iptr_r_data * width_p));
+	wire [((num_in_p * 2) - 1):0] yumi_intermediate;
+	generate
+		if ((num_in_p &gt;= middle_meet_p)) begin
+			assign valid_head_o = valid_head_o_pretrunc[0+:middle_meet_p];
+			assign data_head_o_flat = data_head_o_flat_pretrunc[0+:(width_p * middle_meet_p)];
+			assign yumi_intermediate = ({2 {sv2v_cast_1A36E(go_channels_i)}} &lt;&lt; iptr_r);
+		end
+		else begin
+			assign valid_head_o = sv2v_cast_1EE3E(valid_head_o_pretrunc[0+:num_in_p]);
+			assign data_head_o_flat = sv2v_cast_B4F12(data_head_o_flat_pretrunc[0+:(width_p * num_in_p)]);
+			assign yumi_intermediate = ({2 {go_channels_i}} &lt;&lt; iptr_r);
+		end
+	endgenerate
+	assign yumi_o = yumi_intermediate[num_in_p+:num_in_p];
+	bsg_circular_ptr #(
+		.slots_p(num_in_p),
+		.max_add_p(min_in_middle_meet_p)
+	) c_ptr(
+		.reset_i(reset),
+		.clk(clk),
+		.add_i(go_cnt_i),
+		.o(iptr_r),
+		.n_o()
+	);
+	bsg_circular_ptr #(
+		.slots_p(num_in_p),
+		.max_add_p(min_in_middle_meet_p)
+	) c_ptr_data(
+		.reset_i(reset),
+		.clk(clk),
+		.add_i(go_cnt_i),
+		.o(iptr_r_data),
+		.n_o()
+	);
+	function automatic [(middle_meet_data_lp - 1):0] sv2v_cast_B4F12;
+		input reg [(middle_meet_data_lp - 1):0] inp;
+		sv2v_cast_B4F12 = inp;
+	endfunction
+	function automatic [(middle_meet_p - 1):0] sv2v_cast_1EE3E;
+		input reg [(middle_meet_p - 1):0] inp;
+		sv2v_cast_1EE3E = inp;
+	endfunction
+	function automatic [(num_in_p - 1):0] sv2v_cast_1A36E;
+		input reg [(num_in_p - 1):0] inp;
+		sv2v_cast_1A36E = inp;
+	endfunction
+endmodule
+module bsg_rr_f2f_output (
+	clk,
+	reset,
+	ready_i,
+	ready_head_o,
+	go_channels_i,
+	go_cnt_i,
+	data_head_i,
+	valid_o,
+	data_o
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter num_out_p = 0;
+	parameter middle_meet_p = -1;
+	parameter min_out_middle_meet_lp = ((num_out_p &lt; middle_meet_p) ? num_out_p : middle_meet_p);
+	input clk;
+	input reset;
+	input [(num_out_p - 1):0] ready_i;
+	output [(middle_meet_p - 1):0] ready_head_o;
+	input [(min_out_middle_meet_lp - 1):0] go_channels_i;
+	input [($clog2((min_out_middle_meet_lp + 1)) - 1):0] go_cnt_i;
+	input [(((min_out_middle_meet_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((min_out_middle_meet_lp - 1) &gt;= 0) ? min_out_middle_meet_lp : (2 - min_out_middle_meet_lp)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((min_out_middle_meet_lp - 1) &gt;= 0) ? min_out_middle_meet_lp : (2 - min_out_middle_meet_lp)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (min_out_middle_meet_lp - 1)) ? (2 - min_out_middle_meet_lp) : min_out_middle_meet_lp) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((min_out_middle_meet_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (min_out_middle_meet_lp - 1)) ? (2 - min_out_middle_meet_lp) : min_out_middle_meet_lp) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((min_out_middle_meet_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((min_out_middle_meet_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((min_out_middle_meet_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((min_out_middle_meet_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_head_i;
+	output [(num_out_p - 1):0] valid_o;
+	output [(((num_out_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((num_out_p - 1) &gt;= 0) ? num_out_p : (2 - num_out_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_out_p - 1) &gt;= 0) ? num_out_p : (2 - num_out_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_out_p - 1)) ? (2 - num_out_p) : num_out_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_out_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_out_p - 1)) ? (2 - num_out_p) : num_out_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_out_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((num_out_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((num_out_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_out_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_o;
+	wire [(((num_out_p == 1) ? 1 : $clog2(num_out_p)) - 1):0] optr_r;
+	wire [(((num_out_p == 1) ? 1 : $clog2(num_out_p)) - 1):0] optr_r_data;
+	wire [(num_out_p - 1):0] ready_head_o_pretr;
+	bsg_rotate_right #(.width_p(num_out_p)) ready_rr(
+		.data_i(ready_i),
+		.rot_i(optr_r),
+		.o(ready_head_o_pretr)
+	);
+	wire [((num_out_p * 2) - 1):0] valid_pretr;
+	generate
+		if ((num_out_p &gt;= middle_meet_p)) begin
+			assign ready_head_o = ready_head_o_pretr[0+:middle_meet_p];
+			assign valid_pretr = ({2 {sv2v_cast_4BA5D(go_channels_i)}} &lt;&lt; optr_r);
+		end
+		else begin
+			assign ready_head_o = sv2v_cast_1EE3E(ready_head_o_pretr[0+:num_out_p]);
+			assign valid_pretr = ({2 {go_channels_i}} &lt;&lt; optr_r);
+		end
+	endgenerate
+	assign valid_o = valid_pretr[num_out_p+:num_out_p];
+	genvar i;
+	wire [(width_p - 1):0] data_head_double [((num_out_p * 2) - 1):0];
+	generate
+		for (i = 0; (i &lt; num_out_p); i = (i + 1)) begin
+			if ((i &lt; middle_meet_p)) begin
+				assign data_head_double[i] = data_head_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((min_out_middle_meet_lp - 1) &gt;= 0) ? i : (0 - (i - (min_out_middle_meet_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))];
+				assign data_head_double[(i + num_out_p)] = data_head_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((min_out_middle_meet_lp - 1) &gt;= 0) ? i : (0 - (i - (min_out_middle_meet_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))];
+			end
+			else begin
+				assign data_head_double[i] = sv2v_cast_89401(0);
+				assign data_head_double[(i + num_out_p)] = sv2v_cast_89401(0);
+			end
+			assign data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((num_out_p - 1) &gt;= 0) ? i : (0 - (i - (num_out_p - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))] = data_head_double[((i + num_out_p) - optr_r_data)];
+		end
+	endgenerate
+	bsg_circular_ptr #(
+		.slots_p(num_out_p),
+		.max_add_p(min_out_middle_meet_lp)
+	) c_ptr(
+		.clk(clk),
+		.reset_i(reset),
+		.add_i(go_cnt_i),
+		.o(optr_r),
+		.n_o()
+	);
+	bsg_circular_ptr #(
+		.slots_p(num_out_p),
+		.max_add_p(min_out_middle_meet_lp)
+	) c_ptr_data(
+		.clk(clk),
+		.reset_i(reset),
+		.add_i(go_cnt_i),
+		.o(optr_r_data),
+		.n_o()
+	);
+	function automatic [(middle_meet_p - 1):0] sv2v_cast_1EE3E;
+		input reg [(middle_meet_p - 1):0] inp;
+		sv2v_cast_1EE3E = inp;
+	endfunction
+	function automatic [(num_out_p - 1):0] sv2v_cast_4BA5D;
+		input reg [(num_out_p - 1):0] inp;
+		sv2v_cast_4BA5D = inp;
+	endfunction
+	function automatic [(width_p - 1):0] sv2v_cast_89401;
+		input reg [(width_p - 1):0] inp;
+		sv2v_cast_89401 = inp;
+	endfunction
+endmodule
+module bsg_rr_f2f_middle (
+	valid_head_i,
+	ready_head_i,
+	go_channels_o,
+	go_cnt_o
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter middle_meet_p = 1;
+	parameter use_popcount_p = 0;
+	input [(middle_meet_p - 1):0] valid_head_i;
+	input [(middle_meet_p - 1):0] ready_head_i;
+	output [(middle_meet_p - 1):0] go_channels_o;
+	output [($clog2((middle_meet_p + 1)) - 1):0] go_cnt_o;
+	wire [(middle_meet_p - 1):0] happy_channels = (valid_head_i &amp; ready_head_i);
+	wire [(middle_meet_p - 1):0] go_channels_int;
+	bsg_scan #(
+		.width_p(middle_meet_p),
+		.and_p(1),
+		.lo_to_hi_p(1)
+	) and_scan(
+		.i(happy_channels),
+		.o(go_channels_int)
+	);
+	assign go_channels_o = go_channels_int;
+	generate
+		if (use_popcount_p) bsg_popcount #(.width_p(middle_meet_p)) pop(
+			.i(go_channels_int),
+			.o(go_cnt_o)
+		);
+		else bsg_thermometer_count #(.width_p(middle_meet_p)) thermo(
+			.i(go_channels_int),
+			.o(go_cnt_o)
+		);
+	endgenerate
+endmodule
+module bsg_round_robin_fifo_to_fifo (
+	clk,
+	reset,
+	valid_i,
+	data_i,
+	yumi_o,
+	in_top_channel_i,
+	out_top_channel_i,
+	valid_o,
+	data_o,
+	ready_i
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter num_in_p = -1;
+	parameter num_out_p = 1;
+	parameter in_channel_count_mask_p = (1 &lt;&lt; (num_in_p - 1));
+	parameter out_channel_count_mask_p = (1 &lt;&lt; (num_out_p - 1));
+	input clk;
+	input reset;
+	input [(num_in_p - 1):0] valid_i;
+	input [(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_i;
+	output [(num_in_p - 1):0] yumi_o;
+	input [((($clog2(num_in_p) - 1) &gt; 0) ? ($clog2(num_in_p) - 1) : 0):0] in_top_channel_i;
+	input [((($clog2(num_out_p) - 1) &gt; 0) ? ($clog2(num_out_p) - 1) : 0):0] out_top_channel_i;
+	output [(num_out_p - 1):0] valid_o;
+	output [(((num_out_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((num_out_p - 1) &gt;= 0) ? num_out_p : (2 - num_out_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_out_p - 1) &gt;= 0) ? num_out_p : (2 - num_out_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_out_p - 1)) ? (2 - num_out_p) : num_out_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_out_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_out_p - 1)) ? (2 - num_out_p) : num_out_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_out_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((num_out_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((num_out_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_out_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_o;
+	input [(num_out_p - 1):0] ready_i;
+	localparam middle_meet_lp = ((num_in_p &lt; num_out_p) ? num_in_p : num_out_p);
+	wire [(middle_meet_lp - 1):0] go_channels;
+	wire [((middle_meet_lp * width_p) - 1):0] data_head [(num_in_p - 1):0];
+	wire [(middle_meet_lp - 1):0] valid_head [(num_in_p - 1):0];
+	wire [(middle_meet_lp - 1):0] ready_head [(num_out_p - 1):0];
+	wire [(num_in_p - 1):0] yumi_int_o [(num_in_p - 1):0];
+	wire [(num_out_p - 1):0] valid_int_o [(num_out_p - 1):0];
+	wire [((width_p * num_out_p) - 1):0] data_int_o [(num_out_p - 1):0];
+	assign yumi_o = yumi_int_o[in_top_channel_i];
+	assign valid_o = valid_int_o[out_top_channel_i];
+	wire [((width_p * num_out_p) - 1):0] data_o_flat = data_int_o[out_top_channel_i];
+	wire [((width_p * num_out_p) - 1):0] zero_flat;
+	wire [($clog2((((num_in_p &lt; num_out_p) ? num_in_p : num_out_p) + 1)) - 1):0] go_cnt;
+	assign zero_flat = 0;
+	bsg_make_2D_array #(
+		.width_p(width_p),
+		.items_p(num_out_p)
+	) bm2Da(
+		.i(data_o_flat),
+		.o(data_o)
+	);
+	genvar i;
+	genvar j;
+	generate
+		for (i = 0; (i &lt; num_in_p); i = (i + 1)) begin : ic
+			if (in_channel_count_mask_p[i]) begin : in_chan
+				wire [(((middle_meet_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((middle_meet_lp - 1) &gt;= 0) ? middle_meet_lp : (2 - middle_meet_lp)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((middle_meet_lp - 1) &gt;= 0) ? middle_meet_lp : (2 - middle_meet_lp)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (middle_meet_lp - 1)) ? (2 - middle_meet_lp) : middle_meet_lp) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((middle_meet_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (middle_meet_lp - 1)) ? (2 - middle_meet_lp) : middle_meet_lp) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((middle_meet_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((middle_meet_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((middle_meet_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((middle_meet_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_head_tmp;
+				assign data_head[i] = {&gt;&gt; 1{data_head_tmp}};
+				bsg_rr_f2f_input #(
+					.width_p(width_p),
+					.num_in_p((i + 1)),
+					.middle_meet_p(middle_meet_lp)
+				) bsg_rr_ff_in(
+					.clk(clk),
+					.reset((reset | (in_top_channel_i != i))),
+					.valid_i(valid_i[i:0]),
+					.data_i(data_i[((((i &gt;= 0) ? (i + 1) : (1 - i)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1):0]),
+					.data_head_o(data_head_tmp),
+					.valid_head_o(valid_head[i]),
+					.go_channels_i(go_channels[((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1):0]),
+					.go_cnt_i(go_cnt[($clog2(((((i + 1) &lt; ((num_in_p &lt; num_out_p) ? num_in_p : num_out_p)) ? (i + 1) : ((num_in_p &lt; num_out_p) ? num_in_p : num_out_p)) + 1)) - 1):0]),
+					.yumi_o(yumi_int_o[i][i:0])
+				);
+				for (j = (i + 1); (j &lt; num_in_p); j = (j + 1)) begin
+					assign yumi_int_o[i][j] = 1&#39;b0;
+				end
+			end
+		end
+	endgenerate
+	bsg_rr_f2f_middle #(
+		.width_p(width_p),
+		.middle_meet_p(middle_meet_lp)
+	) brrf2fm(
+		.valid_head_i(valid_head[in_top_channel_i]),
+		.ready_head_i(ready_head[out_top_channel_i]),
+		.go_channels_o(go_channels),
+		.go_cnt_o(go_cnt)
+	);
+	generate
+		for (i = 0; (i &lt; num_out_p); i = (i + 1)) begin : oc
+			if (out_channel_count_mask_p[i]) begin : out_chan
+				wire [((((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? ((((((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) &gt;= 0) ? (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) : (2 - (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : ((((((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) &gt;= 0) ? (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) : (2 - (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp))) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= ((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1)) ? (2 - (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp)) : (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + ((((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= ((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1)) ? (2 - (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp)) : (((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + (((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):((((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? (((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + (((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_head_array;
+				wire [((i &gt;= 0) ? (((width_p - 1) &gt;= 0) ? ((((i &gt;= 0) ? (i + 1) : (1 - i)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : ((((i &gt;= 0) ? (i + 1) : (1 - i)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= i) ? (1 - i) : (i + 1)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + ((i * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= i) ? (1 - i) : (i + 1)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + (i * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):((i &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? (i * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + (i * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_o_array;
+				bsg_make_2D_array #(
+					.width_p(width_p),
+					.items_p((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp))
+				) bm2Da(
+					.i(data_head[in_top_channel_i][0+:((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) * width_p)]),
+					.o(data_head_array)
+				);
+				assign data_int_o[i][((width_p * (i + 1)) - 1):0] = {&gt;&gt; 1{data_o_array}};
+				bsg_rr_f2f_output #(
+					.width_p(width_p),
+					.num_out_p((i + 1)),
+					.middle_meet_p(middle_meet_lp)
+				) bsg_rr_ff_out(
+					.clk(clk),
+					.reset((reset | (out_top_channel_i != i))),
+					.ready_i(ready_i[i:0]),
+					.ready_head_o(ready_head[i]),
+					.go_channels_i(go_channels[((((i + 1) &lt; middle_meet_lp) ? (i + 1) : middle_meet_lp) - 1):0]),
+					.go_cnt_i(go_cnt[($clog2(((((i + 1) &lt; ((num_in_p &lt; num_out_p) ? num_in_p : num_out_p)) ? (i + 1) : ((num_in_p &lt; num_out_p) ? num_in_p : num_out_p)) + 1)) - 1):0]),
+					.data_head_i(data_head_array),
+					.valid_o(valid_int_o[i][i:0]),
+					.data_o(data_o_array)
+				);
+				for (j = (i + 1); (j &lt; num_out_p); j = (j + 1)) begin
+					assign valid_int_o[i][j] = 1&#39;b0;
+				end
+				if (((num_out_p - i) &gt; 1)) assign data_int_o[i][((width_p * num_out_p) - 1):(width_p * (i + 1))] = zero_flat[0+:(width_p * (num_out_p - (i + 1)))];
+			end
+		end
+	endgenerate
+endmodule
 
 </pre>
 </body>

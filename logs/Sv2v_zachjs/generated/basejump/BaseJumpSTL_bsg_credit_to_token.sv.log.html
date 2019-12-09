@@ -7,21 +7,62 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v</a>
-time_elapsed: 0.018s
-ram usage: 9628 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v</a>
+time_elapsed: 0.060s
+ram usage: 10716 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v.html#l-19" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v:19</a>:41: Lexical error: Undefined macro: BSG_WIDTH
+module bsg_credit_to_token (
+	clk_i,
+	reset_i,
+	credit_i,
+	ready_i,
+	token_o
+);
+	parameter decimation_p = -1;
+	parameter max_val_p = -1;
+	input clk_i;
+	input reset_i;
+	input credit_i;
+	input ready_i;
+	output token_o;
+	localparam counter_width_lp = $clog2((max_val_p + 1));
+	localparam step_width_lp = $clog2((decimation_p + 1));
+	wire [(counter_width_lp - 1):0] count;
+	wire [(step_width_lp - 1):0] up;
+	wire [(step_width_lp - 1):0] down;
+	wire token_ready;
+	wire token_almost_ready;
+	bsg_counter_up_down_variable #(
+		.max_val_p(max_val_p),
+		.init_val_p(0),
+		.max_step_p(decimation_p)
+	) credit_counter(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.up_i(up),
+		.down_i(down),
+		.count_o(count)
+	);
+	assign up = {{(step_width_lp - 1) {1&#39;b0}}, credit_i};
+	assign down = (token_o ? sv2v_cast_1B62F($unsigned(decimation_p)) : sv2v_cast_1B62F(0));
+	assign token_ready = (count &gt;= decimation_p);
+	assign token_almost_ready = (count &gt;= $unsigned((decimation_p - 1)));
+	assign token_o = (ready_i &amp; (token_ready | (token_almost_ready &amp; credit_i)));
+	function automatic [($clog2((decimation_p + 1)) - 1):0] sv2v_cast_1B62F;
+		input reg [($clog2((decimation_p + 1)) - 1):0] inp;
+		sv2v_cast_1B62F = inp;
+	endfunction
+endmodule
 
 </pre>
 </body>

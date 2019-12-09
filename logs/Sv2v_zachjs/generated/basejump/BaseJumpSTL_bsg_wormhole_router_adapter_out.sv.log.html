@@ -7,21 +7,85 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_adapter_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_adapter_out.v</a>
-time_elapsed: 0.026s
-ram usage: 9916 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_adapter_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_adapter_out.v</a>
+time_elapsed: 0.089s
+ram usage: 11284 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_adapter_out.v.html#l-45" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_adapter_out.v:45</a>:42: Lexical error: Undefined macro: BSG_CDIV
+module bsg_wormhole_router_adapter_out (
+	clk_i,
+	reset_i,
+	link_i,
+	link_o,
+	packet_o,
+	v_o,
+	yumi_i
+);
+	parameter max_payload_width_p = &#34;inv&#34;;
+	parameter len_width_p = &#34;inv&#34;;
+	parameter cord_width_p = &#34;inv&#34;;
+	parameter flit_width_p = &#34;inv&#34;;
+	localparam bsg_ready_and_link_sif_width_lp = (flit_width_p + 2);
+	localparam bsg_wormhole_packet_width_lp = ((cord_width_p + len_width_p) + max_payload_width_p);
+	input clk_i;
+	input reset_i;
+	input [(bsg_ready_and_link_sif_width_lp - 1):0] link_i;
+	output [(bsg_ready_and_link_sif_width_lp - 1):0] link_o;
+	output [(bsg_wormhole_packet_width_lp - 1):0] packet_o;
+	output v_o;
+	input yumi_i;
+	wire [((2 + (((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p))) - 1):0] link_cast_i;
+	wire [((2 + (((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p))) - 1):0] link_cast_o;
+	assign link_cast_i = link_i;
+	assign link_o = link_cast_o;
+	wire [(((((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p)) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) - 1):0] header_li;
+	assign header_li = link_cast_i[((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1):0];
+	localparam max_num_flits_lp = (((((((((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) - 1) &gt;= 0) ? (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) : (2 - (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))))) + flit_width_p) - 1) / flit_width_p);
+	localparam protocol_len_lp = ((max_num_flits_lp == 1) ? 1 : $clog2((((((((((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) - 1) &gt;= 0) ? (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) : (2 - (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))))) + flit_width_p) - 1) / flit_width_p)));
+	wire [((max_num_flits_lp * flit_width_p) - 1):0] packet_padded_lo;
+	bsg_serial_in_parallel_out_dynamic #(
+		.width_p(flit_width_p),
+		.max_els_p(max_num_flits_lp)
+	) sipo(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.data_i(link_cast_i[((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1):0]),
+		.len_i(sv2v_cast_C386C(header_li[((((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p)) + ((((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p)) + -1)):(((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))])),
+		.ready_o(link_cast_o[(1 + ((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1)):(((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p))]),
+		.len_ready_o(),
+		.v_i(link_cast_i[(1 + (1 + ((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1))):(1 + (((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)))]),
+		.v_o(v_o),
+		.data_o(packet_padded_lo),
+		.yumi_i(yumi_i)
+	);
+	assign packet_o = packet_padded_lo[0+:bsg_wormhole_packet_width_lp];
+	assign link_cast_o[((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1):0] = 1&#39;sb0;
+	assign link_cast_o[(1 + (1 + ((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1))):(1 + (((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)))] = 1&#39;sb0;
+	wire recv_r;
+	bsg_dff_reset_en #(.width_p(1)) recv_reg(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.en_i((link_cast_i[(1 + (1 + ((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1))):(1 + (((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)))] || yumi_i)),
+		.data_i(link_cast_i[(1 + (1 + ((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1))):(1 + (((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)))]),
+		.data_o(recv_r)
+	);
+	wire new_header_li = (~recv_r &amp; link_cast_i[(1 + (1 + ((((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)) + -1))):(1 + (((flit_width_p - 1) &gt;= 0) ? flit_width_p : (2 - flit_width_p)))]);
+	always @(negedge clk_i)
+		;
+	function automatic [((((((((((((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) - 1) &gt;= 0) ? (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) : (2 - (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))))) + flit_width_p) - 1) / flit_width_p) == 1) ? 1 : $clog2((((((((((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) - 1) &gt;= 0) ? (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) : (2 - (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))))) + flit_width_p) - 1) / flit_width_p))) - 1):0] sv2v_cast_C386C;
+		input reg [((((((((((((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) - 1) &gt;= 0) ? (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) : (2 - (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))))) + flit_width_p) - 1) / flit_width_p) == 1) ? 1 : $clog2((((((((((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) - 1) &gt;= 0) ? (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))) : (2 - (((((max_payload_width_p - 1) &gt;= 0) ? max_payload_width_p : (2 - max_payload_width_p)) + (((len_width_p - 1) &gt;= 0) ? len_width_p : (2 - len_width_p))) + (((cord_width_p - 1) &gt;= 0) ? cord_width_p : (2 - cord_width_p))))) + flit_width_p) - 1) / flit_width_p))) - 1):0] inp;
+		sv2v_cast_C386C = inp;
+	endfunction
+endmodule
 
 </pre>
 </body>

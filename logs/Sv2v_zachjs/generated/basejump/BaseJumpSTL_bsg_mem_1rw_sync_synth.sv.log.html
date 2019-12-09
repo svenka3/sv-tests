@@ -7,21 +7,79 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_mem
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_mem
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v</a>
-time_elapsed: 0.013s
-ram usage: 9556 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v</a>
+time_elapsed: 0.109s
+ram usage: 10928 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v.html#l-13" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v:13</a>:46: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_mem_1rw_sync_synth (
+	clk_i,
+	v_i,
+	reset_i,
+	data_i,
+	addr_i,
+	w_i,
+	data_o
+);
+	parameter width_p = -1;
+	parameter els_p = -1;
+	parameter latch_last_read_p = 0;
+	parameter addr_width_lp = ((els_p == 1) ? 1 : $clog2(els_p));
+	input clk_i;
+	input v_i;
+	input reset_i;
+	input [(width_p - 1):0] data_i;
+	input [(addr_width_lp - 1):0] addr_i;
+	input w_i;
+	output wire [(width_p - 1):0] data_o;
+	wire unused = reset_i;
+	reg [(addr_width_lp - 1):0] addr_r;
+	reg [(width_p - 1):0] mem [(els_p - 1):0];
+	wire read_en;
+	wire [(width_p - 1):0] data_out;
+	assign read_en = (v_i &amp; ~w_i);
+	assign data_out = mem[addr_r];
+	always @(posedge clk_i)
+		if (read_en)
+			addr_r &lt;= addr_i;
+		else
+			addr_r &lt;= 1&#39;sbX;
+	generate
+		if (latch_last_read_p) begin : llr
+			wire read_en_r;
+			bsg_dff #(.width_p(1)) read_en_dff(
+				.clk_i(clk_i),
+				.data_i(read_en),
+				.data_o(read_en_r)
+			);
+			bsg_dff_en_bypass #(.width_p(width_p)) dff_bypass(
+				.clk_i(clk_i),
+				.en_i(read_en_r),
+				.data_i(data_out),
+				.data_o(data_o)
+			);
+		end
+		else begin : no_llr
+			assign data_o = data_out;
+		end
+	endgenerate
+	always @(posedge clk_i)
+		if ((v_i &amp; w_i))
+			mem[addr_i] &lt;= data_i;
+	initial $display(&#34;## %L: instantiating width_p=%d, els_p=%d (%m)&#34;, width_p, els_p);
+	always @(negedge clk_i)
+		if (v_i)
+			;
+endmodule
 
 </pre>
 </body>

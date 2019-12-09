@@ -7,21 +7,47 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v</a>
-time_elapsed: 0.010s
-ram usage: 9652 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v</a>
+time_elapsed: 0.048s
+ram usage: 11184 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v.html#l-31" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v:31</a>:45: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_lru_pseudo_tree_encode (
+	lru_i,
+	way_id_o
+);
+	parameter ways_p = &#34;inv&#34;;
+	parameter lg_ways_lp = ((ways_p == 1) ? 1 : $clog2(ways_p));
+	input [(ways_p - 2):0] lru_i;
+	output wire [(lg_ways_lp - 1):0] way_id_o;
+	generate
+		genvar rank_i;
+		for (rank_i = 0; (rank_i &lt; lg_ways_lp); rank_i = (rank_i + 1)) begin : rank
+			if ((rank_i == 0)) begin : z
+				assign way_id_o[(lg_ways_lp - 1)] = lru_i[0];
+			end
+			else begin : nz
+				bsg_mux #(
+					.width_p(1),
+					.els_p((2 ** rank_i))
+				) mux(
+					.data_i(lru_i[((2 ** rank_i) - 1)+:(2 ** rank_i)]),
+					.sel_i(way_id_o[(lg_ways_lp - 1)-:rank_i]),
+					.data_o(way_id_o[((lg_ways_lp - 1) - rank_i)])
+				);
+			end
+		end
+	endgenerate
+endmodule
 
 </pre>
 </body>

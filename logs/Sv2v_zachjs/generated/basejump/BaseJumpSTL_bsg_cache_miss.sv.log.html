@@ -7,21 +7,320 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_cache
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_cache
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v</a>
-time_elapsed: 0.017s
-ram usage: 9628 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v</a>
+time_elapsed: 0.664s
+ram usage: 14356 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v.html#l-18" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v:18</a>:57: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_cache_miss (
+	clk_i,
+	reset_i,
+	miss_v_i,
+	decode_v_i,
+	addr_v_i,
+	tag_v_i,
+	valid_v_i,
+	lock_v_i,
+	tag_hit_way_id_i,
+	tag_hit_found_i,
+	sbuf_empty_i,
+	dma_cmd_o,
+	dma_way_o,
+	dma_addr_o,
+	dma_done_i,
+	stat_info_i,
+	stat_mem_v_o,
+	stat_mem_w_o,
+	stat_mem_addr_o,
+	stat_mem_data_o,
+	stat_mem_w_mask_o,
+	tag_mem_v_o,
+	tag_mem_w_o,
+	tag_mem_addr_o,
+	tag_mem_data_o,
+	tag_mem_w_mask_o,
+	done_o,
+	recover_o,
+	chosen_way_o,
+	ack_i
+);
+	localparam [3:0] START = 0;
+	localparam [3:0] FLUSH_OP = 1;
+	localparam [3:0] LOCK_OP = 2;
+	localparam [3:0] SEND_EVICT_ADDR = 3;
+	localparam [3:0] SEND_FILL_ADDR = 4;
+	localparam [3:0] SEND_EVICT_DATA = 5;
+	localparam [3:0] GET_FILL_DATA = 6;
+	localparam [3:0] RECOVER = 7;
+	localparam [3:0] DONE = 8;
+	localparam [3:0] e_dma_nop = 4&#39;b0000;
+	localparam [3:0] e_dma_send_fill_addr = 4&#39;b0001;
+	localparam [3:0] e_dma_send_evict_addr = 4&#39;b0010;
+	localparam [3:0] e_dma_get_fill_data = 4&#39;b0100;
+	localparam [3:0] e_dma_send_evict_data = 4&#39;b1000;
+	localparam [4:0] LB = 5&#39;b00000;
+	localparam [4:0] LH = 5&#39;b00001;
+	localparam [4:0] LW = 5&#39;b00010;
+	localparam [4:0] LD = 5&#39;b00011;
+	localparam [4:0] LBU = 5&#39;b00100;
+	localparam [4:0] LHU = 5&#39;b00101;
+	localparam [4:0] LWU = 5&#39;b00110;
+	localparam [4:0] LDU = 5&#39;b00111;
+	localparam [4:0] SB = 5&#39;b01000;
+	localparam [4:0] SH = 5&#39;b01001;
+	localparam [4:0] SW = 5&#39;b01010;
+	localparam [4:0] SD = 5&#39;b01011;
+	localparam [4:0] LM = 5&#39;b01100;
+	localparam [4:0] SM = 5&#39;b01101;
+	localparam [4:0] TAGST = 5&#39;b10000;
+	localparam [4:0] TAGFL = 5&#39;b10001;
+	localparam [4:0] TAGLV = 5&#39;b10010;
+	localparam [4:0] TAGLA = 5&#39;b10011;
+	localparam [4:0] AFL = 5&#39;b11000;
+	localparam [4:0] AFLINV = 5&#39;b11001;
+	localparam [4:0] AINV = 5&#39;b11010;
+	localparam [4:0] ALOCK = 5&#39;b11011;
+	localparam [4:0] AUNLOCK = 5&#39;b11100;
+	parameter addr_width_p = &#34;inv&#34;;
+	parameter data_width_p = &#34;inv&#34;;
+	parameter block_size_in_words_p = &#34;inv&#34;;
+	parameter sets_p = &#34;inv&#34;;
+	parameter ways_p = &#34;inv&#34;;
+	parameter lg_block_size_in_words_lp = ((block_size_in_words_p == 1) ? 1 : $clog2(block_size_in_words_p));
+	parameter lg_sets_lp = ((sets_p == 1) ? 1 : $clog2(sets_p));
+	parameter lg_data_mask_width_lp = (((data_width_p &gt;&gt; 3) == 1) ? 1 : $clog2((data_width_p &gt;&gt; 3)));
+	parameter tag_width_lp = (((addr_width_p - lg_data_mask_width_lp) - lg_sets_lp) - lg_block_size_in_words_lp);
+	parameter tag_info_width_lp = (tag_width_lp + 2);
+	parameter lg_ways_lp = ((ways_p == 1) ? 1 : $clog2(ways_p));
+	parameter stat_info_width_lp = ((ways_p + ways_p) - 1);
+	input clk_i;
+	input reset_i;
+	input miss_v_i;
+	input wire [15:0] decode_v_i;
+	input [(addr_width_p - 1):0] addr_v_i;
+	input [(((ways_p - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + -1) : (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * ((0 &gt;= (tag_width_lp - 1)) ? (2 - tag_width_lp) : tag_width_lp)) + ((tag_width_lp - 1) - 1))) : (((tag_width_lp - 1) &gt;= 0) ? ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + (((ways_p - 1) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) : ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * ((0 &gt;= (tag_width_lp - 1)) ? (2 - tag_width_lp) : tag_width_lp)) + (((tag_width_lp - 1) + ((ways_p - 1) * ((0 &gt;= (tag_width_lp - 1)) ? (2 - tag_width_lp) : tag_width_lp))) - 1)))):(((ways_p - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? 0 : (tag_width_lp - 1)) : (((tag_width_lp - 1) &gt;= 0) ? ((ways_p - 1) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : ((tag_width_lp - 1) + ((ways_p - 1) * ((0 &gt;= (tag_width_lp - 1)) ? (2 - tag_width_lp) : tag_width_lp)))))] tag_v_i;
+	input [(ways_p - 1):0] valid_v_i;
+	input [(ways_p - 1):0] lock_v_i;
+	input [(lg_ways_lp - 1):0] tag_hit_way_id_i;
+	input tag_hit_found_i;
+	input sbuf_empty_i;
+	output reg [3:0] dma_cmd_o;
+	output wire [(lg_ways_lp - 1):0] dma_way_o;
+	output reg [(addr_width_p - 1):0] dma_addr_o;
+	input dma_done_i;
+	input [(stat_info_width_lp - 1):0] stat_info_i;
+	output reg stat_mem_v_o;
+	output reg stat_mem_w_o;
+	output wire [(lg_sets_lp - 1):0] stat_mem_addr_o;
+	output wire [(stat_info_width_lp - 1):0] stat_mem_data_o;
+	output wire [(stat_info_width_lp - 1):0] stat_mem_w_mask_o;
+	output reg tag_mem_v_o;
+	output reg tag_mem_w_o;
+	output wire [(lg_sets_lp - 1):0] tag_mem_addr_o;
+	output wire [(((ways_p - 1) &gt;= 0) ? (((tag_info_width_lp - 1) &gt;= 0) ? (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) + -1) : (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp)) + ((tag_info_width_lp - 1) - 1))) : (((tag_info_width_lp - 1) &gt;= 0) ? ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) + (((ways_p - 1) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) - 1)) : ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp)) + (((tag_info_width_lp - 1) + ((ways_p - 1) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp))) - 1)))):(((ways_p - 1) &gt;= 0) ? (((tag_info_width_lp - 1) &gt;= 0) ? 0 : (tag_info_width_lp - 1)) : (((tag_info_width_lp - 1) &gt;= 0) ? ((ways_p - 1) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) : ((tag_info_width_lp - 1) + ((ways_p - 1) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp)))))] tag_mem_data_o;
+	output wire [(((ways_p - 1) &gt;= 0) ? (((tag_info_width_lp - 1) &gt;= 0) ? (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) + -1) : (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp)) + ((tag_info_width_lp - 1) - 1))) : (((tag_info_width_lp - 1) &gt;= 0) ? ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) + (((ways_p - 1) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) - 1)) : ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp)) + (((tag_info_width_lp - 1) + ((ways_p - 1) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp))) - 1)))):(((ways_p - 1) &gt;= 0) ? (((tag_info_width_lp - 1) &gt;= 0) ? 0 : (tag_info_width_lp - 1)) : (((tag_info_width_lp - 1) &gt;= 0) ? ((ways_p - 1) * (((tag_info_width_lp - 1) &gt;= 0) ? tag_info_width_lp : (2 - tag_info_width_lp))) : ((tag_info_width_lp - 1) + ((ways_p - 1) * ((0 &gt;= (tag_info_width_lp - 1)) ? (2 - tag_info_width_lp) : tag_info_width_lp)))))] tag_mem_w_mask_o;
+	output reg done_o;
+	output reg recover_o;
+	output wire [(lg_ways_lp - 1):0] chosen_way_o;
+	input ack_i;
+	wire [(((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + (((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))) - 1):0] stat_info_in;
+	assign stat_info_in = stat_info_i;
+	reg [(((ways_p - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + -1) : (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))) + (((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) - 1))) : ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + (((ways_p - 1) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) - 1)) : ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) + ((ways_p - 1) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) - 1)))):(((ways_p - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) : ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((ways_p - 1) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) : (((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) + ((ways_p - 1) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))))))] tag_mem_data_out;
+	reg [(((ways_p - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + -1) : (((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))) + (((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) - 1))) : ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + (((ways_p - 1) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) - 1)) : ((((0 &gt;= (ways_p - 1)) ? (2 - ways_p) : ways_p) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) + ((ways_p - 1) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) - 1)))):(((ways_p - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) : ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((ways_p - 1) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) : (((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) + ((ways_p - 1) * ((0 &gt;= ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)) ? (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) : (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))))))] tag_mem_w_mask_out;
+	reg [(((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + (((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))) - 1):0] stat_mem_data_out;
+	reg [(((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + (((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))) - 1):0] stat_mem_w_mask_out;
+	assign tag_mem_data_o = tag_mem_data_out;
+	assign stat_mem_data_o = stat_mem_data_out;
+	assign tag_mem_w_mask_o = tag_mem_w_mask_out;
+	assign stat_mem_w_mask_o = stat_mem_w_mask_out;
+	wire [(lg_ways_lp - 1):0] invalid_way_id;
+	wire invalid_exist;
+	bsg_priority_encode #(
+		.width_p(ways_p),
+		.lo_to_hi_p(1)
+	) invalid_way_pe(
+		.i((~valid_v_i &amp; ~lock_v_i)),
+		.addr_o(invalid_way_id),
+		.v_o(invalid_exist)
+	);
+	wire [(lg_ways_lp - 1):0] lru_way_id;
+	bsg_lru_pseudo_tree_encode #(.ways_p(ways_p)) lru_encode(
+		.lru_i(stat_info_in[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0]),
+		.way_id_o(lru_way_id)
+	);
+	reg [3:0] miss_state_r;
+	reg [3:0] miss_state_n;
+	reg [(lg_ways_lp - 1):0] chosen_way_r;
+	reg [(lg_ways_lp - 1):0] chosen_way_n;
+	wire goto_flush_op;
+	wire goto_lock_op;
+	assign goto_flush_op = (((decode_v_i[8:8] | decode_v_i[3:3]) | decode_v_i[5:5]) | decode_v_i[4:4]);
+	assign goto_lock_op = (decode_v_i[1:1] | (decode_v_i[2:2] &amp; tag_hit_found_i));
+	wire [(tag_width_lp - 1):0] addr_tag_v;
+	wire [(lg_sets_lp - 1):0] addr_index_v;
+	wire [(lg_ways_lp - 1):0] addr_way_v;
+	wire [(lg_block_size_in_words_lp - 1):0] addr_block_offset_v;
+	assign addr_index_v = addr_v_i[(lg_data_mask_width_lp + lg_block_size_in_words_lp)+:lg_sets_lp];
+	assign addr_tag_v = addr_v_i[((lg_data_mask_width_lp + lg_block_size_in_words_lp) + lg_sets_lp)+:tag_width_lp];
+	assign addr_way_v = addr_v_i[((lg_sets_lp + lg_block_size_in_words_lp) + lg_data_mask_width_lp)+:lg_ways_lp];
+	assign addr_block_offset_v = addr_v_i[lg_data_mask_width_lp+:lg_block_size_in_words_lp];
+	assign stat_mem_addr_o = addr_index_v;
+	assign tag_mem_addr_o = addr_index_v;
+	assign chosen_way_o = chosen_way_n;
+	assign dma_way_o = chosen_way_r;
+	wire [(ways_p - 2):0] chosen_way_lru_data;
+	wire [(ways_p - 2):0] chosen_way_lru_mask;
+	bsg_lru_pseudo_tree_decode #(.ways_p(ways_p)) chosen_way_lru_decode(
+		.way_id_i(chosen_way_n),
+		.data_o(chosen_way_lru_data),
+		.mask_o(chosen_way_lru_mask)
+	);
+	wire [(lg_ways_lp - 1):0] backup_lru_way_id;
+	bsg_priority_encode #(
+		.width_p(ways_p),
+		.lo_to_hi_p(1)
+	) backup_lru_pe(
+		.i(~lock_v_i),
+		.addr_o(backup_lru_way_id),
+		.v_o()
+	);
+	wire [(ways_p - 1):0] chosen_way_decode;
+	bsg_decode #(.num_out_p(ways_p)) chosen_way_demux(
+		.i(chosen_way_n),
+		.o(chosen_way_decode)
+	);
+	always @(*) begin
+		stat_mem_v_o = 1&#39;b0;
+		stat_mem_w_o = 1&#39;b0;
+		stat_mem_data_out = 1&#39;sb0;
+		stat_mem_w_mask_out = 1&#39;sb0;
+		tag_mem_v_o = 1&#39;b0;
+		tag_mem_w_o = 1&#39;b0;
+		tag_mem_data_out = {(((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) {1&#39;sb0}};
+		tag_mem_w_mask_out = {(((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) {1&#39;sb0}};
+		chosen_way_n = chosen_way_r;
+		dma_addr_o = 1&#39;sb0;
+		dma_cmd_o = e_dma_nop;
+		recover_o = 1&#39;sb0;
+		done_o = 1&#39;sb0;
+		case (miss_state_r)
+			START: begin
+				stat_mem_v_o = miss_v_i;
+				miss_state_n = (miss_v_i ? (goto_flush_op ? FLUSH_OP : (goto_lock_op ? LOCK_OP : SEND_FILL_ADDR)) : START);
+			end
+			SEND_FILL_ADDR: begin
+				chosen_way_n = (invalid_exist ? invalid_way_id : (lock_v_i[lru_way_id] ? backup_lru_way_id : lru_way_id));
+				dma_cmd_o = e_dma_send_fill_addr;
+				dma_addr_o = {addr_tag_v, addr_index_v, {(lg_data_mask_width_lp + lg_block_size_in_words_lp) {1&#39;b0}}};
+				stat_mem_v_o = dma_done_i;
+				stat_mem_w_o = dma_done_i;
+				stat_mem_data_out[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = {ways_p {decode_v_i[10:10]}};
+				stat_mem_data_out[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = chosen_way_lru_data;
+				stat_mem_w_mask_out[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = chosen_way_decode;
+				stat_mem_w_mask_out[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = chosen_way_lru_mask;
+				tag_mem_v_o = dma_done_i;
+				tag_mem_w_o = dma_done_i;
+				begin : sv2v_autoblock_1
+					integer i;
+					for (i = 0; (i &lt; ways_p); i = (i + 1))
+						begin
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:((((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 - ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))] = addr_tag_v;
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) &gt;= (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) ? (((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + 1) : (((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) - (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) + 1))] = decode_v_i[2:2];
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) &gt;= (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) ? (((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) + 1) : (((1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) + 1))] = 1&#39;b1;
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:((((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 - ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))] = {tag_width_lp {chosen_way_decode[i]}};
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) &gt;= (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) ? (((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + 1) : (((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) - (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) + 1))] = chosen_way_decode[i];
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) &gt;= (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) ? (((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) + 1) : (((1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) + 1))] = chosen_way_decode[i];
+						end
+				end
+				miss_state_n = (dma_done_i ? ((stat_info_in[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + chosen_way_n)] &amp; valid_v_i[chosen_way_n]) ? SEND_EVICT_ADDR : GET_FILL_DATA) : SEND_FILL_ADDR);
+			end
+			FLUSH_OP: begin
+				chosen_way_n = (decode_v_i[8:8] ? addr_way_v : tag_hit_way_id_i);
+				stat_mem_v_o = 1&#39;b1;
+				stat_mem_w_o = 1&#39;b1;
+				stat_mem_data_out[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = {ways_p {1&#39;b0}};
+				stat_mem_data_out[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = {(ways_p - 1) {1&#39;b0}};
+				stat_mem_w_mask_out[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = chosen_way_decode;
+				stat_mem_w_mask_out[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = {(ways_p - 1) {1&#39;b0}};
+				tag_mem_v_o = 1&#39;b1;
+				tag_mem_w_o = 1&#39;b1;
+				begin : sv2v_autoblock_2
+					integer i;
+					for (i = 0; (i &lt; ways_p); i = (i + 1))
+						begin
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) &gt;= (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) ? (((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) + 1) : (((1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) + 1))] = 1&#39;b0;
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) &gt;= (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) ? (((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + 1) : (((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) - (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) + 1))] = 1&#39;b0;
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:((((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 - ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))] = {tag_width_lp {1&#39;b0}};
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) &gt;= (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) ? (((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) + 1) : (((1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) + 1))] = ((decode_v_i[3:3] | decode_v_i[4:4]) &amp; chosen_way_decode[i]);
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) &gt;= (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) ? (((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + 1) : (((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) - (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) + 1))] = ((decode_v_i[3:3] | decode_v_i[4:4]) &amp; chosen_way_decode[i]);
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:((((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 - ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))] = {tag_width_lp {1&#39;b0}};
+						end
+				end
+				miss_state_n = (((~decode_v_i[3:3] &amp; stat_info_in[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + chosen_way_n)]) &amp; valid_v_i[chosen_way_n]) ? SEND_EVICT_ADDR : RECOVER);
+			end
+			LOCK_OP: begin
+				chosen_way_n = tag_hit_way_id_i;
+				tag_mem_v_o = 1&#39;b1;
+				tag_mem_w_o = 1&#39;b1;
+				begin : sv2v_autoblock_3
+					integer i;
+					for (i = 0; (i &lt; ways_p); i = (i + 1))
+						begin
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) &gt;= (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) ? (((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) + 1) : (((1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) + 1))] = 1&#39;b0;
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) &gt;= (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) ? (((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + 1) : (((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) - (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) + 1))] = decode_v_i[2:2];
+							tag_mem_data_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:((((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 - ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))] = {tag_width_lp {1&#39;b0}};
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) &gt;= (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) ? (((1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - (1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))) + 1) : (((1 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - (1 + (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))) + 1))] = 1&#39;b0;
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:(((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) &gt;= (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) ? (((1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) + 1) : (((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) - (1 + ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1))) + 1))] = chosen_way_decode[i];
+							tag_mem_w_mask_out[(((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) : (2 - (2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)))))) + ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? ((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) : (0 - (((((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1) &gt;= 0) ? 0 : ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)) - ((2 + (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))) - 1)))))+:((((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1) &gt;= 0) ? (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) : (1 - ((((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp)) + -1)))] = {tag_width_lp {1&#39;b0}};
+						end
+				end
+				miss_state_n = RECOVER;
+			end
+			SEND_EVICT_ADDR: begin
+				dma_cmd_o = e_dma_send_evict_addr;
+				dma_addr_o = {tag_v_i[((((tag_width_lp - 1) &gt;= 0) ? 0 : (tag_width_lp - 1)) + ((((ways_p - 1) &gt;= 0) ? chosen_way_r : (0 - (chosen_way_r - (ways_p - 1)))) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))+:(((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))], addr_index_v, {(lg_data_mask_width_lp + lg_block_size_in_words_lp) {1&#39;b0}}};
+				miss_state_n = (dma_done_i ? SEND_EVICT_DATA : SEND_EVICT_ADDR);
+			end
+			SEND_EVICT_DATA: begin
+				dma_cmd_o = (sbuf_empty_i ? e_dma_send_evict_data : e_dma_nop);
+				dma_addr_o = {tag_v_i[((((tag_width_lp - 1) &gt;= 0) ? 0 : (tag_width_lp - 1)) + ((((ways_p - 1) &gt;= 0) ? chosen_way_r : (0 - (chosen_way_r - (ways_p - 1)))) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))+:(((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))], addr_index_v, {(lg_data_mask_width_lp + lg_block_size_in_words_lp) {1&#39;b0}}};
+				miss_state_n = (dma_done_i ? (((decode_v_i[8:8] | decode_v_i[4:4]) | decode_v_i[5:5]) ? RECOVER : GET_FILL_DATA) : SEND_EVICT_DATA);
+			end
+			GET_FILL_DATA: begin
+				dma_cmd_o = (sbuf_empty_i ? e_dma_get_fill_data : e_dma_nop);
+				dma_addr_o = {addr_tag_v, addr_index_v, addr_block_offset_v, {lg_data_mask_width_lp {1&#39;b0}}};
+				miss_state_n = (dma_done_i ? RECOVER : GET_FILL_DATA);
+			end
+			RECOVER: begin
+				recover_o = 1&#39;b1;
+				miss_state_n = DONE;
+			end
+			DONE: begin
+				done_o = 1&#39;b1;
+				miss_state_n = (ack_i ? START : DONE);
+			end
+			default: miss_state_n = START;
+		endcase
+	end
+	always @(posedge clk_i)
+		if (reset_i) begin
+			miss_state_r &lt;= START;
+			chosen_way_r &lt;= 1&#39;b0;
+		end
+		else begin
+			miss_state_r &lt;= miss_state_n;
+			chosen_way_r &lt;= chosen_way_n;
+		end
+endmodule
 
 </pre>
 </body>

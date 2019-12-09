@@ -7,21 +7,69 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v</a>
-time_elapsed: 0.011s
-ram usage: 9700 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v</a>
+time_elapsed: 0.103s
+ram usage: 11072 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v.html#l-20" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v:20</a>:30: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_encode_one_hot (
+	i,
+	addr_o,
+	v_o
+);
+	parameter width_p = 8;
+	parameter lo_to_hi_p = 1;
+	input [(width_p - 1):0] i;
+	output [(((width_p == 1) ? 1 : $clog2(width_p)) - 1):0] addr_o;
+	output v_o;
+	localparam half_width_lp = (width_p &gt;&gt; 1);
+	localparam aligned_width_lp = (1 &lt;&lt; $clog2(width_p));
+	wire [(((width_p == 1) ? 1 : $clog2(width_p)) - 1):0] addr_lo;
+	generate
+		if ((width_p == 1)) begin : base
+			assign v_o = i;
+			assign addr_lo = 1&#39;bX;
+		end
+		else if ((width_p != aligned_width_lp)) begin : unaligned
+			wire [($clog2((1 &lt;&lt; $clog2(width_p))) - 1):0] aligned_addr;
+			wire [((aligned_width_lp - width_p) - 1):0] zero_pad = {(aligned_width_lp - width_p) {1&#39;b0}};
+			wire [(aligned_width_lp - 1):0] padded = (lo_to_hi_p ? {zero_pad, i} : {i, zero_pad});
+			bsg_encode_one_hot #(.width_p(aligned_width_lp)) align(
+				.i(padded),
+				.addr_o(aligned_addr),
+				.v_o(v_o)
+			);
+			assign addr_lo = aligned_addr[($clog2(width_p) - 1):0];
+		end
+		else begin : aligned
+			wire [(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((2 * (((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) : (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1)))))) + -1) : ((2 * ((0 &gt;= (((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1)) ? (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1)))) : ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))))) + ((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) - 1))):(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? 0 : (((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1))] addrs;
+			wire [1:0] vs;
+			bsg_encode_one_hot #(.width_p(half_width_lp)) left(
+				.i(i[0+:half_width_lp]),
+				.addr_o(addrs[(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? 0 : (((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1))+:(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) : (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1)))))]),
+				.v_o(vs[0])
+			);
+			bsg_encode_one_hot #(.width_p(half_width_lp)) right(
+				.i(i[half_width_lp+:half_width_lp]),
+				.addr_o(addrs[((((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? 0 : (((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1)) + (((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) : (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))))))+:(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) : (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1)))))]),
+				.v_o(vs[1])
+			);
+			assign v_o = |vs;
+			if ((width_p == 2)) assign addr_lo = vs[lo_to_hi_p];
+			else assign addr_lo = {vs[lo_to_hi_p], (addrs[(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? 0 : (((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1))+:(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) : (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1)))))] | addrs[((((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? 0 : (((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1)) + (((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) : (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))))))+:(((((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) - 1) &gt;= 0) ? ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1))) : (2 - ((half_width_lp == 1) ? 1 : $clog2((width_p &gt;&gt; 1)))))])};
+		end
+	endgenerate
+	assign addr_o = ((((i - 1) &amp; i) == 1&#39;sb0) ? addr_lo : {((width_p == 1) ? 1 : $clog2(width_p)) {1&#39;bx}});
+endmodule
 
 </pre>
 </body>
