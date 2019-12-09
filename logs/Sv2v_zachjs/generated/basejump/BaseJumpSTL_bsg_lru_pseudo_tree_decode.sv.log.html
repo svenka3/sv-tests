@@ -7,21 +7,46 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_decode.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_decode.v</a>
-time_elapsed: 0.008s
-ram usage: 9704 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_decode.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_decode.v</a>
+time_elapsed: 0.064s
+ram usage: 10940 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_decode.v.html#l-15" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_decode.v:15</a>:45: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_lru_pseudo_tree_decode (
+	way_id_i,
+	data_o,
+	mask_o
+);
+	parameter ways_p = &#34;inv&#34;;
+	localparam lg_ways_lp = ((ways_p == 1) ? 1 : $clog2(ways_p));
+	input [(lg_ways_lp - 1):0] way_id_i;
+	output wire [(ways_p - 2):0] data_o;
+	output wire [(ways_p - 2):0] mask_o;
+	genvar i;
+	generate
+		for (i = 0; (i &lt; (ways_p - 1)); i = (i + 1)) begin : rof
+			if ((i == 0)) begin : fi
+				assign mask_o[i] = 1&#39;b1;
+			end
+			else if (((i % 2) == 1)) begin : fi
+				assign mask_o[i] = (mask_o[((i - 1) / 2)] &amp; ~way_id_i[((lg_ways_lp - (((i + 2) == 1) ? 1 : $clog2((i + 2)))) + 1)]);
+			end
+			else begin : fi
+				assign mask_o[i] = (mask_o[((i - 2) / 2)] &amp; way_id_i[((lg_ways_lp - (((i + 2) == 1) ? 1 : $clog2((i + 2)))) + 1)]);
+			end
+			assign data_o[i] = (mask_o[i] &amp; ~way_id_i[(lg_ways_lp - (((i + 2) == 1) ? 1 : $clog2((i + 2))))]);
+		end
+	endgenerate
+endmodule
 
 </pre>
 </body>

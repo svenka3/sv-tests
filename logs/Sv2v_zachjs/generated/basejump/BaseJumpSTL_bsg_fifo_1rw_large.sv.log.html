@@ -7,21 +7,101 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v</a>
-time_elapsed: 0.009s
-ram usage: 9580 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v</a>
+time_elapsed: 0.074s
+ram usage: 11172 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v.html#l-1" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v:1</a>:25: Lexical error: Could not find file &#34;bsg_defines.v&#34;, included from &#34;<a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1rw_large.v</a>&#34;
+module bsg_fifo_1rw_large (
+	clk_i,
+	reset_i,
+	data_i,
+	v_i,
+	enq_not_deq_i,
+	full_o,
+	empty_o,
+	data_o
+);
+	parameter width_p = -1;
+	parameter els_p = -1;
+	parameter verbose_p = 0;
+	input clk_i;
+	input reset_i;
+	input [(width_p - 1):0] data_i;
+	input v_i;
+	input enq_not_deq_i;
+	output full_o;
+	output empty_o;
+	output [(width_p - 1):0] data_o;
+	localparam ptr_width_lp = ((els_p == 1) ? 1 : $clog2(els_p));
+	wire [(ptr_width_lp - 1):0] rd_ptr;
+	wire [(ptr_width_lp - 1):0] wr_ptr;
+	reg last_op_is_read_r;
+	wire mem_we = (enq_not_deq_i &amp; v_i);
+	wire mem_re = (~enq_not_deq_i &amp; v_i);
+	always @(posedge clk_i)
+		if (reset_i)
+			last_op_is_read_r &lt;= 1;
+		else if (v_i)
+			last_op_is_read_r &lt;= mem_re;
+	wire fifo_empty = ((rd_ptr == wr_ptr) &amp; last_op_is_read_r);
+	wire fifo_full = ((rd_ptr == wr_ptr) &amp; ~last_op_is_read_r);
+	assign full_o = fifo_full;
+	assign empty_o = fifo_empty;
+	always @(posedge clk_i)
+		;
+	always @(posedge clk_i)
+		;
+	always @(posedge clk_i)
+		if (verbose_p)
+			if (v_i)
+				if (enq_not_deq_i)
+					$display(&#34;### %m enq %x onto fifo (r=%x w=%x)&#34;, data_i, rd_ptr, wr_ptr);
+				else
+					$display(&#34;### %m deq fifo (r=%x w=%x)&#34;, rd_ptr, wr_ptr);
+	wire [31:0] num_elements_debug = (fifo_empty ? 0 : (fifo_full ? els_p : ((wr_ptr &gt; rd_ptr) ? (wr_ptr - rd_ptr) : (els_p - (rd_ptr - wr_ptr)))));
+	bsg_circular_ptr #(
+		.slots_p(els_p),
+		.max_add_p(1)
+	) rd_circ_ptr(
+		.clk(clk_i),
+		.reset_i(reset_i),
+		.add_i(mem_re),
+		.o(rd_ptr),
+		.n_o()
+	);
+	bsg_circular_ptr #(
+		.slots_p(els_p),
+		.max_add_p(1)
+	) wr_circ_ptr(
+		.clk(clk_i),
+		.reset_i(reset_i),
+		.add_i(mem_we),
+		.o(wr_ptr),
+		.n_o()
+	);
+	bsg_mem_1rw_sync #(
+		.width_p(width_p),
+		.els_p(els_p)
+	) mem_1srw(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.data_i(data_i),
+		.addr_i((mem_we ? wr_ptr : rd_ptr)),
+		.v_i(v_i),
+		.w_i(mem_we),
+		.data_o(data_o)
+	);
+endmodule
 
 </pre>
 </body>

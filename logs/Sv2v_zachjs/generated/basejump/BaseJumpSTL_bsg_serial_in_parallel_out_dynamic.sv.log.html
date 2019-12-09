@@ -7,21 +7,147 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v</a>
-time_elapsed: 0.009s
-ram usage: 9588 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v</a>
+time_elapsed: 0.107s
+ram usage: 11340 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v.html#l-12" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v:12</a>:48: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_serial_in_parallel_out_dynamic (
+	clk_i,
+	reset_i,
+	v_i,
+	len_i,
+	data_i,
+	ready_o,
+	len_ready_o,
+	v_o,
+	data_o,
+	yumi_i
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter max_els_p = &#34;inv&#34;;
+	parameter lg_max_els_lp = ((max_els_p == 1) ? 1 : $clog2(max_els_p));
+	input clk_i;
+	input reset_i;
+	input v_i;
+	input [(lg_max_els_lp - 1):0] len_i;
+	input [(width_p - 1):0] data_i;
+	output ready_o;
+	output len_ready_o;
+	output v_o;
+	output [(((max_els_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((max_els_p - 1) &gt;= 0) ? max_els_p : (2 - max_els_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((max_els_p - 1) &gt;= 0) ? max_els_p : (2 - max_els_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (max_els_p - 1)) ? (2 - max_els_p) : max_els_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((max_els_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (max_els_p - 1)) ? (2 - max_els_p) : max_els_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((max_els_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((max_els_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((max_els_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((max_els_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_o;
+	input yumi_i;
+	genvar i;
+	wire yumi_lo;
+	assign yumi_lo = (v_i &amp; ready_o);
+	wire [(lg_max_els_lp - 1):0] count_r;
+	wire [(lg_max_els_lp - 1):0] count_lo;
+	wire [(lg_max_els_lp - 1):0] len_r;
+	wire [(lg_max_els_lp - 1):0] len_lo;
+	wire clear_li;
+	wire up_li;
+	wire dff_en_li;
+	wire go_fifo_v_li;
+	wire count_r_is_zero;
+	wire count_r_is_last;
+	assign count_lo = count_r;
+	assign len_lo = (count_r_is_zero ? len_i : len_r);
+	assign count_r_is_zero = (count_lo == sv2v_cast_C8F51(0));
+	assign count_r_is_last = (count_lo == len_lo);
+	assign len_ready_o = count_r_is_zero;
+	assign up_li = (yumi_lo &amp; ~count_r_is_last);
+	assign clear_li = (yumi_lo &amp; count_r_is_last);
+	assign go_fifo_v_li = clear_li;
+	assign dff_en_li = (yumi_lo &amp; count_r_is_zero);
+	bsg_counter_clear_up #(
+		.max_val_p((max_els_p - 1)),
+		.init_val_p(0)
+	) ctr(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.clear_i(clear_li),
+		.up_i(up_li),
+		.count_o(count_r)
+	);
+	bsg_dff_reset_en #(
+		.width_p(lg_max_els_lp),
+		.reset_val_p(0)
+	) dff_len(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.en_i(dff_en_li),
+		.data_i(len_i),
+		.data_o(len_r)
+	);
+	wire one_word_lo;
+	bsg_two_fifo #(.width_p(1)) go_fifo(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.ready_o(),
+		.data_i(count_r_is_zero),
+		.v_i(go_fifo_v_li),
+		.v_o(v_o),
+		.data_o(one_word_lo),
+		.yumi_i(yumi_i)
+	);
+	wire [(max_els_p - 1):0] fifo_valid_li;
+	wire [(max_els_p - 1):0] fifo_ready_lo;
+	wire [(max_els_p - 1):0] fifo_valid_lo;
+	wire [(max_els_p - 1):0] fifo_yumi_li;
+	assign ready_o = fifo_ready_lo[count_lo];
+	generate
+		for (i = 0; (i &lt; max_els_p); i = (i + 1)) begin : rof0
+			if ((i == 0)) assign fifo_yumi_li[i] = yumi_i;
+			else assign fifo_yumi_li[i] = ((fifo_valid_lo[i] &amp; yumi_i) &amp; ~one_word_lo);
+		end
+	endgenerate
+	bsg_decode_with_v #(.num_out_p(max_els_p)) bdwv(
+		.i(count_lo),
+		.v_i(v_i),
+		.o(fifo_valid_li)
+	);
+	generate
+		for (i = 0; (i &lt; max_els_p); i = (i + 1)) begin : fifos
+			if ((i == 0)) begin : twofifo
+				bsg_two_fifo #(.width_p(width_p)) fifo(
+					.clk_i(clk_i),
+					.reset_i(reset_i),
+					.ready_o(fifo_ready_lo[i]),
+					.data_i(data_i),
+					.v_i(fifo_valid_li[i]),
+					.v_o(fifo_valid_lo[i]),
+					.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((max_els_p - 1) &gt;= 0) ? i : (0 - (i - (max_els_p - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]),
+					.yumi_i(fifo_yumi_li[i])
+				);
+			end
+			else begin : onefifo
+				bsg_one_fifo #(.width_p(width_p)) fifo(
+					.clk_i(clk_i),
+					.reset_i(reset_i),
+					.ready_o(fifo_ready_lo[i]),
+					.data_i(data_i),
+					.v_i(fifo_valid_li[i]),
+					.v_o(fifo_valid_lo[i]),
+					.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((max_els_p - 1) &gt;= 0) ? i : (0 - (i - (max_els_p - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]),
+					.yumi_i(fifo_yumi_li[i])
+				);
+			end
+		end
+	endgenerate
+	function automatic [(lg_max_els_lp - 1):0] sv2v_cast_C8F51;
+		input reg [(lg_max_els_lp - 1):0] inp;
+		sv2v_cast_C8F51 = inp;
+	endfunction
+endmodule
 
 </pre>
 </body>

@@ -7,21 +7,294 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
 should_fail: 0
 tags: basejump
-incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_cache
+incdirs: /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_noc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_misc /home/travis/build/SymbiFlow/sv-tests/third_party/cores/basejump_stl/bsg_cache
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v</a>
-time_elapsed: 0.009s
-ram usage: 9712 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v</a>
+time_elapsed: 0.260s
+ram usage: 12476 KB
 </pre>
 <pre class="log">
 
-<a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v.html#l-19" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v:19</a>:47: Lexical error: Undefined macro: BSG_SAFE_CLOG2
+module bsg_cache_to_axi (
+	clk_i,
+	reset_i,
+	dma_pkt_i,
+	dma_pkt_v_i,
+	dma_pkt_yumi_o,
+	dma_data_o,
+	dma_data_v_o,
+	dma_data_ready_i,
+	dma_data_i,
+	dma_data_v_i,
+	dma_data_yumi_o,
+	axi_awid_o,
+	axi_awaddr_o,
+	axi_awlen_o,
+	axi_awsize_o,
+	axi_awburst_o,
+	axi_awcache_o,
+	axi_awprot_o,
+	axi_awlock_o,
+	axi_awvalid_o,
+	axi_awready_i,
+	axi_wdata_o,
+	axi_wstrb_o,
+	axi_wlast_o,
+	axi_wvalid_o,
+	axi_wready_i,
+	axi_bid_i,
+	axi_bresp_i,
+	axi_bvalid_i,
+	axi_bready_o,
+	axi_arid_o,
+	axi_araddr_o,
+	axi_arlen_o,
+	axi_arsize_o,
+	axi_arburst_o,
+	axi_arcache_o,
+	axi_arprot_o,
+	axi_arlock_o,
+	axi_arvalid_o,
+	axi_arready_i,
+	axi_rid_i,
+	axi_rdata_i,
+	axi_rresp_i,
+	axi_rlast_i,
+	axi_rvalid_i,
+	axi_rready_o
+);
+	localparam [3:0] e_dma_nop = 4&#39;b0000;
+	localparam [3:0] e_dma_send_fill_addr = 4&#39;b0001;
+	localparam [3:0] e_dma_send_evict_addr = 4&#39;b0010;
+	localparam [3:0] e_dma_get_fill_data = 4&#39;b0100;
+	localparam [3:0] e_dma_send_evict_data = 4&#39;b1000;
+	localparam [4:0] LB = 5&#39;b00000;
+	localparam [4:0] LH = 5&#39;b00001;
+	localparam [4:0] LW = 5&#39;b00010;
+	localparam [4:0] LD = 5&#39;b00011;
+	localparam [4:0] LBU = 5&#39;b00100;
+	localparam [4:0] LHU = 5&#39;b00101;
+	localparam [4:0] LWU = 5&#39;b00110;
+	localparam [4:0] LDU = 5&#39;b00111;
+	localparam [4:0] SB = 5&#39;b01000;
+	localparam [4:0] SH = 5&#39;b01001;
+	localparam [4:0] SW = 5&#39;b01010;
+	localparam [4:0] SD = 5&#39;b01011;
+	localparam [4:0] LM = 5&#39;b01100;
+	localparam [4:0] SM = 5&#39;b01101;
+	localparam [4:0] TAGST = 5&#39;b10000;
+	localparam [4:0] TAGFL = 5&#39;b10001;
+	localparam [4:0] TAGLV = 5&#39;b10010;
+	localparam [4:0] TAGLA = 5&#39;b10011;
+	localparam [4:0] AFL = 5&#39;b11000;
+	localparam [4:0] AFLINV = 5&#39;b11001;
+	localparam [4:0] AINV = 5&#39;b11010;
+	localparam [4:0] ALOCK = 5&#39;b11011;
+	localparam [4:0] AUNLOCK = 5&#39;b11100;
+	parameter addr_width_p = &#34;inv&#34;;
+	parameter block_size_in_words_p = &#34;inv&#34;;
+	parameter data_width_p = &#34;inv&#34;;
+	parameter num_cache_p = &#34;inv&#34;;
+	parameter axi_id_width_p = &#34;inv&#34;;
+	parameter axi_addr_width_p = &#34;inv&#34;;
+	parameter axi_data_width_p = &#34;inv&#34;;
+	parameter axi_burst_len_p = &#34;inv&#34;;
+	parameter lg_num_cache_lp = ((num_cache_p == 1) ? 1 : $clog2(num_cache_p));
+	parameter dma_pkt_width_lp = (1 + addr_width_p);
+	parameter axi_strb_width_lp = (axi_data_width_p &gt;&gt; 3);
+	input clk_i;
+	input reset_i;
+	input [(((num_cache_p - 1) &gt;= 0) ? (((dma_pkt_width_lp - 1) &gt;= 0) ? (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) + -1) : (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp)) + ((dma_pkt_width_lp - 1) - 1))) : (((dma_pkt_width_lp - 1) &gt;= 0) ? ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) + (((num_cache_p - 1) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) - 1)) : ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp)) + (((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp))) - 1)))):(((num_cache_p - 1) &gt;= 0) ? (((dma_pkt_width_lp - 1) &gt;= 0) ? 0 : (dma_pkt_width_lp - 1)) : (((dma_pkt_width_lp - 1) &gt;= 0) ? ((num_cache_p - 1) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) : ((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp)))))] dma_pkt_i;
+	input [(num_cache_p - 1):0] dma_pkt_v_i;
+	output wire [(num_cache_p - 1):0] dma_pkt_yumi_o;
+	output wire [(((num_cache_p - 1) &gt;= 0) ? (((data_width_p - 1) &gt;= 0) ? (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) + -1) : (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p)) + ((data_width_p - 1) - 1))) : (((data_width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) + (((num_cache_p - 1) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) - 1)) : ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p))) - 1)))):(((num_cache_p - 1) &gt;= 0) ? (((data_width_p - 1) &gt;= 0) ? 0 : (data_width_p - 1)) : (((data_width_p - 1) &gt;= 0) ? ((num_cache_p - 1) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) : ((data_width_p - 1) + ((num_cache_p - 1) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p)))))] dma_data_o;
+	output wire [(num_cache_p - 1):0] dma_data_v_o;
+	input [(num_cache_p - 1):0] dma_data_ready_i;
+	input [(((num_cache_p - 1) &gt;= 0) ? (((data_width_p - 1) &gt;= 0) ? (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) + -1) : (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p)) + ((data_width_p - 1) - 1))) : (((data_width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) + (((num_cache_p - 1) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) - 1)) : ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p))) - 1)))):(((num_cache_p - 1) &gt;= 0) ? (((data_width_p - 1) &gt;= 0) ? 0 : (data_width_p - 1)) : (((data_width_p - 1) &gt;= 0) ? ((num_cache_p - 1) * (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) : ((data_width_p - 1) + ((num_cache_p - 1) * ((0 &gt;= (data_width_p - 1)) ? (2 - data_width_p) : data_width_p)))))] dma_data_i;
+	input [(num_cache_p - 1):0] dma_data_v_i;
+	output wire [(num_cache_p - 1):0] dma_data_yumi_o;
+	output wire [(axi_id_width_p - 1):0] axi_awid_o;
+	output wire [(axi_addr_width_p - 1):0] axi_awaddr_o;
+	output wire [7:0] axi_awlen_o;
+	output wire [2:0] axi_awsize_o;
+	output wire [1:0] axi_awburst_o;
+	output wire [3:0] axi_awcache_o;
+	output wire [2:0] axi_awprot_o;
+	output wire axi_awlock_o;
+	output wire axi_awvalid_o;
+	input axi_awready_i;
+	output wire [(axi_data_width_p - 1):0] axi_wdata_o;
+	output wire [(axi_strb_width_lp - 1):0] axi_wstrb_o;
+	output wire axi_wlast_o;
+	output wire axi_wvalid_o;
+	input axi_wready_i;
+	input [(axi_id_width_p - 1):0] axi_bid_i;
+	input [1:0] axi_bresp_i;
+	input axi_bvalid_i;
+	output wire axi_bready_o;
+	output wire [(axi_id_width_p - 1):0] axi_arid_o;
+	output wire [(axi_addr_width_p - 1):0] axi_araddr_o;
+	output wire [7:0] axi_arlen_o;
+	output wire [2:0] axi_arsize_o;
+	output wire [1:0] axi_arburst_o;
+	output wire [3:0] axi_arcache_o;
+	output wire [2:0] axi_arprot_o;
+	output wire axi_arlock_o;
+	output wire axi_arvalid_o;
+	input axi_arready_i;
+	input [(axi_id_width_p - 1):0] axi_rid_i;
+	input [(axi_data_width_p - 1):0] axi_rdata_i;
+	input [1:0] axi_rresp_i;
+	input axi_rlast_i;
+	input axi_rvalid_i;
+	output wire axi_rready_o;
+	wire [(((num_cache_p - 1) &gt;= 0) ? ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) : (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) + -1) : (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * ((0 &gt;= ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)) ? (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))) : (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))))) + (((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) - 1))) : ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) : (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) + (((num_cache_p - 1) * ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) : (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) - 1)) : ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * ((0 &gt;= ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)) ? (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))) : (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))))) + ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) + ((num_cache_p - 1) * ((0 &gt;= ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)) ? (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))) : (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) - 1)))):(((num_cache_p - 1) &gt;= 0) ? ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? 0 : ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)) : ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? ((num_cache_p - 1) * ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) : (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) : (((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) + ((num_cache_p - 1) * ((0 &gt;= ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)) ? (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))) : (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))))))))] dma_pkt;
+	assign dma_pkt = {(((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) {dma_pkt_i}};
+	wire [(num_cache_p - 1):0] read_rr_v_li;
+	wire [(num_cache_p - 1):0] read_rr_yumi_lo;
+	wire read_rr_v_lo;
+	wire [((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1):0] read_rr_dma_pkt;
+	wire [(lg_num_cache_lp - 1):0] read_rr_tag_lo;
+	wire read_rr_yumi_li;
+	generate
+		genvar i;
+		for (i = 0; (i &lt; num_cache_p); i = (i + 1)) begin
+			assign read_rr_v_li[i] = (dma_pkt_v_i[i] &amp; ~dma_pkt[(((((num_cache_p - 1) &gt;= 0) ? i : (0 - (i - (num_cache_p - 1)))) * ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) : (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) + ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) : (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) : (0 - (((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) : (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) - ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)))))+:(((1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1)) &gt;= (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) ? (((1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1)) - (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) + 1) : (((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) - (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) + 1))]);
+		end
+	endgenerate
+	bsg_round_robin_n_to_1 #(
+		.width_p(dma_pkt_width_lp),
+		.num_in_p(num_cache_p),
+		.strict_p(0)
+	) read_rr(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.data_i(dma_pkt),
+		.v_i(read_rr_v_li),
+		.yumi_o(read_rr_yumi_lo),
+		.v_o(read_rr_v_lo),
+		.data_o(read_rr_dma_pkt),
+		.tag_o(read_rr_tag_lo),
+		.yumi_i(read_rr_yumi_li)
+	);
+	wire [(num_cache_p - 1):0] write_rr_v_li;
+	wire [(num_cache_p - 1):0] write_rr_yumi_lo;
+	wire write_rr_v_lo;
+	wire [((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1):0] write_rr_dma_pkt;
+	wire [(lg_num_cache_lp - 1):0] write_rr_tag_lo;
+	wire write_rr_yumi_li;
+	generate
+		genvar i;
+		for (i = 0; (i &lt; num_cache_p); i = (i + 1)) begin
+			assign write_rr_v_li[i] = (dma_pkt_v_i[i] &amp; dma_pkt[(((((num_cache_p - 1) &gt;= 0) ? i : (0 - (i - (num_cache_p - 1)))) * ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) : (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) + ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) : (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) : (0 - (((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) : (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) - ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)))))+:(((1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1)) &gt;= (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) ? (((1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1)) - (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) + 1) : (((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) - (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) + 1))]);
+		end
+	endgenerate
+	bsg_round_robin_n_to_1 #(
+		.width_p(dma_pkt_width_lp),
+		.num_in_p(num_cache_p),
+		.strict_p(0)
+	) write_rr(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.data_i(dma_pkt),
+		.v_i(write_rr_v_li),
+		.yumi_o(write_rr_yumi_lo),
+		.v_o(write_rr_v_lo),
+		.data_o(write_rr_dma_pkt),
+		.tag_o(write_rr_tag_lo),
+		.yumi_i(write_rr_yumi_li)
+	);
+	wire [(axi_addr_width_p - 1):0] rx_axi_addr;
+	wire [(axi_addr_width_p - 1):0] tx_axi_addr;
+	assign rx_axi_addr = {{((axi_addr_width_p - lg_num_cache_lp) - addr_width_p) {1&#39;b0}}, read_rr_tag_lo, read_rr_dma_pkt[((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1):0]};
+	assign tx_axi_addr = {{((axi_addr_width_p - lg_num_cache_lp) - addr_width_p) {1&#39;b0}}, write_rr_tag_lo, write_rr_dma_pkt[((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1):0]};
+	generate
+		genvar i;
+		for (i = 0; (i &lt; num_cache_p); i = (i + 1)) begin
+			assign dma_pkt_yumi_o[i] = (dma_pkt[(((((num_cache_p - 1) &gt;= 0) ? i : (0 - (i - (num_cache_p - 1)))) * ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) : (2 - (1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)))))) + ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? ((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) : (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) : (0 - (((((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1) &gt;= 0) ? (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) : (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) - ((1 + (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) - 1)))))+:(((1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1)) &gt;= (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) ? (((1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1)) - (((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p))) + 1) : (((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) - (1 + ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))) + 1))] ? write_rr_yumi_lo[i] : read_rr_yumi_lo[i]);
+		end
+	endgenerate
+	bsg_cache_to_axi_rx #(
+		.num_cache_p(num_cache_p),
+		.data_width_p(data_width_p),
+		.block_size_in_words_p(block_size_in_words_p),
+		.axi_id_width_p(axi_id_width_p),
+		.axi_addr_width_p(axi_addr_width_p),
+		.axi_data_width_p(axi_data_width_p),
+		.axi_burst_len_p(axi_burst_len_p)
+	) axi_rx(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.v_i(read_rr_v_lo),
+		.yumi_o(read_rr_yumi_li),
+		.tag_i(read_rr_tag_lo),
+		.axi_addr_i(rx_axi_addr),
+		.dma_data_o(dma_data_o),
+		.dma_data_v_o(dma_data_v_o),
+		.dma_data_ready_i(dma_data_ready_i),
+		.axi_arid_o(axi_arid_o),
+		.axi_araddr_o(axi_araddr_o),
+		.axi_arlen_o(axi_arlen_o),
+		.axi_arsize_o(axi_arsize_o),
+		.axi_arburst_o(axi_arburst_o),
+		.axi_arcache_o(axi_arcache_o),
+		.axi_arvalid_o(axi_arvalid_o),
+		.axi_arlock_o(axi_arlock_o),
+		.axi_arprot_o(axi_arprot_o),
+		.axi_arready_i(axi_arready_i),
+		.axi_rid_i(axi_rid_i),
+		.axi_rdata_i(axi_rdata_i),
+		.axi_rresp_i(axi_rresp_i),
+		.axi_rlast_i(axi_rlast_i),
+		.axi_rvalid_i(axi_rvalid_i),
+		.axi_rready_o(axi_rready_o)
+	);
+	bsg_cache_to_axi_tx #(
+		.num_cache_p(num_cache_p),
+		.data_width_p(data_width_p),
+		.block_size_in_words_p(block_size_in_words_p),
+		.axi_id_width_p(axi_id_width_p),
+		.axi_addr_width_p(axi_addr_width_p),
+		.axi_data_width_p(axi_data_width_p),
+		.axi_burst_len_p(axi_burst_len_p)
+	) axi_tx(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.v_i(write_rr_v_lo),
+		.yumi_o(write_rr_yumi_li),
+		.tag_i(write_rr_tag_lo),
+		.axi_addr_i(tx_axi_addr),
+		.dma_data_i(dma_data_i),
+		.dma_data_v_i(dma_data_v_i),
+		.dma_data_yumi_o(dma_data_yumi_o),
+		.axi_awid_o(axi_awid_o),
+		.axi_awaddr_o(axi_awaddr_o),
+		.axi_awlen_o(axi_awlen_o),
+		.axi_awsize_o(axi_awsize_o),
+		.axi_awburst_o(axi_awburst_o),
+		.axi_awcache_o(axi_awcache_o),
+		.axi_awprot_o(axi_awprot_o),
+		.axi_awlock_o(axi_awlock_o),
+		.axi_awvalid_o(axi_awvalid_o),
+		.axi_awready_i(axi_awready_i),
+		.axi_wdata_o(axi_wdata_o),
+		.axi_wstrb_o(axi_wstrb_o),
+		.axi_wlast_o(axi_wlast_o),
+		.axi_wvalid_o(axi_wvalid_o),
+		.axi_wready_i(axi_wready_i),
+		.axi_bid_i(axi_bid_i),
+		.axi_bresp_i(axi_bresp_i),
+		.axi_bvalid_i(axi_bvalid_i),
+		.axi_bready_o(axi_bready_o)
+	);
+	initial ;
+endmodule
 
 </pre>
 </body>
