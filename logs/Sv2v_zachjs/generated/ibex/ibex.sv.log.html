@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/ibex/examples/sim/rtl/prim_clock_gating.sv.html" target="file-frame">third_party/cores/ibex/examples/sim/rtl/prim_clock_gating.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pkg.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pkg.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_alu.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_alu.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_compressed_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_compressed_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_controller.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_controller.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_cs_registers.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_cs_registers.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_ex_block.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_ex_block.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_id_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_id_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_if_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_if_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_load_store_unit.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_load_store_unit.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_slow.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_slow.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_fast.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_fast.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_fetch_fifo.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_fetch_fifo.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pmp.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pmp.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_core.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_core.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_register_file_ff.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_register_file_ff.sv</a>
-time_elapsed: 9.214s
-ram usage: 61084 KB
+time_elapsed: 10.037s
+ram usage: 63440 KB
 </pre>
 <pre class="log">
 
@@ -233,7 +233,8 @@ module ibex_alu (
 		adder_op_b_negate = 1&#39;b0;
 		case (operator_i)
 			ALU_SUB, ALU_EQ, ALU_NE, ALU_GTU, ALU_GEU, ALU_LTU, ALU_LEU, ALU_GT, ALU_GE, ALU_LT, ALU_LE, ALU_SLT, ALU_SLTU, ALU_SLET, ALU_SLETU: adder_op_b_negate = 1&#39;b1;
-			default: ;
+			default:
+				;
 		endcase
 	end
 	assign adder_in_a = (multdiv_en_i ? multdiv_operand_a_i : {operand_a_i, 1&#39;b1});
@@ -274,7 +275,8 @@ module ibex_alu (
 		cmp_signed = 1&#39;b0;
 		case (operator_i)
 			ALU_GT, ALU_GE, ALU_LT, ALU_LE, ALU_SLT, ALU_SLET: cmp_signed = 1&#39;b1;
-			default: ;
+			default:
+				;
 		endcase
 	end
 	assign is_equal = (adder_result == 32&#39;b0);
@@ -294,7 +296,8 @@ module ibex_alu (
 			ALU_GE, ALU_GEU: cmp_result = is_greater_equal;
 			ALU_LT, ALU_SLT, ALU_LTU, ALU_SLTU: cmp_result = ~is_greater_equal;
 			ALU_SLET, ALU_SLETU, ALU_LE, ALU_LEU: cmp_result = (~is_greater_equal | is_equal);
-			default: ;
+			default:
+				;
 		endcase
 	end
 	assign comparison_result_o = cmp_result;
@@ -307,7 +310,8 @@ module ibex_alu (
 			ALU_ADD, ALU_SUB: result_o = adder_result;
 			ALU_SLL, ALU_SRL, ALU_SRA: result_o = shift_result;
 			ALU_EQ, ALU_NE, ALU_GTU, ALU_GEU, ALU_LTU, ALU_LEU, ALU_GT, ALU_GE, ALU_LT, ALU_LE, ALU_SLT, ALU_SLTU, ALU_SLET, ALU_SLETU: result_o = {31&#39;h0, cmp_result};
-			default: ;
+			default:
+				;
 		endcase
 	end
 endmodule
@@ -1127,9 +1131,9 @@ module ibex_controller (
 				end
 			end
 			default: begin
-			instr_req_o = 1&#39;b0;
-			ctrl_fsm_ns = 1&#39;bX;
-		end
+				instr_req_o = 1&#39;b0;
+				ctrl_fsm_ns = 1&#39;bX;
+			end
 		endcase
 	end
 	assign debug_mode_o = debug_mode_q;
@@ -1558,23 +1562,24 @@ module ibex_cs_registers (
 			CSR_MCYCLEH: csr_rdata_int = mhpmcounter_q[2016+:32];
 			CSR_MINSTRET: csr_rdata_int = mhpmcounter_q[1856+:32];
 			CSR_MINSTRETH: csr_rdata_int = mhpmcounter_q[1888+:32];
-			default: if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTER_SETUP)) begin
-			csr_rdata_int = mhpmevent[mhpmcounter_idx];
-			if ((((csr_addr[4:0] == 5&#39;b00000) || (csr_addr[4:0] == 5&#39;b00001)) || (csr_addr[4:0] == 5&#39;b00010)))
-				illegal_csr = csr_access_i;
-		end
-		else if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTER)) begin
-			csr_rdata_int = mhpmcounter_q[((31 - mhpmcounter_idx) * 64)+:32];
-			if ((((csr_addr[4:0] == 5&#39;b00000) || (csr_addr[4:0] == 5&#39;b00001)) || (csr_addr[4:0] == 5&#39;b00010)))
-				illegal_csr = csr_access_i;
-		end
-		else if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTERH)) begin
-			csr_rdata_int = mhpmcounter_q[(((31 - mhpmcounter_idx) * 64) + 32)+:32];
-			if ((((csr_addr[4:0] == 5&#39;b00000) || (csr_addr[4:0] == 5&#39;b00001)) || (csr_addr[4:0] == 5&#39;b00010)))
-				illegal_csr = csr_access_i;
-		end
-		else
-			illegal_csr = csr_access_i;
+			default:
+				if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTER_SETUP)) begin
+					csr_rdata_int = mhpmevent[mhpmcounter_idx];
+					if ((((csr_addr[4:0] == 5&#39;b00000) || (csr_addr[4:0] == 5&#39;b00001)) || (csr_addr[4:0] == 5&#39;b00010)))
+						illegal_csr = csr_access_i;
+				end
+				else if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTER)) begin
+					csr_rdata_int = mhpmcounter_q[((31 - mhpmcounter_idx) * 64)+:32];
+					if ((((csr_addr[4:0] == 5&#39;b00000) || (csr_addr[4:0] == 5&#39;b00001)) || (csr_addr[4:0] == 5&#39;b00010)))
+						illegal_csr = csr_access_i;
+				end
+				else if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTERH)) begin
+					csr_rdata_int = mhpmcounter_q[(((31 - mhpmcounter_idx) * 64) + 32)+:32];
+					if ((((csr_addr[4:0] == 5&#39;b00000) || (csr_addr[4:0] == 5&#39;b00001)) || (csr_addr[4:0] == 5&#39;b00010)))
+						illegal_csr = csr_access_i;
+				end
+				else
+					illegal_csr = csr_access_i;
 		endcase
 	end
 	always @(*) begin
@@ -1659,18 +1664,20 @@ module ibex_cs_registers (
 			CSR_MINSTRETH:
 				if (csr_we_int)
 					mhpmcounterh_we[2] = 1&#39;b1;
-			default: if ((csr_we_int == 1&#39;b1))
-			if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTER))
-				mhpmcounter_we[mhpmcounter_idx] = 1&#39;b1;
-			else if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTERH))
-				mhpmcounterh_we[mhpmcounter_idx] = 1&#39;b1;
+			default:
+				if ((csr_we_int == 1&#39;b1))
+					if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTER))
+						mhpmcounter_we[mhpmcounter_idx] = 1&#39;b1;
+					else if (((csr_addr &amp; CSR_MASK_MCOUNTER) == CSR_OFF_MCOUNTERH))
+						mhpmcounterh_we[mhpmcounter_idx] = 1&#39;b1;
 		endcase
 		case (1&#39;b1)
 			csr_save_cause_i: begin
 				case (1&#39;b1)
 					csr_save_if_i: exception_pc = pc_if_i;
 					csr_save_id_i: exception_pc = pc_id_i;
-					default: ;
+					default:
+						;
 				endcase
 				if (debug_csr_save_i) begin
 					dcsr_d[1:0] = PRIV_LVL_M;
@@ -1697,7 +1704,8 @@ module ibex_cs_registers (
 				mepc_d = mstack_epc_q;
 				mcause_d = mstack_cause_q;
 			end
-			default: ;
+			default:
+				;
 		endcase
 	end
 	always @(*) begin
@@ -1711,9 +1719,9 @@ module ibex_cs_registers (
 				csr_wreq = 1&#39;b0;
 			end
 			default: begin
-			csr_wdata_int = 1&#39;sbX;
-			csr_wreq = 1&#39;bX;
-		end
+				csr_wdata_int = 1&#39;sbX;
+				csr_wreq = 1&#39;bX;
+			end
 		endcase
 	end
 	assign csr_we_int = ((csr_wreq &amp; ~illegal_csr_priv) &amp; instr_new_id_i);
@@ -3421,9 +3429,9 @@ module ibex_id_stage (
 							instr_multicycle_done_n = 1&#39;b0;
 						end
 						default: begin
-						instr_multicycle_done_n = 1&#39;b0;
-						instr_ret_o = 1&#39;b1;
-					end
+							instr_multicycle_done_n = 1&#39;b0;
+							instr_ret_o = 1&#39;b1;
+						end
 					endcase
 			WAIT_MULTICYCLE:
 				if (((data_req_dec &amp; lsu_valid_i) | (~data_req_dec &amp; ex_valid_i))) begin
@@ -4376,28 +4384,29 @@ module ibex_multdiv_slow (
 		case (operator_i)
 			MD_OP_MULL: alu_operand_b_o = op_a_bw_pp;
 			MD_OP_MULH: alu_operand_b_o = ((md_state_q == MD_LAST) ? op_a_bw_last_pp : op_a_bw_pp);
-			default: case (md_state_q)
-			MD_IDLE: begin
-				alu_operand_a_o = {32&#39;h0, 1&#39;b1};
-				alu_operand_b_o = {~op_b_i, 1&#39;b1};
-			end
-			MD_ABS_A: begin
-				alu_operand_a_o = {32&#39;h0, 1&#39;b1};
-				alu_operand_b_o = {~op_a_i, 1&#39;b1};
-			end
-			MD_ABS_B: begin
-				alu_operand_a_o = {32&#39;h0, 1&#39;b1};
-				alu_operand_b_o = {~op_b_i, 1&#39;b1};
-			end
-			MD_CHANGE_SIGN: begin
-				alu_operand_a_o = {32&#39;h0, 1&#39;b1};
-				alu_operand_b_o = {~accum_window_q[31:0], 1&#39;b1};
-			end
-			default: begin
-			alu_operand_a_o = {accum_window_q[31:0], 1&#39;b1};
-			alu_operand_b_o = {~op_b_shift_q[31:0], 1&#39;b1};
-		end
-		endcase
+			default:
+				case (md_state_q)
+					MD_IDLE: begin
+						alu_operand_a_o = {32&#39;h0, 1&#39;b1};
+						alu_operand_b_o = {~op_b_i, 1&#39;b1};
+					end
+					MD_ABS_A: begin
+						alu_operand_a_o = {32&#39;h0, 1&#39;b1};
+						alu_operand_b_o = {~op_a_i, 1&#39;b1};
+					end
+					MD_ABS_B: begin
+						alu_operand_a_o = {32&#39;h0, 1&#39;b1};
+						alu_operand_b_o = {~op_b_i, 1&#39;b1};
+					end
+					MD_CHANGE_SIGN: begin
+						alu_operand_a_o = {32&#39;h0, 1&#39;b1};
+						alu_operand_b_o = {~accum_window_q[31:0], 1&#39;b1};
+					end
+					default: begin
+						alu_operand_a_o = {accum_window_q[31:0], 1&#39;b1};
+						alu_operand_b_o = {~op_b_shift_q[31:0], 1&#39;b1};
+					end
+				endcase
 		endcase
 	end
 	assign is_greater_equal = (((accum_window_q[31] ^ op_b_shift_q[31]) == 1&#39;b0) ? (res_adder_h[31] == 1&#39;b0) : accum_window_q[31]);
@@ -4461,9 +4470,9 @@ module ibex_multdiv_slow (
 							md_state_d = (equal_to_zero ? MD_FINISH : MD_ABS_A);
 						end
 						default: begin
-						accum_window_d = op_a_ext;
-						md_state_d = (equal_to_zero ? MD_FINISH : MD_ABS_A);
-					end
+							accum_window_d = op_a_ext;
+							md_state_d = (equal_to_zero ? MD_FINISH : MD_ABS_A);
+						end
 					endcase
 					multdiv_state_d = 5&#39;d31;
 				end
@@ -4491,9 +4500,9 @@ module ibex_multdiv_slow (
 							op_b_shift_d = (op_b_shift_q &gt;&gt; 1);
 						end
 						default: begin
-						accum_window_d = {next_reminder[31:0], op_numerator_q[multdiv_state_m1]};
-						op_a_shift_d = next_quotient;
-					end
+							accum_window_d = {next_reminder[31:0], op_numerator_q[multdiv_state_m1]};
+							op_a_shift_d = next_quotient;
+						end
 					endcase
 					md_state_d = ((multdiv_state_q == 5&#39;d1) ? MD_LAST : MD_COMP);
 				end
@@ -4512,9 +4521,9 @@ module ibex_multdiv_slow (
 							md_state_d = MD_CHANGE_SIGN;
 						end
 						default: begin
-						accum_window_d = {1&#39;b0, next_reminder[31:0]};
-						md_state_d = MD_CHANGE_SIGN;
-					end
+							accum_window_d = {1&#39;b0, next_reminder[31:0]};
+							md_state_d = MD_CHANGE_SIGN;
+						end
 					endcase
 				MD_CHANGE_SIGN: begin
 					md_state_d = MD_FINISH;
