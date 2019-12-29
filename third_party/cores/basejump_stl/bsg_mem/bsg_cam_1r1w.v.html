@@ -144,7 +144,8 @@
 <a href="#l-136">136</a>
 <a href="#l-137">137</a>
 <a href="#l-138">138</a>
-<a href="#l-139">139</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
+<a href="#l-139">139</a>
+<a href="#l-140">140</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
 <a name="l-2"></a><span class="cm">* </span>
 <a name="l-3"></a><span class="cm">* Content Addressable Memory (CAM) module</span>
 <a name="l-4"></a><span class="cm">* The r_data_i is received as an input and is compared against all</span>
@@ -194,95 +195,96 @@
 <a name="l-48"></a>  <span class="k">logic</span>               <span class="n">matched</span><span class="p">,</span> <span class="n">empty_found</span><span class="p">;</span>
 <a name="l-49"></a>  
 <a name="l-50"></a>  <span class="k">assign</span> <span class="n">r_v_o</span>     <span class="o">=</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="n">r_v_i</span> <span class="o">&amp;</span> <span class="n">matched</span><span class="p">;</span>
-<a name="l-51"></a>  <span class="k">assign</span> <span class="n">empty_v_o</span> <span class="o">=</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="n">empty_found</span><span class="p">;</span>
-<a name="l-52"></a>   
-<a name="l-53"></a>  <span class="c1">//write the input pattern into the cam and set the corresponding valid bit</span>
-<a name="l-54"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-55"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">reset_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi</span>
-<a name="l-56"></a>      <span class="n">valid</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-57"></a>    <span class="k">end</span> 
-<a name="l-58"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">en_i</span> <span class="o">&amp;&amp;</span> <span class="n">w_v_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi2</span>
-<a name="l-59"></a>      <span class="c1">//w_set_not_clear_i=1 sets the valid bit and</span>
-<a name="l-60"></a>      <span class="c1">//w_set_not_clear_i=0 makes the corresponding entry invalid</span>
-<a name="l-61"></a>      <span class="n">valid</span><span class="p">[</span><span class="n">w_addr_i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">w_set_not_clear_i</span><span class="p">;</span>
-<a name="l-62"></a>      <span class="n">mem</span><span class="p">[</span><span class="n">w_addr_i</span><span class="p">]</span>   <span class="o">&lt;=</span> <span class="n">w_data_i</span><span class="p">;</span>
-<a name="l-63"></a>    <span class="k">end</span>
-<a name="l-64"></a>  <span class="k">end</span>
-<a name="l-65"></a>  
-<a name="l-66"></a>   
-<a name="l-67"></a>  <span class="c1">//compare the input pattern with all stored valid patterns inside</span>
-<a name="l-68"></a>  <span class="c1">//the cam.In the case of a match, set the corresponding bit in</span>
-<a name="l-69"></a>  <span class="c1">//match_array</span>
-<a name="l-70"></a>  <span class="k">genvar</span> <span class="n">i</span><span class="p">;</span>
-<a name="l-71"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">els_p</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">rof</span>
-<a name="l-72"></a>    <span class="k">assign</span>  <span class="n">match_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mem</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">r_data_i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">valid</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<a name="l-73"></a>	<span class="k">assign</span>  <span class="n">empty_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">valid</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<a name="l-74"></a>  <span class="k">end</span>
-<a name="l-75"></a>  
-<a name="l-76"></a>   
-<a name="l-77"></a>  <span class="k">generate</span> 
-<a name="l-78"></a>    <span class="k">if</span><span class="p">(</span><span class="n">multiple_entries_p</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi3</span>
-<a name="l-79"></a>      <span class="c1">//If multiple_entries_p is 1, the match_array is sent to the</span>
-<a name="l-80"></a>      <span class="c1">//priority encoder to select the match_address</span>
-<a name="l-81"></a>      <span class="n">bsg_priority_encode</span>
-<a name="l-82"></a>        <span class="p">#(.</span><span class="n">width_p</span> <span class="p">(</span><span class="n">els_p</span><span class="p">)</span>
-<a name="l-83"></a>          <span class="p">,.</span><span class="n">lo_to_hi_p</span> <span class="p">(</span><span class="mh">1</span><span class="p">)</span>
-<a name="l-84"></a>        <span class="p">)</span> <span class="n">pe</span>
-<a name="l-85"></a>        <span class="p">(.</span><span class="n">i</span> <span class="p">(</span><span class="n">match_array</span><span class="p">)</span>
-<a name="l-86"></a>         <span class="p">,.</span><span class="n">addr_o</span> <span class="p">(</span><span class="n">r_addr_o</span><span class="p">)</span>
-<a name="l-87"></a>         <span class="p">,.</span><span class="n">v_o</span> <span class="p">(</span><span class="n">matched</span><span class="p">)</span>
-<a name="l-88"></a>        <span class="p">);</span>
-<a name="l-89"></a>    <span class="k">end</span>
-<a name="l-90"></a>    <span class="k">else</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi4</span>
-<a name="l-91"></a>      <span class="c1">//If multiple_entries_p is 0, the match_array is sent to the</span>
-<a name="l-92"></a>      <span class="c1">//one hot encoder to select the match_address</span>
-<a name="l-93"></a>      <span class="n">bsg_encode_one_hot</span>
-<a name="l-94"></a>        <span class="p">#(.</span><span class="n">width_p</span> <span class="p">(</span><span class="n">els_p</span><span class="p">)</span>
-<a name="l-95"></a>          <span class="p">,.</span><span class="n">lo_to_hi_p</span> <span class="p">(</span><span class="mh">1</span><span class="p">)</span>
-<a name="l-96"></a>        <span class="p">)</span> <span class="n">ohe</span>
-<a name="l-97"></a>        <span class="p">(.</span><span class="n">i</span> <span class="p">(</span><span class="n">match_array</span><span class="p">)</span>
-<a name="l-98"></a>         <span class="p">,.</span><span class="n">addr_o</span> <span class="p">(</span><span class="n">r_addr_o</span><span class="p">)</span>
-<a name="l-99"></a>         <span class="p">,.</span><span class="n">v_o</span> <span class="p">(</span><span class="n">matched</span><span class="p">)</span>
-<a name="l-100"></a>        <span class="p">);</span>
-<a name="l-101"></a>    <span class="k">end</span> 
-<a name="l-102"></a>  <span class="k">endgenerate</span>
-<a name="l-103"></a>  
-<a name="l-104"></a>  <span class="k">generate</span> 
-<a name="l-105"></a>    <span class="k">if</span><span class="p">(</span><span class="n">find_empty_entry_p</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi5</span>
-<a name="l-106"></a>	<span class="c1">// If find_empty_entry_p is 1, finds the first empty entry in the cam,</span>
-<a name="l-107"></a>    <span class="c1">// and puts it on empty_addr_o and raises the empty_v_o</span>
-<a name="l-108"></a>      <span class="n">bsg_priority_encode</span>
-<a name="l-109"></a>        <span class="p">#(.</span><span class="n">width_p</span><span class="p">(</span><span class="n">els_p</span><span class="p">)</span>
-<a name="l-110"></a>          <span class="p">,.</span><span class="n">lo_to_hi_p</span><span class="p">(</span><span class="mh">1</span><span class="p">)</span>
-<a name="l-111"></a>        <span class="p">)</span> <span class="n">epe</span>
-<a name="l-112"></a>        <span class="p">(.</span><span class="n">i</span><span class="p">(</span><span class="n">empty_array</span><span class="p">)</span>
-<a name="l-113"></a>         <span class="p">,.</span><span class="n">addr_o</span><span class="p">(</span><span class="n">empty_addr_o</span><span class="p">)</span>
-<a name="l-114"></a>         <span class="p">,.</span><span class="n">v_o</span><span class="p">(</span><span class="n">empty_found</span><span class="p">)</span>
-<a name="l-115"></a>        <span class="p">);</span>
-<a name="l-116"></a>    <span class="k">end</span>
-<a name="l-117"></a>	<span class="k">else</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi6</span>
-<a name="l-118"></a>	<span class="c1">// Otherwise, sets empty_v_o and empty_addr_o to zero</span>
-<a name="l-119"></a>	  <span class="k">assign</span> <span class="n">empty_v_o</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-120"></a>	  <span class="k">assign</span> <span class="n">empty_addr_o</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-121"></a>	<span class="k">end</span>
-<a name="l-122"></a>  <span class="k">endgenerate</span>
-<a name="l-123"></a>  
+<a name="l-51"></a>   
+<a name="l-52"></a>  <span class="c1">//write the input pattern into the cam and set the corresponding valid bit</span>
+<a name="l-53"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-54"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">reset_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi</span>
+<a name="l-55"></a>      <span class="n">valid</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-56"></a>    <span class="k">end</span> 
+<a name="l-57"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">en_i</span> <span class="o">&amp;&amp;</span> <span class="n">w_v_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi2</span>
+<a name="l-58"></a>      <span class="c1">//w_set_not_clear_i=1 sets the valid bit and</span>
+<a name="l-59"></a>      <span class="c1">//w_set_not_clear_i=0 makes the corresponding entry invalid</span>
+<a name="l-60"></a>      <span class="n">valid</span><span class="p">[</span><span class="n">w_addr_i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">w_set_not_clear_i</span><span class="p">;</span>
+<a name="l-61"></a>      <span class="n">mem</span><span class="p">[</span><span class="n">w_addr_i</span><span class="p">]</span>   <span class="o">&lt;=</span> <span class="n">w_data_i</span><span class="p">;</span>
+<a name="l-62"></a>    <span class="k">end</span>
+<a name="l-63"></a>  <span class="k">end</span>
+<a name="l-64"></a>  
+<a name="l-65"></a>   
+<a name="l-66"></a>  <span class="c1">//compare the input pattern with all stored valid patterns inside</span>
+<a name="l-67"></a>  <span class="c1">//the cam.In the case of a match, set the corresponding bit in</span>
+<a name="l-68"></a>  <span class="c1">//match_array</span>
+<a name="l-69"></a>  <span class="k">genvar</span> <span class="n">i</span><span class="p">;</span>
+<a name="l-70"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">els_p</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">rof</span>
+<a name="l-71"></a>    <span class="k">assign</span>  <span class="n">match_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mem</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">r_data_i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">valid</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<a name="l-72"></a>	<span class="k">assign</span>  <span class="n">empty_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">valid</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<a name="l-73"></a>  <span class="k">end</span>
+<a name="l-74"></a>  
+<a name="l-75"></a>   
+<a name="l-76"></a>  <span class="k">generate</span> 
+<a name="l-77"></a>    <span class="k">if</span><span class="p">(</span><span class="n">multiple_entries_p</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi3</span>
+<a name="l-78"></a>      <span class="c1">//If multiple_entries_p is 1, the match_array is sent to the</span>
+<a name="l-79"></a>      <span class="c1">//priority encoder to select the match_address</span>
+<a name="l-80"></a>      <span class="n">bsg_priority_encode</span>
+<a name="l-81"></a>        <span class="p">#(.</span><span class="n">width_p</span> <span class="p">(</span><span class="n">els_p</span><span class="p">)</span>
+<a name="l-82"></a>          <span class="p">,.</span><span class="n">lo_to_hi_p</span> <span class="p">(</span><span class="mh">1</span><span class="p">)</span>
+<a name="l-83"></a>        <span class="p">)</span> <span class="n">pe</span>
+<a name="l-84"></a>        <span class="p">(.</span><span class="n">i</span> <span class="p">(</span><span class="n">match_array</span><span class="p">)</span>
+<a name="l-85"></a>         <span class="p">,.</span><span class="n">addr_o</span> <span class="p">(</span><span class="n">r_addr_o</span><span class="p">)</span>
+<a name="l-86"></a>         <span class="p">,.</span><span class="n">v_o</span> <span class="p">(</span><span class="n">matched</span><span class="p">)</span>
+<a name="l-87"></a>        <span class="p">);</span>
+<a name="l-88"></a>    <span class="k">end</span>
+<a name="l-89"></a>    <span class="k">else</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi4</span>
+<a name="l-90"></a>      <span class="c1">//If multiple_entries_p is 0, the match_array is sent to the</span>
+<a name="l-91"></a>      <span class="c1">//one hot encoder to select the match_address</span>
+<a name="l-92"></a>      <span class="n">bsg_encode_one_hot</span>
+<a name="l-93"></a>        <span class="p">#(.</span><span class="n">width_p</span> <span class="p">(</span><span class="n">els_p</span><span class="p">)</span>
+<a name="l-94"></a>          <span class="p">,.</span><span class="n">lo_to_hi_p</span> <span class="p">(</span><span class="mh">1</span><span class="p">)</span>
+<a name="l-95"></a>        <span class="p">)</span> <span class="n">ohe</span>
+<a name="l-96"></a>        <span class="p">(.</span><span class="n">i</span> <span class="p">(</span><span class="n">match_array</span><span class="p">)</span>
+<a name="l-97"></a>         <span class="p">,.</span><span class="n">addr_o</span> <span class="p">(</span><span class="n">r_addr_o</span><span class="p">)</span>
+<a name="l-98"></a>         <span class="p">,.</span><span class="n">v_o</span> <span class="p">(</span><span class="n">matched</span><span class="p">)</span>
+<a name="l-99"></a>        <span class="p">);</span>
+<a name="l-100"></a>    <span class="k">end</span> 
+<a name="l-101"></a>  <span class="k">endgenerate</span>
+<a name="l-102"></a>  
+<a name="l-103"></a>  <span class="k">generate</span> 
+<a name="l-104"></a>    <span class="k">if</span><span class="p">(</span><span class="n">find_empty_entry_p</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi5</span>
+<a name="l-105"></a>	<span class="c1">// If find_empty_entry_p is 1, finds the first empty entry in the cam,</span>
+<a name="l-106"></a>    <span class="c1">// and puts it on empty_addr_o and raises the empty_v_o</span>
+<a name="l-107"></a>      <span class="n">bsg_priority_encode</span>
+<a name="l-108"></a>        <span class="p">#(.</span><span class="n">width_p</span><span class="p">(</span><span class="n">els_p</span><span class="p">)</span>
+<a name="l-109"></a>          <span class="p">,.</span><span class="n">lo_to_hi_p</span><span class="p">(</span><span class="mh">1</span><span class="p">)</span>
+<a name="l-110"></a>        <span class="p">)</span> <span class="n">epe</span>
+<a name="l-111"></a>        <span class="p">(.</span><span class="n">i</span><span class="p">(</span><span class="n">empty_array</span><span class="p">)</span>
+<a name="l-112"></a>         <span class="p">,.</span><span class="n">addr_o</span><span class="p">(</span><span class="n">empty_addr_o</span><span class="p">)</span>
+<a name="l-113"></a>         <span class="p">,.</span><span class="n">v_o</span><span class="p">(</span><span class="n">empty_found</span><span class="p">)</span>
+<a name="l-114"></a>        <span class="p">);</span>
+<a name="l-115"></a>    
+<a name="l-116"></a>      <span class="k">assign</span> <span class="n">empty_v_o</span> <span class="o">=</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="n">empty_found</span><span class="p">;</span>
+<a name="l-117"></a>    <span class="k">end</span>
+<a name="l-118"></a>    <span class="k">else</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi6</span>
+<a name="l-119"></a>	<span class="c1">// Otherwise, sets empty_v_o and empty_addr_o to zero	</span>
+<a name="l-120"></a>      <span class="k">assign</span> <span class="n">empty_v_o</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-121"></a>      <span class="k">assign</span> <span class="n">empty_addr_o</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-122"></a>    <span class="k">end</span>
+<a name="l-123"></a>  <span class="k">endgenerate</span>
 <a name="l-124"></a>  
-<a name="l-125"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-126"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">multiple_entries_p</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="n">r_v_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi_debug1</span>
-<a name="l-127"></a>      <span class="k">assert</span><span class="p">(</span><span class="n">$countones</span><span class="p">(</span><span class="n">match_array</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">)</span>
-<a name="l-128"></a>        <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;Multiple similar entries are found in match_array\</span>
-<a name="l-129"></a><span class="s">                    %x while multiple_entries_p parameter is %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">match_array</span><span class="p">,</span>
-<a name="l-130"></a>                    <span class="n">multiple_entries_p</span><span class="p">);</span>       
-<a name="l-131"></a>    <span class="k">end</span>
-<a name="l-132"></a>	
-<a name="l-133"></a>	<span class="k">if</span><span class="p">(</span><span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="n">w_v_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi_debug2</span>
-<a name="l-134"></a>	  <span class="k">assert</span><span class="p">(</span><span class="n">w_addr_i</span> <span class="o">&lt;</span> <span class="n">els_p</span><span class="p">)</span>
-<a name="l-135"></a>        <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;Invalid address %x of size %x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">w_addr_i</span><span class="p">,</span> <span class="n">els_p</span><span class="p">);</span>
-<a name="l-136"></a>	<span class="k">end</span>
-<a name="l-137"></a>  <span class="k">end</span> 
-<a name="l-138"></a>
-<a name="l-139"></a><span class="k">endmodule</span>
+<a name="l-125"></a>  
+<a name="l-126"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-127"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">multiple_entries_p</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="n">r_v_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi_debug1</span>
+<a name="l-128"></a>      <span class="k">assert</span><span class="p">(</span><span class="n">$countones</span><span class="p">(</span><span class="n">match_array</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">)</span>
+<a name="l-129"></a>        <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;Multiple similar entries are found in match_array\</span>
+<a name="l-130"></a><span class="s">                    %x while multiple_entries_p parameter is %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">match_array</span><span class="p">,</span>
+<a name="l-131"></a>                    <span class="n">multiple_entries_p</span><span class="p">);</span>       
+<a name="l-132"></a>    <span class="k">end</span>
+<a name="l-133"></a>	
+<a name="l-134"></a>	<span class="k">if</span><span class="p">(</span><span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="n">en_i</span> <span class="o">&amp;</span> <span class="n">w_v_i</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">fi_debug2</span>
+<a name="l-135"></a>	  <span class="k">assert</span><span class="p">(</span><span class="n">w_addr_i</span> <span class="o">&lt;</span> <span class="n">els_p</span><span class="p">)</span>
+<a name="l-136"></a>        <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;Invalid address %x of size %x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">w_addr_i</span><span class="p">,</span> <span class="n">els_p</span><span class="p">);</span>
+<a name="l-137"></a>	<span class="k">end</span>
+<a name="l-138"></a>  <span class="k">end</span> 
+<a name="l-139"></a>
+<a name="l-140"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

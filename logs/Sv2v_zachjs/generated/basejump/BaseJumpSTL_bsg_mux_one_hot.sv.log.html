@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_mux_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_mux_one_hot.v</a>
-time_elapsed: 0.296s
-ram usage: 12588 KB
+time_elapsed: 0.324s
+ram usage: 10960 KB
 </pre>
 <pre class="log">
 
@@ -43,7 +43,9 @@ module bsg_mux_one_hot (
 	generate
 		for (i = 0; (i &lt; width_p); i = (i + 1)) begin : reduce
 			wire [(els_p - 1):0] gather;
-			for (j = 0; (j &lt; els_p); j = (j + 1)) assign gather[j] = data_masked[(((((els_p - 1) &gt;= 0) ? j : (0 - (j - (els_p - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((width_p - 1) &gt;= 0) ? i : (0 - (i - (width_p - 1)))))];
+			for (j = 0; (j &lt; els_p); j = (j + 1)) begin : reduce2
+				assign gather[j] = data_masked[(((((els_p - 1) &gt;= 0) ? j : (0 - (j - (els_p - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((width_p - 1) &gt;= 0) ? i : (0 - (i - (width_p - 1)))))];
+			end
 			assign data_o[i] = |gather;
 		end
 	endgenerate

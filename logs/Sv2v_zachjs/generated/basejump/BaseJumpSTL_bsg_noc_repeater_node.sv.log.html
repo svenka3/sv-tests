@@ -1,0 +1,71 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_noc_repeater_node.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_noc_repeater_node.v</a>
+time_elapsed: 0.228s
+ram usage: 12952 KB
+</pre>
+<pre class="log">
+
+module bsg_noc_repeater_node (
+	clk_i,
+	reset_i,
+	side_A_links_i,
+	side_A_links_o,
+	side_B_links_i,
+	side_B_links_o
+);
+	parameter width_p = -1;
+	parameter bsg_ready_and_link_sif_width_lp = (width_p + 2);
+	input clk_i;
+	input reset_i;
+	input [(bsg_ready_and_link_sif_width_lp - 1):0] side_A_links_i;
+	output [(bsg_ready_and_link_sif_width_lp - 1):0] side_A_links_o;
+	input [(bsg_ready_and_link_sif_width_lp - 1):0] side_B_links_i;
+	output [(bsg_ready_and_link_sif_width_lp - 1):0] side_B_links_o;
+	wire [((2 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1):0] links_A_cast_i;
+	wire [((2 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1):0] links_B_cast_i;
+	wire [((2 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1):0] links_A_cast_o;
+	wire [((2 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1):0] links_B_cast_o;
+	assign links_A_cast_i = side_A_links_i;
+	assign links_B_cast_i = side_B_links_i;
+	assign side_A_links_o = links_A_cast_o;
+	assign side_B_links_o = links_B_cast_o;
+	bsg_two_fifo #(.width_p(width_p)) A_to_B(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.v_i(links_A_cast_i[(1 + (1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1))):(1 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))]),
+		.data_i(links_A_cast_i[((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1):0]),
+		.ready_o(links_A_cast_o[(1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1)):(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]),
+		.v_o(links_A_cast_o[(1 + (1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1))):(1 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))]),
+		.data_o(links_A_cast_o[((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1):0]),
+		.yumi_i((links_A_cast_i[(1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1)):(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))] &amp; links_A_cast_o[(1 + (1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1))):(1 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))]))
+	);
+	bsg_two_fifo #(.width_p(width_p)) B_to_A(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.v_i(links_B_cast_i[(1 + (1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1))):(1 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))]),
+		.data_i(links_B_cast_i[((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1):0]),
+		.ready_o(links_B_cast_o[(1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1)):(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]),
+		.v_o(links_B_cast_o[(1 + (1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1))):(1 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))]),
+		.data_o(links_B_cast_o[((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1):0]),
+		.yumi_i((links_B_cast_i[(1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1)):(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))] &amp; links_B_cast_o[(1 + (1 + ((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + -1))):(1 + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))]))
+	);
+endmodule
+
+</pre>
+</body>

@@ -16,14 +16,15 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_dram_ctrl.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_dram_ctrl.v</a>
-time_elapsed: 0.320s
-ram usage: 13528 KB
+time_elapsed: 0.796s
+ram usage: 13472 KB
 </pre>
 <pre class="log">
 
 module bsg_cache_to_dram_ctrl (
 	clk_i,
 	reset_i,
+	dram_size_i,
 	dma_pkt_i,
 	dma_pkt_v_i,
 	dma_pkt_yumi_o,
@@ -80,14 +81,15 @@ module bsg_cache_to_dram_ctrl (
 	parameter addr_width_p = &#34;inv&#34;;
 	parameter data_width_p = &#34;inv&#34;;
 	parameter block_size_in_words_p = &#34;inv&#34;;
-	parameter dram_ctrl_burst_len_p = &#34;inv&#34;;
 	localparam mask_width_lp = (data_width_p &gt;&gt; 3);
 	localparam lg_num_cache_lp = ((num_cache_p == 1) ? 1 : $clog2(num_cache_p));
-	localparam dram_ctrl_addr_width_lp = (addr_width_p + lg_num_cache_lp);
 	localparam dma_pkt_width_lp = (1 + addr_width_p);
+	parameter dram_ctrl_burst_len_p = &#34;inv&#34;;
+	parameter dram_ctrl_addr_width_p = (addr_width_p + lg_num_cache_lp);
 	localparam num_req_lp = (block_size_in_words_p / dram_ctrl_burst_len_p);
 	input clk_i;
 	input reset_i;
+	input [2:0] dram_size_i;
 	input [(((num_cache_p - 1) &gt;= 0) ? (((dma_pkt_width_lp - 1) &gt;= 0) ? (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) + -1) : (((((num_cache_p - 1) &gt;= 0) ? num_cache_p : (2 - num_cache_p)) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp)) + ((dma_pkt_width_lp - 1) - 1))) : (((dma_pkt_width_lp - 1) &gt;= 0) ? ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) + (((num_cache_p - 1) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) - 1)) : ((((0 &gt;= (num_cache_p - 1)) ? (2 - num_cache_p) : num_cache_p) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp)) + (((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp))) - 1)))):(((num_cache_p - 1) &gt;= 0) ? (((dma_pkt_width_lp - 1) &gt;= 0) ? 0 : (dma_pkt_width_lp - 1)) : (((dma_pkt_width_lp - 1) &gt;= 0) ? ((num_cache_p - 1) * (((dma_pkt_width_lp - 1) &gt;= 0) ? dma_pkt_width_lp : (2 - dma_pkt_width_lp))) : ((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * ((0 &gt;= (dma_pkt_width_lp - 1)) ? (2 - dma_pkt_width_lp) : dma_pkt_width_lp)))))] dma_pkt_i;
 	input [(num_cache_p - 1):0] dma_pkt_v_i;
 	output wire [(num_cache_p - 1):0] dma_pkt_yumi_o;
@@ -100,7 +102,7 @@ module bsg_cache_to_dram_ctrl (
 	output reg app_en_o;
 	input app_rdy_i;
 	output reg [2:0] app_cmd_o;
-	output wire [(dram_ctrl_addr_width_lp - 1):0] app_addr_o;
+	output reg [(dram_ctrl_addr_width_p - 1):0] app_addr_o;
 	output wire app_wdf_wren_o;
 	input app_wdf_rdy_i;
 	output wire [(data_width_p - 1):0] app_wdf_data_o;
@@ -211,7 +213,15 @@ module bsg_cache_to_dram_ctrl (
 			end
 		endcase
 	end
-	assign app_addr_o = {tag_r, addr_r};
+	always @(*)
+		case (dram_size_i)
+			0: app_addr_o = sv2v_cast_85D4E({tag_r, addr_r[((25 - $clog2(num_cache_p)) - 1):0]});
+			1: app_addr_o = sv2v_cast_85D4E({tag_r, addr_r[((26 - $clog2(num_cache_p)) - 1):0]});
+			2: app_addr_o = sv2v_cast_85D4E({tag_r, addr_r[((27 - $clog2(num_cache_p)) - 1):0]});
+			3: app_addr_o = sv2v_cast_85D4E({tag_r, addr_r[((28 - $clog2(num_cache_p)) - 1):0]});
+			4: app_addr_o = sv2v_cast_85D4E({tag_r, addr_r[((29 - $clog2(num_cache_p)) - 1):0]});
+			default: app_addr_o = {tag_r, addr_r};
+		endcase
 	always @(posedge clk_i)
 		if (reset_i) begin
 			req_state_r &lt;= WAIT;
@@ -227,6 +237,10 @@ module bsg_cache_to_dram_ctrl (
 			req_cnt_r &lt;= req_cnt_n;
 			write_not_read_r &lt;= write_not_read_n;
 		end
+	function automatic [(dram_ctrl_addr_width_p - 1):0] sv2v_cast_85D4E;
+		input reg [(dram_ctrl_addr_width_p - 1):0] inp;
+		sv2v_cast_85D4E = inp;
+	endfunction
 endmodule
 
 </pre>
