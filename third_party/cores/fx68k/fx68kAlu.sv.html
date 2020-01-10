@@ -843,7 +843,8 @@
 <a href="#l-835">835</a>
 <a href="#l-836">836</a>
 <a href="#l-837">837</a>
-<a href="#l-838">838</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">//</span>
+<a href="#l-838">838</a>
+<a href="#l-839">839</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">//</span>
 <a name="l-2"></a><span class="c1">// FX 68K</span>
 <a name="l-3"></a><span class="c1">//</span>
 <a name="l-4"></a><span class="c1">// M68K cycle accurate, fully synchronous</span>
@@ -1151,7 +1152,7 @@
 <a name="l-306"></a>		
 <a name="l-307"></a>		<span class="n">ccrTemp</span><span class="p">[</span><span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">pswCcr</span><span class="p">[</span><span class="n">XF</span><span class="p">];</span>     <span class="n">ccrTemp</span><span class="p">[</span><span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>     <span class="n">ccrTemp</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>	
 <a name="l-308"></a>
-<a name="l-309"></a>		<span class="c1">// Not on all operators !!!</span>
+<a name="l-309"></a>		<span class="c1">// Not on all operators</span>
 <a name="l-310"></a>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">ZF</span><span class="p">]</span> <span class="o">=</span> <span class="n">isByte</span> <span class="o">?</span> <span class="o">~</span><span class="p">(</span><span class="o">|</span> <span class="n">result</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">])</span> <span class="o">:</span> <span class="o">~</span><span class="p">(</span><span class="o">|</span> <span class="n">result</span><span class="p">);</span>
 <a name="l-311"></a>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">NF</span><span class="p">]</span> <span class="o">=</span> <span class="n">isByte</span> <span class="o">?</span> <span class="n">result</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">:</span> <span class="n">result</span><span class="p">[</span><span class="mh">15</span><span class="p">];</span>
 <a name="l-312"></a>
@@ -1160,527 +1161,528 @@
 <a name="l-315"></a>		<span class="nl">OP_EXT:</span>
 <a name="l-316"></a>			<span class="c1">// Division overflow.</span>
 <a name="l-317"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">aluColumn</span> <span class="o">==</span> <span class="mh">5</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-318"></a>				<span class="n">ccrTemp</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>		<span class="n">ccrTemp</span><span class="p">[</span><span class="n">NF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-319"></a>			<span class="k">end</span>
-<a name="l-320"></a>
-<a name="l-321"></a>		<span class="n">OP_SUB0</span><span class="p">,</span>				<span class="c1">// used by NOT</span>
-<a name="l-322"></a>		<span class="n">OP_OR</span><span class="p">,</span>
-<a name="l-323"></a>		<span class="nl">OP_EOR:</span>
-<a name="l-324"></a>			<span class="k">begin</span>
-<a name="l-325"></a>				<span class="n">ccrTemp</span><span class="p">[</span><span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>      <span class="n">ccrTemp</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-326"></a>			<span class="k">end</span>
-<a name="l-327"></a>
-<a name="l-328"></a>		<span class="nl">OP_AND:</span>
-<a name="l-329"></a>			<span class="k">begin</span>
-<a name="l-330"></a>				<span class="c1">// ROXL/ROXR indeed copy X to C in column 1 (OP_AND), executed before entering the loop.</span>
-<a name="l-331"></a>				<span class="c1">// Needed when rotate count is zero, the ucode with the ROX operator never reached.</span>
-<a name="l-332"></a>				<span class="c1">// 	C must be set to the value of X, X remains unaffected.</span>
-<a name="l-333"></a>				<span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">aluColumn</span> <span class="o">==</span> <span class="mh">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span> <span class="o">|</span> <span class="n">row</span><span class="p">[</span><span class="mh">8</span><span class="p">]))</span>
-<a name="l-334"></a>					<span class="n">ccrTemp</span><span class="p">[</span><span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">pswCcr</span><span class="p">[</span><span class="n">XF</span><span class="p">];</span>
-<a name="l-335"></a>				<span class="k">else</span>
-<a name="l-336"></a>					<span class="n">ccrTemp</span><span class="p">[</span><span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-337"></a>				<span class="n">ccrTemp</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-338"></a>			<span class="k">end</span>
-<a name="l-339"></a>			
-<a name="l-340"></a>		<span class="c1">// Assumes col 3 of DIV use C and not X !</span>
-<a name="l-341"></a>		<span class="c1">// V will be set in other cols (2/3) of DIV</span>
-<a name="l-342"></a>		<span class="nl">OP_SLAA:</span>   <span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">15</span><span class="p">];</span>
-<a name="l-343"></a>		
-<a name="l-344"></a>		<span class="n">OP_LSL</span><span class="p">,</span><span class="nl">OP_ROXL:</span>
-<a name="l-345"></a>			<span class="k">begin</span>
-<a name="l-346"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
-<a name="l-347"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
-<a name="l-348"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-349"></a>			<span class="k">end</span>
-<a name="l-350"></a>			
-<a name="l-351"></a>		<span class="n">OP_LSR</span><span class="p">,</span><span class="nl">OP_ROXR:</span>
-<a name="l-352"></a>			<span class="k">begin</span>
-<a name="l-353"></a>				<span class="c1">// 0 Needed for mul, or carry gets in high word</span>
-<a name="l-354"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftIsMul</span> <span class="o">?</span> <span class="mh">1</span><span class="mb">&#39;b0</span> <span class="o">:</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-355"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-356"></a>				<span class="c1">// Not relevant for MUL, we clear it at mulm6 (1f) anyway.</span>
-<a name="l-357"></a>				<span class="c1">// Not that MUL can never overlow!</span>
-<a name="l-358"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-359"></a>				<span class="c1">// Z is checking here ALU (low result is actually in ALUE).</span>
-<a name="l-360"></a>				<span class="c1">// But it is correct, see comment above.</span>
-<a name="l-361"></a>			<span class="k">end</span>
-<a name="l-362"></a>			
-<a name="l-363"></a>		<span class="nl">OP_ASL:</span>
-<a name="l-364"></a>			<span class="k">begin</span>
-<a name="l-365"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>			<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
-<a name="l-366"></a>				<span class="c1">// V set if msb changed on any shift.</span>
-<a name="l-367"></a>				<span class="c1">// Otherwise clear previously on OP_AND (col 1i).</span>
-<a name="l-368"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="n">pswCcr</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">|</span> <span class="p">(</span><span class="n">shftMsb</span> <span class="o">^</span>
-<a name="l-369"></a>					<span class="p">(</span><span class="n">isLong</span> <span class="o">?</span> <span class="n">alue</span><span class="p">[</span><span class="mh">15</span><span class="o">-</span><span class="mh">1</span><span class="p">]</span> <span class="o">:</span> <span class="p">(</span><span class="n">isByte</span> <span class="o">?</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">7</span><span class="o">-</span><span class="mh">1</span><span class="p">]</span> <span class="o">:</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">15</span><span class="o">-</span><span class="mh">1</span><span class="p">]))</span> <span class="p">);</span>
-<a name="l-370"></a>			<span class="k">end</span>
-<a name="l-371"></a>		<span class="nl">OP_ASR:</span>
-<a name="l-372"></a>			<span class="k">begin</span>
-<a name="l-373"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-374"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-375"></a>			<span class="k">end</span>
-<a name="l-376"></a>      
-<a name="l-377"></a>		<span class="c1">// X not changed on ROL/ROR !</span>
-<a name="l-378"></a>		<span class="nl">OP_ROL:</span>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
-<a name="l-379"></a>		<span class="nl">OP_ROR:</span>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-380"></a>
-<a name="l-381"></a>		<span class="n">OP_ADD</span><span class="p">,</span>
-<a name="l-382"></a>		<span class="n">OP_ADDC</span><span class="p">,</span>
-<a name="l-383"></a>		<span class="n">OP_ADDX</span><span class="p">,</span>
-<a name="l-384"></a>		<span class="n">OP_SUB</span><span class="p">,</span>
-<a name="l-385"></a>		<span class="n">OP_SUBC</span><span class="p">,</span>
-<a name="l-386"></a>		<span class="nl">OP_SUBX:</span>
-<a name="l-387"></a>			<span class="k">begin</span>
-<a name="l-388"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">subCout</span><span class="p">;</span>
-<a name="l-389"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">subCout</span><span class="p">;</span>
-<a name="l-390"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="n">subOv</span><span class="p">;</span>
-<a name="l-391"></a>			<span class="k">end</span>
-<a name="l-392"></a>
-<a name="l-393"></a>		<span class="n">OP_ABCD</span><span class="p">,</span>
-<a name="l-394"></a>		<span class="nl">OP_SBCD:</span>
-<a name="l-395"></a>			<span class="k">begin</span>
-<a name="l-396"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">bcdCarry</span><span class="p">;</span>
-<a name="l-397"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">bcdCarry</span><span class="p">;</span>
-<a name="l-398"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="n">bcdOverf</span><span class="p">;</span>
-<a name="l-399"></a>			<span class="k">end</span>
-<a name="l-400"></a>		
-<a name="l-401"></a>		<span class="k">endcase</span>
-<a name="l-402"></a>				
-<a name="l-403"></a>	<span class="k">end</span>
-<a name="l-404"></a>	
-<a name="l-405"></a>	<span class="c1">// Core and psw latched at the same cycle</span>
-<a name="l-406"></a>	
-<a name="l-407"></a>	<span class="c1">// CCR filter</span>
-<a name="l-408"></a>	<span class="c1">// CCR out mux for Z &amp; C flags</span>
-<a name="l-409"></a>	<span class="c1">// Z flag for 32-bit result</span>
-<a name="l-410"></a>	<span class="c1">// Not described, but should be used also for instructions</span>
-<a name="l-411"></a>	<span class="c1">//   that clear but not set Z (ADDX/SUBX/ABCD, etc)!</span>
-<a name="l-412"></a>	<span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ccrMasked</span><span class="p">;</span>
-<a name="l-413"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-414"></a>		<span class="n">ccrMasked</span> <span class="o">=</span> <span class="p">(</span><span class="n">ccrTemp</span> <span class="o">&amp;</span> <span class="n">ccrMask</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">pswCcr</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ccrMask</span><span class="p">);</span>
-<a name="l-415"></a>		<span class="c1">// if( finish | isCorf | isArX)		// No need to check specicially for isCorf as they always have the &quot;finish&quot; flag anyway</span>
-<a name="l-416"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">finish</span> <span class="o">|</span> <span class="n">isArX</span><span class="p">)</span>
-<a name="l-417"></a>			<span class="n">ccrMasked</span><span class="p">[</span> <span class="n">ZF</span><span class="p">]</span> <span class="o">=</span> <span class="n">ccrTemp</span><span class="p">[</span> <span class="n">ZF</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">pswCcr</span><span class="p">[</span> <span class="n">ZF</span><span class="p">];</span>
-<a name="l-418"></a>	<span class="k">end</span>
-<a name="l-419"></a>		
-<a name="l-420"></a>	<span class="k">always_ff</span> <span class="p">@(</span> <span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-421"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">enT3</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-422"></a>			<span class="c1">// Update latches from ALU operators</span>
-<a name="l-423"></a>			<span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="o">|</span> <span class="n">aluColumn</span><span class="p">))</span> <span class="k">begin</span>
-<a name="l-424"></a>				<span class="n">aluLatch</span> <span class="o">&lt;=</span> <span class="n">result</span><span class="p">;</span>
-<a name="l-425"></a>				
-<a name="l-426"></a>				<span class="n">coreH</span> <span class="o">&lt;=</span> <span class="n">subHcarry</span><span class="p">;</span>
-<a name="l-427"></a>			   
-<a name="l-428"></a>				<span class="c1">// Update CCR core</span>
-<a name="l-429"></a>				<span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="o">|</span> <span class="n">aluColumn</span><span class="p">))</span>
-<a name="l-430"></a>					<span class="n">ccrCore</span> <span class="o">&lt;=</span> <span class="n">ccrTemp</span><span class="p">;</span>		<span class="c1">// Most bits not really used</span>
-<a name="l-431"></a>			<span class="k">end</span>
-<a name="l-432"></a>
-<a name="l-433"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">alueClkEn</span><span class="p">)</span>
-<a name="l-434"></a>				<span class="n">alue</span> <span class="o">&lt;=</span> <span class="n">iDataBus</span><span class="p">;</span>
-<a name="l-435"></a>			<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">isShift</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">|</span> <span class="n">aluColumn</span><span class="p">))</span>
-<a name="l-436"></a>				<span class="n">alue</span> <span class="o">&lt;=</span> <span class="n">shftResult</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
-<a name="l-437"></a>		<span class="k">end</span>
-<a name="l-438"></a>				
-<a name="l-439"></a>		<span class="c1">// CCR</span>
-<a name="l-440"></a>		<span class="c1">// Originally on T3-T4 edge pulse !!</span>
-<a name="l-441"></a>		<span class="c1">// Might be possible to update on T4 (but not after T0) from partial result registered on T3, it will increase performance!</span>
-<a name="l-442"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">pwrUp</span><span class="p">)</span>
-<a name="l-443"></a>			<span class="n">pswCcr</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-444"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">enT3</span> <span class="o">&amp;</span> <span class="n">ftu2Ccr</span><span class="p">)</span>
-<a name="l-445"></a>			<span class="n">pswCcr</span> <span class="o">&lt;=</span> <span class="n">ftu</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>	
-<a name="l-446"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">enT3</span> <span class="o">&amp;</span>	<span class="o">~</span><span class="n">noCcrEn</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">finish</span> <span class="o">|</span> <span class="n">init</span><span class="p">))</span>
-<a name="l-447"></a>			<span class="n">pswCcr</span> <span class="o">&lt;=</span> <span class="n">ccrMasked</span><span class="p">;</span>
-<a name="l-448"></a>	<span class="k">end</span>
-<a name="l-449"></a>	<span class="k">assign</span> <span class="n">ccr</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">3</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">pswCcr</span><span class="p">};</span>	
-<a name="l-450"></a>
-<a name="l-451"></a>	      
-<a name="l-452"></a><span class="k">endmodule</span>
-<a name="l-453"></a>
-<a name="l-454"></a><span class="c1">// add bcd correction factor</span>
-<a name="l-455"></a><span class="c1">// It would be more efficient to merge add/sub with main ALU !!!</span>
-<a name="l-456"></a><span class="k">module</span> <span class="n">aluCorf</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">binResult</span><span class="p">,</span> <span class="k">input</span> <span class="n">bAdd</span><span class="p">,</span> <span class="k">input</span> <span class="n">cin</span><span class="p">,</span> <span class="k">input</span> <span class="n">hCarry</span><span class="p">,</span>
-<a name="l-457"></a>	<span class="k">output</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">bcdResult</span><span class="p">,</span> <span class="k">output</span> <span class="n">dC</span><span class="p">,</span> <span class="k">output</span> <span class="k">logic</span> <span class="n">ov</span><span class="p">);</span>
-<a name="l-458"></a>
-<a name="l-459"></a>	<span class="k">reg</span> <span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">htemp</span><span class="p">;</span>
-<a name="l-460"></a>	<span class="k">reg</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">hNib</span><span class="p">;</span>
-<a name="l-461"></a>	
-<a name="l-462"></a>	<span class="k">wire</span> <span class="n">lowC</span>  <span class="o">=</span> <span class="n">hCarry</span> <span class="o">|</span> <span class="p">(</span><span class="n">bAdd</span> <span class="o">?</span> <span class="n">gt9</span><span class="p">(</span> <span class="n">binResult</span><span class="p">[</span> <span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">])</span> <span class="o">:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">);</span>
-<a name="l-463"></a>	<span class="k">wire</span> <span class="n">highC</span> <span class="o">=</span> <span class="n">cin</span>	<span class="o">|</span> <span class="p">(</span><span class="n">bAdd</span> <span class="o">?</span> <span class="p">(</span><span class="n">gt9</span><span class="p">(</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">4</span><span class="p">])</span> <span class="o">|</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">8</span><span class="p">])</span> <span class="o">:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">);</span>
-<a name="l-464"></a>		
-<a name="l-465"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-466"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">bAdd</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-467"></a>			<span class="n">htemp</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">binResult</span><span class="p">}</span> <span class="o">+</span> <span class="p">(</span><span class="n">lowC</span>  <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
-<a name="l-468"></a>			<span class="n">hNib</span>  <span class="o">=</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">4</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">highC</span> <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
-<a name="l-469"></a>			<span class="n">ov</span> <span class="o">=</span> <span class="n">hNib</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">binResult</span><span class="p">[</span><span class="mh">7</span><span class="p">];</span>
-<a name="l-470"></a>		<span class="k">end</span>
-<a name="l-471"></a>		<span class="k">else</span> <span class="k">begin</span>
-<a name="l-472"></a>			<span class="n">htemp</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">binResult</span><span class="p">}</span> <span class="o">-</span> <span class="p">(</span><span class="n">lowC</span>  <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
-<a name="l-473"></a>			<span class="n">hNib</span>  <span class="o">=</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">4</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">highC</span> <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
-<a name="l-474"></a>			<span class="n">ov</span> <span class="o">=</span> <span class="o">~</span><span class="n">hNib</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">binResult</span><span class="p">[</span><span class="mh">7</span><span class="p">];</span>
-<a name="l-475"></a>		<span class="k">end</span>
-<a name="l-476"></a>	<span class="k">end</span>
-<a name="l-477"></a>
-<a name="l-478"></a>	<span class="k">assign</span> <span class="n">bcdResult</span> <span class="o">=</span> <span class="p">{</span> <span class="n">hNib</span><span class="p">[</span> <span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-479"></a>	<span class="k">assign</span> <span class="n">dC</span> <span class="o">=</span> <span class="n">hNib</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span> <span class="o">|</span> <span class="n">cin</span><span class="p">;</span>
-<a name="l-480"></a>
-<a name="l-481"></a>	<span class="c1">// Nibble &gt; 9</span>
-<a name="l-482"></a>	<span class="k">function</span> <span class="n">gt9</span> <span class="p">(</span><span class="k">input</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">nib</span><span class="p">);</span>
-<a name="l-483"></a>	<span class="k">begin</span>
-<a name="l-484"></a>		<span class="n">gt9</span> <span class="o">=</span> <span class="n">nib</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">nib</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">|</span> <span class="n">nib</span><span class="p">[</span><span class="mh">1</span><span class="p">]);</span>
-<a name="l-485"></a>	<span class="k">end</span>
-<a name="l-486"></a>	<span class="k">endfunction</span>
-<a name="l-487"></a>
-<a name="l-488"></a><span class="k">endmodule</span>
-<a name="l-489"></a>
+<a name="l-318"></a>				<span class="n">ccrTemp</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-319"></a>				<span class="n">ccrTemp</span><span class="p">[</span><span class="n">NF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">ZF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-320"></a>			<span class="k">end</span>
+<a name="l-321"></a>
+<a name="l-322"></a>		<span class="n">OP_SUB0</span><span class="p">,</span>				<span class="c1">// used by NOT</span>
+<a name="l-323"></a>		<span class="n">OP_OR</span><span class="p">,</span>
+<a name="l-324"></a>		<span class="nl">OP_EOR:</span>
+<a name="l-325"></a>			<span class="k">begin</span>
+<a name="l-326"></a>				<span class="n">ccrTemp</span><span class="p">[</span><span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>      <span class="n">ccrTemp</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-327"></a>			<span class="k">end</span>
+<a name="l-328"></a>
+<a name="l-329"></a>		<span class="nl">OP_AND:</span>
+<a name="l-330"></a>			<span class="k">begin</span>
+<a name="l-331"></a>				<span class="c1">// ROXL/ROXR indeed copy X to C in column 1 (OP_AND), executed before entering the loop.</span>
+<a name="l-332"></a>				<span class="c1">// Needed when rotate count is zero, the ucode with the ROX operator never reached.</span>
+<a name="l-333"></a>				<span class="c1">// 	C must be set to the value of X, X remains unaffected.</span>
+<a name="l-334"></a>				<span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">aluColumn</span> <span class="o">==</span> <span class="mh">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span> <span class="o">|</span> <span class="n">row</span><span class="p">[</span><span class="mh">8</span><span class="p">]))</span>
+<a name="l-335"></a>					<span class="n">ccrTemp</span><span class="p">[</span><span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">pswCcr</span><span class="p">[</span><span class="n">XF</span><span class="p">];</span>
+<a name="l-336"></a>				<span class="k">else</span>
+<a name="l-337"></a>					<span class="n">ccrTemp</span><span class="p">[</span><span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-338"></a>				<span class="n">ccrTemp</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-339"></a>			<span class="k">end</span>
+<a name="l-340"></a>			
+<a name="l-341"></a>		<span class="c1">// Assumes col 3 of DIV use C and not X !</span>
+<a name="l-342"></a>		<span class="c1">// V will be set in other cols (2/3) of DIV</span>
+<a name="l-343"></a>		<span class="nl">OP_SLAA:</span>   <span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">15</span><span class="p">];</span>
+<a name="l-344"></a>		
+<a name="l-345"></a>		<span class="n">OP_LSL</span><span class="p">,</span><span class="nl">OP_ROXL:</span>
+<a name="l-346"></a>			<span class="k">begin</span>
+<a name="l-347"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
+<a name="l-348"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
+<a name="l-349"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-350"></a>			<span class="k">end</span>
+<a name="l-351"></a>			
+<a name="l-352"></a>		<span class="n">OP_LSR</span><span class="p">,</span><span class="nl">OP_ROXR:</span>
+<a name="l-353"></a>			<span class="k">begin</span>
+<a name="l-354"></a>				<span class="c1">// 0 Needed for mul, or carry gets in high word</span>
+<a name="l-355"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftIsMul</span> <span class="o">?</span> <span class="mh">1</span><span class="mb">&#39;b0</span> <span class="o">:</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-356"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-357"></a>				<span class="c1">// Not relevant for MUL, we clear it at mulm6 (1f) anyway.</span>
+<a name="l-358"></a>				<span class="c1">// Not that MUL can never overlow!</span>
+<a name="l-359"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-360"></a>				<span class="c1">// Z is checking here ALU (low result is actually in ALUE).</span>
+<a name="l-361"></a>				<span class="c1">// But it is correct, see comment above.</span>
+<a name="l-362"></a>			<span class="k">end</span>
+<a name="l-363"></a>			
+<a name="l-364"></a>		<span class="nl">OP_ASL:</span>
+<a name="l-365"></a>			<span class="k">begin</span>
+<a name="l-366"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>			<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
+<a name="l-367"></a>				<span class="c1">// V set if msb changed on any shift.</span>
+<a name="l-368"></a>				<span class="c1">// Otherwise clear previously on OP_AND (col 1i).</span>
+<a name="l-369"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="n">pswCcr</span><span class="p">[</span><span class="n">VF</span><span class="p">]</span> <span class="o">|</span> <span class="p">(</span><span class="n">shftMsb</span> <span class="o">^</span>
+<a name="l-370"></a>					<span class="p">(</span><span class="n">isLong</span> <span class="o">?</span> <span class="n">alue</span><span class="p">[</span><span class="mh">15</span><span class="o">-</span><span class="mh">1</span><span class="p">]</span> <span class="o">:</span> <span class="p">(</span><span class="n">isByte</span> <span class="o">?</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">7</span><span class="o">-</span><span class="mh">1</span><span class="p">]</span> <span class="o">:</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">15</span><span class="o">-</span><span class="mh">1</span><span class="p">]))</span> <span class="p">);</span>
+<a name="l-371"></a>			<span class="k">end</span>
+<a name="l-372"></a>		<span class="nl">OP_ASR:</span>
+<a name="l-373"></a>			<span class="k">begin</span>
+<a name="l-374"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-375"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-376"></a>			<span class="k">end</span>
+<a name="l-377"></a>      
+<a name="l-378"></a>		<span class="c1">// X not changed on ROL/ROR !</span>
+<a name="l-379"></a>		<span class="nl">OP_ROL:</span>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">shftMsb</span><span class="p">;</span>
+<a name="l-380"></a>		<span class="nl">OP_ROR:</span>		<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">aOperand</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-381"></a>
+<a name="l-382"></a>		<span class="n">OP_ADD</span><span class="p">,</span>
+<a name="l-383"></a>		<span class="n">OP_ADDC</span><span class="p">,</span>
+<a name="l-384"></a>		<span class="n">OP_ADDX</span><span class="p">,</span>
+<a name="l-385"></a>		<span class="n">OP_SUB</span><span class="p">,</span>
+<a name="l-386"></a>		<span class="n">OP_SUBC</span><span class="p">,</span>
+<a name="l-387"></a>		<span class="nl">OP_SUBX:</span>
+<a name="l-388"></a>			<span class="k">begin</span>
+<a name="l-389"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">subCout</span><span class="p">;</span>
+<a name="l-390"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">subCout</span><span class="p">;</span>
+<a name="l-391"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="n">subOv</span><span class="p">;</span>
+<a name="l-392"></a>			<span class="k">end</span>
+<a name="l-393"></a>
+<a name="l-394"></a>		<span class="n">OP_ABCD</span><span class="p">,</span>
+<a name="l-395"></a>		<span class="nl">OP_SBCD:</span>
+<a name="l-396"></a>			<span class="k">begin</span>
+<a name="l-397"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">XF</span><span class="p">]</span> <span class="o">=</span> <span class="n">bcdCarry</span><span class="p">;</span>
+<a name="l-398"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">CF</span><span class="p">]</span> <span class="o">=</span> <span class="n">bcdCarry</span><span class="p">;</span>
+<a name="l-399"></a>				<span class="n">ccrTemp</span><span class="p">[</span> <span class="n">VF</span><span class="p">]</span> <span class="o">=</span> <span class="n">bcdOverf</span><span class="p">;</span>
+<a name="l-400"></a>			<span class="k">end</span>
+<a name="l-401"></a>		
+<a name="l-402"></a>		<span class="k">endcase</span>
+<a name="l-403"></a>				
+<a name="l-404"></a>	<span class="k">end</span>
+<a name="l-405"></a>	
+<a name="l-406"></a>	<span class="c1">// Core and psw latched at the same cycle</span>
+<a name="l-407"></a>	
+<a name="l-408"></a>	<span class="c1">// CCR filter</span>
+<a name="l-409"></a>	<span class="c1">// CCR out mux for Z &amp; C flags</span>
+<a name="l-410"></a>	<span class="c1">// Z flag for 32-bit result</span>
+<a name="l-411"></a>	<span class="c1">// Not described, but should be used also for instructions</span>
+<a name="l-412"></a>	<span class="c1">//   that clear but not set Z (ADDX/SUBX/ABCD, etc)!</span>
+<a name="l-413"></a>	<span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ccrMasked</span><span class="p">;</span>
+<a name="l-414"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-415"></a>		<span class="n">ccrMasked</span> <span class="o">=</span> <span class="p">(</span><span class="n">ccrTemp</span> <span class="o">&amp;</span> <span class="n">ccrMask</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">pswCcr</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ccrMask</span><span class="p">);</span>
+<a name="l-416"></a>		<span class="c1">// if( finish | isCorf | isArX)		// No need to check specicially for isCorf as they always have the &quot;finish&quot; flag anyway</span>
+<a name="l-417"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">finish</span> <span class="o">|</span> <span class="n">isArX</span><span class="p">)</span>
+<a name="l-418"></a>			<span class="n">ccrMasked</span><span class="p">[</span> <span class="n">ZF</span><span class="p">]</span> <span class="o">=</span> <span class="n">ccrTemp</span><span class="p">[</span> <span class="n">ZF</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">pswCcr</span><span class="p">[</span> <span class="n">ZF</span><span class="p">];</span>
+<a name="l-419"></a>	<span class="k">end</span>
+<a name="l-420"></a>		
+<a name="l-421"></a>	<span class="k">always_ff</span> <span class="p">@(</span> <span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-422"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">enT3</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-423"></a>			<span class="c1">// Update latches from ALU operators</span>
+<a name="l-424"></a>			<span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="o">|</span> <span class="n">aluColumn</span><span class="p">))</span> <span class="k">begin</span>
+<a name="l-425"></a>				<span class="n">aluLatch</span> <span class="o">&lt;=</span> <span class="n">result</span><span class="p">;</span>
+<a name="l-426"></a>				
+<a name="l-427"></a>				<span class="n">coreH</span> <span class="o">&lt;=</span> <span class="n">subHcarry</span><span class="p">;</span>
+<a name="l-428"></a>			   
+<a name="l-429"></a>				<span class="c1">// Update CCR core</span>
+<a name="l-430"></a>				<span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="o">|</span> <span class="n">aluColumn</span><span class="p">))</span>
+<a name="l-431"></a>					<span class="n">ccrCore</span> <span class="o">&lt;=</span> <span class="n">ccrTemp</span><span class="p">;</span>		<span class="c1">// Most bits not really used</span>
+<a name="l-432"></a>			<span class="k">end</span>
+<a name="l-433"></a>
+<a name="l-434"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">alueClkEn</span><span class="p">)</span>
+<a name="l-435"></a>				<span class="n">alue</span> <span class="o">&lt;=</span> <span class="n">iDataBus</span><span class="p">;</span>
+<a name="l-436"></a>			<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">isShift</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">|</span> <span class="n">aluColumn</span><span class="p">))</span>
+<a name="l-437"></a>				<span class="n">alue</span> <span class="o">&lt;=</span> <span class="n">shftResult</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+<a name="l-438"></a>		<span class="k">end</span>
+<a name="l-439"></a>				
+<a name="l-440"></a>		<span class="c1">// CCR</span>
+<a name="l-441"></a>		<span class="c1">// Originally on T3-T4 edge pulse !!</span>
+<a name="l-442"></a>		<span class="c1">// Might be possible to update on T4 (but not after T0) from partial result registered on T3, it will increase performance!</span>
+<a name="l-443"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">pwrUp</span><span class="p">)</span>
+<a name="l-444"></a>			<span class="n">pswCcr</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-445"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">enT3</span> <span class="o">&amp;</span> <span class="n">ftu2Ccr</span><span class="p">)</span>
+<a name="l-446"></a>			<span class="n">pswCcr</span> <span class="o">&lt;=</span> <span class="n">ftu</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>	
+<a name="l-447"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">enT3</span> <span class="o">&amp;</span>	<span class="o">~</span><span class="n">noCcrEn</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">finish</span> <span class="o">|</span> <span class="n">init</span><span class="p">))</span>
+<a name="l-448"></a>			<span class="n">pswCcr</span> <span class="o">&lt;=</span> <span class="n">ccrMasked</span><span class="p">;</span>
+<a name="l-449"></a>	<span class="k">end</span>
+<a name="l-450"></a>	<span class="k">assign</span> <span class="n">ccr</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">3</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">pswCcr</span><span class="p">};</span>	
+<a name="l-451"></a>
+<a name="l-452"></a>	      
+<a name="l-453"></a><span class="k">endmodule</span>
+<a name="l-454"></a>
+<a name="l-455"></a><span class="c1">// add bcd correction factor</span>
+<a name="l-456"></a><span class="c1">// It would be more efficient to merge add/sub with main ALU !!!</span>
+<a name="l-457"></a><span class="k">module</span> <span class="n">aluCorf</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">binResult</span><span class="p">,</span> <span class="k">input</span> <span class="n">bAdd</span><span class="p">,</span> <span class="k">input</span> <span class="n">cin</span><span class="p">,</span> <span class="k">input</span> <span class="n">hCarry</span><span class="p">,</span>
+<a name="l-458"></a>	<span class="k">output</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">bcdResult</span><span class="p">,</span> <span class="k">output</span> <span class="n">dC</span><span class="p">,</span> <span class="k">output</span> <span class="k">logic</span> <span class="n">ov</span><span class="p">);</span>
+<a name="l-459"></a>
+<a name="l-460"></a>	<span class="k">reg</span> <span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">htemp</span><span class="p">;</span>
+<a name="l-461"></a>	<span class="k">reg</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">hNib</span><span class="p">;</span>
+<a name="l-462"></a>	
+<a name="l-463"></a>	<span class="k">wire</span> <span class="n">lowC</span>  <span class="o">=</span> <span class="n">hCarry</span> <span class="o">|</span> <span class="p">(</span><span class="n">bAdd</span> <span class="o">?</span> <span class="n">gt9</span><span class="p">(</span> <span class="n">binResult</span><span class="p">[</span> <span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">])</span> <span class="o">:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">);</span>
+<a name="l-464"></a>	<span class="k">wire</span> <span class="n">highC</span> <span class="o">=</span> <span class="n">cin</span>	<span class="o">|</span> <span class="p">(</span><span class="n">bAdd</span> <span class="o">?</span> <span class="p">(</span><span class="n">gt9</span><span class="p">(</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">4</span><span class="p">])</span> <span class="o">|</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">8</span><span class="p">])</span> <span class="o">:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">);</span>
+<a name="l-465"></a>		
+<a name="l-466"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-467"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">bAdd</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-468"></a>			<span class="n">htemp</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">binResult</span><span class="p">}</span> <span class="o">+</span> <span class="p">(</span><span class="n">lowC</span>  <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
+<a name="l-469"></a>			<span class="n">hNib</span>  <span class="o">=</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">4</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">highC</span> <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
+<a name="l-470"></a>			<span class="n">ov</span> <span class="o">=</span> <span class="n">hNib</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">binResult</span><span class="p">[</span><span class="mh">7</span><span class="p">];</span>
+<a name="l-471"></a>		<span class="k">end</span>
+<a name="l-472"></a>		<span class="k">else</span> <span class="k">begin</span>
+<a name="l-473"></a>			<span class="n">htemp</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">binResult</span><span class="p">}</span> <span class="o">-</span> <span class="p">(</span><span class="n">lowC</span>  <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
+<a name="l-474"></a>			<span class="n">hNib</span>  <span class="o">=</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">4</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">highC</span> <span class="o">?</span> <span class="mh">4&#39;h6</span> <span class="o">:</span> <span class="mh">4&#39;h0</span><span class="p">);</span>
+<a name="l-475"></a>			<span class="n">ov</span> <span class="o">=</span> <span class="o">~</span><span class="n">hNib</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">binResult</span><span class="p">[</span><span class="mh">7</span><span class="p">];</span>
+<a name="l-476"></a>		<span class="k">end</span>
+<a name="l-477"></a>	<span class="k">end</span>
+<a name="l-478"></a>
+<a name="l-479"></a>	<span class="k">assign</span> <span class="n">bcdResult</span> <span class="o">=</span> <span class="p">{</span> <span class="n">hNib</span><span class="p">[</span> <span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">htemp</span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-480"></a>	<span class="k">assign</span> <span class="n">dC</span> <span class="o">=</span> <span class="n">hNib</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span> <span class="o">|</span> <span class="n">cin</span><span class="p">;</span>
+<a name="l-481"></a>
+<a name="l-482"></a>	<span class="c1">// Nibble &gt; 9</span>
+<a name="l-483"></a>	<span class="k">function</span> <span class="n">gt9</span> <span class="p">(</span><span class="k">input</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">nib</span><span class="p">);</span>
+<a name="l-484"></a>	<span class="k">begin</span>
+<a name="l-485"></a>		<span class="n">gt9</span> <span class="o">=</span> <span class="n">nib</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">nib</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">|</span> <span class="n">nib</span><span class="p">[</span><span class="mh">1</span><span class="p">]);</span>
+<a name="l-486"></a>	<span class="k">end</span>
+<a name="l-487"></a>	<span class="k">endfunction</span>
+<a name="l-488"></a>
+<a name="l-489"></a><span class="k">endmodule</span>
 <a name="l-490"></a>
-<a name="l-491"></a><span class="k">module</span> <span class="n">aluShifter</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data</span><span class="p">,</span>
-<a name="l-492"></a>	<span class="k">input</span> <span class="n">isByte</span><span class="p">,</span> <span class="k">input</span> <span class="n">isLong</span><span class="p">,</span> <span class="n">swapWords</span><span class="p">,</span>
-<a name="l-493"></a>	<span class="k">input</span> <span class="n">dir</span><span class="p">,</span> <span class="k">input</span> <span class="n">cin</span><span class="p">,</span>
-<a name="l-494"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">result</span><span class="p">);</span>
-<a name="l-495"></a>	<span class="c1">// output reg cout</span>
-<a name="l-496"></a>
-<a name="l-497"></a>	<span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tdata</span><span class="p">;</span>         
-<a name="l-498"></a>
-<a name="l-499"></a>	<span class="c1">// size mux, put cin in position if dir == right</span>
-<a name="l-500"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-501"></a>		<span class="n">tdata</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
-<a name="l-502"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">isByte</span> <span class="o">&amp;</span> <span class="n">dir</span><span class="p">)</span>
-<a name="l-503"></a>			<span class="n">tdata</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">cin</span><span class="p">;</span>
-<a name="l-504"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">isLong</span> <span class="o">&amp;</span> <span class="n">dir</span><span class="p">)</span>
-<a name="l-505"></a>			<span class="n">tdata</span><span class="p">[</span><span class="mh">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">cin</span><span class="p">;</span>
-<a name="l-506"></a>	<span class="k">end</span>
-<a name="l-507"></a>    
-<a name="l-508"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-509"></a>		<span class="c1">// Reverse alu/alue position for MUL &amp; DIV</span>
-<a name="l-510"></a>		<span class="c1">// Result reversed again</span>
-<a name="l-511"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">swapWords</span> <span class="o">&amp;</span> <span class="n">dir</span><span class="p">)</span>
-<a name="l-512"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">17</span><span class="p">],</span> <span class="n">cin</span><span class="p">,</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">1</span><span class="p">]};</span>
-<a name="l-513"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">swapWords</span><span class="p">)</span>
-<a name="l-514"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">30</span><span class="o">:</span><span class="mh">16</span><span class="p">],</span> <span class="n">cin</span><span class="p">,</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">31</span><span class="p">]};</span>
-<a name="l-515"></a>			
-<a name="l-516"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">dir</span><span class="p">)</span>
-<a name="l-517"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cin</span><span class="p">,</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">1</span><span class="p">]};</span>
-<a name="l-518"></a>		<span class="k">else</span>
-<a name="l-519"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">30</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">cin</span><span class="p">};</span>
-<a name="l-520"></a>	<span class="k">end</span>
-<a name="l-521"></a>
-<a name="l-522"></a><span class="k">endmodule</span>
-<a name="l-523"></a>
+<a name="l-491"></a>
+<a name="l-492"></a><span class="k">module</span> <span class="n">aluShifter</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data</span><span class="p">,</span>
+<a name="l-493"></a>	<span class="k">input</span> <span class="n">isByte</span><span class="p">,</span> <span class="k">input</span> <span class="n">isLong</span><span class="p">,</span> <span class="n">swapWords</span><span class="p">,</span>
+<a name="l-494"></a>	<span class="k">input</span> <span class="n">dir</span><span class="p">,</span> <span class="k">input</span> <span class="n">cin</span><span class="p">,</span>
+<a name="l-495"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">result</span><span class="p">);</span>
+<a name="l-496"></a>	<span class="c1">// output reg cout</span>
+<a name="l-497"></a>
+<a name="l-498"></a>	<span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tdata</span><span class="p">;</span>         
+<a name="l-499"></a>
+<a name="l-500"></a>	<span class="c1">// size mux, put cin in position if dir == right</span>
+<a name="l-501"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-502"></a>		<span class="n">tdata</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+<a name="l-503"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">isByte</span> <span class="o">&amp;</span> <span class="n">dir</span><span class="p">)</span>
+<a name="l-504"></a>			<span class="n">tdata</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">cin</span><span class="p">;</span>
+<a name="l-505"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">isLong</span> <span class="o">&amp;</span> <span class="n">dir</span><span class="p">)</span>
+<a name="l-506"></a>			<span class="n">tdata</span><span class="p">[</span><span class="mh">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">cin</span><span class="p">;</span>
+<a name="l-507"></a>	<span class="k">end</span>
+<a name="l-508"></a>    
+<a name="l-509"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-510"></a>		<span class="c1">// Reverse alu/alue position for MUL &amp; DIV</span>
+<a name="l-511"></a>		<span class="c1">// Result reversed again</span>
+<a name="l-512"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">swapWords</span> <span class="o">&amp;</span> <span class="n">dir</span><span class="p">)</span>
+<a name="l-513"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">17</span><span class="p">],</span> <span class="n">cin</span><span class="p">,</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">1</span><span class="p">]};</span>
+<a name="l-514"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">swapWords</span><span class="p">)</span>
+<a name="l-515"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">30</span><span class="o">:</span><span class="mh">16</span><span class="p">],</span> <span class="n">cin</span><span class="p">,</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">31</span><span class="p">]};</span>
+<a name="l-516"></a>			
+<a name="l-517"></a>		<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">dir</span><span class="p">)</span>
+<a name="l-518"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cin</span><span class="p">,</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">1</span><span class="p">]};</span>
+<a name="l-519"></a>		<span class="k">else</span>
+<a name="l-520"></a>			<span class="n">result</span> <span class="o">=</span> <span class="p">{</span> <span class="n">tdata</span><span class="p">[</span><span class="mh">30</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">cin</span><span class="p">};</span>
+<a name="l-521"></a>	<span class="k">end</span>
+<a name="l-522"></a>
+<a name="l-523"></a><span class="k">endmodule</span>
 <a name="l-524"></a>
-<a name="l-525"></a><span class="c1">// Get current OP from row &amp; col</span>
-<a name="l-526"></a><span class="k">module</span> <span class="n">aluGetOp</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">col</span><span class="p">,</span> <span class="k">input</span> <span class="n">isCorf</span><span class="p">,</span>
-<a name="l-527"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">aluOp</span><span class="p">);</span>
-<a name="l-528"></a>	
-<a name="l-529"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-530"></a>		<span class="n">aluOp</span> <span class="o">=</span> <span class="p">&#39;</span><span class="n">X</span><span class="p">;</span>
-<a name="l-531"></a>		<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>  
-<a name="l-532"></a>		<span class="mh">1</span><span class="o">:</span>   <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_AND</span><span class="p">;</span>
-<a name="l-533"></a>		<span class="mh">5</span><span class="o">:</span>   <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_EXT</span><span class="p">;</span>
-<a name="l-534"></a>
-<a name="l-535"></a>		<span class="k">default</span><span class="o">:</span>
-<a name="l-536"></a>			<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span>
-<a name="l-537"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span><span class="o">:</span>
-<a name="l-538"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-539"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB</span><span class="p">;</span>
-<a name="l-540"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBC</span><span class="p">;</span>
-<a name="l-541"></a>					<span class="mh">4</span><span class="p">,</span><span class="mh">6</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SLAA</span><span class="p">;</span>
-<a name="l-542"></a>					<span class="k">endcase</span>
-<a name="l-543"></a>				
-<a name="l-544"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span><span class="o">:</span>
-<a name="l-545"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-546"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADD</span><span class="p">;</span>
-<a name="l-547"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADDC</span><span class="p">;</span>
-<a name="l-548"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ASR</span><span class="p">;</span>
-<a name="l-549"></a>					<span class="k">endcase</span>
-<a name="l-550"></a>
-<a name="l-551"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span><span class="o">:</span>
-<a name="l-552"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-553"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADDX</span><span class="p">;</span>
-<a name="l-554"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">isCorf</span> <span class="o">?</span> <span class="n">OP_ABCD</span> <span class="o">:</span> <span class="n">OP_ADD</span><span class="p">;</span>
-<a name="l-555"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ASL</span><span class="p">;</span>
-<a name="l-556"></a>					<span class="k">endcase</span>
-<a name="l-557"></a>                  
-<a name="l-558"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span><span class="o">:</span>
-<a name="l-559"></a>					<span class="n">aluOp</span> <span class="o">=</span> <span class="p">(</span> <span class="n">col</span> <span class="o">==</span> <span class="mh">4</span><span class="p">)</span> <span class="o">?</span> <span class="n">OP_LSL</span> <span class="o">:</span> <span class="n">OP_AND</span><span class="p">;</span>
-<a name="l-560"></a>				
-<a name="l-561"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span>
-<a name="l-562"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span><span class="o">:</span>
-<a name="l-563"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-564"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB</span><span class="p">;</span>
-<a name="l-565"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBC</span><span class="p">;</span>
-<a name="l-566"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_LSR</span><span class="p">;</span>
-<a name="l-567"></a>					<span class="k">endcase</span>
-<a name="l-568"></a>				
-<a name="l-569"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span><span class="o">:</span>					<span class="c1">// MUL</span>
-<a name="l-570"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-571"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB</span><span class="p">;</span>
-<a name="l-572"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADD</span><span class="p">;</span>
-<a name="l-573"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROXR</span><span class="p">;</span>
-<a name="l-574"></a>					<span class="k">endcase</span>
-<a name="l-575"></a>               
-<a name="l-576"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span><span class="o">:</span>
-<a name="l-577"></a>					<span class="c1">// OP_AND For EXT.L</span>
-<a name="l-578"></a>					<span class="c1">// But would be more efficient to change ucode and use column 1 instead of col3 at ublock extr1!				</span>
-<a name="l-579"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-580"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_EXT</span><span class="p">;</span>
-<a name="l-581"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_AND</span><span class="p">;</span>
-<a name="l-582"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROXR</span><span class="p">;</span>
-<a name="l-583"></a>					<span class="k">endcase</span>
-<a name="l-584"></a>               
-<a name="l-585"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">9</span><span class="p">]</span><span class="o">:</span>
-<a name="l-586"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-587"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBX</span><span class="p">;</span>
-<a name="l-588"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SBCD</span><span class="p">;</span>
-<a name="l-589"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROL</span><span class="p">;</span>
-<a name="l-590"></a>					<span class="k">endcase</span>
-<a name="l-591"></a>
-<a name="l-592"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">10</span><span class="p">]</span><span class="o">:</span>
-<a name="l-593"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-594"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBX</span><span class="p">;</span>
-<a name="l-595"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBC</span><span class="p">;</span>
-<a name="l-596"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROR</span><span class="p">;</span>
-<a name="l-597"></a>					<span class="k">endcase</span>
-<a name="l-598"></a>                
-<a name="l-599"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span><span class="o">:</span>
-<a name="l-600"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-601"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB0</span><span class="p">;</span>
-<a name="l-602"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB0</span><span class="p">;</span>
-<a name="l-603"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROXL</span><span class="p">;</span>
-<a name="l-604"></a>					<span class="k">endcase</span>
-<a name="l-605"></a>                
-<a name="l-606"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADDX</span><span class="p">;</span>               
-<a name="l-607"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_EOR</span><span class="p">;</span>
-<a name="l-608"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">==</span> <span class="mh">4</span><span class="p">)</span> <span class="o">?</span> <span class="n">OP_EOR</span> <span class="o">:</span> <span class="n">OP_OR</span><span class="p">;</span>
-<a name="l-609"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">==</span> <span class="mh">3</span><span class="p">)</span> <span class="o">?</span> <span class="n">OP_ADD</span> <span class="o">:</span> <span class="n">OP_OR</span><span class="p">;</span>		<span class="c1">// OP_ADD used by DBcc</span>
-<a name="l-610"></a>				
-<a name="l-611"></a>			<span class="k">endcase</span>         
-<a name="l-612"></a>		<span class="k">endcase</span>
-<a name="l-613"></a>	<span class="k">end</span>
-<a name="l-614"></a><span class="k">endmodule</span>
-<a name="l-615"></a>
-<a name="l-616"></a><span class="c1">// Decodes IRD into ALU row (1-15)</span>
-<a name="l-617"></a><span class="c1">// Slow, but no need to optimize for speed since IRD is latched at least two CPU cycles before it is used</span>
-<a name="l-618"></a><span class="c1">// We also register the result after combining with column from nanocode</span>
-<a name="l-619"></a><span class="c1">//</span>
-<a name="l-620"></a><span class="c1">// Many opcodes are not decoded because they either don&#39;t do any ALU op,</span>
-<a name="l-621"></a><span class="c1">// or use only columns 1 and 5 that are the same for all rows.</span>
-<a name="l-622"></a>
-<a name="l-623"></a><span class="k">module</span> <span class="n">rowDecoder</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ird</span><span class="p">,</span>
-<a name="l-624"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">,</span> <span class="k">output</span> <span class="n">noCcrEn</span><span class="p">,</span> <span class="k">output</span> <span class="k">logic</span> <span class="n">isArX</span><span class="p">);</span>
-<a name="l-625"></a>
+<a name="l-525"></a>
+<a name="l-526"></a><span class="c1">// Get current OP from row &amp; col</span>
+<a name="l-527"></a><span class="k">module</span> <span class="n">aluGetOp</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">col</span><span class="p">,</span> <span class="k">input</span> <span class="n">isCorf</span><span class="p">,</span>
+<a name="l-528"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">aluOp</span><span class="p">);</span>
+<a name="l-529"></a>	
+<a name="l-530"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-531"></a>		<span class="n">aluOp</span> <span class="o">=</span> <span class="p">&#39;</span><span class="n">X</span><span class="p">;</span>
+<a name="l-532"></a>		<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>  
+<a name="l-533"></a>		<span class="mh">1</span><span class="o">:</span>   <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_AND</span><span class="p">;</span>
+<a name="l-534"></a>		<span class="mh">5</span><span class="o">:</span>   <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_EXT</span><span class="p">;</span>
+<a name="l-535"></a>
+<a name="l-536"></a>		<span class="k">default</span><span class="o">:</span>
+<a name="l-537"></a>			<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span>
+<a name="l-538"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span><span class="o">:</span>
+<a name="l-539"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-540"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB</span><span class="p">;</span>
+<a name="l-541"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBC</span><span class="p">;</span>
+<a name="l-542"></a>					<span class="mh">4</span><span class="p">,</span><span class="mh">6</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SLAA</span><span class="p">;</span>
+<a name="l-543"></a>					<span class="k">endcase</span>
+<a name="l-544"></a>				
+<a name="l-545"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span><span class="o">:</span>
+<a name="l-546"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-547"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADD</span><span class="p">;</span>
+<a name="l-548"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADDC</span><span class="p">;</span>
+<a name="l-549"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ASR</span><span class="p">;</span>
+<a name="l-550"></a>					<span class="k">endcase</span>
+<a name="l-551"></a>
+<a name="l-552"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span><span class="o">:</span>
+<a name="l-553"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-554"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADDX</span><span class="p">;</span>
+<a name="l-555"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">isCorf</span> <span class="o">?</span> <span class="n">OP_ABCD</span> <span class="o">:</span> <span class="n">OP_ADD</span><span class="p">;</span>
+<a name="l-556"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ASL</span><span class="p">;</span>
+<a name="l-557"></a>					<span class="k">endcase</span>
+<a name="l-558"></a>                  
+<a name="l-559"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span><span class="o">:</span>
+<a name="l-560"></a>					<span class="n">aluOp</span> <span class="o">=</span> <span class="p">(</span> <span class="n">col</span> <span class="o">==</span> <span class="mh">4</span><span class="p">)</span> <span class="o">?</span> <span class="n">OP_LSL</span> <span class="o">:</span> <span class="n">OP_AND</span><span class="p">;</span>
+<a name="l-561"></a>				
+<a name="l-562"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span>
+<a name="l-563"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span><span class="o">:</span>
+<a name="l-564"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-565"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB</span><span class="p">;</span>
+<a name="l-566"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBC</span><span class="p">;</span>
+<a name="l-567"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_LSR</span><span class="p">;</span>
+<a name="l-568"></a>					<span class="k">endcase</span>
+<a name="l-569"></a>				
+<a name="l-570"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span><span class="o">:</span>					<span class="c1">// MUL</span>
+<a name="l-571"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-572"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB</span><span class="p">;</span>
+<a name="l-573"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADD</span><span class="p">;</span>
+<a name="l-574"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROXR</span><span class="p">;</span>
+<a name="l-575"></a>					<span class="k">endcase</span>
+<a name="l-576"></a>               
+<a name="l-577"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span><span class="o">:</span>
+<a name="l-578"></a>					<span class="c1">// OP_AND For EXT.L</span>
+<a name="l-579"></a>					<span class="c1">// But would be more efficient to change ucode and use column 1 instead of col3 at ublock extr1!				</span>
+<a name="l-580"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-581"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_EXT</span><span class="p">;</span>
+<a name="l-582"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_AND</span><span class="p">;</span>
+<a name="l-583"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROXR</span><span class="p">;</span>
+<a name="l-584"></a>					<span class="k">endcase</span>
+<a name="l-585"></a>               
+<a name="l-586"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">9</span><span class="p">]</span><span class="o">:</span>
+<a name="l-587"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-588"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBX</span><span class="p">;</span>
+<a name="l-589"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SBCD</span><span class="p">;</span>
+<a name="l-590"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROL</span><span class="p">;</span>
+<a name="l-591"></a>					<span class="k">endcase</span>
+<a name="l-592"></a>
+<a name="l-593"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">10</span><span class="p">]</span><span class="o">:</span>
+<a name="l-594"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-595"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBX</span><span class="p">;</span>
+<a name="l-596"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUBC</span><span class="p">;</span>
+<a name="l-597"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROR</span><span class="p">;</span>
+<a name="l-598"></a>					<span class="k">endcase</span>
+<a name="l-599"></a>                
+<a name="l-600"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span><span class="o">:</span>
+<a name="l-601"></a>					<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-602"></a>					<span class="mh">2</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB0</span><span class="p">;</span>
+<a name="l-603"></a>					<span class="mh">3</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_SUB0</span><span class="p">;</span>
+<a name="l-604"></a>					<span class="mh">4</span><span class="o">:</span> <span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ROXL</span><span class="p">;</span>
+<a name="l-605"></a>					<span class="k">endcase</span>
+<a name="l-606"></a>                
+<a name="l-607"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_ADDX</span><span class="p">;</span>               
+<a name="l-608"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="n">OP_EOR</span><span class="p">;</span>
+<a name="l-609"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">==</span> <span class="mh">4</span><span class="p">)</span> <span class="o">?</span> <span class="n">OP_EOR</span> <span class="o">:</span> <span class="n">OP_OR</span><span class="p">;</span>
+<a name="l-610"></a>				<span class="n">row</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span><span class="o">:</span>	<span class="n">aluOp</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">==</span> <span class="mh">3</span><span class="p">)</span> <span class="o">?</span> <span class="n">OP_ADD</span> <span class="o">:</span> <span class="n">OP_OR</span><span class="p">;</span>		<span class="c1">// OP_ADD used by DBcc</span>
+<a name="l-611"></a>				
+<a name="l-612"></a>			<span class="k">endcase</span>         
+<a name="l-613"></a>		<span class="k">endcase</span>
+<a name="l-614"></a>	<span class="k">end</span>
+<a name="l-615"></a><span class="k">endmodule</span>
+<a name="l-616"></a>
+<a name="l-617"></a><span class="c1">// Decodes IRD into ALU row (1-15)</span>
+<a name="l-618"></a><span class="c1">// Slow, but no need to optimize for speed since IRD is latched at least two CPU cycles before it is used</span>
+<a name="l-619"></a><span class="c1">// We also register the result after combining with column from nanocode</span>
+<a name="l-620"></a><span class="c1">//</span>
+<a name="l-621"></a><span class="c1">// Many opcodes are not decoded because they either don&#39;t do any ALU op,</span>
+<a name="l-622"></a><span class="c1">// or use only columns 1 and 5 that are the same for all rows.</span>
+<a name="l-623"></a>
+<a name="l-624"></a><span class="k">module</span> <span class="n">rowDecoder</span><span class="p">(</span> <span class="k">input</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ird</span><span class="p">,</span>
+<a name="l-625"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">,</span> <span class="k">output</span> <span class="n">noCcrEn</span><span class="p">,</span> <span class="k">output</span> <span class="k">logic</span> <span class="n">isArX</span><span class="p">);</span>
 <a name="l-626"></a>
-<a name="l-627"></a>	<span class="c1">// Addr or data register direct</span>
-<a name="l-628"></a>	<span class="k">wire</span> <span class="n">eaRdir</span> <span class="o">=</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span> <span class="mh">5</span><span class="o">:</span><span class="mh">4</span><span class="p">]</span> <span class="o">==</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">);</span>
-<a name="l-629"></a>	<span class="c1">// Addr register direct</span>
-<a name="l-630"></a>	<span class="k">wire</span> <span class="n">eaAdir</span> <span class="o">=</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span> <span class="mh">5</span><span class="o">:</span><span class="mh">3</span><span class="p">]</span> <span class="o">==</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">);</span>
-<a name="l-631"></a>	<span class="k">wire</span> <span class="n">size11</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">6</span><span class="p">];</span>
-<a name="l-632"></a>	
-<a name="l-633"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-634"></a>		<span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">12</span><span class="p">])</span>
-<a name="l-635"></a>		<span class="mh">&#39;h4</span><span class="p">,</span>
-<a name="l-636"></a>		<span class="mh">&#39;h9</span><span class="p">,</span>
-<a name="l-637"></a>		<span class="mh">&#39;hd</span><span class="o">:</span>
-<a name="l-638"></a>			<span class="n">isArX</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">10</span><span class="p">]</span> <span class="o">|</span> <span class="n">row</span><span class="p">[</span><span class="mh">12</span><span class="p">];</span>
-<a name="l-639"></a>		<span class="k">default</span><span class="o">:</span>
-<a name="l-640"></a>			<span class="n">isArX</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-641"></a>		<span class="k">endcase</span>
-<a name="l-642"></a>	<span class="k">end</span>
-<a name="l-643"></a>
-<a name="l-644"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-645"></a>		<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">12</span><span class="p">])</span>
-<a name="l-646"></a>
-<a name="l-647"></a>		<span class="mh">&#39;h4</span><span class="o">:</span>  <span class="k">begin</span>
-<a name="l-648"></a>				<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">])</span>
-<a name="l-649"></a>					<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_06</span><span class="p">;</span>			<span class="c1">// chk (or lea)</span>
-<a name="l-650"></a>				<span class="k">else</span> <span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">9</span><span class="p">])</span>
-<a name="l-651"></a>					<span class="mb">&#39;b000</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_10</span><span class="p">;</span>	<span class="c1">// negx</span>
-<a name="l-652"></a>					<span class="mb">&#39;b001</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>	<span class="c1">// clr</span>
-<a name="l-653"></a>					<span class="mb">&#39;b010</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>	<span class="c1">// neg</span>
-<a name="l-654"></a>					<span class="mb">&#39;b011</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_11</span><span class="p">;</span>	<span class="c1">// not</span>
-<a name="l-655"></a>					<span class="mb">&#39;b100</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">])</span> <span class="o">?</span> <span class="no">`ALU_ROW_08</span> <span class="o">:</span> <span class="no">`ALU_ROW_09</span><span class="p">;</span>	<span class="c1">// nbcd/swap/ext(or pea)</span>
-<a name="l-656"></a>					<span class="mb">&#39;b101</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_15</span><span class="p">;</span>	<span class="c1">// tst &amp; tas</span>
-<a name="l-657"></a>					<span class="k">default</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-658"></a>				<span class="k">endcase</span>
-<a name="l-659"></a>			<span class="k">end</span>
-<a name="l-660"></a>
-<a name="l-661"></a>		<span class="mh">&#39;h0</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-662"></a>				<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">])</span>                       <span class="c1">// dynamic bit</span>
-<a name="l-663"></a>					<span class="n">row</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">?</span> <span class="no">`ALU_ROW_14</span> <span class="o">:</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>
-<a name="l-664"></a>				<span class="k">else</span> <span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span> <span class="mh">11</span><span class="o">:</span><span class="mh">9</span><span class="p">])</span>
-<a name="l-665"></a>					<span class="mb">&#39;b000</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_14</span><span class="p">;</span>	<span class="c1">// ori</span>
-<a name="l-666"></a>					<span class="mb">&#39;b001</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>	<span class="c1">// andi</span>
-<a name="l-667"></a>					<span class="mb">&#39;b010</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>	<span class="c1">// subi</span>
-<a name="l-668"></a>					<span class="mb">&#39;b011</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>	<span class="c1">// addi</span>
-<a name="l-669"></a>					<span class="mb">&#39;b100</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">?</span> <span class="no">`ALU_ROW_14</span> <span class="o">:</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>   <span class="c1">// static bit</span>
-<a name="l-670"></a>					<span class="mb">&#39;b101</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>	<span class="c1">// eori</span>
-<a name="l-671"></a>					<span class="mb">&#39;b110</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_06</span><span class="p">;</span>	<span class="c1">// cmpi</span>
-<a name="l-672"></a>					<span class="k">default</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-673"></a>					<span class="k">endcase</span>
-<a name="l-674"></a>				<span class="k">end</span>
-<a name="l-675"></a>				
-<a name="l-676"></a>		<span class="c1">// MOVE</span>
-<a name="l-677"></a>		<span class="c1">// move.b originally also rows 5 &amp; 15. Only because IRD bit 14 is not decoded.</span>
-<a name="l-678"></a>		<span class="c1">// It&#39;s the same for move the operations performed by MOVE.B</span>
-<a name="l-679"></a>
-<a name="l-680"></a>		<span class="mh">&#39;h1</span><span class="p">,</span><span class="mh">&#39;h2</span><span class="p">,</span><span class="mh">&#39;h3</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>
-<a name="l-681"></a>		
-<a name="l-682"></a>		<span class="mh">&#39;h5</span><span class="o">:</span>
-<a name="l-683"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>										
-<a name="l-684"></a>               <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_15</span><span class="p">;</span>								<span class="c1">// As originally and easier to decode</span>
-<a name="l-685"></a>			<span class="k">else</span>
-<a name="l-686"></a>				<span class="n">row</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">?</span> <span class="no">`ALU_ROW_05</span> <span class="o">:</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>     <span class="c1">// addq/subq</span>
-<a name="l-687"></a>		<span class="mh">&#39;h6</span><span class="o">:</span>	<span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>						<span class="c1">//bcc/bra/bsr</span>
-<a name="l-688"></a>		<span class="mh">&#39;h7</span><span class="o">:</span>	<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>				<span class="c1">// moveq</span>
-<a name="l-689"></a>		<span class="mh">&#39;h8</span><span class="o">:</span>
-<a name="l-690"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>						<span class="c1">// div</span>
-<a name="l-691"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_01</span><span class="p">;</span>
-<a name="l-692"></a>			<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>		<span class="c1">// sbcd</span>
-<a name="l-693"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_09</span><span class="p">;</span>
-<a name="l-694"></a>			<span class="k">else</span>
-<a name="l-695"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_14</span><span class="p">;</span>			<span class="c1">// or</span>
-<a name="l-696"></a>		<span class="mh">&#39;h9</span><span class="o">:</span>
-<a name="l-697"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">size11</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>
-<a name="l-698"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_10</span><span class="p">;</span>			<span class="c1">// subx</span>
-<a name="l-699"></a>			<span class="k">else</span>
-<a name="l-700"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>			<span class="c1">// sub/suba</span>
-<a name="l-701"></a>		<span class="mh">&#39;hb</span><span class="o">:</span>
-<a name="l-702"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">size11</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">eaAdir</span><span class="p">)</span>
-<a name="l-703"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>			<span class="c1">// eor</span>
-<a name="l-704"></a>			<span class="k">else</span>
-<a name="l-705"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_06</span><span class="p">;</span>			<span class="c1">// cmp/cmpa/cmpm</span>
-<a name="l-706"></a>		<span class="mh">&#39;hc</span><span class="o">:</span>
-<a name="l-707"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>
-<a name="l-708"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_07</span><span class="p">;</span>			<span class="c1">// mul</span>
-<a name="l-709"></a>			<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>		<span class="c1">// abcd</span>
-<a name="l-710"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_03</span><span class="p">;</span>
-<a name="l-711"></a>			<span class="k">else</span>
-<a name="l-712"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>			<span class="c1">// and</span>
-<a name="l-713"></a>		<span class="mh">&#39;hd</span><span class="o">:</span>
-<a name="l-714"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">size11</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>
-<a name="l-715"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_12</span><span class="p">;</span>			<span class="c1">// addx</span>
-<a name="l-716"></a>			<span class="k">else</span>
-<a name="l-717"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>			<span class="c1">// add/adda</span>
-<a name="l-718"></a>		<span class="mh">&#39;he</span><span class="o">:</span>
-<a name="l-719"></a>			<span class="k">begin</span>
-<a name="l-720"></a>				<span class="k">reg</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">stype</span><span class="p">;</span>
-<a name="l-721"></a>				
-<a name="l-722"></a>				<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>					<span class="c1">// memory shift/rotate</span>
-<a name="l-723"></a>					<span class="n">stype</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span> <span class="mh">10</span><span class="o">:</span><span class="mh">9</span><span class="p">];</span>
-<a name="l-724"></a>				<span class="k">else</span>						<span class="c1">// register shift/rotate</span>
-<a name="l-725"></a>					<span class="n">stype</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span> <span class="mh">4</span><span class="o">:</span><span class="mh">3</span><span class="p">];</span>
-<a name="l-726"></a>
-<a name="l-727"></a>				<span class="k">case</span><span class="p">(</span> <span class="p">{</span><span class="n">stype</span><span class="p">,</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]})</span>
-<a name="l-728"></a>				<span class="mh">0</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>	<span class="c1">// ASR</span>
-<a name="l-729"></a>				<span class="mh">1</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_03</span><span class="p">;</span>	<span class="c1">// ASL</span>
-<a name="l-730"></a>				<span class="mh">2</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>	<span class="c1">// LSR</span>
-<a name="l-731"></a>				<span class="mh">3</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>	<span class="c1">// LSL</span>
-<a name="l-732"></a>				<span class="mh">4</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_08</span><span class="p">;</span>	<span class="c1">// ROXR</span>
-<a name="l-733"></a>				<span class="mh">5</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_11</span><span class="p">;</span>	<span class="c1">// ROXL</span>
-<a name="l-734"></a>				<span class="mh">6</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_10</span><span class="p">;</span>	<span class="c1">// ROR</span>
-<a name="l-735"></a>				<span class="mh">7</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_09</span><span class="p">;</span>	<span class="c1">// ROL</span>
-<a name="l-736"></a>				<span class="k">endcase</span>
-<a name="l-737"></a>			<span class="k">end</span>
-<a name="l-738"></a>			
-<a name="l-739"></a>		<span class="k">default</span><span class="o">:</span>	<span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-740"></a>		<span class="k">endcase</span>
-<a name="l-741"></a>	<span class="k">end</span>
-<a name="l-742"></a>   
-<a name="l-743"></a>	<span class="c1">// Decode opcodes that don&#39;t affect flags</span>
-<a name="l-744"></a>	<span class="c1">// ADDA/SUBA ADDQ/SUBQ MOVEA</span>
-<a name="l-745"></a>
-<a name="l-746"></a>	<span class="k">assign</span> <span class="n">noCcrEn</span> <span class="o">=</span>
-<a name="l-747"></a>		<span class="c1">// ADDA/SUBA</span>
-<a name="l-748"></a>		<span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ird</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">size11</span><span class="p">)</span> <span class="o">|</span>
-<a name="l-749"></a>		<span class="c1">// ADDQ/SUBQ to An</span>
-<a name="l-750"></a>		<span class="p">(</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">12</span><span class="p">]</span> <span class="o">==</span> <span class="mh">4&#39;h5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">eaAdir</span><span class="p">)</span> <span class="o">|</span>
-<a name="l-751"></a>		<span class="c1">// MOVEA</span>
-<a name="l-752"></a>		<span class="p">(</span> <span class="p">(</span><span class="o">~</span><span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ird</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">13</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">6</span><span class="p">]</span> <span class="o">==</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">);</span>
-<a name="l-753"></a>        
-<a name="l-754"></a><span class="k">endmodule</span>
-<a name="l-755"></a>
-<a name="l-756"></a><span class="c1">// Row/col CCR update table</span>
-<a name="l-757"></a><span class="k">module</span> <span class="n">ccrTable</span><span class="p">(</span> 
-<a name="l-758"></a>	<span class="k">input</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">col</span><span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">,</span> <span class="k">input</span> <span class="n">finish</span><span class="p">,</span>
-<a name="l-759"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">MASK_NBITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ccrMask</span><span class="p">);</span>
-<a name="l-760"></a>    
-<a name="l-761"></a>	<span class="k">localparam</span>
-<a name="l-762"></a>		<span class="n">KNZ00</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>   <span class="c1">// ok coz operators clear them</span>
-<a name="l-763"></a>		<span class="n">KKZKK</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b00100</span><span class="p">,</span>
-<a name="l-764"></a>		<span class="n">KNZKK</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01100</span><span class="p">,</span>
-<a name="l-765"></a>		<span class="n">KNZ10</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>	<span class="c1">// Used by OP_EXT on divison overflow</span>
-<a name="l-766"></a>		<span class="n">KNZ0C</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>	<span class="c1">// Used by DIV. V should be 0, but it is ok:</span>
-<a name="l-767"></a>							<span class="c1">// DIVU: ends with quotient - 0, so V &amp; C always clear.</span>
-<a name="l-768"></a>							<span class="c1">// DIVS: ends with 1i (AND), again, V &amp; C always clear.</span>
-<a name="l-769"></a>
-<a name="l-770"></a>		<span class="n">KNZVC</span>	<span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>
-<a name="l-771"></a>		<span class="n">XNKVC</span>	<span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b11011</span><span class="p">,</span>	<span class="c1">// Used by BCD instructions. Don&#39;t modify Z at all at the binary operation. Only at the BCD correction cycle</span>
-<a name="l-772"></a>		
-<a name="l-773"></a>		<span class="n">CUPDALL</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b11111</span><span class="p">,</span>
-<a name="l-774"></a>		<span class="n">CUNUSED</span> <span class="o">=</span> <span class="mh">5</span><span class="p">&#39;</span><span class="n">bxxxxx</span><span class="p">;</span>
-<a name="l-775"></a>    
-<a name="l-776"></a>
-<a name="l-777"></a>	<span class="k">logic</span> <span class="p">[</span><span class="n">MASK_NBITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ccrMask1</span><span class="p">;</span>
-<a name="l-778"></a>
-<a name="l-779"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-780"></a>		<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
-<a name="l-781"></a>		<span class="mh">1</span><span class="o">:</span>			<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">ccrMask1</span><span class="p">;</span>
-<a name="l-782"></a>		
-<a name="l-783"></a>		<span class="mh">2</span><span class="p">,</span><span class="mh">3</span><span class="o">:</span>
-<a name="l-784"></a>			<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span>
-<a name="l-785"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span><span class="o">:</span>		<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ0C</span><span class="p">;</span>		<span class="c1">// DIV, used as 3n in col3</span>
-<a name="l-786"></a>			
-<a name="l-787"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span>								<span class="c1">// ABCD</span>
-<a name="l-788"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">9</span><span class="p">]</span><span class="o">:</span>								<span class="c1">// SBCD/NBCD</span>
-<a name="l-789"></a>						<span class="n">ccrMask</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">==</span> <span class="mh">2</span><span class="p">)</span> <span class="o">?</span> <span class="n">XNKVC</span> <span class="o">:</span> <span class="n">CUPDALL</span><span class="p">;</span>
-<a name="l-790"></a>			
-<a name="l-791"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span>
-<a name="l-792"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span>
-<a name="l-793"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">10</span><span class="p">],</span>							<span class="c1">// SUBX/NEGX</span>
-<a name="l-794"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUPDALL</span><span class="p">;</span>		<span class="c1">// ADDX</span>
-<a name="l-795"></a>			
-<a name="l-796"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">6</span><span class="p">],</span>								<span class="c1">// CMP</span>
-<a name="l-797"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">7</span><span class="p">],</span>								<span class="c1">// MUL		</span>
-<a name="l-798"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZVC</span><span class="p">;</span>		<span class="c1">// NOT</span>
-<a name="l-799"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">4</span><span class="p">],</span>
-<a name="l-800"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">8</span><span class="p">],</span>								<span class="c1">// Not used in col 3</span>
-<a name="l-801"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">13</span><span class="p">],</span>
-<a name="l-802"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ00</span><span class="p">;</span>
-<a name="l-803"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b0</span><span class="p">;</span>			<span class="c1">// TAS/Scc, not used in col 3</span>
-<a name="l-804"></a>			<span class="c1">// default:	ccrMask = CUNUSED;</span>
-<a name="l-805"></a>			<span class="k">endcase</span>			
-<a name="l-806"></a>			
-<a name="l-807"></a>		<span class="mh">4</span><span class="o">:</span>
-<a name="l-808"></a>			<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">row</span><span class="p">)</span>
-<a name="l-809"></a>			<span class="c1">// 1: DIV, only n (4n &amp; 6n)</span>
-<a name="l-810"></a>			<span class="c1">// 14: BCLR 4n</span>
-<a name="l-811"></a>			<span class="c1">// 6,12,13,15	// not used</span>
-<a name="l-812"></a>			<span class="no">`ALU_ROW_02</span><span class="p">,</span>
-<a name="l-813"></a>			<span class="no">`ALU_ROW_03</span><span class="p">,</span>							<span class="c1">// ASL    (originally ANZVA)</span>
-<a name="l-814"></a>			<span class="no">`ALU_ROW_04</span><span class="p">,</span>
-<a name="l-815"></a>			<span class="no">`ALU_ROW_05</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUPDALL</span><span class="p">;</span>		<span class="c1">// Shifts (originally ANZ0A)</span>
-<a name="l-816"></a>			
-<a name="l-817"></a>			<span class="no">`ALU_ROW_07</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ00</span><span class="p">;</span>		<span class="c1">// MUL (originally KNZ0A)</span>
-<a name="l-818"></a>			<span class="no">`ALU_ROW_09</span><span class="p">,</span>
-<a name="l-819"></a>			<span class="no">`ALU_ROW_10</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ00</span><span class="p">;</span>		<span class="c1">// RO[lr] (originally KNZ0A)</span>
-<a name="l-820"></a>			<span class="no">`ALU_ROW_08</span><span class="p">,</span>							<span class="c1">// ROXR (originally ANZ0A)</span>
-<a name="l-821"></a>			<span class="no">`ALU_ROW_11</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUPDALL</span><span class="p">;</span>		<span class="c1">// ROXL (originally ANZ0A)</span>
-<a name="l-822"></a>			<span class="k">default</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUNUSED</span><span class="p">;</span>
-<a name="l-823"></a>			<span class="k">endcase</span>
-<a name="l-824"></a>		
-<a name="l-825"></a>		<span class="mh">5</span><span class="o">:</span>			<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">?</span> <span class="n">KNZ10</span> <span class="o">:</span> <span class="mh">5</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-826"></a>		<span class="k">default</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUNUSED</span><span class="p">;</span>
-<a name="l-827"></a>		<span class="k">endcase</span>
-<a name="l-828"></a>	<span class="k">end</span>
-<a name="l-829"></a>
-<a name="l-830"></a>	<span class="c1">// Column 1 (AND)      </span>
-<a name="l-831"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-832"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">finish</span><span class="p">)</span>
-<a name="l-833"></a>			<span class="n">ccrMask1</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">?</span> <span class="n">KNZ00</span> <span class="o">:</span> <span class="n">KNZKK</span><span class="p">;</span>
-<a name="l-834"></a>		<span class="k">else</span>
-<a name="l-835"></a>			<span class="n">ccrMask1</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span> <span class="o">|</span> <span class="n">row</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span> <span class="o">?</span> <span class="n">KKZKK</span> <span class="o">:</span> <span class="n">KNZ00</span><span class="p">;</span>
-<a name="l-836"></a>	<span class="k">end</span>
-<a name="l-837"></a>    
-<a name="l-838"></a><span class="k">endmodule</span>
+<a name="l-627"></a>
+<a name="l-628"></a>	<span class="c1">// Addr or data register direct</span>
+<a name="l-629"></a>	<span class="k">wire</span> <span class="n">eaRdir</span> <span class="o">=</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span> <span class="mh">5</span><span class="o">:</span><span class="mh">4</span><span class="p">]</span> <span class="o">==</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">);</span>
+<a name="l-630"></a>	<span class="c1">// Addr register direct</span>
+<a name="l-631"></a>	<span class="k">wire</span> <span class="n">eaAdir</span> <span class="o">=</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span> <span class="mh">5</span><span class="o">:</span><span class="mh">3</span><span class="p">]</span> <span class="o">==</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">);</span>
+<a name="l-632"></a>	<span class="k">wire</span> <span class="n">size11</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">6</span><span class="p">];</span>
+<a name="l-633"></a>	
+<a name="l-634"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-635"></a>		<span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">12</span><span class="p">])</span>
+<a name="l-636"></a>		<span class="mh">&#39;h4</span><span class="p">,</span>
+<a name="l-637"></a>		<span class="mh">&#39;h9</span><span class="p">,</span>
+<a name="l-638"></a>		<span class="mh">&#39;hd</span><span class="o">:</span>
+<a name="l-639"></a>			<span class="n">isArX</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">10</span><span class="p">]</span> <span class="o">|</span> <span class="n">row</span><span class="p">[</span><span class="mh">12</span><span class="p">];</span>
+<a name="l-640"></a>		<span class="k">default</span><span class="o">:</span>
+<a name="l-641"></a>			<span class="n">isArX</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-642"></a>		<span class="k">endcase</span>
+<a name="l-643"></a>	<span class="k">end</span>
+<a name="l-644"></a>
+<a name="l-645"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-646"></a>		<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">12</span><span class="p">])</span>
+<a name="l-647"></a>
+<a name="l-648"></a>		<span class="mh">&#39;h4</span><span class="o">:</span>  <span class="k">begin</span>
+<a name="l-649"></a>				<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">])</span>
+<a name="l-650"></a>					<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_06</span><span class="p">;</span>			<span class="c1">// chk (or lea)</span>
+<a name="l-651"></a>				<span class="k">else</span> <span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">9</span><span class="p">])</span>
+<a name="l-652"></a>					<span class="mb">&#39;b000</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_10</span><span class="p">;</span>	<span class="c1">// negx</span>
+<a name="l-653"></a>					<span class="mb">&#39;b001</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>	<span class="c1">// clr</span>
+<a name="l-654"></a>					<span class="mb">&#39;b010</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>	<span class="c1">// neg</span>
+<a name="l-655"></a>					<span class="mb">&#39;b011</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_11</span><span class="p">;</span>	<span class="c1">// not</span>
+<a name="l-656"></a>					<span class="mb">&#39;b100</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">])</span> <span class="o">?</span> <span class="no">`ALU_ROW_08</span> <span class="o">:</span> <span class="no">`ALU_ROW_09</span><span class="p">;</span>	<span class="c1">// nbcd/swap/ext(or pea)</span>
+<a name="l-657"></a>					<span class="mb">&#39;b101</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_15</span><span class="p">;</span>	<span class="c1">// tst &amp; tas</span>
+<a name="l-658"></a>					<span class="k">default</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-659"></a>				<span class="k">endcase</span>
+<a name="l-660"></a>			<span class="k">end</span>
+<a name="l-661"></a>
+<a name="l-662"></a>		<span class="mh">&#39;h0</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-663"></a>				<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">])</span>                       <span class="c1">// dynamic bit</span>
+<a name="l-664"></a>					<span class="n">row</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">?</span> <span class="no">`ALU_ROW_14</span> <span class="o">:</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>
+<a name="l-665"></a>				<span class="k">else</span> <span class="k">case</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span> <span class="mh">11</span><span class="o">:</span><span class="mh">9</span><span class="p">])</span>
+<a name="l-666"></a>					<span class="mb">&#39;b000</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_14</span><span class="p">;</span>	<span class="c1">// ori</span>
+<a name="l-667"></a>					<span class="mb">&#39;b001</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>	<span class="c1">// andi</span>
+<a name="l-668"></a>					<span class="mb">&#39;b010</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>	<span class="c1">// subi</span>
+<a name="l-669"></a>					<span class="mb">&#39;b011</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>	<span class="c1">// addi</span>
+<a name="l-670"></a>					<span class="mb">&#39;b100</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">?</span> <span class="no">`ALU_ROW_14</span> <span class="o">:</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>   <span class="c1">// static bit</span>
+<a name="l-671"></a>					<span class="mb">&#39;b101</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>	<span class="c1">// eori</span>
+<a name="l-672"></a>					<span class="mb">&#39;b110</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_06</span><span class="p">;</span>	<span class="c1">// cmpi</span>
+<a name="l-673"></a>					<span class="k">default</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-674"></a>					<span class="k">endcase</span>
+<a name="l-675"></a>				<span class="k">end</span>
+<a name="l-676"></a>				
+<a name="l-677"></a>		<span class="c1">// MOVE</span>
+<a name="l-678"></a>		<span class="c1">// move.b originally also rows 5 &amp; 15. Only because IRD bit 14 is not decoded.</span>
+<a name="l-679"></a>		<span class="c1">// It&#39;s the same for move the operations performed by MOVE.B</span>
+<a name="l-680"></a>
+<a name="l-681"></a>		<span class="mh">&#39;h1</span><span class="p">,</span><span class="mh">&#39;h2</span><span class="p">,</span><span class="mh">&#39;h3</span><span class="o">:</span>   <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>
+<a name="l-682"></a>		
+<a name="l-683"></a>		<span class="mh">&#39;h5</span><span class="o">:</span>
+<a name="l-684"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>										
+<a name="l-685"></a>               <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_15</span><span class="p">;</span>								<span class="c1">// As originally and easier to decode</span>
+<a name="l-686"></a>			<span class="k">else</span>
+<a name="l-687"></a>				<span class="n">row</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">?</span> <span class="no">`ALU_ROW_05</span> <span class="o">:</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>     <span class="c1">// addq/subq</span>
+<a name="l-688"></a>		<span class="mh">&#39;h6</span><span class="o">:</span>	<span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>						<span class="c1">//bcc/bra/bsr</span>
+<a name="l-689"></a>		<span class="mh">&#39;h7</span><span class="o">:</span>	<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>				<span class="c1">// moveq</span>
+<a name="l-690"></a>		<span class="mh">&#39;h8</span><span class="o">:</span>
+<a name="l-691"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>						<span class="c1">// div</span>
+<a name="l-692"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_01</span><span class="p">;</span>
+<a name="l-693"></a>			<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>		<span class="c1">// sbcd</span>
+<a name="l-694"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_09</span><span class="p">;</span>
+<a name="l-695"></a>			<span class="k">else</span>
+<a name="l-696"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_14</span><span class="p">;</span>			<span class="c1">// or</span>
+<a name="l-697"></a>		<span class="mh">&#39;h9</span><span class="o">:</span>
+<a name="l-698"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">size11</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>
+<a name="l-699"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_10</span><span class="p">;</span>			<span class="c1">// subx</span>
+<a name="l-700"></a>			<span class="k">else</span>
+<a name="l-701"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>			<span class="c1">// sub/suba</span>
+<a name="l-702"></a>		<span class="mh">&#39;hb</span><span class="o">:</span>
+<a name="l-703"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">size11</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">eaAdir</span><span class="p">)</span>
+<a name="l-704"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_13</span><span class="p">;</span>			<span class="c1">// eor</span>
+<a name="l-705"></a>			<span class="k">else</span>
+<a name="l-706"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_06</span><span class="p">;</span>			<span class="c1">// cmp/cmpa/cmpm</span>
+<a name="l-707"></a>		<span class="mh">&#39;hc</span><span class="o">:</span>
+<a name="l-708"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>
+<a name="l-709"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_07</span><span class="p">;</span>			<span class="c1">// mul</span>
+<a name="l-710"></a>			<span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>		<span class="c1">// abcd</span>
+<a name="l-711"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_03</span><span class="p">;</span>
+<a name="l-712"></a>			<span class="k">else</span>
+<a name="l-713"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>			<span class="c1">// and</span>
+<a name="l-714"></a>		<span class="mh">&#39;hd</span><span class="o">:</span>
+<a name="l-715"></a>			<span class="k">if</span><span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">size11</span> <span class="o">&amp;</span> <span class="n">eaRdir</span><span class="p">)</span>
+<a name="l-716"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_12</span><span class="p">;</span>			<span class="c1">// addx</span>
+<a name="l-717"></a>			<span class="k">else</span>
+<a name="l-718"></a>				<span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>			<span class="c1">// add/adda</span>
+<a name="l-719"></a>		<span class="mh">&#39;he</span><span class="o">:</span>
+<a name="l-720"></a>			<span class="k">begin</span>
+<a name="l-721"></a>				<span class="k">reg</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">stype</span><span class="p">;</span>
+<a name="l-722"></a>				
+<a name="l-723"></a>				<span class="k">if</span><span class="p">(</span> <span class="n">size11</span><span class="p">)</span>					<span class="c1">// memory shift/rotate</span>
+<a name="l-724"></a>					<span class="n">stype</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span> <span class="mh">10</span><span class="o">:</span><span class="mh">9</span><span class="p">];</span>
+<a name="l-725"></a>				<span class="k">else</span>						<span class="c1">// register shift/rotate</span>
+<a name="l-726"></a>					<span class="n">stype</span> <span class="o">=</span> <span class="n">ird</span><span class="p">[</span> <span class="mh">4</span><span class="o">:</span><span class="mh">3</span><span class="p">];</span>
+<a name="l-727"></a>
+<a name="l-728"></a>				<span class="k">case</span><span class="p">(</span> <span class="p">{</span><span class="n">stype</span><span class="p">,</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="p">]})</span>
+<a name="l-729"></a>				<span class="mh">0</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_02</span><span class="p">;</span>	<span class="c1">// ASR</span>
+<a name="l-730"></a>				<span class="mh">1</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_03</span><span class="p">;</span>	<span class="c1">// ASL</span>
+<a name="l-731"></a>				<span class="mh">2</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_05</span><span class="p">;</span>	<span class="c1">// LSR</span>
+<a name="l-732"></a>				<span class="mh">3</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_04</span><span class="p">;</span>	<span class="c1">// LSL</span>
+<a name="l-733"></a>				<span class="mh">4</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_08</span><span class="p">;</span>	<span class="c1">// ROXR</span>
+<a name="l-734"></a>				<span class="mh">5</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_11</span><span class="p">;</span>	<span class="c1">// ROXL</span>
+<a name="l-735"></a>				<span class="mh">6</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_10</span><span class="p">;</span>	<span class="c1">// ROR</span>
+<a name="l-736"></a>				<span class="mh">7</span><span class="o">:</span> <span class="n">row</span> <span class="o">=</span> <span class="no">`ALU_ROW_09</span><span class="p">;</span>	<span class="c1">// ROL</span>
+<a name="l-737"></a>				<span class="k">endcase</span>
+<a name="l-738"></a>			<span class="k">end</span>
+<a name="l-739"></a>			
+<a name="l-740"></a>		<span class="k">default</span><span class="o">:</span>	<span class="n">row</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-741"></a>		<span class="k">endcase</span>
+<a name="l-742"></a>	<span class="k">end</span>
+<a name="l-743"></a>   
+<a name="l-744"></a>	<span class="c1">// Decode opcodes that don&#39;t affect flags</span>
+<a name="l-745"></a>	<span class="c1">// ADDA/SUBA ADDQ/SUBQ MOVEA</span>
+<a name="l-746"></a>
+<a name="l-747"></a>	<span class="k">assign</span> <span class="n">noCcrEn</span> <span class="o">=</span>
+<a name="l-748"></a>		<span class="c1">// ADDA/SUBA</span>
+<a name="l-749"></a>		<span class="p">(</span> <span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ird</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">size11</span><span class="p">)</span> <span class="o">|</span>
+<a name="l-750"></a>		<span class="c1">// ADDQ/SUBQ to An</span>
+<a name="l-751"></a>		<span class="p">(</span> <span class="p">(</span><span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">12</span><span class="p">]</span> <span class="o">==</span> <span class="mh">4&#39;h5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">eaAdir</span><span class="p">)</span> <span class="o">|</span>
+<a name="l-752"></a>		<span class="c1">// MOVEA</span>
+<a name="l-753"></a>		<span class="p">(</span> <span class="p">(</span><span class="o">~</span><span class="n">ird</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ird</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">13</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">ird</span><span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">6</span><span class="p">]</span> <span class="o">==</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">);</span>
+<a name="l-754"></a>        
+<a name="l-755"></a><span class="k">endmodule</span>
+<a name="l-756"></a>
+<a name="l-757"></a><span class="c1">// Row/col CCR update table</span>
+<a name="l-758"></a><span class="k">module</span> <span class="n">ccrTable</span><span class="p">(</span> 
+<a name="l-759"></a>	<span class="k">input</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">col</span><span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">row</span><span class="p">,</span> <span class="k">input</span> <span class="n">finish</span><span class="p">,</span>
+<a name="l-760"></a>	<span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">MASK_NBITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ccrMask</span><span class="p">);</span>
+<a name="l-761"></a>    
+<a name="l-762"></a>	<span class="k">localparam</span>
+<a name="l-763"></a>		<span class="n">KNZ00</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>   <span class="c1">// ok coz operators clear them</span>
+<a name="l-764"></a>		<span class="n">KKZKK</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b00100</span><span class="p">,</span>
+<a name="l-765"></a>		<span class="n">KNZKK</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01100</span><span class="p">,</span>
+<a name="l-766"></a>		<span class="n">KNZ10</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>	<span class="c1">// Used by OP_EXT on divison overflow</span>
+<a name="l-767"></a>		<span class="n">KNZ0C</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>	<span class="c1">// Used by DIV. V should be 0, but it is ok:</span>
+<a name="l-768"></a>							<span class="c1">// DIVU: ends with quotient - 0, so V &amp; C always clear.</span>
+<a name="l-769"></a>							<span class="c1">// DIVS: ends with 1i (AND), again, V &amp; C always clear.</span>
+<a name="l-770"></a>
+<a name="l-771"></a>		<span class="n">KNZVC</span>	<span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b01111</span><span class="p">,</span>
+<a name="l-772"></a>		<span class="n">XNKVC</span>	<span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b11011</span><span class="p">,</span>	<span class="c1">// Used by BCD instructions. Don&#39;t modify Z at all at the binary operation. Only at the BCD correction cycle</span>
+<a name="l-773"></a>		
+<a name="l-774"></a>		<span class="n">CUPDALL</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b11111</span><span class="p">,</span>
+<a name="l-775"></a>		<span class="n">CUNUSED</span> <span class="o">=</span> <span class="mh">5</span><span class="p">&#39;</span><span class="n">bxxxxx</span><span class="p">;</span>
+<a name="l-776"></a>    
+<a name="l-777"></a>
+<a name="l-778"></a>	<span class="k">logic</span> <span class="p">[</span><span class="n">MASK_NBITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ccrMask1</span><span class="p">;</span>
+<a name="l-779"></a>
+<a name="l-780"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-781"></a>		<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">col</span><span class="p">)</span>
+<a name="l-782"></a>		<span class="mh">1</span><span class="o">:</span>			<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">ccrMask1</span><span class="p">;</span>
+<a name="l-783"></a>		
+<a name="l-784"></a>		<span class="mh">2</span><span class="p">,</span><span class="mh">3</span><span class="o">:</span>
+<a name="l-785"></a>			<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span>
+<a name="l-786"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span><span class="o">:</span>		<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ0C</span><span class="p">;</span>		<span class="c1">// DIV, used as 3n in col3</span>
+<a name="l-787"></a>			
+<a name="l-788"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span>								<span class="c1">// ABCD</span>
+<a name="l-789"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">9</span><span class="p">]</span><span class="o">:</span>								<span class="c1">// SBCD/NBCD</span>
+<a name="l-790"></a>						<span class="n">ccrMask</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">==</span> <span class="mh">2</span><span class="p">)</span> <span class="o">?</span> <span class="n">XNKVC</span> <span class="o">:</span> <span class="n">CUPDALL</span><span class="p">;</span>
+<a name="l-791"></a>			
+<a name="l-792"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span>
+<a name="l-793"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span>
+<a name="l-794"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">10</span><span class="p">],</span>							<span class="c1">// SUBX/NEGX</span>
+<a name="l-795"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUPDALL</span><span class="p">;</span>		<span class="c1">// ADDX</span>
+<a name="l-796"></a>			
+<a name="l-797"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">6</span><span class="p">],</span>								<span class="c1">// CMP</span>
+<a name="l-798"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">7</span><span class="p">],</span>								<span class="c1">// MUL		</span>
+<a name="l-799"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZVC</span><span class="p">;</span>		<span class="c1">// NOT</span>
+<a name="l-800"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">4</span><span class="p">],</span>
+<a name="l-801"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">8</span><span class="p">],</span>								<span class="c1">// Not used in col 3</span>
+<a name="l-802"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">13</span><span class="p">],</span>
+<a name="l-803"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ00</span><span class="p">;</span>
+<a name="l-804"></a>			<span class="n">row</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="mh">5</span><span class="mb">&#39;b0</span><span class="p">;</span>			<span class="c1">// TAS/Scc, not used in col 3</span>
+<a name="l-805"></a>			<span class="c1">// default:	ccrMask = CUNUSED;</span>
+<a name="l-806"></a>			<span class="k">endcase</span>			
+<a name="l-807"></a>			
+<a name="l-808"></a>		<span class="mh">4</span><span class="o">:</span>
+<a name="l-809"></a>			<span class="k">unique</span> <span class="k">case</span><span class="p">(</span> <span class="n">row</span><span class="p">)</span>
+<a name="l-810"></a>			<span class="c1">// 1: DIV, only n (4n &amp; 6n)</span>
+<a name="l-811"></a>			<span class="c1">// 14: BCLR 4n</span>
+<a name="l-812"></a>			<span class="c1">// 6,12,13,15	// not used</span>
+<a name="l-813"></a>			<span class="no">`ALU_ROW_02</span><span class="p">,</span>
+<a name="l-814"></a>			<span class="no">`ALU_ROW_03</span><span class="p">,</span>							<span class="c1">// ASL    (originally ANZVA)</span>
+<a name="l-815"></a>			<span class="no">`ALU_ROW_04</span><span class="p">,</span>
+<a name="l-816"></a>			<span class="no">`ALU_ROW_05</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUPDALL</span><span class="p">;</span>		<span class="c1">// Shifts (originally ANZ0A)</span>
+<a name="l-817"></a>			
+<a name="l-818"></a>			<span class="no">`ALU_ROW_07</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ00</span><span class="p">;</span>		<span class="c1">// MUL (originally KNZ0A)</span>
+<a name="l-819"></a>			<span class="no">`ALU_ROW_09</span><span class="p">,</span>
+<a name="l-820"></a>			<span class="no">`ALU_ROW_10</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">KNZ00</span><span class="p">;</span>		<span class="c1">// RO[lr] (originally KNZ0A)</span>
+<a name="l-821"></a>			<span class="no">`ALU_ROW_08</span><span class="p">,</span>							<span class="c1">// ROXR (originally ANZ0A)</span>
+<a name="l-822"></a>			<span class="no">`ALU_ROW_11</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUPDALL</span><span class="p">;</span>		<span class="c1">// ROXL (originally ANZ0A)</span>
+<a name="l-823"></a>			<span class="k">default</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUNUSED</span><span class="p">;</span>
+<a name="l-824"></a>			<span class="k">endcase</span>
+<a name="l-825"></a>		
+<a name="l-826"></a>		<span class="mh">5</span><span class="o">:</span>			<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">?</span> <span class="n">KNZ10</span> <span class="o">:</span> <span class="mh">5</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-827"></a>		<span class="k">default</span><span class="o">:</span>	<span class="n">ccrMask</span> <span class="o">=</span> <span class="n">CUNUSED</span><span class="p">;</span>
+<a name="l-828"></a>		<span class="k">endcase</span>
+<a name="l-829"></a>	<span class="k">end</span>
+<a name="l-830"></a>
+<a name="l-831"></a>	<span class="c1">// Column 1 (AND)      </span>
+<a name="l-832"></a>	<span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-833"></a>		<span class="k">if</span><span class="p">(</span> <span class="n">finish</span><span class="p">)</span>
+<a name="l-834"></a>			<span class="n">ccrMask1</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">?</span> <span class="n">KNZ00</span> <span class="o">:</span> <span class="n">KNZKK</span><span class="p">;</span>
+<a name="l-835"></a>		<span class="k">else</span>
+<a name="l-836"></a>			<span class="n">ccrMask1</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span> <span class="o">|</span> <span class="n">row</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span> <span class="o">?</span> <span class="n">KKZKK</span> <span class="o">:</span> <span class="n">KNZ00</span><span class="p">;</span>
+<a name="l-837"></a>	<span class="k">end</span>
+<a name="l-838"></a>    
+<a name="l-839"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

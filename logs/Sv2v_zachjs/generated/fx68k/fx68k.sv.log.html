@@ -16,13 +16,14 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/fx68k/fx68k.sv.html" target="file-frame">third_party/cores/fx68k/fx68k.sv</a> <a href="../../../../third_party/cores/fx68k/fx68kAlu.sv.html" target="file-frame">third_party/cores/fx68k/fx68kAlu.sv</a> <a href="../../../../third_party/cores/fx68k/uaddrPla.sv.html" target="file-frame">third_party/cores/fx68k/uaddrPla.sv</a>
-time_elapsed: 15.500s
-ram usage: 57296 KB
+time_elapsed: 15.300s
+ram usage: 59848 KB
 </pre>
 <pre class="log">
 
 module fx68k (
 	clk,
+	HALTn,
 	extReset,
 	pwrUp,
 	enPhi1,
@@ -65,6 +66,7 @@ module fx68k (
 	localparam TVN_AUTOVEC = 13;
 	localparam TVN_INTERRUPT = 15;
 	input clk;
+	input HALTn;
 	input extReset;
 	input pwrUp;
 	input enPhi1;
@@ -131,6 +133,7 @@ module fx68k (
 	reg [2:0] iIpl;
 	reg Vpai;
 	reg BeI;
+	reg Halti;
 	reg BRi;
 	reg BgackI;
 	reg BeiDelay;
@@ -150,8 +153,9 @@ module fx68k (
 			Vpai &lt;= VPAn;
 			BeI &lt;= rBerr;
 			BeiDelay &lt;= BeI;
-			BRi &lt;= BRn;
 			BgackI &lt;= BGACKn;
+			BRi &lt;= BRn;
+			Halti &lt;= HALTn;
 		end
 	reg [(NANO_WIDTH - 1):0] nanoLatch;
 	wire [(NANO_WIDTH - 1):0] nanoOutput;
@@ -362,7 +366,7 @@ module fx68k (
 		.Clks(Clks),
 		.BRi(BRi),
 		.BgackI(BgackI),
-		.Halti(1&#39;b1),
+		.Halti(Halti),
 		.bgBlock(bgBlock),
 		.busAvail(busAvail),
 		.BGn(BGn)
@@ -2471,6 +2475,7 @@ module fx68kAlu (
 				if ((aluColumn == 5)) begin
 					ccrTemp[VF] = 1&#39;b1;
 					ccrTemp[NF] = 1&#39;b1;
+					ccrTemp[ZF] = 1&#39;b0;
 				end
 			OP_SUB0, OP_OR, OP_EOR: begin
 				ccrTemp[CF] = 0;
