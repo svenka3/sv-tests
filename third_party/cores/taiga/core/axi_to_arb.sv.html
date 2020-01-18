@@ -268,7 +268,7 @@
 <a href="#l-260">260</a>
 <a href="#l-261">261</a>
 <a href="#l-262">262</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
-<a name="l-2"></a><span class="cm"> * Copyright © 2017 Eric Matthews,  Lesley Shannon</span>
+<a name="l-2"></a><span class="cm"> * Copyright © 2017-2019 Eric Matthews,  Lesley Shannon</span>
 <a name="l-3"></a><span class="cm"> *</span>
 <a name="l-4"></a><span class="cm"> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <a name="l-5"></a><span class="cm"> * you may not use this file except in compliance with the License.</span>
@@ -373,7 +373,7 @@
 <a name="l-104"></a>
 <a name="l-105"></a>
 <a name="l-106"></a>    <span class="c1">//AMO read modify write support ****************************************************</span>
-<a name="l-107"></a>    <span class="k">assign</span> <span class="n">read_modify_write</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">is_amo</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span> <span class="o">!=</span> <span class="n">AMO_LR</span> <span class="o">||</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span> <span class="o">!=</span> <span class="n">AMO_SC</span><span class="p">);</span>
+<a name="l-107"></a>    <span class="k">assign</span> <span class="n">read_modify_write</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">is_amo</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span> <span class="o">!=</span> <span class="n">AMO_LR</span> <span class="o">||</span> <span class="n">l2</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span> <span class="o">!=</span> <span class="n">AMO_SC</span><span class="p">);</span>
 <a name="l-108"></a>
 <a name="l-109"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-110"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
@@ -398,20 +398,20 @@
 <a name="l-129"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-130"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
 <a name="l-131"></a>            <span class="n">read_count</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-132"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">axi_rvalid</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">axi_rid</span> <span class="o">==</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">id</span><span class="p">))</span>
+<a name="l-132"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">axi_rvalid</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">axi_rid</span> <span class="o">==</span> <span class="n">l2</span><span class="p">.</span><span class="n">id</span><span class="p">))</span>
 <a name="l-133"></a>            <span class="n">read_count</span> <span class="o">&lt;=</span> <span class="n">read_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
 <a name="l-134"></a>    <span class="k">end</span>
 <a name="l-135"></a>
 <a name="l-136"></a>    <span class="k">assign</span> <span class="n">amo_alu_inputs</span><span class="p">.</span><span class="n">rs1_load</span> <span class="o">=</span> <span class="n">axi_rdata</span><span class="p">;</span>
 <a name="l-137"></a>    <span class="k">assign</span> <span class="n">amo_alu_inputs</span><span class="p">.</span><span class="n">rs2</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">wr_data</span><span class="p">;</span>
-<a name="l-138"></a>    <span class="k">assign</span> <span class="n">amo_alu_inputs</span><span class="p">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span><span class="p">;</span>
+<a name="l-138"></a>    <span class="k">assign</span> <span class="n">amo_alu_inputs</span><span class="p">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span><span class="p">;</span>
 <a name="l-139"></a>
 <a name="l-140"></a>    <span class="n">amo_alu</span> <span class="n">amo_unit</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">result</span><span class="p">(</span><span class="n">amo_result</span><span class="p">));</span>
 <a name="l-141"></a>
 <a name="l-142"></a>    <span class="c1">//TODO:  assumption that all data caches have same line size, would have to update wrt the burst size to be safe if they have different line lengths</span>
 <a name="l-143"></a>    <span class="c1">//also update araddr</span>
 <a name="l-144"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-145"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">axi_rvalid</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">read_count</span> <span class="o">==</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">addr</span><span class="p">[</span><span class="nl">DCACHE_SUB_LINE_ADDR_W:</span><span class="mh">0</span><span class="p">]))</span>
+<a name="l-145"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">axi_rvalid</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">read_count</span> <span class="o">==</span> <span class="n">l2</span><span class="p">.</span><span class="n">addr</span><span class="p">[</span><span class="nl">DCACHE_SUB_LINE_ADDR_W:</span><span class="mh">0</span><span class="p">]))</span>
 <a name="l-146"></a>            <span class="n">amo_result_r</span> <span class="o">&lt;=</span> <span class="n">amo_result</span><span class="p">;</span>
 <a name="l-147"></a>    <span class="k">end</span>
 <a name="l-148"></a>
@@ -420,12 +420,12 @@
 <a name="l-151"></a>            <span class="n">amo_write_ready</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
 <a name="l-152"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">pop</span><span class="p">)</span>
 <a name="l-153"></a>            <span class="n">amo_write_ready</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-154"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">is_amo</span> <span class="o">&amp;&amp;</span> <span class="n">axi_rvalid</span> <span class="o">&amp;&amp;</span> <span class="n">read_count</span> <span class="o">==</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">addr</span><span class="p">[</span><span class="nl">DCACHE_SUB_LINE_ADDR_W:</span><span class="mh">0</span><span class="p">])</span>
+<a name="l-154"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">is_amo</span> <span class="o">&amp;&amp;</span> <span class="n">axi_rvalid</span> <span class="o">&amp;&amp;</span> <span class="n">read_count</span> <span class="o">==</span> <span class="n">l2</span><span class="p">.</span><span class="n">addr</span><span class="p">[</span><span class="nl">DCACHE_SUB_LINE_ADDR_W:</span><span class="mh">0</span><span class="p">])</span>
 <a name="l-155"></a>            <span class="n">amo_write_ready</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
 <a name="l-156"></a>    <span class="k">end</span>
 <a name="l-157"></a>    <span class="c1">//End AMO</span>
 <a name="l-158"></a>
-<a name="l-159"></a>    <span class="k">assign</span> <span class="n">burst_count</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span><span class="p">;</span>
+<a name="l-159"></a>    <span class="k">assign</span> <span class="n">burst_count</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span><span class="p">;</span>
 <a name="l-160"></a>
 <a name="l-161"></a>    <span class="c1">//read constants</span>
 <a name="l-162"></a>    <span class="k">assign</span> <span class="n">axi_arlen</span> <span class="o">=</span> <span class="n">burst_count</span><span class="p">;</span> <span class="c1">//</span>
@@ -434,9 +434,9 @@
 <a name="l-165"></a>    <span class="k">assign</span> <span class="n">axi_arsize</span> <span class="o">=</span> <span class="mh">3</span><span class="mb">&#39;b010</span><span class="p">;</span><span class="c1">//4 bytes</span>
 <a name="l-166"></a>    <span class="k">assign</span> <span class="n">axi_arcache</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0011</span><span class="p">;</span> <span class="c1">//bufferable cacheable memory</span>
 <a name="l-167"></a>    <span class="k">assign</span> <span class="n">axi_arport</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-168"></a>    <span class="k">assign</span> <span class="n">axi_arid</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+<a name="l-168"></a>    <span class="k">assign</span> <span class="n">axi_arid</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
 <a name="l-169"></a>
-<a name="l-170"></a>    <span class="k">assign</span> <span class="n">axi_araddr</span> <span class="o">=</span><span class="p">{</span><span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">addr</span><span class="p">[</span><span class="mh">29</span><span class="o">:</span><span class="n">DCACHE_SUB_LINE_ADDR_W</span><span class="p">],</span>  <span class="p">{</span><span class="n">DCACHE_SUB_LINE_ADDR_W</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">};</span>
+<a name="l-170"></a>    <span class="k">assign</span> <span class="n">axi_araddr</span> <span class="o">=</span><span class="p">{</span><span class="n">l2</span><span class="p">.</span><span class="n">addr</span><span class="p">[</span><span class="mh">29</span><span class="o">:</span><span class="n">DCACHE_SUB_LINE_ADDR_W</span><span class="p">],</span>  <span class="p">{</span><span class="n">DCACHE_SUB_LINE_ADDR_W</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">};</span>
 <a name="l-171"></a>
 <a name="l-172"></a>    <span class="k">assign</span> <span class="n">write_reference_burst_count</span> <span class="o">=</span> <span class="n">read_modify_write</span> <span class="o">?</span> <span class="mh">0</span> <span class="o">:</span> <span class="n">burst_count</span><span class="p">;</span>
 <a name="l-173"></a>
@@ -448,11 +448,11 @@
 <a name="l-179"></a>    <span class="k">assign</span> <span class="n">axi_awcache</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0011</span><span class="p">;</span><span class="c1">//bufferable cacheable memory</span>
 <a name="l-180"></a>    <span class="k">assign</span> <span class="n">axi_awport</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-181"></a>
-<a name="l-182"></a>    <span class="k">assign</span> <span class="n">axi_awaddr</span> <span class="o">=</span><span class="p">{</span><span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">addr</span><span class="p">,</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">};</span>
+<a name="l-182"></a>    <span class="k">assign</span> <span class="n">axi_awaddr</span> <span class="o">=</span><span class="p">{</span><span class="n">l2</span><span class="p">.</span><span class="n">addr</span><span class="p">,</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">};</span>
 <a name="l-183"></a>
 <a name="l-184"></a>    <span class="k">assign</span> <span class="n">axi_wdata</span> <span class="o">=</span> <span class="n">read_modify_write</span> <span class="o">?</span> <span class="n">amo_result_r</span> <span class="o">:</span> <span class="n">l2</span><span class="p">.</span><span class="n">wr_data</span><span class="p">;</span>
 <a name="l-185"></a>
-<a name="l-186"></a>    <span class="k">assign</span> <span class="n">axi_wstrb</span> <span class="o">=</span><span class="n">read_modify_write</span> <span class="o">?</span> <span class="m">&#39;1</span> <span class="o">:</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">be</span><span class="p">;</span>
+<a name="l-186"></a>    <span class="k">assign</span> <span class="n">axi_wstrb</span> <span class="o">=</span><span class="n">read_modify_write</span> <span class="o">?</span> <span class="m">&#39;1</span> <span class="o">:</span> <span class="n">l2</span><span class="p">.</span><span class="n">be</span><span class="p">;</span>
 <a name="l-187"></a>
 <a name="l-188"></a>
 <a name="l-189"></a>    <span class="c1">//Done when read request sent, or slave ack on write data</span>
@@ -465,7 +465,7 @@
 <a name="l-196"></a>            <span class="n">axi_arvalid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
 <a name="l-197"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">axi_arvalid</span> <span class="o">&amp;</span> <span class="n">axi_arready</span><span class="p">)</span>
 <a name="l-198"></a>            <span class="n">axi_arvalid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-199"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">request_valid</span> <span class="o">&amp;</span> <span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">rnw</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">address_phase_complete</span><span class="p">)</span>
+<a name="l-199"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">request_valid</span> <span class="o">&amp;</span> <span class="n">l2</span><span class="p">.</span><span class="n">rnw</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">address_phase_complete</span><span class="p">)</span>
 <a name="l-200"></a>            <span class="n">axi_arvalid</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
 <a name="l-201"></a>    <span class="k">end</span>
 <a name="l-202"></a>
@@ -473,7 +473,7 @@
 <a name="l-204"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-205"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
 <a name="l-206"></a>            <span class="n">axi_awvalid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-207"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">wr_data_valid</span> <span class="o">&amp;</span> <span class="n">l2</span><span class="p">.</span><span class="n">request_valid</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">rnw</span> <span class="o">|</span> <span class="n">amo_write_ready</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">write_in_progress</span><span class="p">)</span>
+<a name="l-207"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">wr_data_valid</span> <span class="o">&amp;</span> <span class="n">l2</span><span class="p">.</span><span class="n">request_valid</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">l2</span><span class="p">.</span><span class="n">rnw</span> <span class="o">|</span> <span class="n">amo_write_ready</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">write_in_progress</span><span class="p">)</span>
 <a name="l-208"></a>            <span class="n">axi_awvalid</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
 <a name="l-209"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">axi_awready</span><span class="p">)</span>
 <a name="l-210"></a>            <span class="n">axi_awvalid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
@@ -484,7 +484,7 @@
 <a name="l-215"></a>            <span class="n">write_in_progress</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
 <a name="l-216"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">axi_bvalid</span><span class="p">)</span>
 <a name="l-217"></a>            <span class="n">write_in_progress</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-218"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">wr_data_valid</span> <span class="o">&amp;</span> <span class="n">l2</span><span class="p">.</span><span class="n">request_valid</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">l2</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">rnw</span> <span class="o">|</span> <span class="n">amo_write_ready</span><span class="p">))</span>
+<a name="l-218"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">wr_data_valid</span> <span class="o">&amp;</span> <span class="n">l2</span><span class="p">.</span><span class="n">request_valid</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">l2</span><span class="p">.</span><span class="n">rnw</span> <span class="o">|</span> <span class="n">amo_write_ready</span><span class="p">))</span>
 <a name="l-219"></a>            <span class="n">write_in_progress</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
 <a name="l-220"></a>    <span class="k">end</span>
 <a name="l-221"></a>

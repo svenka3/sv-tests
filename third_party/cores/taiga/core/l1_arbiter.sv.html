@@ -180,8 +180,21 @@
 <a href="#l-172">172</a>
 <a href="#l-173">173</a>
 <a href="#l-174">174</a>
-<a href="#l-175">175</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
-<a name="l-2"></a><span class="cm"> * Copyright © 2017 Eric Matthews,  Lesley Shannon</span>
+<a href="#l-175">175</a>
+<a href="#l-176">176</a>
+<a href="#l-177">177</a>
+<a href="#l-178">178</a>
+<a href="#l-179">179</a>
+<a href="#l-180">180</a>
+<a href="#l-181">181</a>
+<a href="#l-182">182</a>
+<a href="#l-183">183</a>
+<a href="#l-184">184</a>
+<a href="#l-185">185</a>
+<a href="#l-186">186</a>
+<a href="#l-187">187</a>
+<a href="#l-188">188</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
+<a name="l-2"></a><span class="cm"> * Copyright © 2017-2019 Eric Matthews,  Lesley Shannon</span>
 <a name="l-3"></a><span class="cm"> *</span>
 <a name="l-4"></a><span class="cm"> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <a name="l-5"></a><span class="cm"> * you may not use this file except in compliance with the License.</span>
@@ -338,23 +351,36 @@
 <a name="l-156"></a>    <span class="c1">//    endgenerate</span>
 <a name="l-157"></a>
 <a name="l-158"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-159"></a>        <span class="n">l2</span><span class="p">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-160"></a>        <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">2</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span><span class="mh">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-161"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-<a name="l-162"></a>                <span class="n">l2</span><span class="p">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<a name="l-163"></a>        <span class="k">end</span>
-<a name="l-164"></a>    <span class="k">end</span>
-<a name="l-165"></a>
-<a name="l-166"></a>    <span class="k">generate</span>
-<a name="l-167"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span><span class="n">L1_CONNECTIONS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-168"></a>            <span class="k">assign</span> <span class="n">l1_response</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">rd_data</span><span class="p">;</span>
-<a name="l-169"></a>            <span class="k">assign</span> <span class="n">l1_response</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data_valid</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">rd_data_valid</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">rd_sub_id</span> <span class="o">==</span> <span class="n">i</span><span class="p">);</span>
-<a name="l-170"></a>        <span class="k">end</span>
-<a name="l-171"></a>    <span class="k">endgenerate</span>
-<a name="l-172"></a>
-<a name="l-173"></a>
-<a name="l-174"></a>
-<a name="l-175"></a><span class="k">endmodule</span>
+<a name="l-159"></a>        <span class="c1">//l2.request = l2_requests[L1_CONNECTIONS-1];</span>
+<a name="l-160"></a>        <span class="n">l2</span><span class="p">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="p">].</span><span class="n">addr</span><span class="p">;</span>
+<a name="l-161"></a>        <span class="n">l2</span><span class="p">.</span><span class="n">rnw</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="p">].</span><span class="n">rnw</span><span class="p">;</span>
+<a name="l-162"></a>        <span class="n">l2</span><span class="p">.</span><span class="n">be</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="p">].</span><span class="n">be</span><span class="p">;</span>
+<a name="l-163"></a>        <span class="n">l2</span><span class="p">.</span><span class="n">is_amo</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="p">].</span><span class="n">is_amo</span><span class="p">;</span>
+<a name="l-164"></a>        <span class="n">l2</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="p">].</span><span class="n">amo_type_or_burst_size</span><span class="p">;</span>
+<a name="l-165"></a>        <span class="n">l2</span><span class="p">.</span><span class="n">sub_id</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="p">].</span><span class="n">sub_id</span><span class="p">;</span>
+<a name="l-166"></a>        <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">2</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span><span class="mh">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-167"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">begin</span>
+<a name="l-168"></a>                <span class="c1">//l2.request = l2_requests[i];</span>
+<a name="l-169"></a>		<span class="n">l2</span><span class="p">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">addr</span><span class="p">;</span>
+<a name="l-170"></a>                <span class="n">l2</span><span class="p">.</span><span class="n">rnw</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">rnw</span><span class="p">;</span>
+<a name="l-171"></a>                <span class="n">l2</span><span class="p">.</span><span class="n">be</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">be</span><span class="p">;</span>
+<a name="l-172"></a>                <span class="n">l2</span><span class="p">.</span><span class="n">is_amo</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">is_amo</span><span class="p">;</span>
+<a name="l-173"></a>                <span class="n">l2</span><span class="p">.</span><span class="n">amo_type_or_burst_size</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">amo_type_or_burst_size</span><span class="p">;</span>
+<a name="l-174"></a>                <span class="n">l2</span><span class="p">.</span><span class="n">sub_id</span> <span class="o">=</span> <span class="n">l2_requests</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">sub_id</span><span class="p">;</span>
+<a name="l-175"></a>			<span class="k">end</span>
+<a name="l-176"></a>        <span class="k">end</span>
+<a name="l-177"></a>    <span class="k">end</span>
+<a name="l-178"></a>
+<a name="l-179"></a>    <span class="k">generate</span>
+<a name="l-180"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span><span class="n">L1_CONNECTIONS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-181"></a>            <span class="k">assign</span> <span class="n">l1_response</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">rd_data</span><span class="p">;</span>
+<a name="l-182"></a>            <span class="k">assign</span> <span class="n">l1_response</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data_valid</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="n">rd_data_valid</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">l2</span><span class="p">.</span><span class="n">rd_sub_id</span> <span class="o">==</span> <span class="n">i</span><span class="p">);</span>
+<a name="l-183"></a>        <span class="k">end</span>
+<a name="l-184"></a>    <span class="k">endgenerate</span>
+<a name="l-185"></a>
+<a name="l-186"></a>
+<a name="l-187"></a>
+<a name="l-188"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

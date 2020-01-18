@@ -760,7 +760,7 @@
 <a name="l-211"></a>    <span class="k">assign</span> <span class="n">interrupt_privilege_level</span> <span class="o">=</span> <span class="n">interrupt_delegated</span> <span class="o">?</span> <span class="n">SUPERVISOR_PRIVILEGE</span> <span class="o">:</span> <span class="n">MACHINE_PRIVILEGE</span><span class="p">;</span>
 <a name="l-212"></a>
 <a name="l-213"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-214"></a>        <span class="k">unique</span> <span class="k">if</span><span class="p">(</span><span class="n">mret</span> <span class="o">|</span> <span class="n">sret</span><span class="p">)</span>
+<a name="l-214"></a>        <span class="k">if</span><span class="p">(</span><span class="n">mret</span> <span class="o">|</span> <span class="n">sret</span><span class="p">)</span>
 <a name="l-215"></a>            <span class="n">next_privilege_level</span> <span class="o">=</span> <span class="n">trap_return_privilege_level</span><span class="p">;</span>
 <a name="l-216"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">interrupt</span><span class="p">)</span>
 <a name="l-217"></a>            <span class="n">next_privilege_level</span> <span class="o">=</span> <span class="n">interrupt_privilege_level</span><span class="p">;</span>
@@ -798,7 +798,7 @@
 <a name="l-249"></a>    <span class="c1">//return from trap</span>
 <a name="l-250"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-251"></a>        <span class="n">mstatus_return</span> <span class="o">=</span> <span class="n">mstatus</span><span class="p">;</span>
-<a name="l-252"></a>        <span class="k">unique</span> <span class="k">if</span> <span class="p">(</span><span class="n">sret</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-252"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">sret</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-253"></a>            <span class="n">mstatus_return</span><span class="p">.</span><span class="n">sie</span> <span class="o">=</span> <span class="n">mstatus_return</span><span class="p">.</span><span class="n">spie</span><span class="p">;</span>
 <a name="l-254"></a>            <span class="n">mstatus_return</span><span class="p">.</span><span class="n">spie</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
 <a name="l-255"></a>            <span class="n">mstatus_return</span><span class="p">.</span><span class="n">spp</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
@@ -814,7 +814,7 @@
 <a name="l-265"></a>    <span class="k">assign</span> <span class="n">mstatus_mask</span> <span class="o">=</span> <span class="n">mwrite_decoder</span><span class="p">[</span><span class="n">MSTATUS</span><span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]]</span> <span class="o">?</span> <span class="n">mstatus_mmask</span> <span class="o">:</span> <span class="n">mstatus_smask</span><span class="p">;</span>
 <a name="l-266"></a>
 <a name="l-267"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-268"></a>        <span class="k">unique</span> <span class="k">if</span> <span class="p">(</span><span class="n">mwrite_decoder</span><span class="p">[</span><span class="n">MSTATUS</span><span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]]</span> <span class="o">|</span> <span class="n">swrite_decoder</span><span class="p">[</span><span class="n">SSTATUS</span><span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]])</span>
+<a name="l-268"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">mwrite_decoder</span><span class="p">[</span><span class="n">MSTATUS</span><span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]]</span> <span class="o">|</span> <span class="n">swrite_decoder</span><span class="p">[</span><span class="n">SSTATUS</span><span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]])</span>
 <a name="l-269"></a>            <span class="n">mstatus_new</span> <span class="o">=</span> <span class="n">updated_csr</span> <span class="o">&amp;</span> <span class="n">mstatus_mask</span><span class="p">;</span>
 <a name="l-270"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">interrupt</span> <span class="o">|</span> <span class="n">gc_exception</span><span class="p">.</span><span class="n">valid</span><span class="p">)</span>
 <a name="l-271"></a>            <span class="n">mstatus_new</span> <span class="o">=</span> <span class="n">mstatus_exception</span><span class="p">;</span>

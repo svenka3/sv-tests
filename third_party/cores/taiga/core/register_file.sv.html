@@ -132,7 +132,8 @@
 <a href="#l-124">124</a>
 <a href="#l-125">125</a>
 <a href="#l-126">126</a>
-<a href="#l-127">127</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
+<a href="#l-127">127</a>
+<a href="#l-128">128</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
 <a name="l-2"></a><span class="cm"> * Copyright © 2017-2019 Eric Matthews,  Lesley Shannon</span>
 <a name="l-3"></a><span class="cm"> *</span>
 <a name="l-4"></a><span class="cm"> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
@@ -215,50 +216,51 @@
 <a name="l-81"></a>
 <a name="l-82"></a>    <span class="k">assign</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rs1_id</span> <span class="o">=</span> <span class="n">in_use_by</span><span class="p">[</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">rs1_addr</span><span class="p">];</span>
 <a name="l-83"></a>    <span class="k">assign</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rs2_id</span> <span class="o">=</span> <span class="n">in_use_by</span><span class="p">[</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_addr</span><span class="p">];</span>
-<a name="l-84"></a>
-<a name="l-85"></a>    <span class="k">assign</span> <span class="n">valid_write</span> <span class="o">=</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rd_nzero</span> <span class="o">&amp;</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">retired</span><span class="p">;</span>
-<a name="l-86"></a>
-<a name="l-87"></a>    <span class="k">assign</span> <span class="n">rs1_feedforward</span> <span class="o">=</span> <span class="n">rs1_inuse</span><span class="p">;</span>
-<a name="l-88"></a>    <span class="k">assign</span> <span class="n">rs2_feedforward</span> <span class="o">=</span> <span class="n">rs2_inuse</span><span class="p">;</span>
-<a name="l-89"></a>
-<a name="l-90"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs1_data</span> <span class="o">=</span> <span class="n">rs1_feedforward</span> <span class="o">?</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rs1_data</span> <span class="o">:</span> <span class="n">register</span><span class="p">[</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">rs1_addr</span><span class="p">];</span>
-<a name="l-91"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_data</span> <span class="o">=</span> <span class="n">rs2_feedforward</span> <span class="o">?</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rs2_data</span> <span class="o">:</span> <span class="n">register</span><span class="p">[</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_addr</span><span class="p">];</span>
-<a name="l-92"></a>
-<a name="l-93"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs1_conflict</span> <span class="o">=</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs1</span> <span class="o">&amp;</span> <span class="n">rs1_inuse</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">rf_wb</span><span class="p">.</span><span class="n">rs1_valid</span><span class="p">;</span>
-<a name="l-94"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_conflict</span> <span class="o">=</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs2</span> <span class="o">&amp;</span> <span class="n">rs2_inuse</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">rf_wb</span><span class="p">.</span><span class="n">rs2_valid</span><span class="p">;</span>
-<a name="l-95"></a>
-<a name="l-96"></a>    <span class="c1">////////////////////////////////////////////////////</span>
-<a name="l-97"></a>    <span class="c1">//End of Implementation</span>
-<a name="l-98"></a>    <span class="c1">////////////////////////////////////////////////////</span>
-<a name="l-99"></a>
-<a name="l-100"></a>    <span class="c1">////////////////////////////////////////////////////</span>
-<a name="l-101"></a>    <span class="c1">//Assertions</span>
-<a name="l-102"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-103"></a>        <span class="k">assert</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">instruction_issued</span> <span class="o">&amp;&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">future_rd_addr</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;Write to inuse for register x0 occured!&quot;</span><span class="p">);</span>
-<a name="l-104"></a>    <span class="k">end</span>
-<a name="l-105"></a>
-<a name="l-106"></a>    <span class="c1">////////////////////////////////////////////////////</span>
-<a name="l-107"></a>    <span class="c1">//Simulation Only</span>
-<a name="l-108"></a>    <span class="c1">// synthesis translate_off</span>
-<a name="l-109"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sim_registers_unamed</span><span class="p">;</span>
-<a name="l-110"></a>    <span class="n">simulation_named_regfile</span> <span class="n">sim_register</span><span class="p">;</span>
-<a name="l-111"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-112"></a>        <span class="k">foreach</span><span class="p">(</span><span class="n">register</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-<a name="l-113"></a>            <span class="n">sim_registers_unamed</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">register</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<a name="l-114"></a>        <span class="n">sim_register</span> <span class="o">=</span> <span class="n">sim_registers_unamed</span><span class="p">;</span>
-<a name="l-115"></a>    <span class="k">end</span>
-<a name="l-116"></a>    <span class="c1">// synthesis translate_on</span>
-<a name="l-117"></a>
-<a name="l-118"></a>    <span class="c1">////////////////////////////////////////////////////</span>
-<a name="l-119"></a>    <span class="c1">//Trace Interface</span>
-<a name="l-120"></a>    <span class="k">generate</span> <span class="k">if</span> <span class="p">(</span><span class="n">ENABLE_TRACE_INTERFACE</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-121"></a>        <span class="k">assign</span> <span class="n">tr_rs1_forwarding_needed</span> <span class="o">=</span> <span class="n">instruction_issued</span> <span class="o">&amp;</span> <span class="n">rs1_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs1</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">tr_rs1_and_rs2_forwarding_needed</span><span class="p">;</span>
-<a name="l-122"></a>        <span class="k">assign</span> <span class="n">tr_rs2_forwarding_needed</span> <span class="o">=</span> <span class="n">instruction_issued</span> <span class="o">&amp;</span> <span class="n">rs2_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs2</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">tr_rs1_and_rs2_forwarding_needed</span><span class="p">;</span>
-<a name="l-123"></a>        <span class="k">assign</span> <span class="n">tr_rs1_and_rs2_forwarding_needed</span> <span class="o">=</span> <span class="n">instruction_issued</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">rs1_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">rs2_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs2</span><span class="p">);</span>
-<a name="l-124"></a>    <span class="k">end</span>
-<a name="l-125"></a>    <span class="k">endgenerate</span>
-<a name="l-126"></a>
-<a name="l-127"></a><span class="k">endmodule</span>
+<a name="l-84"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_id</span> <span class="o">=</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rs2_id</span><span class="p">;</span>
+<a name="l-85"></a>
+<a name="l-86"></a>    <span class="k">assign</span> <span class="n">valid_write</span> <span class="o">=</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rd_nzero</span> <span class="o">&amp;</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">retiring</span><span class="p">;</span>
+<a name="l-87"></a>
+<a name="l-88"></a>    <span class="k">assign</span> <span class="n">rs1_feedforward</span> <span class="o">=</span> <span class="n">rs1_inuse</span><span class="p">;</span>
+<a name="l-89"></a>    <span class="k">assign</span> <span class="n">rs2_feedforward</span> <span class="o">=</span> <span class="n">rs2_inuse</span><span class="p">;</span>
+<a name="l-90"></a>
+<a name="l-91"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs1_data</span> <span class="o">=</span> <span class="n">rs1_feedforward</span> <span class="o">?</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rs1_data</span> <span class="o">:</span> <span class="n">register</span><span class="p">[</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">rs1_addr</span><span class="p">];</span>
+<a name="l-92"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_data</span> <span class="o">=</span> <span class="n">rs2_feedforward</span> <span class="o">?</span> <span class="n">rf_wb</span><span class="p">.</span><span class="n">rs2_data</span> <span class="o">:</span> <span class="n">register</span><span class="p">[</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_addr</span><span class="p">];</span>
+<a name="l-93"></a>
+<a name="l-94"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs1_conflict</span> <span class="o">=</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs1</span> <span class="o">&amp;</span> <span class="n">rs1_inuse</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">rf_wb</span><span class="p">.</span><span class="n">rs1_valid</span><span class="p">;</span>
+<a name="l-95"></a>    <span class="k">assign</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">rs2_conflict</span> <span class="o">=</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs2</span> <span class="o">&amp;</span> <span class="n">rs2_inuse</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">rf_wb</span><span class="p">.</span><span class="n">rs2_valid</span><span class="p">;</span>
+<a name="l-96"></a>
+<a name="l-97"></a>    <span class="c1">////////////////////////////////////////////////////</span>
+<a name="l-98"></a>    <span class="c1">//End of Implementation</span>
+<a name="l-99"></a>    <span class="c1">////////////////////////////////////////////////////</span>
+<a name="l-100"></a>
+<a name="l-101"></a>    <span class="c1">////////////////////////////////////////////////////</span>
+<a name="l-102"></a>    <span class="c1">//Assertions</span>
+<a name="l-103"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-104"></a>        <span class="k">assert</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">rf_decode</span><span class="p">.</span><span class="n">instruction_issued</span> <span class="o">&amp;&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">future_rd_addr</span> <span class="o">==</span> <span class="mh">0</span><span class="p">))</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;Write to inuse for register x0 occured!&quot;</span><span class="p">);</span>
+<a name="l-105"></a>    <span class="k">end</span>
+<a name="l-106"></a>
+<a name="l-107"></a>    <span class="c1">////////////////////////////////////////////////////</span>
+<a name="l-108"></a>    <span class="c1">//Simulation Only</span>
+<a name="l-109"></a>    <span class="c1">// synthesis translate_off</span>
+<a name="l-110"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sim_registers_unamed</span><span class="p">;</span>
+<a name="l-111"></a>    <span class="n">simulation_named_regfile</span> <span class="n">sim_register</span><span class="p">;</span>
+<a name="l-112"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-113"></a>        <span class="k">foreach</span><span class="p">(</span><span class="n">register</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<a name="l-114"></a>            <span class="n">sim_registers_unamed</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">register</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<a name="l-115"></a>        <span class="n">sim_register</span> <span class="o">=</span> <span class="n">sim_registers_unamed</span><span class="p">;</span>
+<a name="l-116"></a>    <span class="k">end</span>
+<a name="l-117"></a>    <span class="c1">// synthesis translate_on</span>
+<a name="l-118"></a>
+<a name="l-119"></a>    <span class="c1">////////////////////////////////////////////////////</span>
+<a name="l-120"></a>    <span class="c1">//Trace Interface</span>
+<a name="l-121"></a>    <span class="k">generate</span> <span class="k">if</span> <span class="p">(</span><span class="n">ENABLE_TRACE_INTERFACE</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-122"></a>        <span class="k">assign</span> <span class="n">tr_rs1_forwarding_needed</span> <span class="o">=</span> <span class="n">instruction_issued</span> <span class="o">&amp;</span> <span class="n">rs1_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs1</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">tr_rs1_and_rs2_forwarding_needed</span><span class="p">;</span>
+<a name="l-123"></a>        <span class="k">assign</span> <span class="n">tr_rs2_forwarding_needed</span> <span class="o">=</span> <span class="n">instruction_issued</span> <span class="o">&amp;</span> <span class="n">rs2_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs2</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">tr_rs1_and_rs2_forwarding_needed</span><span class="p">;</span>
+<a name="l-124"></a>        <span class="k">assign</span> <span class="n">tr_rs1_and_rs2_forwarding_needed</span> <span class="o">=</span> <span class="n">instruction_issued</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">rs1_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">rs2_inuse</span> <span class="o">&amp;</span> <span class="n">rf_decode</span><span class="p">.</span><span class="n">uses_rs2</span><span class="p">);</span>
+<a name="l-125"></a>    <span class="k">end</span>
+<a name="l-126"></a>    <span class="k">endgenerate</span>
+<a name="l-127"></a>
+<a name="l-128"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

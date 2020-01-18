@@ -266,7 +266,7 @@
 <a name="l-59"></a><span class="cm">     *************************************/</span>
 <a name="l-60"></a>
 <a name="l-61"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-62"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<a name="l-62"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span> <span class="o">|</span> <span class="n">fetch_sub</span><span class="p">.</span><span class="n">flush</span><span class="p">)</span>
 <a name="l-63"></a>            <span class="n">second_cycle</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
 <a name="l-64"></a>        <span class="k">else</span>
 <a name="l-65"></a>            <span class="n">second_cycle</span> <span class="o">&lt;=</span> <span class="n">fetch_sub</span><span class="p">.</span><span class="n">new_request</span><span class="p">;</span>
@@ -397,7 +397,7 @@
 <a name="l-190"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-191"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
 <a name="l-192"></a>            <span class="n">idle</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-193"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">fetch_sub</span><span class="p">.</span><span class="n">new_request</span><span class="p">)</span>
+<a name="l-193"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">fetch_sub</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">fetch_sub</span><span class="p">.</span><span class="n">flush</span><span class="p">)</span>
 <a name="l-194"></a>            <span class="n">idle</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
 <a name="l-195"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">memory_complete</span> <span class="o">|</span> <span class="n">tag_hit</span><span class="p">)</span> <span class="c1">//read miss OR write through complete</span>
 <a name="l-196"></a>            <span class="n">idle</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
