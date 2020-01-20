@@ -1,0 +1,59 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_test
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_ascii_writer.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_ascii_writer.v</a>
+time_elapsed: 0.224s
+ram usage: 12940 KB
+</pre>
+<pre class="log">
+
+module bsg_nonsynth_ascii_writer (
+	clk,
+	reset_i,
+	valid_i,
+	data_i
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter values_p = &#34;inv&#34;;
+	parameter filename_p = -1;
+	parameter fopen_param_p = &#34;w&#34;;
+	parameter format_p = &#34;%x &#34;;
+	input clk;
+	input reset_i;
+	input valid_i;
+	input [((width_p * values_p) - 1):0] data_i;
+	integer file = -1;
+	integer i;
+	always @(posedge reset_i)
+		if ((file == -1))
+			file = $fopen(filename_p, fopen_param_p);
+	reg [((width_p * values_p) - 1):0] capture_data_r;
+	reg capture_valid_r;
+	always @(posedge clk) begin
+		capture_data_r &lt;= data_i;
+		capture_valid_r &lt;= valid_i;
+	end
+	always @(negedge clk)
+		if ((capture_valid_r &amp;&amp; (file != -1))) begin
+			for (i = 0; (i &lt; values_p); i = (i + 1))
+				$fwrite(file, format_p, capture_data_r[(i * width_p)+:width_p]);
+			$fwrite(file, &#34;\n&#34;);
+		end
+endmodule
+
+</pre>
+</body>

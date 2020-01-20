@@ -1,0 +1,54 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_compare_and_swap.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_compare_and_swap.v</a>
+time_elapsed: 0.124s
+ram usage: 12796 KB
+</pre>
+<pre class="log">
+
+module bsg_compare_and_swap (
+	data_i,
+	swap_on_equal_i,
+	data_o,
+	swapped_o
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter t_p = (width_p - 1);
+	parameter b_p = 0;
+	parameter cond_swap_on_equal_p = 0;
+	input [(((width_p - 1) &gt;= 0) ? ((2 * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : ((2 * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))):(((width_p - 1) &gt;= 0) ? 0 : (width_p - 1))] data_i;
+	input swap_on_equal_i;
+	output reg [(((width_p - 1) &gt;= 0) ? ((2 * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : ((2 * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))):(((width_p - 1) &gt;= 0) ? 0 : (width_p - 1))] data_o;
+	output swapped_o;
+	wire gt = (data_i[(((width_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? b_p : t_p) : (0 - ((((width_p - 1) &gt;= 0) ? b_p : t_p) - (width_p - 1))))+:((t_p &gt;= b_p) ? ((t_p - b_p) + 1) : ((b_p - t_p) + 1))] &gt; data_i[((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + (((width_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? b_p : t_p) : (0 - ((((width_p - 1) &gt;= 0) ? b_p : t_p) - (width_p - 1)))))+:((t_p &gt;= b_p) ? ((t_p - b_p) + 1) : ((b_p - t_p) + 1))]);
+	generate
+		if (cond_swap_on_equal_p) begin
+			wire eq = (data_i[(((width_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? b_p : t_p) : (0 - ((((width_p - 1) &gt;= 0) ? b_p : t_p) - (width_p - 1))))+:((t_p &gt;= b_p) ? ((t_p - b_p) + 1) : ((b_p - t_p) + 1))] == data_i[((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) + (((width_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? b_p : t_p) : (0 - ((((width_p - 1) &gt;= 0) ? b_p : t_p) - (width_p - 1)))))+:((t_p &gt;= b_p) ? ((t_p - b_p) + 1) : ((b_p - t_p) + 1))]);
+			assign swapped_o = (gt | (eq &amp; swap_on_equal_i));
+		end
+		else assign swapped_o = gt;
+	endgenerate
+	always @(*)
+		if (swapped_o)
+			data_o = {data_i[(((width_p - 1) &gt;= 0) ? 0 : (width_p - 1))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]};
+		else
+			data_o = {data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[(((width_p - 1) &gt;= 0) ? 0 : (width_p - 1))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]};
+endmodule
+
+</pre>
+</body>
