@@ -1,0 +1,58 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1002.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1002.v</a>
+time_elapsed: 0.032s
+ram usage: 11504 KB
+</pre>
+<pre class="log">
+
+module top;
+	reg signed [13:0] datain;
+	wire signed [15:0] dataout;
+	assign dataout = (datain &gt;&gt;&gt; 2);
+	reg test_failed;
+	initial begin
+		test_failed = 0;
+		#(1) datain = 14&#39;h0FFF;
+		#(1) datain = 14&#39;h0000;
+		#(1) datain = 14&#39;h1FFF;
+		#(1) datain = 14&#39;h1000;
+		#(1) datain = 14&#39;h2FFF;
+		#(1) datain = 14&#39;h2000;
+		#(1) datain = 14&#39;h3FFF;
+		#(1) datain = 14&#39;h3000;
+		#(2)
+			;
+		if (test_failed)
+			$display(&#34;TEST FAILED :-(&#34;);
+		else
+			$display(&#34;TEST PASSED :-)&#34;);
+	end
+	wire signed [15:0] expected_dataout;
+	assign expected_dataout = ($signed({datain[13:2], 2&#39;b0}) / 4);
+	always @(dataout)
+		if ((expected_dataout != dataout)) begin
+			$display(&#34;datain = %d dataout = %h expected = %h ... CHECK FAILED&#34;, datain, dataout, expected_dataout);
+			test_failed = 1;
+		end
+		else
+			$display(&#34;datain = %d dataout = %d expected = %d ... CHECK PASSED&#34;, datain, dataout, expected_dataout);
+endmodule
+
+</pre>
+</body>

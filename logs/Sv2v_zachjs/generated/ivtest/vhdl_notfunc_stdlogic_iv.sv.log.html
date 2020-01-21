@@ -1,0 +1,84 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-failed">
+description: Test imported from ivtest
+should_fail: 1
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/vhdl_notfunc_stdlogic.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vhdl_notfunc_stdlogic.v</a>
+time_elapsed: 0.096s
+ram usage: 9924 KB
+</pre>
+<pre class="log">
+
+module stimulus (A);
+	output reg A;
+	initial begin
+		#(0) A = 1&#39;bx;
+		#(10) A = 1&#39;bz;
+		#(10) A = 1&#39;b0;
+		#(10) A = 1&#39;b1;
+	end
+endmodule
+module scoreboard (
+	Y,
+	A
+);
+	input Y;
+	input A;
+	function truth_table;
+		input reg a;
+		reg gate_operand;
+		reg gate_output;
+		begin
+			gate_operand = a;
+			case (gate_operand)
+				1&#39;bx: gate_output = 1&#39;bx;
+				1&#39;bz: gate_output = 1&#39;bx;
+				1&#39;b0: gate_output = 1;
+				1&#39;b1: gate_output = 0;
+			endcase
+			truth_table = gate_output;
+		end
+	endfunction
+	reg Y_t;
+	always @(A) begin
+		Y_t = truth_table(A);
+		#(1)
+			;
+		if ((Y_t !== Y)) begin
+			$display(&#34;FAILED! - mismatch found for input %b in NOT operation&#34;, A);
+			$finish;
+		end
+	end
+endmodule
+module test;
+	stimulus stim(A);
+	not_func duv(
+		.a_i(A),
+		.c_o(Y)
+	);
+	scoreboard mon(
+		Y,
+		A
+	);
+	initial begin
+		#(200)
+			;
+		$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
+
+</pre>
+</body>

@@ -1,0 +1,52 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/mod_inst_pkg.v.html" target="file-frame">third_party/tests/ivtest/ivltests/mod_inst_pkg.v</a>
+time_elapsed: 0.072s
+ram usage: 11812 KB
+</pre>
+<pre class="log">
+
+module foo (inport);
+	localparam FOO = 5;
+	function signed [31:0] get_size;
+		input reg signed [31:0] x;
+		get_size = (x + 3);
+	endfunction
+	parameter FOO_PARAM = FOO;
+	input [(get_size(7) - 1):0] inport;
+	wire signed [31:0] value = 11;
+	initial begin
+		if (((((get_size(7) - 1) &gt;= 0) ? get_size(7) : (2 - get_size(7))) != 10)) begin
+			$display(&#34;FAILED -- function import in module declaration failed (%d)&#34;, (((get_size(7) - 1) &gt;= 0) ? get_size(7) : (2 - get_size(7))));
+			$finish;
+		end
+		if ((value != 11)) begin
+			$display(&#34;FAILED -- Something is wrong with typedef import (%d)&#34;, value);
+			$finish;
+		end
+		if ((FOO_PARAM != 5)) begin
+			$display(&#34;FAILED -- Something is wrong with paramater imports (%d)&#34;, FOO_PARAM);
+			$finish;
+		end
+		$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
+
+</pre>
+</body>

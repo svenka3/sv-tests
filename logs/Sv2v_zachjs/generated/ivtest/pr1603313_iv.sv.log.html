@@ -1,0 +1,72 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1603313.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1603313.v</a>
+time_elapsed: 0.112s
+ram usage: 11516 KB
+</pre>
+<pre class="log">
+
+module TestMultiplier;
+	reg clk;
+	initial begin
+		clk = 0;
+		forever #(0.5) clk = ~clk;
+	end
+	reg [5:0] left;
+	reg [5:0] right;
+	wire [2:0] exp;
+	Multiplier mul(
+		clk,
+		left,
+		right,
+		exp
+	);
+	parameter ONE = {3&#39;b011, 3&#39;b0};
+	always @(posedge clk) begin
+		left = ONE;
+		right = ONE;
+		#(10)
+			if ((exp !== 3&#39;b011))
+				$display(&#34;FAIL: expected %b, got %b&#34;, 3&#39;b011, exp);
+			else
+				$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
+module Multiplier (
+	clk,
+	left,
+	right,
+	exp
+);
+	input clk;
+	input [5:0] left;
+	input [5:0] right;
+	output [2:0] exp;
+	reg [2:0] exp;
+	wire signed [2:0] expl = (left[5:3] - 3);
+	wire signed [2:0] expr = (right[5:3] - 3);
+	reg signed [3:0] sumExp;
+	always @(posedge clk) begin
+		sumExp &lt;= (((expl + expr) &lt; -2) ? -3 : (expl + expr));
+		exp[2:0] &lt;= (sumExp + 3);
+	end
+endmodule
+
+</pre>
+</body>

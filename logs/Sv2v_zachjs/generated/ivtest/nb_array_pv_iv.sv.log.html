@@ -1,0 +1,88 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/nb_array_pv.v.html" target="file-frame">third_party/tests/ivtest/ivltests/nb_array_pv.v</a>
+time_elapsed: 0.124s
+ram usage: 12280 KB
+</pre>
+<pre class="log">
+
+module top;
+	reg pass = 1&#39;b1;
+	integer delay;
+	wire [3:0] in = 4&#39;h0;
+	reg [7:0] result [1:0];
+	initial begin
+		result[0] &lt;= #(10) 8&#39;h00;
+		if ((($simtime != 0) || (result[0] !== 8&#39;bx))) begin
+			$display(&#34;Failed #10 blocked at %0t, expected 8&#39;hxx, got %h&#34;, $simtime, result[0]);
+			pass = 1&#39;b0;
+		end
+		@(result[0])
+			;
+		if ((($simtime != 10) || (result[0] !== 8&#39;h00))) begin
+			$display(&#34;Failed #10 at %0t, expected 8&#39;h00, got %h&#34;, $simtime, result[0]);
+			pass = 1&#39;b0;
+		end
+		result[0][8:5] &lt;= #(10) 4&#39;hb;
+		@(result[0])
+			;
+		if ((($simtime != 20) || (result[0] !== 8&#39;h60))) begin
+			$display(&#34;Failed MSB #10 at %0t, expected 8&#39;h60, got %h&#34;, $simtime, result[0]);
+			pass = 1&#39;b0;
+		end
+		result[0][1:-2] &lt;= #(10) 4&#39;hb;
+		@(result[0])
+			;
+		if ((($simtime != 30) || (result[0] !== 8&#39;h62))) begin
+			$display(&#34;Failed LSB #10 at %0t, expected 8&#39;h62, got %h&#34;, $simtime, result[0]);
+			pass = 1&#39;b0;
+		end
+		delay = 20;
+		result[1] &lt;= #(delay) 8&#39;h00;
+		if ((($simtime != 30) || (result[1] !== 8&#39;bx))) begin
+			$display(&#34;Failed #delay blocked at %0t, expected 8&#39;hxx, got %h&#34;, $simtime, result[1]);
+			pass = 1&#39;b0;
+		end
+		@(result[1])
+			;
+		if ((($simtime != 50) || (result[1] !== 8&#39;h00))) begin
+			$display(&#34;Failed #delay at %0t, expected 8&#39;h00, got %h&#34;, $simtime, result[1]);
+			pass = 1&#39;b0;
+		end
+		result[1][8:5] &lt;= #(delay) 4&#39;hb;
+		@(result[1])
+			;
+		if ((($simtime != 70) || (result[1] !== 8&#39;h60))) begin
+			$display(&#34;Failed MSB #delay at %0t, expected 8&#39;h60, got %h&#34;, $simtime, result[1]);
+			pass = 1&#39;b0;
+		end
+		result[1][1:-2] &lt;= #(delay) 4&#39;hb;
+		@(result[1])
+			;
+		if ((($simtime != 90) || (result[1] !== 8&#39;h62))) begin
+			$display(&#34;Failed LSB #delay at %0t, expected 8&#39;h62, got %h&#34;, $simtime, result[1]);
+			pass = 1&#39;b0;
+		end
+		if (pass)
+			$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
+
+</pre>
+</body>

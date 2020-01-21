@@ -1,0 +1,81 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2121536.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2121536.v</a>
+time_elapsed: 0.072s
+ram usage: 13748 KB
+</pre>
+<pre class="log">
+
+module top;
+	reg pass = 1&#39;b1;
+	wire [31:0] in = &#39;bx;
+	wire signed [31:0] sin = &#39;bx;
+	wire [63:0] res;
+	wire signed [63:0] sres;
+	lower lwr(
+		res,
+		in
+	);
+	slower slwr(
+		sres,
+		sin
+	);
+	initial begin
+		#(1)
+			;
+		if ((res !== {32&#39;b0, 32&#39;bx})) begin
+			$display(&#34;FAILED: unsigned output (%b)&#34;, res);
+			pass = 1&#39;b0;
+		end
+		if ((lwr.lout !== {32&#39;b0, 32&#39;bx})) begin
+			$display(&#34;FAILED: unsigned input (%b)&#34;, lwr.lout);
+			pass = 1&#39;b0;
+		end
+		if ((sres !== 64&#39;bx)) begin
+			$display(&#34;FAILED: signed output (%b)&#34;, sres);
+			pass = 1&#39;b0;
+		end
+		if ((slwr.lout !== 64&#39;bx)) begin
+			$display(&#34;FAILED: signed input (%b)&#34;, slwr.lout);
+			pass = 1&#39;b0;
+		end
+		if (pass)
+			$display(&#34;PASSED&#34;);
+	end
+endmodule
+module lower (
+	lrtn,
+	lin
+);
+	output [31:0] lrtn;
+	input [63:0] lin;
+	wire [63:0] lout = lin;
+	assign lrtn = lout[31:0];
+endmodule
+module slower (
+	lrtn,
+	lin
+);
+	output signed [31:0] lrtn;
+	input signed [63:0] lin;
+	wire signed [63:0] lout = lin;
+	assign lrtn = lout[31:0];
+endmodule
+
+</pre>
+</body>

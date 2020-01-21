@@ -1,0 +1,82 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/eeq.v.html" target="file-frame">third_party/tests/ivtest/ivltests/eeq.v</a>
+time_elapsed: 0.032s
+ram usage: 9776 KB
+</pre>
+<pre class="log">
+
+module eeq;
+	reg [3:0] a;
+	reg [3:0] b;
+	wire eeq = (a === b);
+	wire nee = (a !== b);
+	reg err;
+	always begin
+		#(2)
+			;
+		$display(&#34;%b %b ===%b !==%b&#34;, a, b, eeq, nee);
+		if ((((a === b) !== eeq) || ((a !== b) !== nee)))
+			err = 1;
+	end
+	initial begin
+		err = 0;
+		#(1) a = 4&#39;b zx10;
+		b = 4&#39;b zx10;
+		#(1)
+			;
+		#(1) a = 4&#39;b 1x10;
+		b = 4&#39;b zx10;
+		#(1)
+			;
+		#(1) a = 4&#39;b xz10;
+		b = 4&#39;b zx10;
+		#(1)
+			;
+		#(1) a = 4&#39;b xz01;
+		b = 4&#39;b zx10;
+		#(1)
+			;
+		#(1) a = 4&#39;b 0000;
+		b = 4&#39;b 0000;
+		#(1)
+			;
+		#(1) a = 4&#39;b 1111;
+		b = 4&#39;b 1111;
+		#(1)
+			;
+		#(1) a = 4&#39;b xxxx;
+		b = 4&#39;b xxxx;
+		#(1)
+			;
+		#(1) a = 4&#39;b zzzz;
+		b = 4&#39;b zzzz;
+		#(1)
+			;
+		#(1)
+			;
+		if (err)
+			$display(&#34;FAILED&#34;);
+		else
+			$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
+
+</pre>
+</body>

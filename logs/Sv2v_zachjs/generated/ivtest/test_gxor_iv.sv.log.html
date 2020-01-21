@@ -1,0 +1,87 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-failed">
+description: Test imported from ivtest
+should_fail: 1
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/test_gxor.v.html" target="file-frame">third_party/tests/ivtest/ivltests/test_gxor.v</a>
+time_elapsed: 0.096s
+ram usage: 10036 KB
+</pre>
+<pre class="log">
+
+module stimulus (a);
+	parameter HW = 4;
+	parameter T = 10;
+	parameter M = 200;
+	output reg [((2 * HW) - 1):0] a;
+	reg signed [31:0] i;
+	reg signed [31:0] MAX;
+	initial begin
+		MAX = (1 &lt;&lt; (2 * HW));
+		for (i = 0; (i &lt; M); i = (i + 1))
+			begin
+				a = ($random % MAX);
+				#(T)
+					;
+			end
+	end
+endmodule
+module check (
+	x,
+	y
+);
+	parameter HW = 4;
+	input [((2 * HW) - 1):0] x;
+	input y;
+	wire yi = ^x;
+	always @(y or yi) begin
+		#(1)
+			;
+		if ((y !== yi)) begin
+			$display(&#34;ERROR&#34;);
+			$finish;
+		end
+	end
+endmodule
+module test;
+	parameter M = 200;
+	parameter T = 10;
+	parameter HW = 4;
+	parameter S = ((M * T) + 40);
+	wire [((2 * HW) - 1):0] a;
+	wire y;
+	stimulus #(
+		.HW(HW),
+		.T(T),
+		.M(M)
+	) stim(.a(a));
+	gxor_reduce #(HW) duv(
+		.a(a),
+		.ar(y)
+	);
+	check check(
+		.x(a),
+		.y(y)
+	);
+	initial begin
+		#(S)
+			;
+		$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
+
+</pre>
+</body>

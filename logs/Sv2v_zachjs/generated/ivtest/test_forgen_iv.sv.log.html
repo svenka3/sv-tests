@@ -1,0 +1,59 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-failed">
+description: Test imported from ivtest
+should_fail: 1
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/test_forgen.v.html" target="file-frame">third_party/tests/ivtest/ivltests/test_forgen.v</a>
+time_elapsed: 0.048s
+ram usage: 11584 KB
+</pre>
+<pre class="log">
+
+module main;
+	parameter WIDTH = 8;
+	parameter ITERATIONS = 1000;
+	reg [(WIDTH - 1):0] src0;
+	reg [(WIDTH - 1):0] src1;
+	reg [(WIDTH - 1):0] ref_dst;
+	reg clk;
+	wire [(WIDTH - 1):0] dst;
+	test #(.width(WIDTH)) test0(
+		.dst(dst),
+		.src0(src0),
+		.src1(src1),
+		.clk(clk)
+	);
+	integer idx;
+	initial begin
+		clk = 0;
+		for (idx = 0; (idx &lt; ITERATIONS); idx = (idx + 1))
+			begin
+				src0 = $random;
+				src1 = $random;
+				ref_dst = (src0 ^ src1);
+				#(1) clk = 1;
+				#(1)
+					if ((dst !== ref_dst)) begin
+						$display(&#34;FAILED: src0=%b, src1=%b dst=%b, ref=%b&#34;, src0, src1, dst, ref_dst);
+						$finish;
+					end
+				clk = 0;
+			end
+		$display(&#34;PASSED&#34;);
+	end
+endmodule
+
+</pre>
+</body>

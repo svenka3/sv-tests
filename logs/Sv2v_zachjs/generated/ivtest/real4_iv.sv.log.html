@@ -1,0 +1,81 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/tests/generated/ivtest
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/real4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/real4.v</a>
+time_elapsed: 0.124s
+ram usage: 11444 KB
+</pre>
+<pre class="log">
+
+module test;
+	integer err;
+	integer i;
+	real r;
+	reg [63:0] b;
+	parameter PI = 3.1415926535_8979323846_2643383279;
+	initial begin
+		err = 0;
+		i = $rtoi(0.1);
+		if ((i != 0)) begin
+			err = 1;
+			$display(&#34;$rtoi(0.1): %0d != 0&#34;, i);
+		end
+		i = $rtoi(9.6);
+		if ((i != 9)) begin
+			err = 1;
+			$display(&#34;$rtoi(9.6): %0d != 9&#34;, i);
+		end
+		b = $realtobits(PI);
+		if ((b != 64&#39;h400921FB54442D18)) begin
+			err = 1;
+			$display(&#34;$realtobits(PI): &#39;h%x != &#39;h400921FB54442D18&#34;, b);
+		end
+		b = $realtobits(1.1);
+		if ((b != 64&#39;h3ff199999999999a)) begin
+			err = 1;
+			$display(&#34;$realtobits(1.1): &#39;h%x != &#39;h400921FB54442D18&#34;, b);
+		end
+		r = $bitstoreal(64&#39;h400921FB54442D18);
+		if ((r != PI)) begin
+			err = 1;
+			$display(&#34;$realtobits(PI): %20.17f != %20.17f&#34;, r, PI);
+		end
+		r = $bitstoreal(64&#39;h3FF4CCCCCCCCCCCD);
+		if ((r != 1.3)) begin
+			err = 1;
+			$display(&#34;$realtobits(1.3): %20.17f != 1.3&#34;, r);
+		end
+		r = $itor(1);
+		if ((r != 1.0)) begin
+			err = 1;
+			$display(&#34;$itor(1): %20.1f != 1.0&#34;, r);
+		end
+		r = $itor(123456789);
+		if ((r != 123456789.0)) begin
+			err = 1;
+			$display(&#34;$itor(123456789): %20.1f != 123456789.0&#34;, r);
+		end
+		if (err)
+			$display(&#34;FAILED&#34;);
+		else
+			$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
+
+</pre>
+</body>
