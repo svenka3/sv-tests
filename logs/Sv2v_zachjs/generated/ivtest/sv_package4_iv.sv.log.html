@@ -7,7 +7,7 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
 should_fail: 0
 tags: ivtest
@@ -16,14 +16,34 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sv_package4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sv_package4.v</a>
-time_elapsed: 0.028s
-ram usage: 15276 KB
+time_elapsed: 0.088s
+ram usage: 11296 KB
 </pre>
 <pre class="log">
 
-zachjs-sv2v: convertLHS encountered dot for bad type: (word_t,word,&#34;low&#34;)
-CallStack (from HasCallStack):
-  error, called at src/Convert/Struct.hs:302:22 in main:Convert.Struct
+module main;
+	wire [15:0] p1_word;
+	word_t word;
+	initial begin
+		if (($bits(word_t) != 16)) begin
+			$display(&#34;FAILED -- $bits(p1::word) == %0d&#34;, 16);
+			$finish;
+		end
+		word = &#39;haa55;
+		if ((word != &#39;haa55)) begin
+			$display(&#34;FAILED -- p1::word = %h&#34;, word);
+			$finish;
+		end
+		word.low = &#39;h66;
+		word.high = &#39;hbb;
+		if (((word != &#39;hbb66) || (word.low != 8&#39;h66))) begin
+			$display(&#34;FAILED -- p1::word = %h&#34;, word);
+			$finish;
+		end
+		$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
 
 </pre>
 </body>
