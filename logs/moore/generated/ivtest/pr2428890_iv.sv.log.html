@@ -7,7 +7,7 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
 should_fail: 0
 tags: ivtest
@@ -17,7 +17,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890.v</a>
 time_elapsed: 0.004s
-ram usage: 9624 KB
+ram usage: 9492 KB
 </pre>
 <pre class="log">
 
@@ -33,16 +33,31 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890.v:13</a>:3-13:
-   | 
-   |   parameter local2 = local1+1-three;  // This should be &#39;sd0
-   |   ^^^^^^^^^^                                                
+proc %lower.param1.initial.232.1 () -&gt; () {
+0:
+    %1 = const i32 2
+    %2 = const i32 0
+    %3 = const i32 1
+    %4 = sub i32 %2, %3
+    %5 = slt i32 %1, %4
+    br %5, %if_false, %if_true
+if_true:
+    %6 = const i32 0
+    br %if_exit
+if_false:
+    %7 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, src/svlog/typeck.rs:382:13
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
+entity @lower.param1 () -&gt; () {
+    inst %lower.param1.initial.232.1 () -&gt; ()
+}
+
+entity @top () -&gt; () {
+    inst @lower.param1 () -&gt; ()
+}
 
 </pre>
 </body>
