@@ -1,0 +1,58 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_test
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dramsim3_map.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dramsim3_map.v</a>
+time_elapsed: 0.584s
+ram usage: 14832 KB
+</pre>
+<pre class="log">
+
+module bsg_nonsynth_dramsim3_map (
+	ch_addr_i,
+	mem_addr_o
+);
+	import bsg_dramsim3_pkg::*;
+	parameter channel_addr_width_p = &#34;inv&#34;;
+	parameter data_width_p = &#34;inv&#34;;
+	parameter num_channels_p = &#34;inv&#34;;
+	parameter num_columns_p = &#34;inv&#34;;
+	parameter address_mapping_p = &#34;inv&#34;;
+	parameter channel_select_p = &#34;inv&#34;;
+	parameter debug_p = 0;
+	parameter lg_num_channels_lp = ((num_channels_p == 1) ? 1 : $clog2(num_channels_p));
+	parameter lg_num_columns_lp = ((num_columns_p == 1) ? 1 : $clog2(num_columns_p));
+	parameter data_mask_width_lp = (data_width_p &gt;&gt; 3);
+	parameter byte_offset_width_lp = (((data_width_p &gt;&gt; 3) == 1) ? 1 : $clog2((data_width_p &gt;&gt; 3)));
+	parameter addr_width_lp = (lg_num_channels_lp + channel_addr_width_p);
+	input wire [(channel_addr_width_p - 1):0] ch_addr_i;
+	output wire [(addr_width_lp - 1):0] mem_addr_o;
+	generate
+		if ((address_mapping_p == e_ro_ra_bg_ba_co_ch)) begin
+			assign mem_addr_o = {ch_addr_i[(channel_addr_width_p - 1):byte_offset_width_lp], sv2v_cast_C109C(channel_select_p), {byte_offset_width_lp {1&#39;b0}}};
+		end
+		else if ((address_mapping_p == e_ro_ra_bg_ba_ch_co)) begin
+			assign mem_addr_o = {ch_addr_i[(channel_addr_width_p - 1):(lg_num_columns_lp + byte_offset_width_lp)], sv2v_cast_C109C(channel_select_p), ch_addr_i[((lg_num_columns_lp + byte_offset_width_lp) - 1):byte_offset_width_lp], {byte_offset_width_lp {1&#39;b0}}};
+		end
+	endgenerate
+	function automatic [(lg_num_channels_lp - 1):0] sv2v_cast_C109C;
+		input reg [(lg_num_channels_lp - 1):0] inp;
+		sv2v_cast_C109C = inp;
+	endfunction
+endmodule
+
+</pre>
+</body>

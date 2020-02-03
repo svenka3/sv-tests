@@ -15,9 +15,9 @@ incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpf
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_dma.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_dma.v</a>
-time_elapsed: 0.936s
-ram usage: 15796 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_dma.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_dma.v</a>
+time_elapsed: 0.960s
+ram usage: 13568 KB
 </pre>
 <pre class="log">
 
@@ -54,29 +54,47 @@ module bsg_cache_dma (
 	localparam [3:0] e_dma_send_evict_addr = 4&#39;b0010;
 	localparam [3:0] e_dma_get_fill_data = 4&#39;b0100;
 	localparam [3:0] e_dma_send_evict_data = 4&#39;b1000;
-	localparam [4:0] LB = 5&#39;b00000;
-	localparam [4:0] LH = 5&#39;b00001;
-	localparam [4:0] LW = 5&#39;b00010;
-	localparam [4:0] LD = 5&#39;b00011;
-	localparam [4:0] LBU = 5&#39;b00100;
-	localparam [4:0] LHU = 5&#39;b00101;
-	localparam [4:0] LWU = 5&#39;b00110;
-	localparam [4:0] LDU = 5&#39;b00111;
-	localparam [4:0] SB = 5&#39;b01000;
-	localparam [4:0] SH = 5&#39;b01001;
-	localparam [4:0] SW = 5&#39;b01010;
-	localparam [4:0] SD = 5&#39;b01011;
-	localparam [4:0] LM = 5&#39;b01100;
-	localparam [4:0] SM = 5&#39;b01101;
-	localparam [4:0] TAGST = 5&#39;b10000;
-	localparam [4:0] TAGFL = 5&#39;b10001;
-	localparam [4:0] TAGLV = 5&#39;b10010;
-	localparam [4:0] TAGLA = 5&#39;b10011;
-	localparam [4:0] AFL = 5&#39;b11000;
-	localparam [4:0] AFLINV = 5&#39;b11001;
-	localparam [4:0] AINV = 5&#39;b11010;
-	localparam [4:0] ALOCK = 5&#39;b11011;
-	localparam [4:0] AUNLOCK = 5&#39;b11100;
+	localparam [5:0] LB = 6&#39;b000000;
+	localparam [5:0] LH = 6&#39;b000001;
+	localparam [5:0] LW = 6&#39;b000010;
+	localparam [5:0] LD = 6&#39;b000011;
+	localparam [5:0] LBU = 6&#39;b000100;
+	localparam [5:0] LHU = 6&#39;b000101;
+	localparam [5:0] LWU = 6&#39;b000110;
+	localparam [5:0] LDU = 6&#39;b000111;
+	localparam [5:0] SB = 6&#39;b001000;
+	localparam [5:0] SH = 6&#39;b001001;
+	localparam [5:0] SW = 6&#39;b001010;
+	localparam [5:0] SD = 6&#39;b001011;
+	localparam [5:0] LM = 6&#39;b001100;
+	localparam [5:0] SM = 6&#39;b001101;
+	localparam [5:0] TAGST = 6&#39;b010000;
+	localparam [5:0] TAGFL = 6&#39;b010001;
+	localparam [5:0] TAGLV = 6&#39;b010010;
+	localparam [5:0] TAGLA = 6&#39;b010011;
+	localparam [5:0] AFL = 6&#39;b011000;
+	localparam [5:0] AFLINV = 6&#39;b011001;
+	localparam [5:0] AINV = 6&#39;b011010;
+	localparam [5:0] ALOCK = 6&#39;b011011;
+	localparam [5:0] AUNLOCK = 6&#39;b011100;
+	localparam [5:0] AMOSWAP_W = 6&#39;b100000;
+	localparam [5:0] AMOADD_W = 6&#39;b100001;
+	localparam [5:0] AMOXOR_W = 6&#39;b100010;
+	localparam [5:0] AMOAND_W = 6&#39;b100011;
+	localparam [5:0] AMOOR_W = 6&#39;b100100;
+	localparam [5:0] AMOMIN_W = 6&#39;b100101;
+	localparam [5:0] AMOMAX_W = 6&#39;b100110;
+	localparam [5:0] AMOMINU_W = 6&#39;b100111;
+	localparam [5:0] AMOMAXU_W = 6&#39;b101000;
+	localparam [5:0] AMOSWAP_D = 6&#39;b110000;
+	localparam [5:0] AMOADD_D = 6&#39;b110001;
+	localparam [5:0] AMOXOR_D = 6&#39;b110010;
+	localparam [5:0] AMOAND_D = 6&#39;b110011;
+	localparam [5:0] AMOOR_D = 6&#39;b110100;
+	localparam [5:0] AMOMIN_D = 6&#39;b110101;
+	localparam [5:0] AMOMAX_D = 6&#39;b110110;
+	localparam [5:0] AMOMINU_D = 6&#39;b110111;
+	localparam [5:0] AMOMAXU_D = 6&#39;b111000;
 	parameter addr_width_p = &#34;inv&#34;;
 	parameter data_width_p = &#34;inv&#34;;
 	parameter block_size_in_words_p = &#34;inv&#34;;

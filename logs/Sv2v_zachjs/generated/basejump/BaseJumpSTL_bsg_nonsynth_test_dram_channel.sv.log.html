@@ -1,0 +1,70 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_test
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_test_dram_channel.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_test_dram_channel.v</a>
+time_elapsed: 0.392s
+ram usage: 25016 KB
+</pre>
+<pre class="log">
+
+module bsg_nonsynth_test_dram_channel (
+	clk_i,
+	reset_i,
+	read_v_i,
+	read_addr_i,
+	write_v_i,
+	write_addr_i,
+	data_v_i,
+	data_i,
+	data_yumi_o,
+	data_v_o,
+	data_o
+);
+	parameter channel_addr_width_p = &#34;inv&#34;;
+	parameter data_width_p = &#34;inv&#34;;
+	parameter mem_els_p = (2 ** 23);
+	parameter init_mem_p = 0;
+	parameter data_mask_width_lp = (data_width_p &gt;&gt; 3);
+	parameter byte_offset_width_lp = (((data_width_p &gt;&gt; 3) == 1) ? 1 : $clog2((data_width_p &gt;&gt; 3)));
+	input clk_i;
+	input reset_i;
+	input read_v_i;
+	input [(channel_addr_width_p - 1):0] read_addr_i;
+	input write_v_i;
+	input [(channel_addr_width_p - 1):0] write_addr_i;
+	input data_v_i;
+	input [(data_width_p - 1):0] data_i;
+	output wire data_yumi_o;
+	output wire data_v_o;
+	output wire [(data_width_p - 1):0] data_o;
+	reg [(data_width_p - 1):0] mem [(mem_els_p - 1):0];
+	assign data_v_o = read_v_i;
+	assign data_o = mem[read_addr_i[(channel_addr_width_p - 1):byte_offset_width_lp]];
+	assign data_yumi_o = (data_v_i &amp; write_v_i);
+	initial if (init_mem_p) begin : sv2v_autoblock_1
+		integer i;
+		for (i = 0; (i &lt; mem_els_p); i = (i + 1))
+			mem[i] = 1&#39;sb0;
+	end
+	always @(posedge clk_i)
+		if (~reset_i)
+			if (write_v_i)
+				mem[write_addr_i[(channel_addr_width_p - 1):byte_offset_width_lp]] &lt;= data_i;
+endmodule
+
+</pre>
+</body>

@@ -15,9 +15,9 @@ incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpf
 top_module: 
 type: parsing
 mode: parsing
-files: <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_sbox_ctrl.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_sbox_ctrl.v</a>
-time_elapsed: 0.808s
-ram usage: 14684 KB
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_sbox_ctrl.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_sbox_ctrl.v</a>
+time_elapsed: 0.596s
+ram usage: 14172 KB
 </pre>
 <pre class="log">
 
@@ -39,12 +39,12 @@ module bsg_sbox_ctrl_concentrate (
 	generate
 		for (i = 0; (i &lt; width_p); i = (i + 1)) assign fwd_sort_li[(((lg_width_p &gt;= 0) ? 0 : lg_width_p) + ((((width_p - 1) &gt;= 0) ? i : (0 - (i - (width_p - 1)))) * ((lg_width_p &gt;= 0) ? (lg_width_p + 1) : (1 - lg_width_p))))+:((lg_width_p &gt;= 0) ? (lg_width_p + 1) : (1 - lg_width_p))] = {~vec_i[i], i[0+:lg_width_p]};
 	endgenerate
-	bsg_stable_sort #(
+	bsg_sort_stable #(
 		.width_p((lg_width_p + 1)),
 		.items_p(4),
 		.t_p(width_p),
 		.b_p((width_p - 1))
-	) stable_sort(
+	) sort_stable(
 		.i(fwd_sort_li),
 		.o(fwd_sort_lo)
 	);
@@ -64,7 +64,7 @@ module bsg_sbox_ctrl_concentrate (
 		.items_p(4),
 		.t_p(((2 * lg_width_p) - 1)),
 		.b_p(lg_width_p)
-	) stable_sort_2(
+	) sort_stable_2(
 		.i(bkwd_sort_li),
 		.o(bkwd_sort_lo)
 	);
