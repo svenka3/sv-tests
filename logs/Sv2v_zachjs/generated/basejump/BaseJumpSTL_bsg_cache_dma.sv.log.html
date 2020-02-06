@@ -17,7 +17,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_dma.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_dma.v</a>
 time_elapsed: 1.020s
-ram usage: 14060 KB
+ram usage: 14168 KB
 </pre>
 <pre class="log">
 
@@ -185,9 +185,7 @@ module bsg_cache_dma (
 	);
 	generate
 		genvar i;
-		for (i = 0; (i &lt; ways_p); i = (i + 1)) begin
-			assign data_mem_w_mask_o[((((data_mask_width_lp - 1) &gt;= 0) ? 0 : (data_mask_width_lp - 1)) + ((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * (((data_mask_width_lp - 1) &gt;= 0) ? data_mask_width_lp : (2 - data_mask_width_lp))))+:(((data_mask_width_lp - 1) &gt;= 0) ? data_mask_width_lp : (2 - data_mask_width_lp))] = {data_mask_width_lp {dma_way_mask[i]}};
-		end
+		for (i = 0; (i &lt; ways_p); i = (i + 1)) assign data_mem_w_mask_o[((((data_mask_width_lp - 1) &gt;= 0) ? 0 : (data_mask_width_lp - 1)) + ((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * (((data_mask_width_lp - 1) &gt;= 0) ? data_mask_width_lp : (2 - data_mask_width_lp))))+:(((data_mask_width_lp - 1) &gt;= 0) ? data_mask_width_lp : (2 - data_mask_width_lp))] = {data_mask_width_lp {dma_way_mask[i]}};
 	endgenerate
 	assign data_mem_addr_o = {dma_addr_i[(byte_offset_width_lp + lg_block_size_in_words_lp)+:lg_sets_lp], counter_r[(lg_block_size_in_words_lp - 1):0]};
 	assign data_mem_data_o = {ways_p {in_fifo_data_lo}};

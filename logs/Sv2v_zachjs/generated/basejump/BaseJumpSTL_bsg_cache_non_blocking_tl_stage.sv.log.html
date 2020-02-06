@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_tl_stage.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_tl_stage.v</a>
-time_elapsed: 2.692s
-ram usage: 15860 KB
+time_elapsed: 2.356s
+ram usage: 16332 KB
 </pre>
 <pre class="log">
 
@@ -262,9 +262,7 @@ module bsg_cache_non_blocking_tl_stage (
 	wire [(ways_p - 1):0] tag_hit;
 	generate
 		genvar i;
-		for (i = 0; (i &lt; ways_p); i = (i + 1)) begin
-			assign tag_hit[i] = ((tag_tl[((((tag_width_lp - 1) &gt;= 0) ? 0 : (tag_width_lp - 1)) + ((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))+:(((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))] == addr_tag_tl) &amp; valid_tl[i]);
-		end
+		for (i = 0; (i &lt; ways_p); i = (i + 1)) assign tag_hit[i] = ((tag_tl[((((tag_width_lp - 1) &gt;= 0) ? 0 : (tag_width_lp - 1)) + ((((ways_p - 1) &gt;= 0) ? i : (0 - (i - (ways_p - 1)))) * (((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))))+:(((tag_width_lp - 1) &gt;= 0) ? tag_width_lp : (2 - tag_width_lp))] == addr_tag_tl) &amp; valid_tl[i]);
 	endgenerate
 	wire [(lg_ways_lp - 1):0] tag_hit_way;
 	bsg_priority_encode #(

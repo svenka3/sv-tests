@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync.v</a>
-time_elapsed: 0.656s
-ram usage: 13468 KB
+time_elapsed: 0.544s
+ram usage: 15460 KB
 </pre>
 <pre class="log">
 
@@ -44,17 +44,13 @@ module bsg_mem_1rw_sync (
 	output wire [(width_p - 1):0] data_o;
 	wire clk_lo;
 	generate
-		if (enable_clock_gating_p) begin
-			bsg_clkgate_optional icg(
-				.clk_i(clk_i),
-				.en_i(v_i),
-				.bypass_i(1&#39;b0),
-				.gated_clock_o(clk_lo)
-			);
-		end
-		else begin
-			assign clk_lo = clk_i;
-		end
+		if (enable_clock_gating_p) bsg_clkgate_optional icg(
+			.clk_i(clk_i),
+			.en_i(v_i),
+			.bypass_i(1&#39;b0),
+			.gated_clock_o(clk_lo)
+		);
+		else assign clk_lo = clk_i;
 	endgenerate
 	bsg_mem_1rw_sync_synth #(
 		.width_p(width_p),

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v</a>
-time_elapsed: 1.328s
-ram usage: 15804 KB
+time_elapsed: 1.396s
+ram usage: 14232 KB
 </pre>
 <pre class="log">
 
@@ -308,9 +308,7 @@ module bsg_round_robin_fifo_to_fifo (
 					.go_cnt_i(go_cnt[($clog2(((((i + 1) &lt; ((num_in_p &lt; num_out_p) ? num_in_p : num_out_p)) ? (i + 1) : ((num_in_p &lt; num_out_p) ? num_in_p : num_out_p)) + 1)) - 1):0]),
 					.yumi_o(yumi_int_o[i][i:0])
 				);
-				for (j = (i + 1); (j &lt; num_in_p); j = (j + 1)) begin
-					assign yumi_int_o[i][j] = 1&#39;b0;
-				end
+				for (j = (i + 1); (j &lt; num_in_p); j = (j + 1)) assign yumi_int_o[i][j] = 1&#39;b0;
 			end
 		end
 	endgenerate
@@ -351,9 +349,7 @@ module bsg_round_robin_fifo_to_fifo (
 					.valid_o(valid_int_o[i][i:0]),
 					.data_o(data_o_array)
 				);
-				for (j = (i + 1); (j &lt; num_out_p); j = (j + 1)) begin
-					assign valid_int_o[i][j] = 1&#39;b0;
-				end
+				for (j = (i + 1); (j &lt; num_out_p); j = (j + 1)) assign valid_int_o[i][j] = 1&#39;b0;
 				if (((num_out_p - i) &gt; 1)) assign data_int_o[i][((width_p * num_out_p) - 1):(width_p * (i + 1))] = zero_flat[0+:(width_p * (num_out_p - (i + 1)))];
 			end
 		end

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dramsim3_map.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dramsim3_map.v</a>
-time_elapsed: 0.668s
-ram usage: 13480 KB
+time_elapsed: 0.464s
+ram usage: 16216 KB
 </pre>
 <pre class="log">
 
@@ -41,12 +41,8 @@ module bsg_nonsynth_dramsim3_map (
 	input wire [(channel_addr_width_p - 1):0] ch_addr_i;
 	output wire [(addr_width_lp - 1):0] mem_addr_o;
 	generate
-		if ((address_mapping_p == e_ro_ra_bg_ba_co_ch)) begin
-			assign mem_addr_o = {ch_addr_i[(channel_addr_width_p - 1):byte_offset_width_lp], sv2v_cast_C109C(channel_select_p), {byte_offset_width_lp {1&#39;b0}}};
-		end
-		else if ((address_mapping_p == e_ro_ra_bg_ba_ch_co)) begin
-			assign mem_addr_o = {ch_addr_i[(channel_addr_width_p - 1):(lg_num_columns_lp + byte_offset_width_lp)], sv2v_cast_C109C(channel_select_p), ch_addr_i[((lg_num_columns_lp + byte_offset_width_lp) - 1):byte_offset_width_lp], {byte_offset_width_lp {1&#39;b0}}};
-		end
+		if ((address_mapping_p == e_ro_ra_bg_ba_co_ch)) assign mem_addr_o = {ch_addr_i[(channel_addr_width_p - 1):byte_offset_width_lp], sv2v_cast_C109C(channel_select_p), {byte_offset_width_lp {1&#39;b0}}};
+		else if ((address_mapping_p == e_ro_ra_bg_ba_ch_co)) assign mem_addr_o = {ch_addr_i[(channel_addr_width_p - 1):(lg_num_columns_lp + byte_offset_width_lp)], sv2v_cast_C109C(channel_select_p), ch_addr_i[((lg_num_columns_lp + byte_offset_width_lp) - 1):byte_offset_width_lp], {byte_offset_width_lp {1&#39;b0}}};
 	endgenerate
 	function automatic [(lg_num_channels_lp - 1):0] sv2v_cast_C109C;
 		input reg [(lg_num_channels_lp - 1):0] inp;

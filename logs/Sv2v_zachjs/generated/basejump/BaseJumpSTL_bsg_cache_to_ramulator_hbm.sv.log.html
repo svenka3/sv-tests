@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_ramulator_hbm.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_ramulator_hbm.v</a>
-time_elapsed: 0.648s
-ram usage: 14048 KB
+time_elapsed: 1.008s
+ram usage: 15804 KB
 </pre>
 <pre class="log">
 
@@ -146,12 +146,8 @@ module bsg_cache_to_ramulator_hbm (
 	);
 	wire [(hbm_channel_addr_width_p - 1):0] req_addr;
 	generate
-		if ((num_cache_p == 1)) begin
-			assign req_addr = {{(hbm_channel_addr_width_p - cache_bank_addr_width_p) {1&#39;b0}}, rr_pkt_lo[((((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1) &gt;= 0) ? 0 : ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))+:cache_bank_addr_width_p]};
-		end
-		else begin
-			assign req_addr = {{((hbm_channel_addr_width_p - lg_num_cache_lp) - cache_bank_addr_width_p) {1&#39;b0}}, rr_tag_lo, rr_pkt_lo[((((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1) &gt;= 0) ? 0 : ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))+:cache_bank_addr_width_p]};
-		end
+		if ((num_cache_p == 1)) assign req_addr = {{(hbm_channel_addr_width_p - cache_bank_addr_width_p) {1&#39;b0}}, rr_pkt_lo[((((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1) &gt;= 0) ? 0 : ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))+:cache_bank_addr_width_p]};
+		else assign req_addr = {{((hbm_channel_addr_width_p - lg_num_cache_lp) - cache_bank_addr_width_p) {1&#39;b0}}, rr_tag_lo, rr_pkt_lo[((((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1) &gt;= 0) ? 0 : ((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + -1))+:cache_bank_addr_width_p]};
 	endgenerate
 	reg req_afifo_enq;
 	wire req_afifo_full;

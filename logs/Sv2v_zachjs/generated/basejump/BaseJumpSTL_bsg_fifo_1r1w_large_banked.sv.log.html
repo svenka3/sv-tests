@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large_banked.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large_banked.v</a>
-time_elapsed: 0.488s
-ram usage: 14928 KB
+time_elapsed: 0.516s
+ram usage: 15252 KB
 </pre>
 <pre class="log">
 
@@ -60,22 +60,20 @@ module bsg_fifo_1r1w_large_banked (
 	wire [1:0] yumi_int;
 	wire [(((width_p - 1) &gt;= 0) ? (((((width_p - 1) &gt;= 0) ? width_p : (2 - width_p)) * 2) + -1) : ((((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p) * 2) + (((width_p - 1) * 2) - 1))):(((width_p - 1) &gt;= 0) ? 0 : ((width_p - 1) * 2))] data_int;
 	generate
-		for (i = 0; (i &lt; 2); i = (i + 1)) begin
-			bsg_fifo_1r1w_pseudo_large #(
-				.width(width_p),
-				.els_p((els_p &gt;&gt; 1)),
-				.early_yumi_p(1)
-			) bank(
-				.clk_i(clk_i),
-				.reset_i(reset_i),
-				.v_i(v_i_demux[i]),
-				.data_i(data_i),
-				.ready_o(ready_o_mux[i]),
-				.v_o(v_int[i]),
-				.data_o(data_int[((((width_p - 1) &gt;= 0) ? i : (0 - (i - (width_p - 1)))) * 2)+:2]),
-				.yumi_i(yumi_int[i])
-			);
-		end
+		for (i = 0; (i &lt; 2); i = (i + 1)) bsg_fifo_1r1w_pseudo_large #(
+			.width(width_p),
+			.els_p((els_p &gt;&gt; 1)),
+			.early_yumi_p(1)
+		) bank(
+			.clk_i(clk_i),
+			.reset_i(reset_i),
+			.v_i(v_i_demux[i]),
+			.data_i(data_i),
+			.ready_o(ready_o_mux[i]),
+			.v_o(v_int[i]),
+			.data_o(data_int[((((width_p - 1) &gt;= 0) ? i : (0 - (i - (width_p - 1)))) * 2)+:2]),
+			.yumi_i(yumi_int[i])
+		);
 	endgenerate
 	bsg_round_robin_n_to_1 #(
 		.width(width_p),

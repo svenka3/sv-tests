@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v</a>
-time_elapsed: 0.692s
-ram usage: 15984 KB
+time_elapsed: 0.576s
+ram usage: 14952 KB
 </pre>
 <pre class="log">
 
@@ -99,17 +99,13 @@ module bsg_tag_trace_replay (
 		.yumi_i(yumi_i)
 	);
 	generate
-		if ((num_masters_p == 0)) begin
-			assign en_r_o = 1&#39;bz;
-		end
-		else begin
-			bsg_dff_en #(.width_p(num_masters_p)) en_reg(
-				.clk_i(clk_i),
-				.en_i((tr_valid_lo &amp; piso_ready_lo)),
-				.data_i(tr_data_lo[(max_payload_width_p + bsg_tag_header_width_lp)+:num_masters_p]),
-				.data_o(en_r_o)
-			);
-		end
+		if ((num_masters_p == 0)) assign en_r_o = 1&#39;bz;
+		else bsg_dff_en #(.width_p(num_masters_p)) en_reg(
+			.clk_i(clk_i),
+			.en_i((tr_valid_lo &amp; piso_ready_lo)),
+			.data_i(tr_data_lo[(max_payload_width_p + bsg_tag_header_width_lp)+:num_masters_p]),
+			.data_o(en_r_o)
+		);
 	endgenerate
 	function automatic [((rom_data_width_p - 4) - 1):0] sv2v_cast_F473F;
 		input reg [((rom_data_width_p - 4) - 1):0] inp;
