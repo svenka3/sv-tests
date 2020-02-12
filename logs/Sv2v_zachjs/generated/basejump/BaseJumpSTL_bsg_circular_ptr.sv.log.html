@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_circular_ptr.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_circular_ptr.v</a>
-time_elapsed: 0.488s
-ram usage: 14188 KB
+time_elapsed: 1.288s
+ram usage: 13664 KB
 </pre>
 <pre class="log">
 
@@ -37,8 +37,9 @@ module bsg_circular_ptr (
 	output [(ptr_width_lp - 1):0] o;
 	output [(ptr_width_lp - 1):0] n_o;
 	reg [(ptr_width_lp - 1):0] ptr_r;
-	reg [(ptr_width_lp - 1):0] ptr_n;
-	reg [ptr_width_lp:0] ptr_wrap;
+	wire [(ptr_width_lp - 1):0] ptr_n;
+	wire [(ptr_width_lp - 1):0] ptr_nowrap;
+	wire [ptr_width_lp:0] ptr_wrap;
 	assign o = ptr_r;
 	assign n_o = ptr_n;
 	always @(posedge clk)
@@ -48,21 +49,20 @@ module bsg_circular_ptr (
 			ptr_r &lt;= ptr_n;
 	generate
 		if ((slots_p == 1)) begin
-			always @(*) ptr_n = 1&#39;b0;
+			assign ptr_n = 1&#39;b0;
 			wire ignore = |add_i;
 		end
 		else if (((1 &lt;&lt; $clog2(slots_p)) == slots_p)) if ((max_add_p == 1)) begin
 			wire [(ptr_width_lp - 1):0] ptr_r_p1 = (ptr_r + 1&#39;b1);
-			always @(*) ptr_n = (add_i ? ptr_r_p1 : ptr_r);
+			assign ptr_n = (add_i ? ptr_r_p1 : ptr_r);
 		end
-		else always @(*) ptr_n = sv2v_cast_7EC17((ptr_r + add_i));
+		else assign ptr_n = sv2v_cast_7EC17((ptr_r + add_i));
 		else begin : notpow2
-			always @(*) begin
-				ptr_wrap = (({1&#39;b0, ptr_r} - slots_p) + add_i);
-				ptr_n = (ptr_r + add_i);
-				if (~ptr_wrap[ptr_width_lp])
-					ptr_n = ptr_wrap[0+:ptr_width_lp];
-			end
+			assign ptr_wrap = (({1&#39;b0, ptr_r} - slots_p) + add_i);
+			assign ptr_nowrap = (ptr_r + add_i);
+			assign ptr_n = (~ptr_wrap[ptr_width_lp] ? ptr_wrap[0+:ptr_width_lp] : ptr_nowrap);
+			always @(*)
+				;
 		end
 	endgenerate
 	function automatic [(ptr_width_lp - 1):0] sv2v_cast_7EC17;

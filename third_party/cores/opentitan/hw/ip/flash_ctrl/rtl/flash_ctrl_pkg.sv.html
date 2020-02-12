@@ -57,7 +57,27 @@
 <a href="#l-49">49</a>
 <a href="#l-50">50</a>
 <a href="#l-51">51</a>
-<a href="#l-52">52</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-52">52</a>
+<a href="#l-53">53</a>
+<a href="#l-54">54</a>
+<a href="#l-55">55</a>
+<a href="#l-56">56</a>
+<a href="#l-57">57</a>
+<a href="#l-58">58</a>
+<a href="#l-59">59</a>
+<a href="#l-60">60</a>
+<a href="#l-61">61</a>
+<a href="#l-62">62</a>
+<a href="#l-63">63</a>
+<a href="#l-64">64</a>
+<a href="#l-65">65</a>
+<a href="#l-66">66</a>
+<a href="#l-67">67</a>
+<a href="#l-68">68</a>
+<a href="#l-69">69</a>
+<a href="#l-70">70</a>
+<a href="#l-71">71</a>
+<a href="#l-72">72</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -97,18 +117,38 @@
 <a name="l-38"></a>    <span class="k">logic</span>                         <span class="n">bk_erase</span><span class="p">;</span>
 <a name="l-39"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">top_pkg</span><span class="o">::</span><span class="n">FLASH_AW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">addr</span><span class="p">;</span>
 <a name="l-40"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">top_pkg</span><span class="o">::</span><span class="n">FLASH_DW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">prog_data</span><span class="p">;</span>
-<a name="l-41"></a>  <span class="p">}</span> <span class="n">flash_c2m_t</span><span class="p">;</span>
+<a name="l-41"></a>  <span class="p">}</span> <span class="n">flash_req_t</span><span class="p">;</span>
 <a name="l-42"></a>
-<a name="l-43"></a>  <span class="c1">// memory to flash controller</span>
-<a name="l-44"></a>  <span class="k">typedef</span> <span class="k">struct</span> <span class="k">packed</span> <span class="p">{</span>
-<a name="l-45"></a>    <span class="k">logic</span>                         <span class="n">rd_done</span><span class="p">;</span>
-<a name="l-46"></a>    <span class="k">logic</span>                         <span class="n">prog_done</span><span class="p">;</span>
-<a name="l-47"></a>    <span class="k">logic</span>                         <span class="n">erase_done</span><span class="p">;</span>
-<a name="l-48"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">top_pkg</span><span class="o">::</span><span class="n">FLASH_DW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rd_data</span><span class="p">;</span>
-<a name="l-49"></a>    <span class="k">logic</span>                         <span class="n">init_busy</span><span class="p">;</span>
-<a name="l-50"></a>  <span class="p">}</span> <span class="n">flash_m2c_t</span><span class="p">;</span>
-<a name="l-51"></a>
-<a name="l-52"></a><span class="k">endpackage</span> <span class="o">:</span> <span class="n">flash_ctrl_pkg</span>
+<a name="l-43"></a>  <span class="c1">// default value of flash_req_t (for dangling ports)</span>
+<a name="l-44"></a>  <span class="k">parameter</span> <span class="n">flash_req_t</span> <span class="n">FLASH_REQ_DEFAULT</span> <span class="o">=</span> <span class="p">&#39;{</span>
+<a name="l-45"></a>    <span class="nl">req:</span>       <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-46"></a>    <span class="nl">rd:</span>        <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-47"></a>    <span class="nl">prog:</span>      <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-48"></a>    <span class="nl">pg_erase:</span>  <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-49"></a>    <span class="nl">bk_erase:</span>  <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-50"></a>    <span class="nl">addr:</span>      <span class="m">&#39;0</span><span class="p">,</span>
+<a name="l-51"></a>    <span class="nl">prog_data:</span> <span class="m">&#39;0</span>
+<a name="l-52"></a>  <span class="p">};</span>
+<a name="l-53"></a>
+<a name="l-54"></a>  <span class="c1">// memory to flash controller</span>
+<a name="l-55"></a>  <span class="k">typedef</span> <span class="k">struct</span> <span class="k">packed</span> <span class="p">{</span>
+<a name="l-56"></a>    <span class="k">logic</span>                         <span class="n">rd_done</span><span class="p">;</span>
+<a name="l-57"></a>    <span class="k">logic</span>                         <span class="n">prog_done</span><span class="p">;</span>
+<a name="l-58"></a>    <span class="k">logic</span>                         <span class="n">erase_done</span><span class="p">;</span>
+<a name="l-59"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">top_pkg</span><span class="o">::</span><span class="n">FLASH_DW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rd_data</span><span class="p">;</span>
+<a name="l-60"></a>    <span class="k">logic</span>                         <span class="n">init_busy</span><span class="p">;</span>
+<a name="l-61"></a>  <span class="p">}</span> <span class="n">flash_rsp_t</span><span class="p">;</span>
+<a name="l-62"></a>
+<a name="l-63"></a>  <span class="c1">// default value of flash_rsp_t (for dangling ports)</span>
+<a name="l-64"></a>  <span class="k">parameter</span> <span class="n">flash_rsp_t</span> <span class="n">FLASH_RSP_DEFAULT</span> <span class="o">=</span> <span class="p">&#39;{</span>
+<a name="l-65"></a>    <span class="nl">rd_done:</span>    <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-66"></a>    <span class="nl">prog_done:</span>  <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-67"></a>    <span class="nl">erase_done:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span>
+<a name="l-68"></a>    <span class="nl">rd_data:</span>    <span class="m">&#39;0</span><span class="p">,</span>
+<a name="l-69"></a>    <span class="nl">init_busy:</span>  <span class="mh">1</span><span class="mb">&#39;b0</span>
+<a name="l-70"></a>  <span class="p">};</span>
+<a name="l-71"></a>
+<a name="l-72"></a><span class="k">endpackage</span> <span class="o">:</span> <span class="n">flash_ctrl_pkg</span>
 </pre></div>
 </td></tr></table>
   </body>
