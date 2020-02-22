@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1892959b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1892959b.v</a>
-time_elapsed: 0.056s
-ram usage: 9720 KB
+time_elapsed: 0.088s
+ram usage: 13384 KB
 </pre>
 <pre class="log">
 
@@ -25,10 +25,10 @@ module top;
 	parameter device = &#34;DEVICE 2&#34;;
 	wire res;
 	function is_dev1;
-		input reg [(8 * 20):1] device;
+		input reg [8 * 20:1] device;
 		reg is_device;
 		begin
-			if (((device == &#34;DEVICE1&#34;) || (device == &#34;DEVICE 1&#34;)))
+			if ((device == &#34;DEVICE1&#34;) || (device == &#34;DEVICE 1&#34;))
 				is_device = 1;
 			else
 				is_device = 0;
@@ -36,10 +36,10 @@ module top;
 		end
 	endfunction
 	function is_dev2;
-		input reg [(8 * 20):1] device;
+		input reg [8 * 20:1] device;
 		reg is_device;
 		begin
-			if (((device == &#34;DEVICE2&#34;) || (device == &#34;DEVICE 2&#34;)))
+			if ((device == &#34;DEVICE2&#34;) || (device == &#34;DEVICE 2&#34;))
 				is_device = 1;
 			else
 				is_device = 0;
@@ -47,19 +47,19 @@ module top;
 		end
 	endfunction
 	function is_dev;
-		input reg [(8 * 20):1] device;
+		input reg [8 * 20:1] device;
 		reg is_device;
 		begin
-			if ((is_dev1(device) || is_dev2(device)))
+			if (is_dev1(device) || is_dev2(device))
 				is_device = 1;
 			else
 				is_device = 0;
 			is_dev = is_device;
 		end
 	endfunction
-	assign res = ((is_dev(device) == 1) ? 1&#39;b1 : 1&#39;b0);
+	assign res = (is_dev(device) == 1 ? 1&#39;b1 : 1&#39;b0);
 	initial #(1)
-		if ((res == 1&#39;b1))
+		if (res == 1&#39;b1)
 			$display(&#34;PASSED&#34;);
 		else
 			$display(&#34;FAILED&#34;);

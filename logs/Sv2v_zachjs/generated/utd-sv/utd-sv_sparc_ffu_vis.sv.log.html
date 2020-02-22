@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sparc_ffu_vis.v.html" target="file-frame">third_party/tests/utd-sv/sparc_ffu_vis.v</a>
-time_elapsed: 0.240s
-ram usage: 12436 KB
+time_elapsed: 0.080s
+ram usage: 11436 KB
 </pre>
 <pre class="log">
 
@@ -86,7 +86,7 @@ module sparc_ffu_vis (
 	wire [63:0] logic_rs1;
 	wire [63:0] logic_rs2;
 	assign add_in_rs1[63:0] = dp_vis_rs1_data[63:0];
-	assign add_in_rs2[63:0] = (dp_vis_rs2_data[63:0] ^ {64 {ctl_vis_subtract}});
+	assign add_in_rs2[63:0] = dp_vis_rs2_data[63:0] ^ {64 {ctl_vis_subtract}};
 	sparc_ffu_part_add32 part_adder_hi(
 		.z(add_out[63:32]),
 		.add32(ctl_vis_add32),
@@ -126,11 +126,11 @@ module sparc_ffu_vis (
 		.in1(align_data1[63:0]),
 		.sel(ctl_vis_align_odd)
 	);
-	assign logic_rs1[63:0] = (dp_vis_rs1_data[63:0] ^ {64 {ctl_vis_log_invert_rs1}});
-	assign logic_rs2[63:0] = (dp_vis_rs2_data[63:0] ^ {64 {ctl_vis_log_invert_rs2}});
+	assign logic_rs1[63:0] = dp_vis_rs1_data[63:0] ^ {64 {ctl_vis_log_invert_rs1}};
+	assign logic_rs2[63:0] = dp_vis_rs2_data[63:0] ^ {64 {ctl_vis_log_invert_rs2}};
 	assign logic_nor[63:0] = ~(logic_rs1[63:0] | logic_rs2[63:0]);
 	assign logic_nand[63:0] = ~(logic_rs1[63:0] &amp; logic_rs2[63:0]);
-	assign logic_xor[63:0] = (logic_rs1[63:0] ^ logic_rs2[63:0]);
+	assign logic_xor[63:0] = logic_rs1[63:0] ^ logic_rs2[63:0];
 	mux3ds #(64) pass_mux(
 		.dout(logic_pass[63:0]),
 		.in0({64 {ctl_vis_log_constant}}),

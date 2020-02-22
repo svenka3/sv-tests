@@ -17,7 +17,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/always_latch.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_latch.v</a>
 time_elapsed: 0.116s
-ram usage: 14076 KB
+ram usage: 12044 KB
 </pre>
 <pre class="log">
 
@@ -34,15 +34,15 @@ module top;
 		input reg i2;
 		reg partial;
 		begin
-			partial = (i1 &amp; i2);
-			f_and = (partial | hidden);
+			partial = i1 &amp; i2;
+			f_and = partial | hidden;
 		end
 	endfunction
 	reg intr;
 	always @(*)
 		if (en) begin
 			intr = flip;
-			y &lt;= (f_and(a, b) ^ intr);
+			y &lt;= f_and(a, b) ^ intr;
 		end
 	initial begin
 		pass = 1&#39;b1;
@@ -53,7 +53,7 @@ module top;
 		b = 1&#39;b0;
 		#(1)
 			;
-		if ((y !== 1&#39;b0)) begin
+		if (y !== 1&#39;b0) begin
 			$display(&#34;FAILED: a=1&#39;b0, b=1&#39;b0, hidden=1&#39;b0, expected 1&#39;b0, got %b&#34;, y);
 			pass = 1&#39;b0;
 		end
@@ -61,7 +61,7 @@ module top;
 		b = 1&#39;b1;
 		#(1)
 			;
-		if ((y !== 1&#39;b0)) begin
+		if (y !== 1&#39;b0) begin
 			$display(&#34;FAILED: a=1&#39;b0, b=1&#39;b1, hidden=1&#39;b0, expected 1&#39;b0, got %b&#34;, y);
 			pass = 1&#39;b0;
 		end
@@ -69,7 +69,7 @@ module top;
 		b = 1&#39;b0;
 		#(1)
 			;
-		if ((y !== 1&#39;b0)) begin
+		if (y !== 1&#39;b0) begin
 			$display(&#34;FAILED: a=1&#39;b1, b=1&#39;b0, hidden=1&#39;b0, expected 1&#39;b0, got %b&#34;, y);
 			pass = 1&#39;b0;
 		end
@@ -77,7 +77,7 @@ module top;
 		b = 1&#39;b1;
 		#(1)
 			;
-		if ((y !== 1&#39;b1)) begin
+		if (y !== 1&#39;b1) begin
 			$display(&#34;FAILED: a=1&#39;b1, b=1&#39;b1, hidden=1&#39;b0, expected 1&#39;b1, got %b&#34;, y);
 			pass = 1&#39;b0;
 		end
@@ -86,7 +86,7 @@ module top;
 		b = 1&#39;b0;
 		#(1)
 			;
-		if ((y !== 1&#39;b0)) begin
+		if (y !== 1&#39;b0) begin
 			$display(&#34;FAILED: a=1&#39;b0, b=1&#39;b0, hidden=1&#39;b0, expected 1&#39;b0, got %b&#34;, y);
 			pass = 1&#39;b0;
 		end
@@ -95,7 +95,7 @@ module top;
 		b = 1&#39;b0;
 		#(1)
 			;
-		if ((y !== 1&#39;b1)) begin
+		if (y !== 1&#39;b1) begin
 			$display(&#34;FAILED: a=1&#39;b0, b=1&#39;b0, hidden=1&#39;b1, expected 1&#39;b1, got %b&#34;, y);
 			pass = 1&#39;b0;
 		end
@@ -103,7 +103,7 @@ module top;
 		hidden = 1&#39;b0;
 		#(1)
 			;
-		if ((y !== 1&#39;b1)) begin
+		if (y !== 1&#39;b1) begin
 			$display(&#34;FAILED: en=1&#39;b0, expected 1&#39;b1, got %b&#34;, y);
 			pass = 1&#39;b0;
 		end

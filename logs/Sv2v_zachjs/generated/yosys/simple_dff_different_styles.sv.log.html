@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/dff_different_styles.v.html" target="file-frame">third_party/tools/yosys/tests/simple/dff_different_styles.v</a>
-time_elapsed: 0.132s
-ram usage: 11408 KB
+time_elapsed: 0.084s
+ram usage: 10600 KB
 </pre>
 <pre class="log">
 
@@ -90,7 +90,7 @@ module dffa3 (
 	input d;
 	output reg q;
 	always @(posedge clk or negedge arst)
-		if (~!arst)
+		if (~(!arst))
 			q &lt;= d;
 		else
 			q &lt;= 1;
@@ -131,7 +131,7 @@ module dffsr1 (
 	output reg q;
 	always @(posedge clk or posedge arst)
 		if (arst)
-			q &lt;= (d ^ d);
+			q &lt;= d ^ d;
 		else
 			q &lt;= d;
 endmodule
@@ -153,8 +153,8 @@ module dffsr2 (
 	(* gentb_clock *) wire d;
 	dffsr2_sub uut(
 		clk,
-		(preset &amp;&amp; !clear),
-		(!preset &amp;&amp; clear),
+		preset &amp;&amp; !clear,
+		!preset &amp;&amp; clear,
 		d,
 		q
 	);

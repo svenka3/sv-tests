@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/scbuf_evict.v.html" target="file-frame">third_party/tests/utd-sv/scbuf_evict.v</a>
-time_elapsed: 0.896s
-ram usage: 13220 KB
+time_elapsed: 0.716s
+ram usage: 17404 KB
 </pre>
 <pre class="log">
 
@@ -269,10 +269,10 @@ module scbuf_evict (
 		.si(),
 		.so()
 	);
-	assign sctag_scbuf_rdma_wren_s3_v4 = (((sctag_scbuf_rdma_wren_s3[6] | sctag_scbuf_rdma_wren_s3[4]) | sctag_scbuf_rdma_wren_s3[2]) | sctag_scbuf_rdma_wren_s3[0]);
-	assign sctag_scbuf_rdma_wren_s3_v3 = (((sctag_scbuf_rdma_wren_s3[7] | sctag_scbuf_rdma_wren_s3[5]) | sctag_scbuf_rdma_wren_s3[3]) | sctag_scbuf_rdma_wren_s3[1]);
-	assign sctag_scbuf_rdma_wren_s3_v2 = (((sctag_scbuf_rdma_wren_s3[14] | sctag_scbuf_rdma_wren_s3[12]) | sctag_scbuf_rdma_wren_s3[10]) | sctag_scbuf_rdma_wren_s3[8]);
-	assign sctag_scbuf_rdma_wren_s3_v1 = (((sctag_scbuf_rdma_wren_s3[15] | sctag_scbuf_rdma_wren_s3[13]) | sctag_scbuf_rdma_wren_s3[11]) | sctag_scbuf_rdma_wren_s3[9]);
+	assign sctag_scbuf_rdma_wren_s3_v4 = ((sctag_scbuf_rdma_wren_s3[6] | sctag_scbuf_rdma_wren_s3[4]) | sctag_scbuf_rdma_wren_s3[2]) | sctag_scbuf_rdma_wren_s3[0];
+	assign sctag_scbuf_rdma_wren_s3_v3 = ((sctag_scbuf_rdma_wren_s3[7] | sctag_scbuf_rdma_wren_s3[5]) | sctag_scbuf_rdma_wren_s3[3]) | sctag_scbuf_rdma_wren_s3[1];
+	assign sctag_scbuf_rdma_wren_s3_v2 = ((sctag_scbuf_rdma_wren_s3[14] | sctag_scbuf_rdma_wren_s3[12]) | sctag_scbuf_rdma_wren_s3[10]) | sctag_scbuf_rdma_wren_s3[8];
+	assign sctag_scbuf_rdma_wren_s3_v1 = ((sctag_scbuf_rdma_wren_s3[15] | sctag_scbuf_rdma_wren_s3[13]) | sctag_scbuf_rdma_wren_s3[11]) | sctag_scbuf_rdma_wren_s3[9];
 	dff_s #(2) ff_sctag_scbuf_rdma_wrwl_s3(
 		.q(sctag_scbuf_rdma_wrwl_s3[1:0]),
 		.din(sctag_scbuf_rdma_wrwl_s2[1:0]),
@@ -340,7 +340,7 @@ module scbuf_evict (
 		.si(),
 		.so()
 	);
-	assign error_qual_in = (sctag_scbuf_rdma_rden_r3 | (error_qual &amp; sctag_scbuf_evict_en_r3));
+	assign error_qual_in = sctag_scbuf_rdma_rden_r3 | (error_qual &amp; sctag_scbuf_evict_en_r3);
 	dffrl_s #(1) ff_array_rd_ptr(
 		.q(error_qual),
 		.din(error_qual_in),
@@ -350,7 +350,7 @@ module scbuf_evict (
 		.si(),
 		.so()
 	);
-	assign wb_or_rdma_rden_r2 = ((sctag_scbuf_wbrd_en_r2 | sctag_scbuf_rdma_rden_r2) | sehold);
+	assign wb_or_rdma_rden_r2 = (sctag_scbuf_wbrd_en_r2 | sctag_scbuf_rdma_rden_r2) | sehold;
 	clken_buf clk_buf_r2(
 		.clk(en_clk_r2),
 		.rclk(rclk),
@@ -442,9 +442,9 @@ module scbuf_evict (
 		.si(),
 		.so()
 	);
-	assign sel_in0 = (sctag_scbuf_ev_dword_r3[1:0] == 2&#39;b00);
-	assign sel_in1 = (sctag_scbuf_ev_dword_r3[1:0] == 2&#39;b01);
-	assign sel_in2 = (sctag_scbuf_ev_dword_r3[1:0] == 2&#39;b10);
+	assign sel_in0 = sctag_scbuf_ev_dword_r3[1:0] == 2&#39;b00;
+	assign sel_in1 = sctag_scbuf_ev_dword_r3[1:0] == 2&#39;b01;
+	assign sel_in2 = sctag_scbuf_ev_dword_r3[1:0] == 2&#39;b10;
 	assign sel_in3 = ~((sel_in0 | sel_in1) | sel_in2);
 	mux4ds #(78) mux_wb_array_dout_1(
 		.dout(wb_array_dout_r3_4t1[77:0]),
@@ -497,9 +497,9 @@ module scbuf_evict (
 		.parity(wb_array_dout_r4[45:39]),
 		.din(wb_array_dout_r4[77:46])
 	);
-	assign evict_uncorr_err_r4 = ((sctag_scbuf_evict_en_r4 &amp; !error_qual) &amp; ((|check0_r4[5:0] &amp; ~parity0_r4) | (|check1_r4[5:0] &amp; ~parity1_r4)));
-	assign evict_uncorr_err_unqual_r4 = (sctag_scbuf_evict_en_r4 &amp; ((|check0_r4[5:0] &amp; ~parity0_r4) | (|check1_r4[5:0] &amp; ~parity1_r4)));
-	assign evict_corr_err_r4 = ((sctag_scbuf_evict_en_r4 &amp; !error_qual) &amp; (parity0_r4 | parity1_r4));
+	assign evict_uncorr_err_r4 = (sctag_scbuf_evict_en_r4 &amp; !error_qual) &amp; ((|check0_r4[5:0] &amp; ~parity0_r4) | (|check1_r4[5:0] &amp; ~parity1_r4));
+	assign evict_uncorr_err_unqual_r4 = sctag_scbuf_evict_en_r4 &amp; ((|check0_r4[5:0] &amp; ~parity0_r4) | (|check1_r4[5:0] &amp; ~parity1_r4));
+	assign evict_corr_err_r4 = (sctag_scbuf_evict_en_r4 &amp; !error_qual) &amp; (parity0_r4 | parity1_r4);
 	dff_s #(64) ff_wb_array_dout_r5(
 		.q(wb_array_dout_r5[63:0]),
 		.din(wb_array_dout_ecc_r4[63:0]),

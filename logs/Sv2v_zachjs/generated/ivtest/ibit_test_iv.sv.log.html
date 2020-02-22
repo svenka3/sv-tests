@@ -17,7 +17,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ibit_test.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ibit_test.v</a>
 time_elapsed: 0.116s
-ram usage: 10676 KB
+ram usage: 10340 KB
 </pre>
 <pre class="log">
 
@@ -33,34 +33,34 @@ module ibit_test;
 	assign bu = ar;
 	assign bu_xz = ar_xz;
 	initial begin
-		if (((bu !== 15&#39;b0) | (bu_xz != 15&#39;b0))) begin
+		if ((bu !== 15&#39;b0) | (bu_xz != 15&#39;b0)) begin
 			$display(&#34;FAILED - time zero initialisation incorrect: %b %b&#34;, bu, bu_xz);
 			$finish;
 		end
-		for (i = 0; (i &lt; TRIALS); i = (i + 1))
+		for (i = 0; i &lt; TRIALS; i = i + 1)
 			begin
 				#(1)
 					;
-				ar = ($random % MAX);
+				ar = $random % MAX;
 				#(1)
 					;
-				if ((bu !== ar)) begin
+				if (bu !== ar) begin
 					$display(&#34;FAILED - incorrect assigment to bits: %b&#34;, bu);
 					$finish;
 				end
 			end
 		#(1)
 			;
-		for (i = 0; (i &lt; TRIALS); i = (i + 1))
+		for (i = 0; i &lt; TRIALS; i = i + 1)
 			begin
 				#(1)
 					;
-				ar = ($random % MAX);
+				ar = $random % MAX;
 				ar_xz = xz_inject(ar);
 				ar_expected = xz_expected(ar_xz);
 				#(1)
 					;
-				if ((bu_xz !== ar_expected)) begin
+				if (bu_xz !== ar_expected) begin
 					$display(&#34;FAILED - incorrect assigment to bits (when &#39;x): %b&#34;, bu);
 					$finish;
 				end
@@ -74,11 +74,11 @@ module ibit_test;
 		integer i;
 		integer temp;
 		begin
-			temp = ($random % MAX);
-			for (i = 0; (i &lt; 15); i = (i + 1))
-				if ((temp[i] == 1&#39;b1)) begin
-					temp = ($random % MAX);
-					if ((temp &lt;= 0))
+			temp = $random % MAX;
+			for (i = 0; i &lt; 15; i = i + 1)
+				if (temp[i] == 1&#39;b1) begin
+					temp = $random % MAX;
+					if (temp &lt;= 0)
 						value[i] = 1&#39;bx;
 					else
 						value[i] = 1&#39;bz;
@@ -90,8 +90,8 @@ module ibit_test;
 		input reg [15:0] value_xz;
 		integer i;
 		begin
-			for (i = 0; (i &lt; 15); i = (i + 1))
-				if (((value_xz[i] === 1&#39;bx) || (value_xz[i] === 1&#39;bz)))
+			for (i = 0; i &lt; 15; i = i + 1)
+				if ((value_xz[i] === 1&#39;bx) || (value_xz[i] === 1&#39;bz))
 					value_xz[i] = 1&#39;b0;
 			xz_expected = value_xz;
 		end

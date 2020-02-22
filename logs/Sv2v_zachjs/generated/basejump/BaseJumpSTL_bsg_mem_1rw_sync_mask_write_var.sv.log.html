@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_var.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_var.v</a>
-time_elapsed: 0.348s
-ram usage: 14744 KB
+time_elapsed: 0.420s
+ram usage: 15004 KB
 </pre>
 <pre class="log">
 
@@ -34,31 +34,31 @@ module bsg_mem_1rw_sync_mask_write_var (
 	parameter width_p = -1;
 	parameter mask_width_p = -1;
 	parameter els_p = -1;
-	parameter chunk_size_lp = (width_p / mask_width_p);
-	parameter addr_width_lp = ((els_p == 1) ? 1 : $clog2(els_p));
+	parameter chunk_size_lp = width_p / mask_width_p;
+	parameter addr_width_lp = (els_p == 1 ? 1 : $clog2(els_p));
 	input clk_i;
 	input reset_i;
-	input [(width_p - 1):0] data_i;
-	input [(width_p - 1):0] w_mask_i;
-	input [(addr_width_lp - 1):0] addr_i;
+	input [width_p - 1:0] data_i;
+	input [width_p - 1:0] w_mask_i;
+	input [addr_width_lp - 1:0] addr_i;
 	input v_i;
 	input w_i;
-	output [(width_p - 1):0] data_o;
+	output [width_p - 1:0] data_o;
 	always @(posedge clk_i)
 		;
 	genvar i;
 	generate
-		for (i = 0; (i &lt; chunk_size_lp); i = (i + 1)) bsg_mem_1rw_sync #(
+		for (i = 0; i &lt; chunk_size_lp; i = i + 1) bsg_mem_1rw_sync #(
 			.width_p(mask_width_p),
 			.els_p(els_p)
 		) mem(
 			.clk_i(clk_i),
 			.reset_i(reset_i),
-			.data_i(data_i[(((i + 1) * mask_width_p) - 1):(i * mask_width_p)]),
+			.data_i(data_i[((i + 1) * mask_width_p) - 1:i * mask_width_p]),
 			.addr_i(addr_i),
 			.v_i(v_i),
-			.w_i((w_i &amp; w_mask_i[(i * mask_width_p)])),
-			.data_o(data_o[(((i + 1) * mask_width_p) - 1):(i * mask_width_p)])
+			.w_i(w_i &amp; w_mask_i[i * mask_width_p]),
+			.data_o(data_o[((i + 1) * mask_width_p) - 1:i * mask_width_p])
 		);
 	endgenerate
 endmodule

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_n_to_1.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_n_to_1.v</a>
-time_elapsed: 0.536s
-ram usage: 16020 KB
+time_elapsed: 0.436s
+ram usage: 13796 KB
 </pre>
 <pre class="log">
 
@@ -35,19 +35,19 @@ module bsg_round_robin_n_to_1 (
 	parameter width_p = -1;
 	parameter num_in_p = -1;
 	parameter strict_p = &#34;inv&#34;;
-	parameter tag_width_lp = ((num_in_p == 1) ? 1 : $clog2(num_in_p));
+	parameter tag_width_lp = (num_in_p == 1 ? 1 : $clog2(num_in_p));
 	input clk_i;
 	input reset_i;
-	input [(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_i;
-	input [(num_in_p - 1):0] v_i;
-	output [(num_in_p - 1):0] yumi_o;
+	input [((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] data_i;
+	input [num_in_p - 1:0] v_i;
+	output [num_in_p - 1:0] yumi_o;
 	output v_o;
-	output [(width_p - 1):0] data_o;
-	output [(tag_width_lp - 1):0] tag_o;
+	output [width_p - 1:0] data_o;
+	output [tag_width_lp - 1:0] tag_o;
 	input yumi_i;
 	generate
 		if (strict_p) begin : strict
-			wire [(tag_width_lp - 1):0] ptr_r;
+			wire [tag_width_lp - 1:0] ptr_r;
 			bsg_circular_ptr #(
 				.slots_p(num_in_p),
 				.max_add_p(1)
@@ -59,12 +59,12 @@ module bsg_round_robin_n_to_1 (
 				.n_o()
 			);
 			assign v_o = v_i[ptr_r];
-			assign data_o = data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((num_in_p - 1) &gt;= 0) ? ptr_r : (0 - (ptr_r - (num_in_p - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))];
+			assign data_o = data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((num_in_p - 1) &gt;= 0 ? ptr_r : 0 - (ptr_r - (num_in_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)];
 			assign tag_o = ptr_r;
-			assign yumi_o = sv2v_cast_1A36E((yumi_i &lt;&lt; tag_o));
+			assign yumi_o = sv2v_cast_1A36E(yumi_i &lt;&lt; tag_o);
 		end
 		else begin : greedy
-			wire [(num_in_p - 1):0] grants_lo;
+			wire [num_in_p - 1:0] grants_lo;
 			bsg_round_robin_arb #(.inputs_p(num_in_p)) rr_arb_ctrl(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
@@ -74,7 +74,7 @@ module bsg_round_robin_n_to_1 (
 				.sel_one_hot_o(),
 				.v_o(v_o),
 				.tag_o(tag_o),
-				.yumi_i((yumi_i &amp; v_o))
+				.yumi_i(yumi_i &amp; v_o)
 			);
 			bsg_crossbar_o_by_i #(
 				.i_els_p(num_in_p),
@@ -85,11 +85,11 @@ module bsg_round_robin_n_to_1 (
 				.sel_oi_one_hot_i(grants_lo),
 				.o(data_o)
 			);
-			assign yumi_o = (grants_lo &amp; {num_in_p {yumi_i}});
+			assign yumi_o = grants_lo &amp; {num_in_p {yumi_i}};
 		end
 	endgenerate
-	function automatic [(num_in_p - 1):0] sv2v_cast_1A36E;
-		input reg [(num_in_p - 1):0] inp;
+	function automatic [num_in_p - 1:0] sv2v_cast_1A36E;
+		input reg [num_in_p - 1:0] inp;
 		sv2v_cast_1A36E = inp;
 	endfunction
 endmodule

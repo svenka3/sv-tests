@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_source_sync_upstream.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_source_sync_upstream.v</a>
-time_elapsed: 0.452s
-ram usage: 13216 KB
+time_elapsed: 0.604s
+ram usage: 15820 KB
 </pre>
 <pre class="log">
 
@@ -44,16 +44,16 @@ module bsg_link_source_sync_upstream (
 	input io_clk_i;
 	input io_link_reset_i;
 	input async_token_reset_i;
-	input [(channel_width_p - 1):0] core_data_i;
+	input [channel_width_p - 1:0] core_data_i;
 	input core_valid_i;
 	output core_ready_o;
-	output reg [(channel_width_p - 1):0] io_data_o;
+	output reg [channel_width_p - 1:0] io_data_o;
 	output reg io_valid_o;
 	input io_ready_i;
 	input token_clk_i;
 	wire core_fifo_valid;
 	wire core_fifo_yumi;
-	wire [(channel_width_p - 1):0] core_fifo_data;
+	wire [channel_width_p - 1:0] core_fifo_data;
 	bsg_two_fifo #(.width_p(channel_width_p)) core_fifo(
 		.clk_i(core_clk_i),
 		.reset_i(core_link_reset_i),
@@ -65,10 +65,10 @@ module bsg_link_source_sync_upstream (
 		.yumi_i(core_fifo_yumi)
 	);
 	wire core_async_fifo_full;
-	assign core_fifo_yumi = (core_fifo_valid &amp; ~core_async_fifo_full);
+	assign core_fifo_yumi = core_fifo_valid &amp; ~core_async_fifo_full;
 	wire io_async_fifo_valid;
 	wire io_async_fifo_yumi;
-	wire [(channel_width_p - 1):0] io_async_fifo_data;
+	wire [channel_width_p - 1:0] io_async_fifo_data;
 	bsg_async_fifo #(
 		.lg_size_p(3),
 		.width_p(channel_width_p)
@@ -95,9 +95,9 @@ module bsg_link_source_sync_upstream (
 				io_data_o = io_async_fifo_data;
 		end
 	end
-	wire [((lg_credit_to_token_decimation_p + 1) - 1):0] io_token_alternator_r;
+	wire [(lg_credit_to_token_decimation_p + 1) - 1:0] io_token_alternator_r;
 	bsg_counter_clear_up #(
-		.max_val_p({(lg_credit_to_token_decimation_p + 1) {1&#39;b1}}),
+		.max_val_p({lg_credit_to_token_decimation_p + 1 {1&#39;b1}}),
 		.init_val_p(0),
 		.disable_overflow_warning_p(1)
 	) token_alt(
@@ -111,12 +111,12 @@ module bsg_link_source_sync_upstream (
 	wire io_negedge_credits_avail;
 	wire io_posedge_credits_avail;
 	wire io_credit_avail = (io_on_negedge_token ? io_negedge_credits_avail : io_posedge_credits_avail);
-	assign io_valid_n = (io_credit_avail &amp; io_async_fifo_valid);
-	assign io_async_fifo_yumi = (io_valid_n &amp; io_ready_i);
-	wire io_negedge_credits_deque = (io_async_fifo_yumi &amp; io_on_negedge_token);
-	wire io_posedge_credits_deque = (io_async_fifo_yumi &amp; ~io_on_negedge_token);
+	assign io_valid_n = io_credit_avail &amp; io_async_fifo_valid;
+	assign io_async_fifo_yumi = io_valid_n &amp; io_ready_i;
+	wire io_negedge_credits_deque = io_async_fifo_yumi &amp; io_on_negedge_token;
+	wire io_posedge_credits_deque = io_async_fifo_yumi &amp; ~io_on_negedge_token;
 	bsg_async_credit_counter #(
-		.max_tokens_p((2 ** ((lg_fifo_depth_p - 1) - lg_credit_to_token_decimation_p))),
+		.max_tokens_p(2 ** ((lg_fifo_depth_p - 1) - lg_credit_to_token_decimation_p)),
 		.lg_credit_to_token_decimation_p(lg_credit_to_token_decimation_p),
 		.count_negedge_p(1&#39;b0),
 		.extra_margin_p(2),
@@ -133,7 +133,7 @@ module bsg_link_source_sync_upstream (
 		.r_credits_avail_o(io_posedge_credits_avail)
 	);
 	bsg_async_credit_counter #(
-		.max_tokens_p((2 ** ((lg_fifo_depth_p - 1) - lg_credit_to_token_decimation_p))),
+		.max_tokens_p(2 ** ((lg_fifo_depth_p - 1) - lg_credit_to_token_decimation_p)),
 		.lg_credit_to_token_decimation_p(lg_credit_to_token_decimation_p),
 		.count_negedge_p(1&#39;b1),
 		.extra_margin_p(2),

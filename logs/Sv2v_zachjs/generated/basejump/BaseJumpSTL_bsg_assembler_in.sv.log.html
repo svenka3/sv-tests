@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_in.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_in.v</a>
-time_elapsed: 0.476s
-ram usage: 16072 KB
+time_elapsed: 0.640s
+ram usage: 15104 KB
 </pre>
 <pre class="log">
 
@@ -37,22 +37,22 @@ module bsg_assembler_in (
 	parameter width_p = &#34;inv&#34;;
 	parameter num_in_p = &#34;inv&#34;;
 	parameter num_out_p = &#34;inv&#34;;
-	parameter in_channel_count_mask_p = (1 &lt;&lt; (num_in_p - 1));
+	parameter in_channel_count_mask_p = 1 &lt;&lt; (num_in_p - 1);
 	input clk;
 	input reset;
 	input calibration_done_i;
-	input [(num_in_p - 1):0] valid_i;
-	input [((0 &gt;= (num_in_p - 1)) ? (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1))) : (((width_p - 1) &gt;= 0) ? (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1)))):((0 &gt;= (num_in_p - 1)) ? (((width_p - 1) &gt;= 0) ? ((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))) : (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)))] data_i;
-	output [(num_in_p - 1):0] yumi_o;
-	input [((0 &gt; ($clog2(num_in_p) - 1)) ? 0 : ($clog2(num_in_p) - 1)):0] in_top_channel_i;
-	input [((0 &gt; ($clog2(num_out_p) - 1)) ? 0 : ($clog2(num_out_p) - 1)):0] out_top_channel_i;
+	input [num_in_p - 1:0] valid_i;
+	input [(0 &gt;= (num_in_p - 1) ? ((width_p - 1) &gt;= 0 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1)) : ((width_p - 1) &gt;= 0 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1))):(0 &gt;= (num_in_p - 1) ? ((width_p - 1) &gt;= 0 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))) : ((width_p - 1) &gt;= 0 ? 0 : width_p - 1))] data_i;
+	output [num_in_p - 1:0] yumi_o;
+	input [(0 &gt; ($clog2(num_in_p) - 1) ? 0 : $clog2(num_in_p) - 1):0] in_top_channel_i;
+	input [(0 &gt; ($clog2(num_out_p) - 1) ? 0 : $clog2(num_out_p) - 1):0] out_top_channel_i;
 	output valid_o;
-	output [((num_out_p * width_p) - 1):0] data_o;
+	output [(num_out_p * width_p) - 1:0] data_o;
 	input yumi_i;
-	wire [(num_out_p - 1):0] fifo_enq_vec;
-	wire [(num_out_p - 1):0] fifo_not_full_vec;
-	wire [(num_out_p - 1):0] fifo_valid_vec;
-	wire [(((num_out_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((num_out_p - 1) &gt;= 0) ? num_out_p : (2 - num_out_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_out_p - 1) &gt;= 0) ? num_out_p : (2 - num_out_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_out_p - 1)) ? (2 - num_out_p) : num_out_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_out_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_out_p - 1)) ? (2 - num_out_p) : num_out_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_out_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((num_out_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((num_out_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_out_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] fifo_data_vec;
+	wire [num_out_p - 1:0] fifo_enq_vec;
+	wire [num_out_p - 1:0] fifo_not_full_vec;
+	wire [num_out_p - 1:0] fifo_valid_vec;
+	wire [((num_out_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (num_out_p * width_p) + -1 : (num_out_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):((num_out_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] fifo_data_vec;
 	bsg_round_robin_fifo_to_fifo #(
 		.width_p(width_p),
 		.num_in_p(num_in_p),
@@ -61,7 +61,7 @@ module bsg_assembler_in (
 	) rr_fifo_to_fifo(
 		.clk(clk),
 		.reset(reset),
-		.valid_i((valid_i &amp; {num_in_p {calibration_done_i}})),
+		.valid_i(valid_i &amp; {num_in_p {calibration_done_i}}),
 		.data_i(data_i),
 		.yumi_o(yumi_o),
 		.in_top_channel_i(in_top_channel_i),
@@ -72,20 +72,20 @@ module bsg_assembler_in (
 	);
 	genvar i;
 	generate
-		for (i = 0; (i &lt; num_out_p); i = (i + 1)) begin : fifos
+		for (i = 0; i &lt; num_out_p; i = i + 1) begin : fifos
 			bsg_two_fifo #(.width_p(width_p)) ring_packet_fifo(
 				.clk_i(clk),
 				.reset_i(reset),
 				.ready_o(fifo_not_full_vec[i]),
 				.v_i(fifo_enq_vec[i]),
-				.data_i(fifo_data_vec[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((num_out_p - 1) &gt;= 0) ? i : (0 - (i - (num_out_p - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]),
+				.data_i(fifo_data_vec[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((num_out_p - 1) &gt;= 0 ? i : 0 - (i - (num_out_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]),
 				.v_o(fifo_valid_vec[i]),
-				.data_o(data_o[(width_p * i)+:width_p]),
+				.data_o(data_o[width_p * i+:width_p]),
 				.yumi_i(yumi_i)
 			);
 		end
 	endgenerate
-	assign valid_o = (&amp;fifo_valid_vec &amp; calibration_done_i);
+	assign valid_o = &amp;fifo_valid_vec &amp; calibration_done_i;
 endmodule
 
 </pre>

@@ -16,11 +16,12 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_clk_gen/bsg_dram_clk_gen.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_clk_gen/bsg_dram_clk_gen.v</a>
-time_elapsed: 0.468s
-ram usage: 14788 KB
+time_elapsed: 0.404s
+ram usage: 14232 KB
 </pre>
 <pre class="log">
 
+import bsg_tag_pkg::bsg_tag_s;
 module bsg_dram_clk_gen (
 	bsg_osc_tag_i,
 	bsg_osc_trigger_tag_i,
@@ -41,8 +42,8 @@ module bsg_dram_clk_gen (
 	input async_osc_reset_i;
 	output osc_clk_o;
 	output div_clk_o;
-	input [(num_lines_p - 1):0] dly_clk_i;
-	output [(num_lines_p - 1):0] dly_clk_o;
+	input [num_lines_p - 1:0] dly_clk_i;
+	output [num_lines_p - 1:0] dly_clk_o;
 	genvar i;
 	localparam debug_level_lp = 0;
 	bsg_clk_gen_osc #(.num_adgs_p(num_adgs_p)) clk_gen_osc_inst(
@@ -51,10 +52,10 @@ module bsg_dram_clk_gen (
 		.async_reset_i(async_osc_reset_i),
 		.clk_o(osc_clk_o)
 	);
-	wire [(((((downsample_width_p - 1) &gt;= 0) ? downsample_width_p : (2 - downsample_width_p)) + 1) - 1):0] ds_tag_payload_r;
+	wire [(((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1) - 1:0] ds_tag_payload_r;
 	wire ds_tag_payload_new_r;
 	bsg_tag_client #(
-		.width_p((((((((downsample_width_p - 1) &gt;= 0) ? downsample_width_p : (2 - downsample_width_p)) + 1) - 1) &gt;= 0) ? ((((downsample_width_p - 1) &gt;= 0) ? downsample_width_p : (2 - downsample_width_p)) + 1) : (2 - ((((downsample_width_p - 1) &gt;= 0) ? downsample_width_p : (2 - downsample_width_p)) + 1)))),
+		.width_p((((((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1) - 1) &gt;= 0 ? ((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1 : 2 - (((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1))),
 		.default_p(0),
 		.harden_p(1)
 	) btc_ds(
@@ -65,7 +66,7 @@ module bsg_dram_clk_gen (
 		.recv_data_r_o(ds_tag_payload_r)
 	);
 	generate
-		if ((debug_level_lp &gt; 1)) always @(negedge osc_clk_o)
+		if (debug_level_lp &gt; 1) always @(negedge osc_clk_o)
 			if (ds_tag_payload_new_r)
 				$display(&#34;## bsg_clk_gen downsampler received configuration state: %b&#34;, ds_tag_payload_r);
 	endgenerate
@@ -74,12 +75,12 @@ module bsg_dram_clk_gen (
 		.harden_p(1)
 	) clk_gen_ds_inst(
 		.clk_i(osc_clk_o),
-		.reset_i(ds_tag_payload_r[0:0]),
-		.val_i(ds_tag_payload_r[(((downsample_width_p - 1) &gt;= 0) ? downsample_width_p : (2 - downsample_width_p)):1]),
+		.reset_i(ds_tag_payload_r[0]),
+		.val_i(ds_tag_payload_r[((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p)-:(((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) &gt;= 1 ? ((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) : 2 - ((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p))]),
 		.clk_r_o(div_clk_o)
 	);
 	generate
-		for (i = 0; (i &lt; num_lines_p); i = (i + 1)) begin : dly_line
+		for (i = 0; i &lt; num_lines_p; i = i + 1) begin : dly_line
 			bsg_dly_line #(.num_adgs_p(num_adgs_p)) dly_line_inst(
 				.bsg_tag_i(bsg_osc_tag_i),
 				.bsg_tag_trigger_i(bsg_osc_trigger_tag_i),
@@ -89,7 +90,6 @@ module bsg_dram_clk_gen (
 			);
 		end
 	endgenerate
-	import bsg_tag_pkg::bsg_tag_s;
 endmodule
 
 </pre>

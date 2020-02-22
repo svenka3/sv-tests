@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_counter_up_down_variable.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_counter_up_down_variable.v</a>
-time_elapsed: 0.472s
-ram usage: 15008 KB
+time_elapsed: 0.352s
+ram usage: 13736 KB
 </pre>
 <pre class="log">
 
@@ -31,22 +31,22 @@ module bsg_counter_up_down_variable (
 	parameter max_val_p = -1;
 	parameter init_val_p = -1;
 	parameter max_step_p = -1;
-	parameter step_width_lp = $clog2((max_step_p + 1));
-	parameter ptr_width_lp = $clog2((max_val_p + 1));
+	parameter step_width_lp = $clog2(max_step_p + 1);
+	parameter ptr_width_lp = $clog2(max_val_p + 1);
 	input clk_i;
 	input reset_i;
-	input [(step_width_lp - 1):0] up_i;
-	input [(step_width_lp - 1):0] down_i;
-	output reg [(ptr_width_lp - 1):0] count_o;
+	input [step_width_lp - 1:0] up_i;
+	input [step_width_lp - 1:0] down_i;
+	output reg [ptr_width_lp - 1:0] count_o;
 	always @(posedge clk_i)
 		if (reset_i)
 			count_o &lt;= init_val_p;
 		else
-			count_o &lt;= ((count_o - down_i) + up_i);
+			count_o &lt;= (count_o - down_i) + up_i;
 	always @(posedge clk_i) begin
-		if ((((count_o == max_val_p) &amp; up_i) &amp; (reset_i === 0)))
+		if (((count_o == max_val_p) &amp; up_i) &amp; (reset_i === 0))
 			$display(&#34;%m error: counter overflow at time %t&#34;, $time);
-		if ((((count_o == 0) &amp; down_i) &amp; (reset_i === 0)))
+		if (((count_o == 0) &amp; down_i) &amp; (reset_i === 0))
 			$display(&#34;%m error: counter underflow at time %t&#34;, $time);
 	end
 endmodule

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_front_side_bus_hop_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_front_side_bus_hop_out.v</a>
-time_elapsed: 0.568s
-ram usage: 15180 KB
+time_elapsed: 0.392s
+ram usage: 15492 KB
 </pre>
 <pre class="log">
 
@@ -36,31 +36,31 @@ module bsg_front_side_bus_hop_out (
 	input clk_i;
 	input reset_i;
 	input [1:0] v_i;
-	input [(((width_p - 1) &gt;= 0) ? ((2 * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : ((2 * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))):(((width_p - 1) &gt;= 0) ? 0 : (width_p - 1))] data_i;
+	input [((width_p - 1) &gt;= 0 ? (2 * width_p) + -1 : (2 * (2 - width_p)) + ((width_p - 1) - 1)):((width_p - 1) &gt;= 0 ? 0 : width_p - 1)] data_i;
 	output ready_o;
 	output yumi_o;
 	output v_o;
-	output [(width_p - 1):0] data_o;
+	output [width_p - 1:0] data_o;
 	input ready_i;
 	wire fifo_v;
 	wire fifo_ready;
 	reg v1_blocked_r;
-	wire source_sel = (~v_i[0] | v1_blocked_r);
-	wire yumi_o_tmp = ((fifo_ready &amp; v_i[1]) &amp; source_sel);
+	wire source_sel = ~v_i[0] | v1_blocked_r;
+	wire yumi_o_tmp = (fifo_ready &amp; v_i[1]) &amp; source_sel;
 	assign yumi_o = yumi_o_tmp;
-	always @(posedge clk_i) v1_blocked_r &lt;= (reset_i ? 1&#39;b0 : (fifo_ready ? (v_i[1] &amp; ~source_sel) : v1_blocked_r));
+	always @(posedge clk_i) v1_blocked_r &lt;= (reset_i ? 1&#39;b0 : (fifo_ready ? v_i[1] &amp; ~source_sel : v1_blocked_r));
 	bsg_two_fifo #(.width_p(width_p)) fifo(
 		.clk_i(clk_i),
 		.reset_i(reset_i),
-		.data_i(data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + (source_sel * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]),
+		.data_i(data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (source_sel * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]),
 		.data_o(data_o),
 		.v_o(fifo_v),
-		.yumi_i((fifo_v &amp; ready_i)),
+		.yumi_i(fifo_v &amp; ready_i),
 		.ready_o(fifo_ready),
 		.v_i(|v_i)
 	);
 	assign v_o = fifo_v;
-	assign ready_o = (fifo_ready &amp; ~v1_blocked_r);
+	assign ready_o = fifo_ready &amp; ~v1_blocked_r;
 endmodule
 
 </pre>

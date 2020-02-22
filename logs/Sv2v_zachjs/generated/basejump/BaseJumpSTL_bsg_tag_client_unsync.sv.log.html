@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_client_unsync.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_client_unsync.v</a>
-time_elapsed: 0.568s
-ram usage: 15948 KB
+time_elapsed: 0.420s
+ram usage: 14204 KB
 </pre>
 <pre class="log">
 
@@ -30,7 +30,7 @@ module bsg_tag_client_unsync (
 	parameter harden_p = 1;
 	parameter debug_level_lp = 0;
 	input bsg_tag_s bsg_tag_i;
-	output [(width_p - 1):0] data_async_r_o;
+	output [width_p - 1:0] data_async_r_o;
 	reg op_r;
 	reg param_r;
 	always @(posedge bsg_tag_i.clk) begin
@@ -38,13 +38,13 @@ module bsg_tag_client_unsync (
 		param_r &lt;= bsg_tag_i.param;
 	end
 	wire shift_op = op_r;
-	wire no_op = (~op_r &amp; ~param_r);
-	wire [(width_p - 1):0] tag_data_r;
-	wire [(width_p - 1):0] tag_data_n;
-	wire [(width_p - 1):0] tag_data_shift;
+	wire no_op = ~op_r &amp; ~param_r;
+	wire [width_p - 1:0] tag_data_r;
+	wire [width_p - 1:0] tag_data_n;
+	wire [width_p - 1:0] tag_data_shift;
 	generate
-		if ((width_p &gt; 1)) begin : fi
-			assign tag_data_shift = {param_r, tag_data_r[(width_p - 1):1]};
+		if (width_p &gt; 1) begin : fi
+			assign tag_data_shift = {param_r, tag_data_r[width_p - 1:1]};
 		end
 		else begin : fi
 			assign tag_data_shift = param_r;
@@ -68,12 +68,12 @@ module bsg_tag_client_unsync (
 		.data_o(tag_data_r)
 	);
 	generate
-		if ((debug_level_lp &gt; 1)) begin : debug
-			wire reset_op = (~op_r &amp; param_r);
+		if (debug_level_lp &gt; 1) begin : debug
+			wire reset_op = ~op_r &amp; param_r;
 			always @(negedge bsg_tag_i.clk) begin
-				if ((reset_op &amp; ~(~bsg_tag_i.op &amp; bsg_tag_i.param)))
+				if (reset_op &amp; ~(~bsg_tag_i.op &amp; bsg_tag_i.param))
 					$display(&#34;## bsg_tag_client RESET DEASSERTED time %t (%m)&#34;, $time);
-				if ((~reset_op &amp; (~bsg_tag_i.op &amp; bsg_tag_i.param)))
+				if (~reset_op &amp; (~bsg_tag_i.op &amp; bsg_tag_i.param))
 					$display(&#34;## bsg_tag_client RESET ASSERTED time   %t  (%m)&#34;, $time);
 				if (shift_op)
 					$display(&#34;## bsg_tag_client (send) SHIFTING  %b (%m)&#34;, tag_data_r);

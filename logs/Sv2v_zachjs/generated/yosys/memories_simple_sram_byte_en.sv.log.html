@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/simple_sram_byte_en.v.html" target="file-frame">third_party/tools/yosys/tests/memories/simple_sram_byte_en.v</a>
-time_elapsed: 0.120s
-ram usage: 11344 KB
+time_elapsed: 0.036s
+ram usage: 11116 KB
 </pre>
 <pre class="log">
 
@@ -32,17 +32,17 @@ module generic_sram_byte_en (
 	parameter DATA_WIDTH = 32;
 	parameter ADDRESS_WIDTH = 4;
 	input i_clk;
-	input [(DATA_WIDTH - 1):0] i_write_data;
+	input [DATA_WIDTH - 1:0] i_write_data;
 	input i_write_enable;
-	input [(ADDRESS_WIDTH - 1):0] i_address;
-	input [((DATA_WIDTH / 8) - 1):0] i_byte_enable;
-	output reg [(DATA_WIDTH - 1):0] o_read_data;
-	reg [(DATA_WIDTH - 1):0] mem [0:((2 ** ADDRESS_WIDTH) - 1)];
+	input [ADDRESS_WIDTH - 1:0] i_address;
+	input [(DATA_WIDTH / 8) - 1:0] i_byte_enable;
+	output reg [DATA_WIDTH - 1:0] o_read_data;
+	reg [DATA_WIDTH - 1:0] mem [0:(2 ** ADDRESS_WIDTH) - 1];
 	integer i;
 	always @(posedge i_clk) begin
-		for (i = 0; (i &lt; (DATA_WIDTH / 8)); i = (i + 1))
-			if ((i_write_enable &amp;&amp; i_byte_enable[i]))
-				mem[i_address][(i * 8)+:8] &lt;= i_write_data[(i * 8)+:8];
+		for (i = 0; i &lt; (DATA_WIDTH / 8); i = i + 1)
+			if (i_write_enable &amp;&amp; i_byte_enable[i])
+				mem[i_address][i * 8+:8] &lt;= i_write_data[i * 8+:8];
 		o_read_data &lt;= mem[i_address];
 	end
 endmodule

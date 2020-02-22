@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_synth.v</a>
-time_elapsed: 0.516s
-ram usage: 14968 KB
+time_elapsed: 0.288s
+ram usage: 15744 KB
 </pre>
 <pre class="log">
 
@@ -33,20 +33,20 @@ module bsg_mem_1rw_sync_synth (
 	parameter width_p = -1;
 	parameter els_p = -1;
 	parameter latch_last_read_p = 0;
-	parameter addr_width_lp = ((els_p == 1) ? 1 : $clog2(els_p));
+	parameter addr_width_lp = (els_p == 1 ? 1 : $clog2(els_p));
 	input clk_i;
 	input v_i;
 	input reset_i;
-	input [(width_p - 1):0] data_i;
-	input [(addr_width_lp - 1):0] addr_i;
+	input [width_p - 1:0] data_i;
+	input [addr_width_lp - 1:0] addr_i;
 	input w_i;
-	output wire [(width_p - 1):0] data_o;
+	output wire [width_p - 1:0] data_o;
 	wire unused = reset_i;
-	reg [(addr_width_lp - 1):0] addr_r;
-	reg [(width_p - 1):0] mem [(els_p - 1):0];
+	reg [addr_width_lp - 1:0] addr_r;
+	reg [width_p - 1:0] mem [els_p - 1:0];
 	wire read_en;
-	wire [(width_p - 1):0] data_out;
-	assign read_en = (v_i &amp; ~w_i);
+	wire [width_p - 1:0] data_out;
+	assign read_en = v_i &amp; ~w_i;
 	assign data_out = mem[addr_r];
 	always @(posedge clk_i)
 		if (read_en)
@@ -73,7 +73,7 @@ module bsg_mem_1rw_sync_synth (
 		end
 	endgenerate
 	always @(posedge clk_i)
-		if ((v_i &amp; w_i))
+		if (v_i &amp; w_i)
 			mem[addr_i] &lt;= data_i;
 	initial $display(&#34;## %L: instantiating width_p=%d, els_p=%d (%m)&#34;, width_p, els_p);
 	always @(negedge clk_i)

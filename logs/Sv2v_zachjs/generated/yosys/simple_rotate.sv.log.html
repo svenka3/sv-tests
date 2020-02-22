@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/rotate.v.html" target="file-frame">third_party/tools/yosys/tests/simple/rotate.v</a>
-time_elapsed: 0.060s
-ram usage: 9976 KB
+time_elapsed: 0.092s
+ram usage: 11656 KB
 </pre>
 <pre class="log">
 
@@ -36,16 +36,16 @@ module a23_barrel_shift_fpga_rotate (
 			genvar i;
 			genvar j;
 		end
-		for (i = 0; (i &lt; 5); i = (i + 1)) begin : netgen
+		for (i = 0; i &lt; 5; i = i + 1) begin : netgen
 			wire [31:0] in;
 			reg [31:0] out;
-			for (j = 0; (j &lt; 32); j = (j + 1)) begin : net
-				always @(*) out[j] = ((in[j] &amp; (~shift_amount[i] ^ direction)) | (in[wrap(j, i)] &amp; (shift_amount[i] ^ direction)));
+			for (j = 0; j &lt; 32; j = j + 1) begin : net
+				always @(*) out[j] = (in[j] &amp; (~shift_amount[i] ^ direction)) | (in[wrap(j, i)] &amp; (shift_amount[i] ^ direction));
 			end
 		end
 		assign netgen[4].in = i_in;
-		for (i = 1; (i &lt; 5); i = (i + 1)) begin : router
-			assign netgen[(i - 1)].in = netgen[i].out;
+		for (i = 1; i &lt; 5; i = i + 1) begin : router
+			assign netgen[i - 1].in = netgen[i].out;
 		end
 	endgenerate
 	assign rot_prod = netgen[0].out;
@@ -54,7 +54,7 @@ module a23_barrel_shift_fpga_rotate (
 		input integer level;
 		integer out;
 		begin
-			out = (pos - (1 &lt;&lt; level));
+			out = pos - (1 &lt;&lt; level);
 			wrap = out[4:0];
 		end
 	endfunction

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_f2i.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_f2i.v</a>
-time_elapsed: 0.672s
-ram usage: 15316 KB
+time_elapsed: 0.516s
+ram usage: 15188 KB
 </pre>
 <pre class="log">
 
@@ -29,15 +29,15 @@ module bsg_fpu_f2i (
 );
 	parameter e_p = &#34;inv&#34;;
 	parameter m_p = &#34;inv&#34;;
-	localparam width_lp = ((e_p + m_p) + 1);
-	localparam bias_lp = {1&#39;b0, {(e_p - 1) {1&#39;b1}}};
-	input [(width_lp - 1):0] a_i;
+	localparam width_lp = (e_p + m_p) + 1;
+	localparam bias_lp = {1&#39;b0, {e_p - 1 {1&#39;b1}}};
+	input [width_lp - 1:0] a_i;
 	input signed_i;
-	output reg [(width_lp - 1):0] z_o;
+	output reg [width_lp - 1:0] z_o;
 	output reg invalid_o;
 	wire sign;
-	wire [(e_p - 1):0] exp;
-	wire [(m_p - 1):0] mantissa;
+	wire [e_p - 1:0] exp;
+	wire [m_p - 1:0] mantissa;
 	wire zero;
 	wire nan;
 	wire infty;
@@ -59,28 +59,28 @@ module bsg_fpu_f2i (
 	);
 	wire exp_too_big;
 	wire exp_too_small;
-	assign exp_too_big = (signed_i ? (exp &gt; ((bias_lp + width_lp) - 2)) : (exp &gt; ((bias_lp + width_lp) - 1)));
-	assign exp_too_small = (exp &lt; bias_lp);
-	wire [(width_lp - 1):0] preshift;
-	wire [(e_p - 1):0] shamt;
-	wire [(width_lp - 1):0] shifted;
-	assign preshift = (signed_i ? {1&#39;b0, 1&#39;b1, mantissa, {((width_lp - 2) - m_p) {1&#39;b0}}} : {1&#39;b1, mantissa, {((width_lp - 1) - m_p) {1&#39;b0}}});
-	assign shamt = (signed_i ? sv2v_cast_C56CD((((bias_lp + width_lp) - 2) - exp)) : sv2v_cast_C56CD((((bias_lp + width_lp) - 1) - exp)));
-	assign shifted = (preshift &gt;&gt; shamt[((width_lp == 1) ? 1 : $clog2(((e_p + m_p) + 1))):0]);
-	wire [(width_lp - 1):0] inverted;
-	wire [(width_lp - 1):0] post_round;
-	assign inverted = ({width_lp {(signed_i &amp; sign)}} ^ shifted);
-	assign post_round = (inverted + sign);
+	assign exp_too_big = (signed_i ? exp &gt; ((bias_lp + width_lp) - 2) : exp &gt; ((bias_lp + width_lp) - 1));
+	assign exp_too_small = exp &lt; bias_lp;
+	wire [width_lp - 1:0] preshift;
+	wire [e_p - 1:0] shamt;
+	wire [width_lp - 1:0] shifted;
+	assign preshift = (signed_i ? {1&#39;b0, 1&#39;b1, mantissa, {(width_lp - 2) - m_p {1&#39;b0}}} : {1&#39;b1, mantissa, {(width_lp - 1) - m_p {1&#39;b0}}});
+	assign shamt = (signed_i ? sv2v_cast_C56CD(((bias_lp + width_lp) - 2) - exp) : sv2v_cast_C56CD(((bias_lp + width_lp) - 1) - exp));
+	assign shifted = preshift &gt;&gt; shamt[(width_lp == 1 ? 1 : $clog2((e_p + m_p) + 1)):0];
+	wire [width_lp - 1:0] inverted;
+	wire [width_lp - 1:0] post_round;
+	assign inverted = {width_lp {signed_i &amp; sign}} ^ shifted;
+	assign post_round = inverted + sign;
 	always @(*)
 		if (nan) begin
-			z_o = (signed_i ? {1&#39;b0, {(width_lp - 1) {1&#39;b1}}} : {width_lp {1&#39;b1}});
+			z_o = (signed_i ? {1&#39;b0, {width_lp - 1 {1&#39;b1}}} : {width_lp {1&#39;b1}});
 			invalid_o = 1&#39;b1;
 		end
 		else if (infty) begin
-			z_o = (sign ? {signed_i, {(width_lp - 1) {1&#39;b0}}} : {~signed_i, {(width_lp - 1) {1&#39;b1}}});
+			z_o = (sign ? {signed_i, {width_lp - 1 {1&#39;b0}}} : {~signed_i, {width_lp - 1 {1&#39;b1}}});
 			invalid_o = 1&#39;b1;
 		end
-		else if ((~signed_i &amp; sign)) begin
+		else if (~signed_i &amp; sign) begin
 			z_o = 1&#39;sb0;
 			invalid_o = 1&#39;b1;
 		end
@@ -89,7 +89,7 @@ module bsg_fpu_f2i (
 			invalid_o = 1&#39;b0;
 		end
 		else if (exp_too_big) begin
-			z_o = (sign ? {1&#39;b1, {(width_lp - 1) {1&#39;b0}}} : {1&#39;b0, {(width_lp - 1) {1&#39;b1}}});
+			z_o = (sign ? {1&#39;b1, {width_lp - 1 {1&#39;b0}}} : {1&#39;b0, {width_lp - 1 {1&#39;b1}}});
 			invalid_o = 1&#39;b1;
 		end
 		else if (exp_too_small) begin
@@ -100,8 +100,8 @@ module bsg_fpu_f2i (
 			z_o = post_round;
 			invalid_o = 1&#39;b0;
 		end
-	function automatic [(e_p - 1):0] sv2v_cast_C56CD;
-		input reg [(e_p - 1):0] inp;
+	function automatic [e_p - 1:0] sv2v_cast_C56CD;
+		input reg [e_p - 1:0] inp;
 		sv2v_cast_C56CD = inp;
 	endfunction
 endmodule

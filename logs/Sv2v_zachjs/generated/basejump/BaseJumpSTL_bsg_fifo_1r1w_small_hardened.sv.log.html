@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_small_hardened.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_small_hardened.v</a>
-time_elapsed: 0.376s
-ram usage: 16108 KB
+time_elapsed: 0.412s
+ram usage: 19568 KB
 </pre>
 <pre class="log">
 
@@ -38,9 +38,9 @@ module bsg_fifo_1r1w_small_hardened (
 	input reset_i;
 	input v_i;
 	output ready_o;
-	input [(width_p - 1):0] data_i;
+	input [width_p - 1:0] data_i;
 	output v_o;
-	output [(width_p - 1):0] data_o;
+	output [width_p - 1:0] data_o;
 	input yumi_i;
 	wire deque = yumi_i;
 	wire v_o_tmp;
@@ -52,17 +52,17 @@ module bsg_fifo_1r1w_small_hardened (
 			assign enque = v_i;
 		end
 		else begin : rav
-			assign enque = (v_i &amp; ready_lo);
+			assign enque = v_i &amp; ready_lo;
 		end
 	endgenerate
-	localparam ptr_width_lp = ((els_p == 1) ? 1 : $clog2(els_p));
-	wire [(ptr_width_lp - 1):0] rptr_r;
-	wire [(ptr_width_lp - 1):0] wptr_r;
+	localparam ptr_width_lp = (els_p == 1 ? 1 : $clog2(els_p));
+	wire [ptr_width_lp - 1:0] rptr_r;
+	wire [ptr_width_lp - 1:0] wptr_r;
 	wire full;
 	wire empty;
-	wire [(ptr_width_lp - 1):0] rptr_n;
-	wire [(width_p - 1):0] data_o_mem;
-	wire [(width_p - 1):0] data_o_reg;
+	wire [ptr_width_lp - 1:0] rptr_n;
+	wire [width_p - 1:0] data_o_mem;
+	wire [width_p - 1:0] data_o_reg;
 	wire read_write_same_addr_n;
 	reg write_bypass_r;
 	wire write_bypass_n;
@@ -100,16 +100,16 @@ module bsg_fifo_1r1w_small_hardened (
 		.data_o(data_o_reg)
 	);
 	assign data_o = (write_bypass_r ? data_o_reg : data_o_mem);
-	assign read_write_same_addr_n = (wptr_r == rptr_n);
-	assign write_bypass_n = (enque &amp; read_write_same_addr_n);
+	assign read_write_same_addr_n = wptr_r == rptr_n;
+	assign write_bypass_n = enque &amp; read_write_same_addr_n;
 	always @(posedge clk_i) write_bypass_r &lt;= write_bypass_n;
 	assign ready_lo = ~full;
 	assign ready_o = ready_lo;
 	assign v_o_tmp = ~empty;
 	always @(negedge clk_i) begin
-		if ((((ready_THEN_valid_p &amp; full) &amp; v_i) &amp; ~reset_i))
+		if (((ready_THEN_valid_p &amp; full) &amp; v_i) &amp; ~reset_i)
 			$display(&#34;%m error: enque full fifo at time %t&#34;, $time);
-		if (((empty &amp; yumi_i) &amp; ~reset_i))
+		if ((empty &amp; yumi_i) &amp; ~reset_i)
 			$display(&#34;%m error: deque empty fifo at time %t&#34;, $time);
 	end
 endmodule

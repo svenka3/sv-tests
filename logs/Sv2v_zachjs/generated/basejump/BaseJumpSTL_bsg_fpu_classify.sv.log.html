@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_classify.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_classify.v</a>
-time_elapsed: 0.472s
-ram usage: 15032 KB
+time_elapsed: 0.424s
+ram usage: 15164 KB
 </pre>
 <pre class="log">
 
@@ -27,10 +27,10 @@ module bsg_fpu_classify (
 );
 	parameter e_p = &#34;inv&#34;;
 	parameter m_p = &#34;inv&#34;;
-	parameter width_lp = ((e_p + m_p) + 1);
+	parameter width_lp = (e_p + m_p) + 1;
 	parameter out_width_lp = width_lp;
-	input [(width_lp - 1):0] a_i;
-	output [(out_width_lp - 1):0] class_o;
+	input [width_lp - 1:0] a_i;
+	output [out_width_lp - 1:0] class_o;
 	wire zero;
 	wire nan;
 	wire sig_nan;
@@ -53,17 +53,17 @@ module bsg_fpu_classify (
 		.exp_o(),
 		.man_o()
 	);
-	assign class_o[0] = (sign &amp; infty);
-	assign class_o[1] = ((((sign &amp; ~infty) &amp; ~denormal) &amp; ~nan) &amp; ~zero);
-	assign class_o[2] = (sign &amp; denormal);
-	assign class_o[3] = (sign &amp; zero);
-	assign class_o[4] = (~sign &amp; zero);
-	assign class_o[5] = (~sign &amp; denormal);
-	assign class_o[6] = ((((~sign &amp; ~infty) &amp; ~denormal) &amp; ~nan) &amp; ~zero);
-	assign class_o[7] = (~sign &amp; infty);
+	assign class_o[0] = sign &amp; infty;
+	assign class_o[1] = (((sign &amp; ~infty) &amp; ~denormal) &amp; ~nan) &amp; ~zero;
+	assign class_o[2] = sign &amp; denormal;
+	assign class_o[3] = sign &amp; zero;
+	assign class_o[4] = ~sign &amp; zero;
+	assign class_o[5] = ~sign &amp; denormal;
+	assign class_o[6] = (((~sign &amp; ~infty) &amp; ~denormal) &amp; ~nan) &amp; ~zero;
+	assign class_o[7] = ~sign &amp; infty;
 	assign class_o[8] = sig_nan;
-	assign class_o[9] = (nan &amp; ~sig_nan);
-	assign class_o[(out_width_lp - 1):10] = 1&#39;sb0;
+	assign class_o[9] = nan &amp; ~sig_nan;
+	assign class_o[out_width_lp - 1:10] = 1&#39;sb0;
 endmodule
 
 </pre>

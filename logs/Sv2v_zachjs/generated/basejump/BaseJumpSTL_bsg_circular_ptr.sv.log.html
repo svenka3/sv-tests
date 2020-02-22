@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_circular_ptr.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_circular_ptr.v</a>
-time_elapsed: 0.616s
-ram usage: 14976 KB
+time_elapsed: 0.552s
+ram usage: 15212 KB
 </pre>
 <pre class="log">
 
@@ -30,15 +30,15 @@ module bsg_circular_ptr (
 );
 	parameter slots_p = -1;
 	parameter max_add_p = -1;
-	parameter ptr_width_lp = ((slots_p == 1) ? 1 : $clog2(slots_p));
+	parameter ptr_width_lp = (slots_p == 1 ? 1 : $clog2(slots_p));
 	input clk;
 	input reset_i;
-	input [($clog2((max_add_p + 1)) - 1):0] add_i;
-	output [(ptr_width_lp - 1):0] o;
-	output [(ptr_width_lp - 1):0] n_o;
-	reg [(ptr_width_lp - 1):0] ptr_r;
-	wire [(ptr_width_lp - 1):0] ptr_n;
-	wire [(ptr_width_lp - 1):0] ptr_nowrap;
+	input [$clog2(max_add_p + 1) - 1:0] add_i;
+	output [ptr_width_lp - 1:0] o;
+	output [ptr_width_lp - 1:0] n_o;
+	reg [ptr_width_lp - 1:0] ptr_r;
+	wire [ptr_width_lp - 1:0] ptr_n;
+	wire [ptr_width_lp - 1:0] ptr_nowrap;
 	wire [ptr_width_lp:0] ptr_wrap;
 	assign o = ptr_r;
 	assign n_o = ptr_n;
@@ -48,25 +48,25 @@ module bsg_circular_ptr (
 		else
 			ptr_r &lt;= ptr_n;
 	generate
-		if ((slots_p == 1)) begin
+		if (slots_p == 1) begin
 			assign ptr_n = 1&#39;b0;
 			wire ignore = |add_i;
 		end
-		else if (((1 &lt;&lt; $clog2(slots_p)) == slots_p)) if ((max_add_p == 1)) begin
-			wire [(ptr_width_lp - 1):0] ptr_r_p1 = (ptr_r + 1&#39;b1);
+		else if ((1 &lt;&lt; $clog2(slots_p)) == slots_p) if (max_add_p == 1) begin
+			wire [ptr_width_lp - 1:0] ptr_r_p1 = ptr_r + 1&#39;b1;
 			assign ptr_n = (add_i ? ptr_r_p1 : ptr_r);
 		end
-		else assign ptr_n = sv2v_cast_7EC17((ptr_r + add_i));
+		else assign ptr_n = sv2v_cast_7EC17(ptr_r + add_i);
 		else begin : notpow2
-			assign ptr_wrap = (({1&#39;b0, ptr_r} - slots_p) + add_i);
-			assign ptr_nowrap = (ptr_r + add_i);
+			assign ptr_wrap = ({1&#39;b0, ptr_r} - slots_p) + add_i;
+			assign ptr_nowrap = ptr_r + add_i;
 			assign ptr_n = (~ptr_wrap[ptr_width_lp] ? ptr_wrap[0+:ptr_width_lp] : ptr_nowrap);
 			always @(*)
 				;
 		end
 	endgenerate
-	function automatic [(ptr_width_lp - 1):0] sv2v_cast_7EC17;
-		input reg [(ptr_width_lp - 1):0] inp;
+	function automatic [ptr_width_lp - 1:0] sv2v_cast_7EC17;
+		input reg [ptr_width_lp - 1:0] inp;
 		sv2v_cast_7EC17 = inp;
 	endfunction
 endmodule

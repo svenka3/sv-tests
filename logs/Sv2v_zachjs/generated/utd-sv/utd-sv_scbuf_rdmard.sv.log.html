@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/scbuf_rdmard.v.html" target="file-frame">third_party/tests/utd-sv/scbuf_rdmard.v</a>
-time_elapsed: 0.440s
-ram usage: 13696 KB
+time_elapsed: 0.388s
+ram usage: 18820 KB
 </pre>
 <pre class="log">
 
@@ -116,7 +116,7 @@ module scbuf_rdmard (
 		.so()
 	);
 	assign io_read_c8 = sctag_scbuf_ctag_c8[12];
-	assign sctag_scbuf_we_c8 = (io_read_c8 &amp; sctag_scbuf_req_en_c8);
+	assign sctag_scbuf_we_c8 = io_read_c8 &amp; sctag_scbuf_req_en_c8;
 	clken_buf clk_buf_data(
 		.clk(en_clk_data),
 		.rclk(rclk),
@@ -197,14 +197,14 @@ module scbuf_rdmard (
 		.si(),
 		.so()
 	);
-	assign sel_in0 = (sctag_scbuf_word_c9[2:1] == 2&#39;b00);
-	assign sel_in1 = (sctag_scbuf_word_c9[2:1] == 2&#39;b01);
-	assign sel_in2 = (sctag_scbuf_word_c9[2:1] == 2&#39;b10);
+	assign sel_in0 = sctag_scbuf_word_c9[2:1] == 2&#39;b00;
+	assign sel_in1 = sctag_scbuf_word_c9[2:1] == 2&#39;b01;
+	assign sel_in2 = sctag_scbuf_word_c9[2:1] == 2&#39;b10;
 	assign sel_in3 = ~((sel_in0 | sel_in1) | sel_in2);
 	assign word_c9 = {sctag_scbuf_word_c9[3], sctag_scbuf_word_c9[0]};
-	assign sel_in4 = (word_c9 == 2&#39;b00);
-	assign sel_in5 = (word_c9 == 2&#39;b01);
-	assign sel_in6 = (word_c9 == 2&#39;b10);
+	assign sel_in4 = word_c9 == 2&#39;b00;
+	assign sel_in5 = word_c9 == 2&#39;b01;
+	assign sel_in6 = word_c9 == 2&#39;b10;
 	assign sel_in7 = ~((sel_in4 | sel_in5) | sel_in6);
 	mux4ds #(78) mux_scdata_scbuf_decc_out_r(
 		.dout(scdata_scbuf_decc_out_c9_4t1[77:0]),
@@ -254,8 +254,8 @@ module scbuf_rdmard (
 		.parity(scdata_scbuf_decc_out_c10[6:0]),
 		.din(scdata_scbuf_decc_out_c10[38:7])
 	);
-	assign rdmard_uncorr_err_c10 = (sctag_scbuf_word_vld_c10 &amp; (|check0_c10[5:0] &amp; ~parity0_c10));
-	assign rdmard_corr_err_c10 = (sctag_scbuf_word_vld_c10 &amp; parity0_c10);
+	assign rdmard_uncorr_err_c10 = sctag_scbuf_word_vld_c10 &amp; (|check0_c10[5:0] &amp; ~parity0_c10);
+	assign rdmard_corr_err_c10 = sctag_scbuf_word_vld_c10 &amp; parity0_c10;
 	mux2ds #(32) mux_data_ctag_c9(
 		.dout(data_ctag_mux_out_c9[31:0]),
 		.in0(scdata_scbuf_dat_out_c10[31:0]),

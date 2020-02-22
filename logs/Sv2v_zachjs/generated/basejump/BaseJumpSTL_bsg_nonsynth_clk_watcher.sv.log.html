@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_clk_gen/bsg_nonsynth_clk_watcher.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_clk_gen/bsg_nonsynth_clk_watcher.v</a>
-time_elapsed: 0.396s
-ram usage: 15128 KB
+time_elapsed: 0.284s
+ram usage: 14124 KB
 </pre>
 <pre class="log">
 
@@ -33,26 +33,26 @@ module bsg_nonsynth_clk_watcher (clk_i);
 	reg signed [63:0] temp_time;
 	always @(posedge clk_i) begin
 		temp_time = $time;
-		if ((((temp_time - my_ticks_negedge) &gt; (last_posedge + tolerance_p)) || ((temp_time - my_ticks_negedge) &lt; (last_posedge - tolerance_p)))) begin
-			if ((cycles_posedge != -1))
-				$write(&#34;## clock_watcher {                                                                                POSEDGE offset (after %-8d cycles) %-7d ps (n/p phase ratio=%2.3f)} (%m)\n&#34;, cycles_posedge, ($time - my_ticks_negedge), (real&#39;(last_negedge) / real&#39;(($time - my_ticks_negedge))));
+		if (((temp_time - my_ticks_negedge) &gt; (last_posedge + tolerance_p)) || ((temp_time - my_ticks_negedge) &lt; (last_posedge - tolerance_p))) begin
+			if (cycles_posedge != -1)
+				$write(&#34;## clock_watcher {                                                                                POSEDGE offset (after %-8d cycles) %-7d ps (n/p phase ratio=%2.3f)} (%m)\n&#34;, cycles_posedge, $time - my_ticks_negedge, real&#39;(last_negedge) / real&#39;($time - my_ticks_negedge));
 			cycles_posedge = 0;
-			last_posedge = ($time - my_ticks_negedge);
+			last_posedge = $time - my_ticks_negedge;
 		end
 		else
-			cycles_posedge = (cycles_posedge + 1);
+			cycles_posedge = cycles_posedge + 1;
 		my_ticks_posedge = $time;
 	end
 	always @(negedge clk_i) begin
 		temp_time = $time;
-		if ((((temp_time - my_ticks_posedge) &gt; (last_negedge + tolerance_p)) || ((temp_time - my_ticks_posedge) &lt; (last_negedge - tolerance_p)))) begin
-			if ((cycles_negedge != -1))
-				$write(&#34;## clock_watcher { NEGEDGE offset (after %-7d cycles) %-7d ps (p/n phase ratio=%2.3f)} (%m)\n&#34;, cycles_negedge, ($time - my_ticks_posedge), (real&#39;(last_posedge) / real&#39;(($time - my_ticks_posedge))));
+		if (((temp_time - my_ticks_posedge) &gt; (last_negedge + tolerance_p)) || ((temp_time - my_ticks_posedge) &lt; (last_negedge - tolerance_p))) begin
+			if (cycles_negedge != -1)
+				$write(&#34;## clock_watcher { NEGEDGE offset (after %-7d cycles) %-7d ps (p/n phase ratio=%2.3f)} (%m)\n&#34;, cycles_negedge, $time - my_ticks_posedge, real&#39;(last_posedge) / real&#39;($time - my_ticks_posedge));
 			cycles_negedge = 0;
-			last_negedge = ($time - my_ticks_posedge);
+			last_negedge = $time - my_ticks_posedge;
 		end
 		else
-			cycles_negedge = (cycles_negedge + 1);
+			cycles_negedge = cycles_negedge + 1;
 		my_ticks_negedge = $time;
 	end
 endmodule

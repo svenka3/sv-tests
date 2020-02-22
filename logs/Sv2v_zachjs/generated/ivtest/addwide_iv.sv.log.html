@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/addwide.v.html" target="file-frame">third_party/tests/ivtest/ivltests/addwide.v</a>
-time_elapsed: 0.168s
-ram usage: 9844 KB
+time_elapsed: 0.064s
+ram usage: 11580 KB
 </pre>
 <pre class="log">
 
@@ -40,13 +40,13 @@ module source (
 	end
 	always #(10) C = ~C;
 	always @(posedge C)
-		if ((l &gt;= wl)) begin
-			l &lt;= ((l + kl) - wl);
-			h &lt;= ((h + kh) + 1);
+		if (l &gt;= wl) begin
+			l &lt;= (l + kl) - wl;
+			h &lt;= (h + kh) + 1;
 		end
 		else begin
-			l &lt;= (l + kl);
-			h &lt;= (h + kh);
+			l &lt;= l + kl;
+			h &lt;= h + kh;
 		end
 endmodule
 module bench;
@@ -57,7 +57,7 @@ module bench;
 		.h(h)
 	);
 	initial #(85) begin
-		if ((h == 13)) begin
+		if (h == 13) begin
 			$display(&#34;%7d&#34;, h);
 			$display(&#34;PASSED&#34;);
 		end

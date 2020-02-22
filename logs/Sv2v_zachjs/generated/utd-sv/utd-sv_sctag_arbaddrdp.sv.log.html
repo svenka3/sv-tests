@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_arbaddrdp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_arbaddrdp.v</a>
-time_elapsed: 0.956s
-ram usage: 15832 KB
+time_elapsed: 0.308s
+ram usage: 18392 KB
 </pre>
 <pre class="log">
 
@@ -101,8 +101,8 @@ module sctag_arbaddrdp (
 	input [39:0] snpq_arbdp_addr_px2;
 	input [39:0] evicttag_addr_px2;
 	input [27:0] arbdata_wr_data_c2;
-	input [(28 - 1):0] tagdp_evict_tag_c4;
-	output [(28 - 1):6] tagdp_evict_tag_c4_buf;
+	input [27:0] tagdp_evict_tag_c4;
+	output [27:6] tagdp_evict_tag_c4_buf;
 	input csr_wr_dirpinj_en;
 	input mux2_snpsel_px2;
 	input mux3_bufsel_px2;
@@ -207,24 +207,24 @@ module sctag_arbaddrdp (
 	wire [9:0] vuad_acc_idx_px2;
 	wire [9:0] vuad_idx2_px2;
 	wire [9:0] bist_vuad_idx;
-	assign err_tag_c4 = {2&#39;b0, tagdp_evict_tag_c4[(28 - 1):0]};
+	assign err_tag_c4 = {2&#39;b0, tagdp_evict_tag_c4[27:0]};
 	zzecc_sctag_30b_cor ecc_corr(
 		.din(err_tag_c4[29:6]),
 		.parity(err_tag_c4[5:1]),
 		.dout(tecc_corr_tag_c1[29:6]),
 		.corrected_bit(corr_bit[4:0])
 	);
-	assign tecc_corr_tag_c1[5] = (err_tag_c4[5] ^ (corr_bit[4:0] == 5&#39;d16));
-	assign tecc_corr_tag_c1[4] = (err_tag_c4[4] ^ (corr_bit[4:0] == 5&#39;d8));
-	assign tecc_corr_tag_c1[3] = (err_tag_c4[3] ^ (corr_bit[4:0] == 5&#39;d4));
-	assign tecc_corr_tag_c1[2] = (err_tag_c4[2] ^ (corr_bit[4:0] == 5&#39;d2));
-	assign tecc_corr_tag_c1[1] = (err_tag_c4[1] ^ (corr_bit[4:0] == 5&#39;d1));
+	assign tecc_corr_tag_c1[5] = err_tag_c4[5] ^ (corr_bit[4:0] == 5&#39;d16);
+	assign tecc_corr_tag_c1[4] = err_tag_c4[4] ^ (corr_bit[4:0] == 5&#39;d8);
+	assign tecc_corr_tag_c1[3] = err_tag_c4[3] ^ (corr_bit[4:0] == 5&#39;d4);
+	assign tecc_corr_tag_c1[2] = err_tag_c4[2] ^ (corr_bit[4:0] == 5&#39;d2);
+	assign tecc_corr_tag_c1[1] = err_tag_c4[1] ^ (corr_bit[4:0] == 5&#39;d1);
 	assign cbit_err = |corr_bit[4:0];
 	zzpar32 par_bit(
 		.z(par_err_tag_c4),
 		.d({err_tag_c4[29:0], 2&#39;b0})
 	);
-	assign tecc_corr_tag_c1[0] = ((par_err_tag_c4 &amp; ~cbit_err) ^ err_tag_c4[0]);
+	assign tecc_corr_tag_c1[0] = (par_err_tag_c4 &amp; ~cbit_err) ^ err_tag_c4[0];
 	dff_s #(28) ff_tecc_corr_tag_c2(
 		.din(tecc_corr_tag_c1[27:0]),
 		.clk(rclk),
@@ -256,7 +256,7 @@ module sctag_arbaddrdp (
 	);
 	assign arbdp_new_addr5to4_px2 = mux3_addr_px2[5:4];
 	assign arbdp_cam_addr_px2 = mux4_addr_px2[39:0];
-	assign data_ecc_idx_plus1 = (data_ecc_idx + 10&#39;b1);
+	assign data_ecc_idx_plus1 = data_ecc_idx + 10&#39;b1;
 	clken_buf ckbuf_data_ecc_idx(
 		.clk(clk_data_ecc_idx),
 		.rclk(rclk),
@@ -418,7 +418,7 @@ module sctag_arbaddrdp (
 	assign arbaddr_addr22_c2 = arbdp_addr_c2[22];
 	assign arbdp_addr5to4_c2 = arbdp_addr_c2[5:4];
 	assign arbdp_diag_wr_way_c2 = arbdp_addr_c2[21:18];
-	assign arbdp_addr_start_c2 = (arbdp_addr_c2[5:0] == 6&#39;b0);
+	assign arbdp_addr_start_c2 = arbdp_addr_c2[5:0] == 6&#39;b0;
 	dff_s #(40) ff_addr_c3(
 		.din(arbdp_addr_c2[39:0]),
 		.clk(rclk),
@@ -446,7 +446,7 @@ module sctag_arbaddrdp (
 		.sel0(~arbctl_imiss_hit_c4),
 		.sel1(arbctl_imiss_hit_c4)
 	);
-	assign arbdp_dir_wr_par_c3 = (^arbdp_addr_c3[39:10] ^ csr_wr_dirpinj_en);
+	assign arbdp_dir_wr_par_c3 = ^arbdp_addr_c3[39:10] ^ csr_wr_dirpinj_en;
 	dff_s #(40) ff_addr_c5(
 		.din(arbdp_addr_c4[39:0]),
 		.clk(rclk),
@@ -533,16 +533,16 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	assign arbdp_addr_c1c2comp_c1 = (arbdp_addr_c1[39:8] == arbdp_addr_c2[39:8]);
-	assign arbdp_addr_c1c3comp_c1 = (arbdp_addr_c1[39:8] == arbdp_addr_c3[39:8]);
-	assign idx_c1c2comp_c1 = (arbdp_addr_c1[17:8] == arbdp_addr_c2[17:8]);
-	assign idx_c1c3comp_c1 = (arbdp_addr_c1[17:8] == arbdp_addr_c3[17:8]);
-	assign idx_c1c4comp_c1 = (arbdp_addr_c1[17:8] == arbdp_addr_c4[17:8]);
-	assign idx_c1c5comp_c1 = (arbdp_addr_c1[17:8] == arbdp_addr_c5[17:8]);
-	assign evict_addr_c4[39:18] = tagdp_evict_tag_c4[(28 - 1):6];
+	assign arbdp_addr_c1c2comp_c1 = arbdp_addr_c1[39:8] == arbdp_addr_c2[39:8];
+	assign arbdp_addr_c1c3comp_c1 = arbdp_addr_c1[39:8] == arbdp_addr_c3[39:8];
+	assign idx_c1c2comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c2[17:8];
+	assign idx_c1c3comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c3[17:8];
+	assign idx_c1c4comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c4[17:8];
+	assign idx_c1c5comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c5[17:8];
+	assign evict_addr_c4[39:18] = tagdp_evict_tag_c4[27:6];
 	assign evict_addr_c4[17:8] = arbdp_addr_c4[17:8];
-	assign c1_addr_eq_wb_c4 = (evict_addr_c4[39:8] == arbdp_addr_c1[39:8]);
-	assign tagdp_evict_tag_c4_buf[(28 - 1):6] = tagdp_evict_tag_c4[(28 - 1):6];
+	assign c1_addr_eq_wb_c4 = evict_addr_c4[39:8] == arbdp_addr_c1[39:8];
+	assign tagdp_evict_tag_c4_buf[27:6] = tagdp_evict_tag_c4[27:6];
 endmodule
 
 </pre>

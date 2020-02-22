@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_round_robin_arb.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_round_robin_arb.v</a>
-time_elapsed: 4.488s
-ram usage: 22840 KB
+time_elapsed: 3.576s
+ram usage: 35304 KB
 </pre>
 <pre class="log">
 
@@ -33,26 +33,26 @@ module bsg_round_robin_arb (
 	yumi_i
 );
 	parameter inputs_p = -1;
-	parameter lg_inputs_p = ((inputs_p == 1) ? 1 : $clog2(inputs_p));
+	parameter lg_inputs_p = (inputs_p == 1 ? 1 : $clog2(inputs_p));
 	parameter reset_on_sr_p = 1&#39;b0;
 	parameter hold_on_sr_p = 1&#39;b0;
 	input clk_i;
 	input reset_i;
 	input grants_en_i;
-	input [(inputs_p - 1):0] reqs_i;
-	output wire [(inputs_p - 1):0] grants_o;
-	output wire [(inputs_p - 1):0] sel_one_hot_o;
+	input [inputs_p - 1:0] reqs_i;
+	output wire [inputs_p - 1:0] grants_o;
+	output wire [inputs_p - 1:0] sel_one_hot_o;
 	output v_o;
-	output reg [(lg_inputs_p - 1):0] tag_o;
+	output reg [lg_inputs_p - 1:0] tag_o;
 	input yumi_i;
-	wire [(lg_inputs_p - 1):0] last;
-	reg [(lg_inputs_p - 1):0] last_n;
-	reg [(lg_inputs_p - 1):0] last_r;
+	wire [lg_inputs_p - 1:0] last;
+	reg [lg_inputs_p - 1:0] last_n;
+	reg [lg_inputs_p - 1:0] last_r;
 	reg hold_on_sr;
 	wire reset_on_sr;
 	generate
-		if ((inputs_p == 1)) begin : inputs_1
-			reg [(1 - 1):0] sel_one_hot_n;
+		if (inputs_p == 1) begin : inputs_1
+			reg [0:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					2&#39;b?_0: begin
@@ -69,17 +69,17 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; grants_en_i);
+			assign grants_o = sel_one_hot_n &amp; grants_en_i;
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					1&#39;b0: hold_on_sr = (reqs_i == 1&#39;b1);
+					1&#39;b0: hold_on_sr = reqs_i == 1&#39;b1;
 					default: hold_on_sr = 1&#39;b0;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_1
-				assign reset_on_sr = (reqs_i == 1&#39;b1);
+				assign reset_on_sr = reqs_i == 1&#39;b1;
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -87,8 +87,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 2)) begin : inputs_2
-			reg [(2 - 1):0] sel_one_hot_n;
+		if (inputs_p == 2) begin : inputs_2
+			reg [1:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					3&#39;b?_00: begin
@@ -117,17 +117,17 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {2 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {2 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					1&#39;b0: hold_on_sr = (reqs_i == 2&#39;b01);
-					default: hold_on_sr = (reqs_i == 2&#39;b10);
+					1&#39;b0: hold_on_sr = reqs_i == 2&#39;b01;
+					default: hold_on_sr = reqs_i == 2&#39;b10;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_2
-				assign reset_on_sr = ((reqs_i == 2&#39;b01) | (reqs_i == 2&#39;b10));
+				assign reset_on_sr = (reqs_i == 2&#39;b01) | (reqs_i == 2&#39;b10);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -135,8 +135,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 3)) begin : inputs_3
-			reg [(3 - 1):0] sel_one_hot_n;
+		if (inputs_p == 3) begin : inputs_3
+			reg [2:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					5&#39;b??_000: begin
@@ -185,19 +185,19 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {3 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {3 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					2&#39;b00: hold_on_sr = (reqs_i == 3&#39;b010);
-					2&#39;b01: hold_on_sr = (reqs_i == 3&#39;b001);
-					2&#39;b10: hold_on_sr = (reqs_i == 3&#39;b100);
+					2&#39;b00: hold_on_sr = reqs_i == 3&#39;b010;
+					2&#39;b01: hold_on_sr = reqs_i == 3&#39;b001;
+					2&#39;b10: hold_on_sr = reqs_i == 3&#39;b100;
 					default: hold_on_sr = 1&#39;b0;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_3
-				assign reset_on_sr = (((reqs_i == 3&#39;b010) | (reqs_i == 3&#39;b001)) | (reqs_i == 3&#39;b100));
+				assign reset_on_sr = ((reqs_i == 3&#39;b010) | (reqs_i == 3&#39;b001)) | (reqs_i == 3&#39;b100);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -205,8 +205,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 4)) begin : inputs_4
-			reg [(4 - 1):0] sel_one_hot_n;
+		if (inputs_p == 4) begin : inputs_4
+			reg [3:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					6&#39;b??_0000: begin
@@ -283,19 +283,19 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {4 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {4 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					2&#39;b00: hold_on_sr = (reqs_i == 4&#39;b0100);
-					2&#39;b01: hold_on_sr = (reqs_i == 4&#39;b0010);
-					2&#39;b10: hold_on_sr = (reqs_i == 4&#39;b0001);
-					default: hold_on_sr = (reqs_i == 4&#39;b1000);
+					2&#39;b00: hold_on_sr = reqs_i == 4&#39;b0100;
+					2&#39;b01: hold_on_sr = reqs_i == 4&#39;b0010;
+					2&#39;b10: hold_on_sr = reqs_i == 4&#39;b0001;
+					default: hold_on_sr = reqs_i == 4&#39;b1000;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_4
-				assign reset_on_sr = ((((reqs_i == 4&#39;b0100) | (reqs_i == 4&#39;b0010)) | (reqs_i == 4&#39;b0001)) | (reqs_i == 4&#39;b1000));
+				assign reset_on_sr = (((reqs_i == 4&#39;b0100) | (reqs_i == 4&#39;b0010)) | (reqs_i == 4&#39;b0001)) | (reqs_i == 4&#39;b1000);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -303,8 +303,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 5)) begin : inputs_5
-			reg [(5 - 1):0] sel_one_hot_n;
+		if (inputs_p == 5) begin : inputs_5
+			reg [4:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					8&#39;b???_00000: begin
@@ -417,21 +417,21 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {5 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {5 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					3&#39;b000: hold_on_sr = (reqs_i == 5&#39;b01000);
-					3&#39;b001: hold_on_sr = (reqs_i == 5&#39;b00100);
-					3&#39;b010: hold_on_sr = (reqs_i == 5&#39;b00010);
-					3&#39;b011: hold_on_sr = (reqs_i == 5&#39;b00001);
-					3&#39;b100: hold_on_sr = (reqs_i == 5&#39;b10000);
+					3&#39;b000: hold_on_sr = reqs_i == 5&#39;b01000;
+					3&#39;b001: hold_on_sr = reqs_i == 5&#39;b00100;
+					3&#39;b010: hold_on_sr = reqs_i == 5&#39;b00010;
+					3&#39;b011: hold_on_sr = reqs_i == 5&#39;b00001;
+					3&#39;b100: hold_on_sr = reqs_i == 5&#39;b10000;
 					default: hold_on_sr = 1&#39;b0;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_5
-				assign reset_on_sr = (((((reqs_i == 5&#39;b01000) | (reqs_i == 5&#39;b00100)) | (reqs_i == 5&#39;b00010)) | (reqs_i == 5&#39;b00001)) | (reqs_i == 5&#39;b10000));
+				assign reset_on_sr = ((((reqs_i == 5&#39;b01000) | (reqs_i == 5&#39;b00100)) | (reqs_i == 5&#39;b00010)) | (reqs_i == 5&#39;b00001)) | (reqs_i == 5&#39;b10000);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -439,8 +439,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 6)) begin : inputs_6
-			reg [(6 - 1):0] sel_one_hot_n;
+		if (inputs_p == 6) begin : inputs_6
+			reg [5:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					9&#39;b???_000000: begin
@@ -597,22 +597,22 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {6 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {6 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					3&#39;b000: hold_on_sr = (reqs_i == 6&#39;b010000);
-					3&#39;b001: hold_on_sr = (reqs_i == 6&#39;b001000);
-					3&#39;b010: hold_on_sr = (reqs_i == 6&#39;b000100);
-					3&#39;b011: hold_on_sr = (reqs_i == 6&#39;b000010);
-					3&#39;b100: hold_on_sr = (reqs_i == 6&#39;b000001);
-					3&#39;b101: hold_on_sr = (reqs_i == 6&#39;b100000);
+					3&#39;b000: hold_on_sr = reqs_i == 6&#39;b010000;
+					3&#39;b001: hold_on_sr = reqs_i == 6&#39;b001000;
+					3&#39;b010: hold_on_sr = reqs_i == 6&#39;b000100;
+					3&#39;b011: hold_on_sr = reqs_i == 6&#39;b000010;
+					3&#39;b100: hold_on_sr = reqs_i == 6&#39;b000001;
+					3&#39;b101: hold_on_sr = reqs_i == 6&#39;b100000;
 					default: hold_on_sr = 1&#39;b0;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_6
-				assign reset_on_sr = ((((((reqs_i == 6&#39;b010000) | (reqs_i == 6&#39;b001000)) | (reqs_i == 6&#39;b000100)) | (reqs_i == 6&#39;b000010)) | (reqs_i == 6&#39;b000001)) | (reqs_i == 6&#39;b100000));
+				assign reset_on_sr = (((((reqs_i == 6&#39;b010000) | (reqs_i == 6&#39;b001000)) | (reqs_i == 6&#39;b000100)) | (reqs_i == 6&#39;b000010)) | (reqs_i == 6&#39;b000001)) | (reqs_i == 6&#39;b100000);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -620,8 +620,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 7)) begin : inputs_7
-			reg [(7 - 1):0] sel_one_hot_n;
+		if (inputs_p == 7) begin : inputs_7
+			reg [6:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					10&#39;b???_0000000: begin
@@ -830,23 +830,23 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {7 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {7 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					3&#39;b000: hold_on_sr = (reqs_i == 7&#39;b0100000);
-					3&#39;b001: hold_on_sr = (reqs_i == 7&#39;b0010000);
-					3&#39;b010: hold_on_sr = (reqs_i == 7&#39;b0001000);
-					3&#39;b011: hold_on_sr = (reqs_i == 7&#39;b0000100);
-					3&#39;b100: hold_on_sr = (reqs_i == 7&#39;b0000010);
-					3&#39;b101: hold_on_sr = (reqs_i == 7&#39;b0000001);
-					3&#39;b110: hold_on_sr = (reqs_i == 7&#39;b1000000);
+					3&#39;b000: hold_on_sr = reqs_i == 7&#39;b0100000;
+					3&#39;b001: hold_on_sr = reqs_i == 7&#39;b0010000;
+					3&#39;b010: hold_on_sr = reqs_i == 7&#39;b0001000;
+					3&#39;b011: hold_on_sr = reqs_i == 7&#39;b0000100;
+					3&#39;b100: hold_on_sr = reqs_i == 7&#39;b0000010;
+					3&#39;b101: hold_on_sr = reqs_i == 7&#39;b0000001;
+					3&#39;b110: hold_on_sr = reqs_i == 7&#39;b1000000;
 					default: hold_on_sr = 1&#39;b0;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_7
-				assign reset_on_sr = (((((((reqs_i == 7&#39;b0100000) | (reqs_i == 7&#39;b0010000)) | (reqs_i == 7&#39;b0001000)) | (reqs_i == 7&#39;b0000100)) | (reqs_i == 7&#39;b0000010)) | (reqs_i == 7&#39;b0000001)) | (reqs_i == 7&#39;b1000000));
+				assign reset_on_sr = ((((((reqs_i == 7&#39;b0100000) | (reqs_i == 7&#39;b0010000)) | (reqs_i == 7&#39;b0001000)) | (reqs_i == 7&#39;b0000100)) | (reqs_i == 7&#39;b0000010)) | (reqs_i == 7&#39;b0000001)) | (reqs_i == 7&#39;b1000000);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -854,8 +854,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 8)) begin : inputs_8
-			reg [(8 - 1):0] sel_one_hot_n;
+		if (inputs_p == 8) begin : inputs_8
+			reg [7:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					11&#39;b???_00000000: begin
@@ -1124,23 +1124,23 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {8 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {8 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					3&#39;b000: hold_on_sr = (reqs_i == 8&#39;b01000000);
-					3&#39;b001: hold_on_sr = (reqs_i == 8&#39;b00100000);
-					3&#39;b010: hold_on_sr = (reqs_i == 8&#39;b00010000);
-					3&#39;b011: hold_on_sr = (reqs_i == 8&#39;b00001000);
-					3&#39;b100: hold_on_sr = (reqs_i == 8&#39;b00000100);
-					3&#39;b101: hold_on_sr = (reqs_i == 8&#39;b00000010);
-					3&#39;b110: hold_on_sr = (reqs_i == 8&#39;b00000001);
-					default: hold_on_sr = (reqs_i == 8&#39;b10000000);
+					3&#39;b000: hold_on_sr = reqs_i == 8&#39;b01000000;
+					3&#39;b001: hold_on_sr = reqs_i == 8&#39;b00100000;
+					3&#39;b010: hold_on_sr = reqs_i == 8&#39;b00010000;
+					3&#39;b011: hold_on_sr = reqs_i == 8&#39;b00001000;
+					3&#39;b100: hold_on_sr = reqs_i == 8&#39;b00000100;
+					3&#39;b101: hold_on_sr = reqs_i == 8&#39;b00000010;
+					3&#39;b110: hold_on_sr = reqs_i == 8&#39;b00000001;
+					default: hold_on_sr = reqs_i == 8&#39;b10000000;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_8
-				assign reset_on_sr = ((((((((reqs_i == 8&#39;b01000000) | (reqs_i == 8&#39;b00100000)) | (reqs_i == 8&#39;b00010000)) | (reqs_i == 8&#39;b00001000)) | (reqs_i == 8&#39;b00000100)) | (reqs_i == 8&#39;b00000010)) | (reqs_i == 8&#39;b00000001)) | (reqs_i == 8&#39;b10000000));
+				assign reset_on_sr = (((((((reqs_i == 8&#39;b01000000) | (reqs_i == 8&#39;b00100000)) | (reqs_i == 8&#39;b00010000)) | (reqs_i == 8&#39;b00001000)) | (reqs_i == 8&#39;b00000100)) | (reqs_i == 8&#39;b00000010)) | (reqs_i == 8&#39;b00000001)) | (reqs_i == 8&#39;b10000000);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -1148,8 +1148,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 9)) begin : inputs_9
-			reg [(9 - 1):0] sel_one_hot_n;
+		if (inputs_p == 9) begin : inputs_9
+			reg [8:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					13&#39;b????_000000000: begin
@@ -1486,25 +1486,25 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {9 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {9 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					4&#39;b0000: hold_on_sr = (reqs_i == 9&#39;b010000000);
-					4&#39;b0001: hold_on_sr = (reqs_i == 9&#39;b001000000);
-					4&#39;b0010: hold_on_sr = (reqs_i == 9&#39;b000100000);
-					4&#39;b0011: hold_on_sr = (reqs_i == 9&#39;b000010000);
-					4&#39;b0100: hold_on_sr = (reqs_i == 9&#39;b000001000);
-					4&#39;b0101: hold_on_sr = (reqs_i == 9&#39;b000000100);
-					4&#39;b0110: hold_on_sr = (reqs_i == 9&#39;b000000010);
-					4&#39;b0111: hold_on_sr = (reqs_i == 9&#39;b000000001);
-					4&#39;b1000: hold_on_sr = (reqs_i == 9&#39;b100000000);
+					4&#39;b0000: hold_on_sr = reqs_i == 9&#39;b010000000;
+					4&#39;b0001: hold_on_sr = reqs_i == 9&#39;b001000000;
+					4&#39;b0010: hold_on_sr = reqs_i == 9&#39;b000100000;
+					4&#39;b0011: hold_on_sr = reqs_i == 9&#39;b000010000;
+					4&#39;b0100: hold_on_sr = reqs_i == 9&#39;b000001000;
+					4&#39;b0101: hold_on_sr = reqs_i == 9&#39;b000000100;
+					4&#39;b0110: hold_on_sr = reqs_i == 9&#39;b000000010;
+					4&#39;b0111: hold_on_sr = reqs_i == 9&#39;b000000001;
+					4&#39;b1000: hold_on_sr = reqs_i == 9&#39;b100000000;
 					default: hold_on_sr = 1&#39;b0;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_9
-				assign reset_on_sr = (((((((((reqs_i == 9&#39;b010000000) | (reqs_i == 9&#39;b001000000)) | (reqs_i == 9&#39;b000100000)) | (reqs_i == 9&#39;b000010000)) | (reqs_i == 9&#39;b000001000)) | (reqs_i == 9&#39;b000000100)) | (reqs_i == 9&#39;b000000010)) | (reqs_i == 9&#39;b000000001)) | (reqs_i == 9&#39;b100000000));
+				assign reset_on_sr = ((((((((reqs_i == 9&#39;b010000000) | (reqs_i == 9&#39;b001000000)) | (reqs_i == 9&#39;b000100000)) | (reqs_i == 9&#39;b000010000)) | (reqs_i == 9&#39;b000001000)) | (reqs_i == 9&#39;b000000100)) | (reqs_i == 9&#39;b000000010)) | (reqs_i == 9&#39;b000000001)) | (reqs_i == 9&#39;b100000000);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -1512,8 +1512,8 @@ module bsg_round_robin_arb (
 		end
 	endgenerate
 	generate
-		if ((inputs_p == 10)) begin : inputs_10
-			reg [(10 - 1):0] sel_one_hot_n;
+		if (inputs_p == 10) begin : inputs_10
+			reg [9:0] sel_one_hot_n;
 			always @(*)
 				casez ({last_r, reqs_i})
 					14&#39;b????_0000000000: begin
@@ -1926,26 +1926,26 @@ module bsg_round_robin_arb (
 					end
 				endcase
 			assign sel_one_hot_o = sel_one_hot_n;
-			assign grants_o = (sel_one_hot_n &amp; {10 {grants_en_i}});
+			assign grants_o = sel_one_hot_n &amp; {10 {grants_en_i}};
 			if (hold_on_sr_p) always @(*)
 				casez (last_r)
-					4&#39;b0000: hold_on_sr = (reqs_i == 10&#39;b0100000000);
-					4&#39;b0001: hold_on_sr = (reqs_i == 10&#39;b0010000000);
-					4&#39;b0010: hold_on_sr = (reqs_i == 10&#39;b0001000000);
-					4&#39;b0011: hold_on_sr = (reqs_i == 10&#39;b0000100000);
-					4&#39;b0100: hold_on_sr = (reqs_i == 10&#39;b0000010000);
-					4&#39;b0101: hold_on_sr = (reqs_i == 10&#39;b0000001000);
-					4&#39;b0110: hold_on_sr = (reqs_i == 10&#39;b0000000100);
-					4&#39;b0111: hold_on_sr = (reqs_i == 10&#39;b0000000010);
-					4&#39;b1000: hold_on_sr = (reqs_i == 10&#39;b0000000001);
-					4&#39;b1001: hold_on_sr = (reqs_i == 10&#39;b1000000000);
+					4&#39;b0000: hold_on_sr = reqs_i == 10&#39;b0100000000;
+					4&#39;b0001: hold_on_sr = reqs_i == 10&#39;b0010000000;
+					4&#39;b0010: hold_on_sr = reqs_i == 10&#39;b0001000000;
+					4&#39;b0011: hold_on_sr = reqs_i == 10&#39;b0000100000;
+					4&#39;b0100: hold_on_sr = reqs_i == 10&#39;b0000010000;
+					4&#39;b0101: hold_on_sr = reqs_i == 10&#39;b0000001000;
+					4&#39;b0110: hold_on_sr = reqs_i == 10&#39;b0000000100;
+					4&#39;b0111: hold_on_sr = reqs_i == 10&#39;b0000000010;
+					4&#39;b1000: hold_on_sr = reqs_i == 10&#39;b0000000001;
+					4&#39;b1001: hold_on_sr = reqs_i == 10&#39;b1000000000;
 					default: hold_on_sr = 1&#39;b0;
 				endcase
 			else begin : not_hold_on_sr_p
 				always @(*) hold_on_sr = 1&#39;sb0;
 			end
 			if (reset_on_sr_p) begin : reset_on_10
-				assign reset_on_sr = ((((((((((reqs_i == 10&#39;b0100000000) | (reqs_i == 10&#39;b0010000000)) | (reqs_i == 10&#39;b0001000000)) | (reqs_i == 10&#39;b0000100000)) | (reqs_i == 10&#39;b0000010000)) | (reqs_i == 10&#39;b0000001000)) | (reqs_i == 10&#39;b0000000100)) | (reqs_i == 10&#39;b0000000010)) | (reqs_i == 10&#39;b0000000001)) | (reqs_i == 10&#39;b1000000000));
+				assign reset_on_sr = (((((((((reqs_i == 10&#39;b0100000000) | (reqs_i == 10&#39;b0010000000)) | (reqs_i == 10&#39;b0001000000)) | (reqs_i == 10&#39;b0000100000)) | (reqs_i == 10&#39;b0000010000)) | (reqs_i == 10&#39;b0000001000)) | (reqs_i == 10&#39;b0000000100)) | (reqs_i == 10&#39;b0000000010)) | (reqs_i == 10&#39;b0000000001)) | (reqs_i == 10&#39;b1000000000);
 			end
 			else begin : not_reset_on_sr_p
 				assign reset_on_sr = 1&#39;sb0;
@@ -1954,22 +1954,22 @@ module bsg_round_robin_arb (
 	endgenerate
 	assign v_o = |reqs_i;
 	generate
-		if ((inputs_p == 1)) always @(*) last_r = 1&#39;b0;
+		if (inputs_p == 1) always @(*) last_r = 1&#39;b0;
 		else begin
 			always @(*)
 				if (hold_on_sr_p) begin : last_n_gen
 					last_n = (hold_on_sr ? last_r : (yumi_i ? tag_o : last_r));
 				end
 				else if (reset_on_sr_p) begin : reset_on_last_n_gen
-					last_n = (reset_on_sr ? (inputs_p - 2) : (yumi_i ? tag_o : last_r));
+					last_n = (reset_on_sr ? inputs_p - 2 : (yumi_i ? tag_o : last_r));
 				end
 				else
 					last_n = (yumi_i ? tag_o : last_r);
 			always @(posedge clk_i) last_r &lt;= (reset_i ? sv2v_cast_8141E(0) : last_n);
 		end
 	endgenerate
-	function automatic [(lg_inputs_p - 1):0] sv2v_cast_8141E;
-		input reg [(lg_inputs_p - 1):0] inp;
+	function automatic [lg_inputs_p - 1:0] sv2v_cast_8141E;
+		input reg [lg_inputs_p - 1:0] inp;
 		sv2v_cast_8141E = inp;
 	endfunction
 endmodule

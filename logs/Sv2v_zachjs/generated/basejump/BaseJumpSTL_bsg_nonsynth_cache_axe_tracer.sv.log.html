@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_nonsynth_cache_axe_tracer.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_nonsynth_cache_axe_tracer.v</a>
-time_elapsed: 0.704s
-ram usage: 16184 KB
+time_elapsed: 0.520s
+ram usage: 16088 KB
 </pre>
 <pre class="log">
 
@@ -79,29 +79,29 @@ module bsg_nonsynth_cache_axe_tracer (
 	parameter data_width_p = &#34;inv&#34;;
 	parameter addr_width_p = &#34;inv&#34;;
 	parameter ways_p = &#34;inv&#34;;
-	parameter sbuf_entry_width_lp = (((addr_width_p + data_width_p) + (data_width_p &gt;&gt; 3)) + ((ways_p == 1) ? 1 : $clog2(ways_p)));
+	parameter sbuf_entry_width_lp = ((addr_width_p + data_width_p) + (data_width_p &gt;&gt; 3)) + (ways_p == 1 ? 1 : $clog2(ways_p));
 	input clk_i;
 	input v_o;
 	input yumi_i;
 	input wire [18:0] decode_v_r;
-	input [(addr_width_p - 1):0] addr_v_r;
-	input [(sbuf_entry_width_lp - 1):0] sbuf_entry_li;
-	input [(data_width_p - 1):0] data_o;
-	wire [(((((((addr_width_p - 1) &gt;= 0) ? addr_width_p : (2 - addr_width_p)) + (((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p))) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0) ? (data_width_p &gt;&gt; 3) : (2 - (data_width_p &gt;&gt; 3)))) + (((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p))))) - 1):0] sbuf_entry;
+	input [addr_width_p - 1:0] addr_v_r;
+	input [sbuf_entry_width_lp - 1:0] sbuf_entry_li;
+	input [data_width_p - 1:0] data_o;
+	wire [(((((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)) + (((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3))) + (((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) - 1:0] sbuf_entry;
 	assign sbuf_entry = sbuf_entry_li;
 	localparam logfile_lp = &#34;bsg_cache.axe&#34;;
 	integer fd;
 	string header;
 	initial forever @(negedge clk_i)
-		if ((v_o &amp; yumi_i)) begin
-			if (decode_v_r[13:13]) begin
+		if (v_o &amp; yumi_i) begin
+			if (decode_v_r[13]) begin
 				fd = $fopen(logfile_lp, &#34;a&#34;);
-				$fwrite(fd, &#34;0: M[%0d] := %0d\n&#34;, (addr_v_r &gt;&gt; 2), sbuf_entry[((((data_width_p - 1) &gt;= 0) ? data_width_p : (2 - data_width_p)) + (((((data_width_p &gt;&gt; 3) - 1) &gt;= 0) ? (data_width_p &gt;&gt; 3) : (2 - (data_width_p &gt;&gt; 3))) + ((((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p)))) + -1))):(((((data_width_p &gt;&gt; 3) - 1) &gt;= 0) ? (data_width_p &gt;&gt; 3) : (2 - (data_width_p &gt;&gt; 3))) + (((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p)))))]);
+				$fwrite(fd, &#34;0: M[%0d] := %0d\n&#34;, addr_v_r &gt;&gt; 2, sbuf_entry[((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))-:((((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))) &gt;= ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) ? ((((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))) - ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))))) + 1 : (((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) - (((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)))) + 1)]);
 				$fclose(fd);
 			end
-			if (decode_v_r[14:14]) begin
+			if (decode_v_r[14]) begin
 				fd = $fopen(logfile_lp, &#34;a&#34;);
-				$fwrite(fd, &#34;0: M[%0d] == %0d\n&#34;, (addr_v_r &gt;&gt; 2), data_o);
+				$fwrite(fd, &#34;0: M[%0d] == %0d\n&#34;, addr_v_r &gt;&gt; 2, data_o);
 				$fclose(fd);
 			end
 		end

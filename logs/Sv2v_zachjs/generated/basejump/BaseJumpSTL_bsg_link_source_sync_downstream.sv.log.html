@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_source_sync_downstream.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_source_sync_downstream.v</a>
-time_elapsed: 0.604s
-ram usage: 14840 KB
+time_elapsed: 0.300s
+ram usage: 14956 KB
 </pre>
 <pre class="log">
 
@@ -40,10 +40,10 @@ module bsg_link_source_sync_downstream (
 	input core_link_reset_i;
 	input io_link_reset_i;
 	input io_clk_i;
-	input [(channel_width_p - 1):0] io_data_i;
+	input [channel_width_p - 1:0] io_data_i;
 	input io_valid_i;
 	output core_token_r_o;
-	output [(channel_width_p - 1):0] core_data_o;
+	output [channel_width_p - 1:0] core_data_o;
 	output core_valid_o;
 	input core_yumi_i;
 	wire io_async_fifo_full;
@@ -51,7 +51,7 @@ module bsg_link_source_sync_downstream (
 		;
 	wire core_async_fifo_deque;
 	wire core_async_fifo_valid_lo;
-	wire [(channel_width_p - 1):0] core_async_fifo_data_lo;
+	wire [channel_width_p - 1:0] core_async_fifo_data_lo;
 	bsg_async_fifo #(
 		.lg_size_p(lg_fifo_depth_p),
 		.width_p(channel_width_p)
@@ -78,11 +78,11 @@ module bsg_link_source_sync_downstream (
 		.data_o(core_data_o),
 		.yumi_i(core_yumi_i)
 	);
-	assign core_async_fifo_deque = (core_async_fifo_valid_lo &amp; core_async_fifo_ready_li);
-	wire [((lg_credit_to_token_decimation_p + 1) - 1):0] core_credits_sent_r;
+	assign core_async_fifo_deque = core_async_fifo_valid_lo &amp; core_async_fifo_ready_li;
+	wire [(lg_credit_to_token_decimation_p + 1) - 1:0] core_credits_sent_r;
 	assign core_token_r_o = core_credits_sent_r[lg_credit_to_token_decimation_p];
 	bsg_counter_clear_up #(
-		.max_val_p({(lg_credit_to_token_decimation_p + 1) {1&#39;b1}}),
+		.max_val_p({lg_credit_to_token_decimation_p + 1 {1&#39;b1}}),
 		.init_val_p(0),
 		.disable_overflow_warning_p(1)
 	) token_counter(

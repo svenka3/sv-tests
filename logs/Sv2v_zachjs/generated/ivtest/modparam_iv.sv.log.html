@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/modparam.v.html" target="file-frame">third_party/tests/ivtest/ivltests/modparam.v</a>
-time_elapsed: 0.284s
-ram usage: 14776 KB
+time_elapsed: 0.148s
+ram usage: 18204 KB
 </pre>
 <pre class="log">
 
@@ -30,9 +30,9 @@ module reg32 (
 	parameter WIDTH = 32;
 	input we;
 	input clk;
-	input [(WIDTH - 1):0] din;
-	output [(WIDTH - 1):0] dout;
-	reg [(WIDTH - 1):0] store;
+	input [WIDTH - 1:0] din;
+	output [WIDTH - 1:0] dout;
+	reg [WIDTH - 1:0] store;
 	always @(posedge clk)
 		if (we)
 			store &lt;= din;
@@ -49,13 +49,13 @@ module memory (
 	input clk;
 	input we;
 	input [1:0] addr;
-	input [(WIDTH - 1):0] din;
-	output [(WIDTH - 1):0] dout;
-	reg [(WIDTH - 1):0] dout;
-	wire [(WIDTH - 1):0] dout0;
-	wire [(WIDTH - 1):0] dout1;
-	wire [(WIDTH - 1):0] dout2;
-	wire [(WIDTH - 1):0] dout3;
+	input [WIDTH - 1:0] din;
+	output [WIDTH - 1:0] dout;
+	reg [WIDTH - 1:0] dout;
+	wire [WIDTH - 1:0] dout0;
+	wire [WIDTH - 1:0] dout1;
+	wire [WIDTH - 1:0] dout2;
+	wire [WIDTH - 1:0] dout3;
 	reg we0;
 	reg we1;
 	reg we2;
@@ -63,26 +63,26 @@ module memory (
 	reg32 #(.WIDTH(WIDTH)) reg0(
 		.clk(clk),
 		.we(we0),
-		.din(din[(WIDTH - 1):0]),
-		.dout(dout0[(WIDTH - 1):0])
+		.din(din[WIDTH - 1:0]),
+		.dout(dout0[WIDTH - 1:0])
 	);
 	reg32 #(.WIDTH(WIDTH)) reg1(
 		.clk(clk),
 		.we(we1),
-		.din(din[(WIDTH - 1):0]),
-		.dout(dout1[(WIDTH - 1):0])
+		.din(din[WIDTH - 1:0]),
+		.dout(dout1[WIDTH - 1:0])
 	);
 	reg32 #(.WIDTH(WIDTH)) reg2(
 		.clk(clk),
 		.we(we2),
-		.din(din[(WIDTH - 1):0]),
-		.dout(dout2[(WIDTH - 1):0])
+		.din(din[WIDTH - 1:0]),
+		.dout(dout2[WIDTH - 1:0])
 	);
 	reg32 #(.WIDTH(WIDTH)) reg3(
 		.clk(clk),
 		.we(we3),
-		.din(din[(WIDTH - 1):0]),
-		.dout(dout3[(WIDTH - 1):0])
+		.din(din[WIDTH - 1:0]),
+		.dout(dout3[WIDTH - 1:0])
 	);
 	always @(addr or we)
 		case (addr)
@@ -124,9 +124,9 @@ module top;
 	reg clk;
 	reg we;
 	reg [1:0] addr;
-	reg [(WIDTH - 1):0] din;
+	reg [WIDTH - 1:0] din;
 	reg error;
-	wire [(WIDTH - 1):0] dout;
+	wire [WIDTH - 1:0] dout;
 	memory mem(
 		clk,
 		we,
@@ -160,11 +160,11 @@ module top;
 		addr = 0;
 		#(1)
 			;
-		if ((dout[7:0] !== 8&#39;h00)) begin
+		if (dout[7:0] !== 8&#39;h00) begin
 			$display(&#34;FAILED - Ram[0] not 0, is %h&#34;, dout[7:0]);
 			error = 1;
 		end
-		if ((error == 0))
+		if (error == 0)
 			$display(&#34;PASSED&#34;);
 		$finish;
 	end

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/scopes.v.html" target="file-frame">third_party/tools/yosys/tests/simple/scopes.v</a>
-time_elapsed: 0.100s
-ram usage: 10008 KB
+time_elapsed: 0.160s
+ram usage: 11496 KB
 </pre>
 <pre class="log">
 
@@ -33,20 +33,20 @@ module scopes_test_01 (
 		input reg [15:0] x;
 		input reg [15:0] y;
 		begin
-			func_01 = (x + y);
+			func_01 = x + y;
 			begin : blk
 				reg [15:0] x;
 				x = y;
-				func_01 = (func_01 ^ x);
+				func_01 = func_01 ^ x;
 			end
-			func_01 = (func_01 ^ x);
+			func_01 = func_01 ^ x;
 		end
 	endfunction
 	function [15:0] func_02;
 		input reg [15:0] x;
 		input reg [15:0] y;
 		begin
-			func_02 = (x - y);
+			func_02 = x - y;
 			begin : blk
 				reg [15:0] func_02;
 				func_02 = 0;
@@ -57,8 +57,8 @@ module scopes_test_01 (
 		input reg [3:0] a;
 		reg [15:0] y;
 		begin
-			y = (a * 23);
-			x = (x + y);
+			y = a * 23;
+			x = x + y;
 		end
 	endtask
 	task task_02;
@@ -69,10 +69,10 @@ module scopes_test_01 (
 			x = y;
 			begin : bar
 				reg [15:0] x;
-				x = (77 + a);
+				x = 77 + a;
 				z = -x;
 			end
-			y = (x ^ z);
+			y = x ^ z;
 		end
 	endtask
 	always @(*) begin
@@ -83,7 +83,7 @@ module scopes_test_01 (
 		begin : foo
 			reg [15:0] y;
 			y = x;
-			y = (y + k);
+			y = y + k;
 			x = y;
 		end
 		x = func_01(y, x);

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr596.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr596.v</a>
-time_elapsed: 0.080s
-ram usage: 11748 KB
+time_elapsed: 0.112s
+ram usage: 9976 KB
 </pre>
 <pre class="log">
 
@@ -26,7 +26,7 @@ module lfsr_test;
 	reg clk;
 	reg reset;
 	reg ena;
-	wire [(SIZE - 1):0] out;
+	wire [SIZE - 1:0] out;
 	initial begin
 		clk = 0;
 		reset = 0;
@@ -52,30 +52,30 @@ module lfsr_counter (
 	parameter WIDTH = 4;
 	parameter TAP = 4&#39;b1001;
 	integer N;
-	output [(WIDTH - 1):0] out;
+	output [WIDTH - 1:0] out;
 	input clk;
 	input reset;
-	wire [(WIDTH - 1):0] gc;
-	reg [(WIDTH - 1):0] lfsr;
-	reg [(WIDTH - 1):0] next_lfsr;
+	wire [WIDTH - 1:0] gc;
+	reg [WIDTH - 1:0] lfsr;
+	reg [WIDTH - 1:0] next_lfsr;
 	reg fb_lsb;
 	reg fb;
 	always @(posedge clk or negedge reset)
-		if ((reset == 1&#39;b0))
-			lfsr[(WIDTH - 1):0] &lt;= 4&#39;b0;
+		if (reset == 1&#39;b0)
+			lfsr[WIDTH - 1:0] &lt;= 4&#39;b0;
 		else
-			lfsr[(WIDTH - 1):0] &lt;= next_lfsr[(WIDTH - 1):0];
+			lfsr[WIDTH - 1:0] &lt;= next_lfsr[WIDTH - 1:0];
 	always @(lfsr) begin
-		fb_lsb = ~|lfsr[(WIDTH - 2):0];
-		fb = (lfsr[(WIDTH - 1)] ^ fb_lsb);
-		for (N = WIDTH; (N &gt;= 0); N = (N - 1))
-			if ((TAP[N] == 1))
-				next_lfsr[N] = (lfsr[(N - 1)] ^ fb);
+		fb_lsb = ~|lfsr[WIDTH - 2:0];
+		fb = lfsr[WIDTH - 1] ^ fb_lsb;
+		for (N = WIDTH; N &gt;= 0; N = N - 1)
+			if (TAP[N] == 1)
+				next_lfsr[N] = lfsr[N - 1] ^ fb;
 			else
-				next_lfsr[N] = lfsr[(N - 1)];
+				next_lfsr[N] = lfsr[N - 1];
 		next_lfsr[0] = fb;
 	end
-	assign out[(WIDTH - 1):0] = {1&#39;b0, lfsr[(WIDTH - 1):1]};
+	assign out[WIDTH - 1:0] = {1&#39;b0, lfsr[WIDTH - 1:1]};
 endmodule
 
 </pre>

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_clk_div_45.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_clk_div_45.v</a>
-time_elapsed: 0.128s
-ram usage: 11372 KB
+time_elapsed: 0.040s
+ram usage: 11592 KB
 </pre>
 <pre class="log">
 
@@ -37,28 +37,28 @@ module clk_div_45 (
 	reg toggle1;
 	reg toggle2;
 	always @(posedge clk_in)
-		if ((enable == 1&#39;b0)) begin
+		if (enable == 1&#39;b0) begin
 			counter1 &lt;= 4&#39;b0;
 			toggle1 &lt;= 0;
 		end
-		else if ((((counter1 == 3) &amp;&amp; toggle2) || (~toggle1 &amp;&amp; (counter1 == 4)))) begin
+		else if (((counter1 == 3) &amp;&amp; toggle2) || (~toggle1 &amp;&amp; (counter1 == 4))) begin
 			counter1 &lt;= 4&#39;b0;
 			toggle1 &lt;= ~toggle1;
 		end
 		else
-			counter1 &lt;= (counter1 + 1);
+			counter1 &lt;= counter1 + 1;
 	always @(negedge clk_in)
-		if ((enable == 1&#39;b0)) begin
+		if (enable == 1&#39;b0) begin
 			counter2 &lt;= 4&#39;b0;
 			toggle2 &lt;= 0;
 		end
-		else if ((((counter2 == 3) &amp;&amp; ~toggle2) || (toggle2 &amp;&amp; (counter2 == 4)))) begin
+		else if (((counter2 == 3) &amp;&amp; ~toggle2) || (toggle2 &amp;&amp; (counter2 == 4))) begin
 			counter2 &lt;= 4&#39;b0;
 			toggle2 &lt;= ~toggle2;
 		end
 		else
-			counter2 &lt;= (counter2 + 1);
-	assign clk_out = (((counter1 &lt; 3) &amp;&amp; (counter2 &lt; 3)) &amp; enable);
+			counter2 &lt;= counter2 + 1;
+	assign clk_out = ((counter1 &lt; 3) &amp;&amp; (counter2 &lt; 3)) &amp; enable;
 endmodule
 
 </pre>

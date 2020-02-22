@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v</a>
-time_elapsed: 0.912s
-ram usage: 14156 KB
+time_elapsed: 0.696s
+ram usage: 14828 KB
 </pre>
 <pre class="log">
 
@@ -50,8 +50,8 @@ module bsg_source_sync_channel_control_slave (
 	input out_reset_i;
 	output reg out_clk_init_r_o;
 	output out_override_en_o;
-	output [((width_p + 1) - 1):0] out_override_valid_data_o;
-	input [((width_p + 1) - 1):0] in_snoop_valid_data_i;
+	output [(width_p + 1) - 1:0] out_override_valid_data_o;
+	input [(width_p + 1) - 1:0] in_snoop_valid_data_i;
 	input in_clk_i;
 	output in_trigger_mode_en_o;
 	output in_trigger_mode_alt_en_o;
@@ -61,14 +61,14 @@ module bsg_source_sync_channel_control_slave (
 	output out_channel_active_o;
 	wire [4:0] out_snoop_valid_data;
 	wire out_active_mismatch;
-	wire [((((width_p + 1) &gt;&gt; 1) &lt;&lt; 1) - 1):0] out_active_pattern = {((width_p + 1) &gt;&gt; 1) {2&#39;b10}};
+	wire [(((width_p + 1) &gt;&gt; 1) &lt;&lt; 1) - 1:0] out_active_pattern = {(width_p + 1) &gt;&gt; 1 {2&#39;b10}};
 	generate
-		if ((width_p &gt;= 4)) assign out_snoop_valid_data = in_snoop_valid_data_i[width_p-:5];
+		if (width_p &gt;= 4) assign out_snoop_valid_data = in_snoop_valid_data_i[width_p-:5];
 		else assign out_snoop_valid_data = {in_snoop_valid_data_i[width_p-:4], 1&#39;b0};
 	endgenerate
 	generate
-		if ((width_p &lt;= 4)) assign out_active_mismatch = 1&#39;b0;
-		else assign out_active_mismatch = |(out_active_pattern[(((width_p + 1) - 5) - 1):0] ^ in_snoop_valid_data_i[(((width_p + 1) - 5) - 1):0]);
+		if (width_p &lt;= 4) assign out_active_mismatch = 1&#39;b0;
+		else assign out_active_mismatch = |(out_active_pattern[((width_p + 1) - 5) - 1:0] ^ in_snoop_valid_data_i[((width_p + 1) - 5) - 1:0]);
 	endgenerate
 	reg [3:0] out_state_n;
 	reg [3:0] out_state_r;
@@ -79,7 +79,7 @@ module bsg_source_sync_channel_control_slave (
 			out_state_r &lt;= out_state_n;
 	always @(*) begin
 		out_state_n = out_state_r;
-		if ((out_state_r == sBegin))
+		if (out_state_r == sBegin)
 			casez (out_snoop_valid_data)
 				5&#39;b0_?111: out_state_n = sResetClock;
 				5&#39;b0_1?10: out_state_n = sResetClock;
@@ -96,13 +96,13 @@ module bsg_source_sync_channel_control_slave (
 			endcase
 	end
 	localparam counter_min_bits_lp = 24;
-	localparam counter_bits_lp = ((counter_min_bits_lp &gt; (((width_p + 1) * 2) + 1)) ? counter_min_bits_lp : (((width_p + 1) * 2) + 1));
-	reg [(counter_bits_lp - 1):0] out_ctr_r;
-	reg [(counter_bits_lp - 1):0] out_ctr_n;
+	localparam counter_bits_lp = (counter_min_bits_lp &gt; (((width_p + 1) * 2) + 1) ? counter_min_bits_lp : ((width_p + 1) * 2) + 1);
+	reg [counter_bits_lp - 1:0] out_ctr_r;
+	reg [counter_bits_lp - 1:0] out_ctr_n;
 	reg [7:0] out_rot_r;
 	reg [7:0] out_rot_n;
-	reg [((width_p + 1) - 1):0] out_override_valid_data_r;
-	reg [((width_p + 1) - 1):0] out_override_valid_data_n;
+	reg [(width_p + 1) - 1:0] out_override_valid_data_r;
+	reg [(width_p + 1) - 1:0] out_override_valid_data_n;
 	reg out_override_en_r;
 	reg out_override_en_n;
 	assign out_override_valid_data_o = out_override_valid_data_r;
@@ -110,17 +110,17 @@ module bsg_source_sync_channel_control_slave (
 	reg out_reset_r;
 	always @(posedge out_clk_i) begin
 		out_reset_r &lt;= out_reset_i;
-		out_clk_init_r_o &lt;= ((~out_reset_i &amp; (out_state_n == sResetClock)) &amp; (out_state_r == sBegin));
+		out_clk_init_r_o &lt;= (~out_reset_i &amp; (out_state_n == sResetClock)) &amp; (out_state_r == sBegin);
 		out_override_en_r &lt;= out_override_en_n;
-		if ((out_reset_i ^ out_reset_r)) begin
-			out_ctr_r &lt;= sv2v_cast_46569(0);
-			out_override_valid_data_r &lt;= {(width_p + 1) {1&#39;b0}};
+		if (out_reset_i ^ out_reset_r) begin
+			out_ctr_r &lt;= sv2v_cast_E3772(0);
+			out_override_valid_data_r &lt;= {width_p + 1 {1&#39;b0}};
 		end
 		else begin
 			out_ctr_r &lt;= out_ctr_n;
 			out_override_valid_data_r &lt;= out_override_valid_data_n;
 		end
-		if ((out_state_r == sBegin))
+		if (out_state_r == sBegin)
 			out_rot_r &lt;= 8&#39;b1010_0101;
 		else
 			out_rot_r &lt;= out_rot_n;
@@ -128,9 +128,9 @@ module bsg_source_sync_channel_control_slave (
 	always @(out_state_r)
 		$display(&#34;## Slave %m entering state %s with in_snoop_valid_data_i %b&#34;, out_state_r.name, in_snoop_valid_data_i);
 	initial ;
-	assign out_channel_active_o = (out_state_r == sActive);
-	wire out_loopback_en = ((out_state_r == sPhase3) || (out_state_r == sPhase4));
-	wire out_trigger_mode_alt_en = (out_state_r == sPhase4);
+	assign out_channel_active_o = out_state_r == sActive;
+	wire out_loopback_en = (out_state_r == sPhase3) || (out_state_r == sPhase4);
+	wire out_trigger_mode_alt_en = out_state_r == sPhase4;
 	bsg_launch_sync_sync #(.width_p(1)) out_to_core_lss(
 		.iclk_i(out_clk_i),
 		.iclk_reset_i(1&#39;b0),
@@ -148,8 +148,8 @@ module bsg_source_sync_channel_control_slave (
 		.iclk_data_o(),
 		.oclk_data_o({in_trigger_mode_en_o, in_trigger_mode_alt_en_o, AWC_ignore})
 	);
-	wire [(counter_bits_lp - 1):0] out_ctr_r_p1 = (out_ctr_r + 1&#39;b1);
-	wire [((((width_p + 1) &gt;&gt; 1) &lt;&lt; 1) - 1):0] inactive_pattern = {((width_p + 1) &gt;&gt; 1) {2&#39;b10}};
+	wire [counter_bits_lp - 1:0] out_ctr_r_p1 = out_ctr_r + 1&#39;b1;
+	wire [(((width_p + 1) &gt;&gt; 1) &lt;&lt; 1) - 1:0] inactive_pattern = {(width_p + 1) &gt;&gt; 1 {2&#39;b10}};
 	always @(*) begin
 		out_infinite_credits_o = 1&#39;b0;
 		out_ctr_n = out_ctr_r;
@@ -160,18 +160,18 @@ module bsg_source_sync_channel_control_slave (
 			sBegin: begin
 				out_ctr_n = out_ctr_r_p1;
 				out_override_en_n = 1&#39;b1;
-				if ((out_ctr_r[(counter_min_bits_lp - 1):lg_token_width_p] == 1&#39;b1))
-					out_override_valid_data_n = {1&#39;b1, 1&#39;b1, {(width_p - 1) {1&#39;b0}}};
+				if (out_ctr_r[counter_min_bits_lp - 1:lg_token_width_p] == 1&#39;b1)
+					out_override_valid_data_n = {1&#39;b1, 1&#39;b1, {width_p - 1 {1&#39;b0}}};
 			end
 			sPhase1: begin
 				out_rot_n = {out_rot_r[6:0], out_rot_r[7]};
 				out_override_en_n = 1&#39;b1;
-				out_override_valid_data_n = {(width_p + 1) {out_rot_r[7]}};
+				out_override_valid_data_n = {width_p + 1 {out_rot_r[7]}};
 			end
 			sPhase2: begin
 				out_ctr_n = out_ctr_r_p1;
 				out_override_en_n = 1&#39;b1;
-				out_override_valid_data_n = (out_ctr_r[0] ? out_ctr_r[(1 + (width_p + 1))+:(width_p + 1)] : out_ctr_r[1+:(width_p + 1)]);
+				out_override_valid_data_n = (out_ctr_r[0] ? out_ctr_r[1 + (width_p + 1)+:width_p + 1] : out_ctr_r[1+:width_p + 1]);
 			end
 			sPhase3: out_infinite_credits_o = 1&#39;b1;
 			sPhase4: out_infinite_credits_o = 1&#39;b1;
@@ -179,9 +179,9 @@ module bsg_source_sync_channel_control_slave (
 				;
 		endcase
 	end
-	function automatic [(((24 &gt; (((width_p + 1) * 2) + 1)) ? 24 : (((width_p + 1) * 2) + 1)) - 1):0] sv2v_cast_46569;
-		input reg [(((24 &gt; (((width_p + 1) * 2) + 1)) ? 24 : (((width_p + 1) * 2) + 1)) - 1):0] inp;
-		sv2v_cast_46569 = inp;
+	function automatic [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] sv2v_cast_E3772;
+		input reg [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] inp;
+		sv2v_cast_E3772 = inp;
 	endfunction
 endmodule
 

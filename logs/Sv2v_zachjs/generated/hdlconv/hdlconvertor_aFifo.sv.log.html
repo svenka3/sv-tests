@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/aFifo.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/aFifo.v</a>
-time_elapsed: 0.092s
-ram usage: 12256 KB
+time_elapsed: 0.216s
+ram usage: 12484 KB
 </pre>
 <pre class="log">
 
@@ -34,19 +34,19 @@ module aFifo (
 );
 	parameter DATA_WIDTH = 8;
 	parameter ADDRESS_WIDTH = 4;
-	parameter FIFO_DEPTH = (1 &lt;&lt; ADDRESS_WIDTH);
-	output reg [(DATA_WIDTH - 1):0] Data_out;
+	parameter FIFO_DEPTH = 1 &lt;&lt; ADDRESS_WIDTH;
+	output reg [DATA_WIDTH - 1:0] Data_out;
 	output reg Empty_out;
 	input wire ReadEn_in;
 	input wire RClk;
-	input wire [(DATA_WIDTH - 1):0] Data_in;
+	input wire [DATA_WIDTH - 1:0] Data_in;
 	output reg Full_out;
 	input wire WriteEn_in;
 	input wire WClk;
 	input wire Clear_in;
-	reg [(DATA_WIDTH - 1):0] Mem [(FIFO_DEPTH - 1):0];
-	wire [(ADDRESS_WIDTH - 1):0] pNextWordToWrite;
-	wire [(ADDRESS_WIDTH - 1):0] pNextWordToRead;
+	reg [DATA_WIDTH - 1:0] Mem [FIFO_DEPTH - 1:0];
+	wire [ADDRESS_WIDTH - 1:0] pNextWordToWrite;
+	wire [ADDRESS_WIDTH - 1:0] pNextWordToRead;
 	wire EqualAddresses;
 	wire NextWriteAddressEn;
 	wire NextReadAddressEn;
@@ -56,13 +56,13 @@ module aFifo (
 	wire PresetFull;
 	wire PresetEmpty;
 	always @(posedge RClk)
-		if ((ReadEn_in &amp; !Empty_out))
+		if (ReadEn_in &amp; !Empty_out)
 			Data_out &lt;= Mem[pNextWordToRead];
 	always @(posedge WClk)
-		if ((WriteEn_in &amp; !Full_out))
+		if (WriteEn_in &amp; !Full_out)
 			Mem[pNextWordToWrite] &lt;= Data_in;
-	assign NextWriteAddressEn = (WriteEn_in &amp; ~Full_out);
-	assign NextReadAddressEn = (ReadEn_in &amp; ~Empty_out);
+	assign NextWriteAddressEn = WriteEn_in &amp; ~Full_out;
+	assign NextReadAddressEn = ReadEn_in &amp; ~Empty_out;
 	GrayCounter GrayCounter_pWr(
 		.GrayCount_out(pNextWordToWrite),
 		.Enable_in(NextWriteAddressEn),
@@ -75,21 +75,21 @@ module aFifo (
 		.Clear_in(Clear_in),
 		.Clk(RClk)
 	);
-	assign EqualAddresses = (pNextWordToWrite == pNextWordToRead);
-	assign Set_Status = ((pNextWordToWrite[(ADDRESS_WIDTH - 2)] ~^ pNextWordToRead[(ADDRESS_WIDTH - 1)]) &amp; (pNextWordToWrite[(ADDRESS_WIDTH - 1)] ^ pNextWordToRead[(ADDRESS_WIDTH - 2)]));
-	assign Rst_Status = ((pNextWordToWrite[(ADDRESS_WIDTH - 2)] ^ pNextWordToRead[(ADDRESS_WIDTH - 1)]) &amp; (pNextWordToWrite[(ADDRESS_WIDTH - 1)] ~^ pNextWordToRead[(ADDRESS_WIDTH - 2)]));
+	assign EqualAddresses = pNextWordToWrite == pNextWordToRead;
+	assign Set_Status = (pNextWordToWrite[ADDRESS_WIDTH - 2] ~^ pNextWordToRead[ADDRESS_WIDTH - 1]) &amp; (pNextWordToWrite[ADDRESS_WIDTH - 1] ^ pNextWordToRead[ADDRESS_WIDTH - 2]);
+	assign Rst_Status = (pNextWordToWrite[ADDRESS_WIDTH - 2] ^ pNextWordToRead[ADDRESS_WIDTH - 1]) &amp; (pNextWordToWrite[ADDRESS_WIDTH - 1] ~^ pNextWordToRead[ADDRESS_WIDTH - 2]);
 	always @(Set_Status or Rst_Status or Clear_in)
-		if ((Rst_Status | Clear_in))
+		if (Rst_Status | Clear_in)
 			Status = 0;
 		else if (Set_Status)
 			Status = 1;
-	assign PresetFull = (Status &amp; EqualAddresses);
+	assign PresetFull = Status &amp; EqualAddresses;
 	always @(posedge WClk or posedge PresetFull)
 		if (PresetFull)
 			Full_out &lt;= 1;
 		else
 			Full_out &lt;= 0;
-	assign PresetEmpty = (~Status &amp; EqualAddresses);
+	assign PresetEmpty = ~Status &amp; EqualAddresses;
 	always @(posedge RClk or posedge PresetEmpty)
 		if (PresetEmpty)
 			Empty_out &lt;= 1;

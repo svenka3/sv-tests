@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_client.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_client.v</a>
-time_elapsed: 0.576s
-ram usage: 14892 KB
+time_elapsed: 0.468s
+ram usage: 14264 KB
 </pre>
 <pre class="log">
 
@@ -36,7 +36,7 @@ module bsg_tag_client (
 	input recv_clk_i;
 	input recv_reset_i;
 	output recv_new_r_o;
-	output [(width_p - 1):0] recv_data_r_o;
+	output [width_p - 1:0] recv_data_r_o;
 	localparam debug_level_lp = 1;
 	reg op_r;
 	reg op_r_r;
@@ -46,16 +46,16 @@ module bsg_tag_client (
 		param_r &lt;= bsg_tag_i.param;
 		op_r_r &lt;= op_r;
 	end
-	wire reset_op = (~op_r &amp; param_r);
+	wire reset_op = ~op_r &amp; param_r;
 	wire shift_op = op_r;
-	wire no_op = (~op_r &amp; ~param_r);
-	wire send_now = (op_r_r &amp; no_op);
-	wire [(width_p - 1):0] tag_data_r;
-	reg [(width_p - 1):0] recv_data_r;
-	wire [(width_p - 1):0] tag_data_n;
-	wire [(width_p - 1):0] tag_data_shift;
+	wire no_op = ~op_r &amp; ~param_r;
+	wire send_now = op_r_r &amp; no_op;
+	wire [width_p - 1:0] tag_data_r;
+	reg [width_p - 1:0] recv_data_r;
+	wire [width_p - 1:0] tag_data_n;
+	wire [width_p - 1:0] tag_data_shift;
 	wire tag_toggle_r;
-	assign tag_data_shift = {param_r, tag_data_r[(width_p - 1):1]};
+	assign tag_data_shift = {param_r, tag_data_r[width_p - 1:1]};
 	bsg_mux2_gatestack #(
 		.width_p(width_p),
 		.harden_p(harden_p)
@@ -74,10 +74,10 @@ module bsg_tag_client (
 		.data_o(tag_data_r)
 	);
 	generate
-		if ((debug_level_lp &gt; 1)) always @(negedge bsg_tag_i.clk) begin
-			if ((reset_op &amp; ~(~bsg_tag_i.op &amp; bsg_tag_i.param)))
+		if (debug_level_lp &gt; 1) always @(negedge bsg_tag_i.clk) begin
+			if (reset_op &amp; ~(~bsg_tag_i.op &amp; bsg_tag_i.param))
 				$display(&#34;## bsg_tag_client (send) RESET DEASSERTED (%m)&#34;);
-			if ((~reset_op &amp; (~bsg_tag_i.op &amp; bsg_tag_i.param)))
+			if (~reset_op &amp; (~bsg_tag_i.op &amp; bsg_tag_i.param))
 				$display(&#34;## bsg_tag_client (send) RESET ASSERTED   (%m)&#34;);
 			if (send_now)
 				$display(&#34;## bsg_tag_client (send) SENDING   %b (%m)&#34;, tag_data_r);
@@ -88,21 +88,21 @@ module bsg_tag_client (
 	bsg_launch_sync_sync #(.width_p(1)) blss(
 		.iclk_i(bsg_tag_i.clk),
 		.iclk_reset_i(reset_op),
-		.iclk_data_i((tag_toggle_r ^ send_now)),
+		.iclk_data_i(tag_toggle_r ^ send_now),
 		.iclk_data_o(tag_toggle_r),
 		.oclk_i(recv_clk_i),
 		.oclk_data_o(recv_toggle_n)
 	);
-	wire recv_new = ((recv_toggle_r ^ recv_toggle_n) &amp; bsg_tag_i.en);
+	wire recv_new = (recv_toggle_r ^ recv_toggle_n) &amp; bsg_tag_i.en;
 	reg recv_new_r;
 	reg recv_new_r_r;
 	always @(posedge recv_clk_i) begin
 		recv_toggle_r &lt;= recv_toggle_n;
 		recv_new_r &lt;= recv_new;
-		recv_new_r_r &lt;= (recv_new_r | recv_reset_i);
+		recv_new_r_r &lt;= recv_new_r | recv_reset_i;
 	end
 	generate
-		if ((default_p == 0)) begin : z
+		if (default_p == 0) begin : z
 			bsg_dff_reset_en #(
 				.width_p(width_p),
 				.harden_p(harden_p)
@@ -118,20 +118,20 @@ module bsg_tag_client (
 			always @(posedge recv_clk_i)
 				if (recv_reset_i) begin
 					recv_data_r &lt;= sv2v_cast_89401(default_p);
-					if ((debug_level_lp &gt; 1))
+					if (debug_level_lp &gt; 1)
 						$display(&#34;## bsg_tag_client (recv) RESET (%m)&#34;);
 				end
 				else if (recv_new_r) begin
 					recv_data_r &lt;= tag_data_r;
-					if ((debug_level_lp &gt; 1))
+					if (debug_level_lp &gt; 1)
 						$display(&#34;## bsg_tag_client (recv) RECEIVING %b (%m)&#34;, tag_data_r);
 				end
 		end
 	endgenerate
-	assign recv_new_r_o = (recv_new_r_r &amp; bsg_tag_i.en);
+	assign recv_new_r_o = recv_new_r_r &amp; bsg_tag_i.en;
 	assign recv_data_r_o = recv_data_r;
-	function automatic [(width_p - 1):0] sv2v_cast_89401;
-		input reg [(width_p - 1):0] inp;
+	function automatic [width_p - 1:0] sv2v_cast_89401;
+		input reg [width_p - 1:0] inp;
 		sv2v_cast_89401 = inp;
 	endfunction
 endmodule

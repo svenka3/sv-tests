@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/contrib/mult16.v.html" target="file-frame">third_party/tests/ivtest/contrib/mult16.v</a>
-time_elapsed: 0.148s
-ram usage: 12048 KB
+time_elapsed: 0.160s
+ram usage: 12408 KB
 </pre>
 <pre class="log">
 
@@ -56,11 +56,11 @@ module mult16 (
 			done &lt;= 0;
 		end
 		else if (~done)
-			if ((b != 0)) begin
+			if (b != 0) begin
 				if (b[0])
-					yout &lt;= (yout + a);
-				b &lt;= (b &gt;&gt; 1);
-				a &lt;= (a &lt;&lt; 1);
+					yout &lt;= yout + a;
+				b &lt;= b &gt;&gt; 1;
+				a &lt;= a &lt;&lt; 1;
 				$display(&#34;a = %h, b = %h, yout = %h&#34;, a, b, yout);
 			end
 			else
@@ -103,7 +103,7 @@ module mul16;
 		test_multiply($random, 0);
 		test_multiply(0, $random);
 		$display(&#34;Done.  %0d Errors&#34;, num_errors);
-		if ((num_errors == 0))
+		if (num_errors == 0)
 			$display(&#34;PASSED&#34;);
 		#(800)
 			;
@@ -124,11 +124,11 @@ module mul16;
 			@(negedge clk) start = 0;
 			@(posedge done)
 				;
-			expected_answer = (a * b);
+			expected_answer = a * b;
 			$display(&#34;%0d * %0d = %0h, Reality = %0h&#34;, a, b, y, expected_answer);
-			if ((y !== expected_answer)) begin
+			if (y !== expected_answer) begin
 				$display(&#34;   FAILED!&#34;);
-				num_errors = (num_errors + 1);
+				num_errors = num_errors + 1;
 			end
 		end
 	endtask

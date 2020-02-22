@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr685.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr685.v</a>
-time_elapsed: 0.052s
-ram usage: 13468 KB
+time_elapsed: 0.120s
+ram usage: 11248 KB
 </pre>
 <pre class="log">
 
@@ -30,7 +30,7 @@ module test (
 	input [15:0] in;
 	output [4:0] out;
 	reg [4:0] out;
-	(* ivl_synthesis_on *) always @(posedge clk) out = ((in &gt;= 16) ? 16 : in);
+	(* ivl_synthesis_on *) always @(posedge clk) out = (in &gt;= 16 ? 16 : in);
 endmodule
 module main;
 	reg clk;
@@ -44,16 +44,16 @@ module main;
 	(* ivl_synthesis_off *) initial begin
 		value = 0;
 		clk = 1;
-		for (value = 0; (value &lt; &#39;h15); value = (value + 1))
+		for (value = 0; value &lt; &#39;h15; value = value + 1)
 			begin
 				#(1) clk = 0;
 				#(1) clk = 1;
 				#(1)
-					if (((value &gt; 16) &amp;&amp; (sat !== 5&#39;d16))) begin
+					if ((value &gt; 16) &amp;&amp; (sat !== 5&#39;d16)) begin
 						$display(&#34;FAILED -- value=%d, sat=%b&#34;, value, sat);
 						$finish;
 					end
-				if (((value &lt;= 16) &amp;&amp; (value !== sat))) begin
+				if ((value &lt;= 16) &amp;&amp; (value !== sat)) begin
 					$display(&#34;FAILED -- value=%d, sat=%b&#34;, value, sat);
 					$finish;
 				end

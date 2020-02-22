@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v</a>
-time_elapsed: 0.160s
-ram usage: 11652 KB
+time_elapsed: 0.144s
+ram usage: 12012 KB
 </pre>
 <pre class="log">
 
@@ -35,19 +35,19 @@ module top;
 		in_part = {15 {2&#39;b01}};
 		#(1)
 			;
-		if ((pa_out_full !== 32&#39;b10101010101010101010101010101010)) begin
+		if (pa_out_full !== 32&#39;b10101010101010101010101010101010) begin
 			$display(&#34;Failed: pa_out_full, got %b&#34;, pa_out_full);
 			pass = 1&#39;b1;
 		end
-		if ((ca_out_full !== 32&#39;b10101010101010101010101010101010)) begin
+		if (ca_out_full !== 32&#39;b10101010101010101010101010101010) begin
 			$display(&#34;Failed: ca_out_full, got %b&#34;, ca_out_full);
 			pass = 1&#39;b1;
 		end
-		if ((pa_out_part !== 32&#39;bxx010101010101010101010101010101)) begin
+		if (pa_out_part !== 32&#39;bxx010101010101010101010101010101) begin
 			$display(&#34;Failed: pa_out_part, got %b&#34;, pa_out_part);
 			pass = 1&#39;b1;
 		end
-		if ((ca_out_part !== 32&#39;bzz010101010101010101010101010101)) begin
+		if (ca_out_part !== 32&#39;bzz010101010101010101010101010101) begin
 			$display(&#34;Failed: ca_out_part, got %b&#34;, ca_out_part);
 			pass = 1&#39;b1;
 		end
@@ -73,11 +73,11 @@ module param (
 	parameter width = 32;
 	output reg [31:0] pa_out;
 	output wire [31:0] ca_out;
-	input [(width - 1):0] in;
+	input [width - 1:0] in;
 	wire z_pad = 1&#39;bz;
 	wire x_pad = 1&#39;bx;
-	assign ca_out = {{(32 - width) {z_pad}}, in};
-	always @(*) pa_out = {{(32 - width) {x_pad}}, in};
+	assign ca_out = {{32 - width {z_pad}}, in};
+	always @(*) pa_out = {{32 - width {x_pad}}, in};
 endmodule
 
 </pre>

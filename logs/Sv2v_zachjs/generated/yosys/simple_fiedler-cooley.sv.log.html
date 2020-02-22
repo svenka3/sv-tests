@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/fiedler-cooley.v.html" target="file-frame">third_party/tools/yosys/tests/simple/fiedler-cooley.v</a>
-time_elapsed: 0.060s
-ram usage: 11736 KB
+time_elapsed: 0.108s
+ram usage: 9596 KB
 </pre>
 <pre class="log">
 
@@ -43,8 +43,8 @@ module up3down5 (
 	reg [9:0] cnt_dn;
 	reg [8:0] count_nxt;
 	always @(posedge clock) begin
-		cnt_dn = (count_out - 3&#39;b 101);
-		cnt_up = (count_out + 2&#39;b 11);
+		cnt_dn = count_out - 3&#39;b 101;
+		cnt_up = count_out + 2&#39;b 11;
 		case ({up, down})
 			2&#39;b 00: count_nxt = data_in;
 			2&#39;b 01: count_nxt = cnt_dn;
@@ -53,8 +53,8 @@ module up3down5 (
 			default: count_nxt = 9&#39;bX;
 		endcase
 		parity_out &lt;= ^count_nxt;
-		carry_out &lt;= (up &amp; cnt_up[9]);
-		borrow_out &lt;= (down &amp; cnt_dn[9]);
+		carry_out &lt;= up &amp; cnt_up[9];
+		borrow_out &lt;= down &amp; cnt_dn[9];
 		count_out &lt;= count_nxt;
 	end
 endmodule

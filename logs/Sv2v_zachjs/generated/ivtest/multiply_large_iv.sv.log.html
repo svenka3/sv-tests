@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/multiply_large.v.html" target="file-frame">third_party/tests/ivtest/ivltests/multiply_large.v</a>
-time_elapsed: 0.316s
-ram usage: 12348 KB
+time_elapsed: 0.300s
+ram usage: 12832 KB
 </pre>
 <pre class="log">
 
@@ -27,29 +27,29 @@ module multiplier (
 	sum
 );
 	parameter N = 1;
-	input [(N - 1):0] a;
-	input [(N - 1):0] b;
-	output [(N - 1):0] sum;
-	reg [((N - 1) * 2):0] tmp;
+	input [N - 1:0] a;
+	input [N - 1:0] b;
+	output [N - 1:0] sum;
+	reg [(N - 1) * 2:0] tmp;
 	integer i;
 	always @(a or b) begin
 		tmp = 0;
-		for (i = 0; (i &lt; N); i = (i + 1))
+		for (i = 0; i &lt; N; i = i + 1)
 			if (b[i])
-				tmp = (tmp + ({{N {1&#39;b0}}, a} &lt;&lt; i));
+				tmp = tmp + ({{N {1&#39;b0}}, a} &lt;&lt; i);
 	end
 	assign sum = tmp[N:0];
 endmodule
 module multiply_large;
-	reg [0:(65 - 1)] a;
-	reg [0:(65 - 1)] b;
-	wire [0:(65 - 1)] c;
-	wire [0:(65 - 1)] s;
-	reg [0:(65 - 1)] d;
+	reg [0:64] a;
+	reg [0:64] b;
+	wire [0:64] c;
+	wire [0:64] s;
+	reg [0:64] d;
 	integer i;
 	integer j;
 	reg rc;
-	assign c = (a * b);
+	assign c = a * b;
 	multiplier #(.N(65)) mpy(
 		a,
 		b,
@@ -58,106 +58,106 @@ module multiply_large;
 	initial begin
 		rc = 0;
 		a = {{64 {1&#39;b0}}, 1&#39;b1};
-		for (i = 0; (i &lt; 65); i = (i + 1))
+		for (i = 0; i &lt; 65; i = i + 1)
 			begin
 				b = {{64 {1&#39;b0}}, 1&#39;b1};
-				for (j = 0; (j &lt; 65); j = (j + 1))
+				for (j = 0; j &lt; 65; j = j + 1)
 					begin
 						#(1)
 							;
-						d = (a * b);
-						if (((c != d) || (c != s))) begin
+						d = a * b;
+						if ((c != d) || (c != s)) begin
 							$display(&#34;a=%h b=%h c=%h d=%h s=%h&#34;, a, b, c, d, s);
 							rc = 1;
 						end
-						b = {b[1:(65 - 1)], 1&#39;b0};
+						b = {b[1:64], 1&#39;b0};
 					end
-				a = {a[1:(65 - 1)], 1&#39;b0};
+				a = {a[1:64], 1&#39;b0};
 			end
 		a = {{64 {1&#39;b1}}, 1&#39;b0};
-		for (i = 0; (i &lt; 65); i = (i + 1))
+		for (i = 0; i &lt; 65; i = i + 1)
 			begin
 				b = {{64 {1&#39;b1}}, 1&#39;b0};
-				for (j = 0; (j &lt; 65); j = (j + 1))
+				for (j = 0; j &lt; 65; j = j + 1)
 					begin
 						#(1)
 							;
-						d = (a * b);
-						if (((c != d) || (c != s))) begin
+						d = a * b;
+						if ((c != d) || (c != s)) begin
 							$display(&#34;a=%h b=%h c=%h d=%h s=%h&#34;, a, b, c, d, s);
 							rc = 1;
 						end
-						b = {b[1:(65 - 1)], 1&#39;b1};
+						b = {b[1:64], 1&#39;b1};
 					end
-				a = {a[1:(65 - 1)], 1&#39;b1};
+				a = {a[1:64], 1&#39;b1};
 			end
 		a = {{63 {1&#39;b0}}, 2&#39;b11};
-		for (i = 0; (i &lt; 65); i = (i + 1))
+		for (i = 0; i &lt; 65; i = i + 1)
 			begin
 				b = {{63 {1&#39;b0}}, 2&#39;b11};
-				for (j = 0; (j &lt; 65); j = (j + 1))
+				for (j = 0; j &lt; 65; j = j + 1)
 					begin
 						#(1)
 							;
-						d = (a * b);
-						if (((c != d) || (c != s))) begin
+						d = a * b;
+						if ((c != d) || (c != s)) begin
 							$display(&#34;a=%h b=%h c=%h d=%h s=%h&#34;, a, b, c, d, s);
 							rc = 1;
 						end
-						b = {b[1:(65 - 1)], 1&#39;b0};
+						b = {b[1:64], 1&#39;b0};
 					end
-				a = {a[1:(65 - 1)], 1&#39;b0};
+				a = {a[1:64], 1&#39;b0};
 			end
 		a = {{63 {1&#39;b1}}, 2&#39;b00};
-		for (i = 0; (i &lt; 65); i = (i + 1))
+		for (i = 0; i &lt; 65; i = i + 1)
 			begin
 				b = {{63 {1&#39;b1}}, 2&#39;b00};
-				for (j = 0; (j &lt; 65); j = (j + 1))
+				for (j = 0; j &lt; 65; j = j + 1)
 					begin
 						#(1)
 							;
-						d = (a * b);
-						if (((c != d) || (c != s))) begin
+						d = a * b;
+						if ((c != d) || (c != s)) begin
 							$display(&#34;a=%h b=%h c=%h d=%h s=%h&#34;, a, b, c, d, s);
 							rc = 1;
 						end
-						b = {b[1:(65 - 1)], 1&#39;b1};
+						b = {b[1:64], 1&#39;b1};
 					end
-				a = {a[1:(65 - 1)], 1&#39;b1};
+				a = {a[1:64], 1&#39;b1};
 			end
 		a = {{62 {1&#39;b0}}, 3&#39;b101};
-		for (i = 0; (i &lt; 65); i = (i + 1))
+		for (i = 0; i &lt; 65; i = i + 1)
 			begin
 				b = {{62 {1&#39;b0}}, 3&#39;b101};
-				for (j = 0; (j &lt; 65); j = (j + 1))
+				for (j = 0; j &lt; 65; j = j + 1)
 					begin
 						#(1)
 							;
-						d = (a * b);
-						if (((c != d) || (c != s))) begin
+						d = a * b;
+						if ((c != d) || (c != s)) begin
 							$display(&#34;a=%h b=%h c=%h d=%h s=%h&#34;, a, b, c, d, s);
 							rc = 1;
 						end
-						b = {b[1:(65 - 1)], 1&#39;b0};
+						b = {b[1:64], 1&#39;b0};
 					end
-				a = {a[1:(65 - 1)], 1&#39;b0};
+				a = {a[1:64], 1&#39;b0};
 			end
 		a = {{62 {1&#39;b1}}, 3&#39;b010};
-		for (i = 0; (i &lt; 65); i = (i + 1))
+		for (i = 0; i &lt; 65; i = i + 1)
 			begin
 				b = {{62 {1&#39;b1}}, 3&#39;b010};
-				for (j = 0; (j &lt; 65); j = (j + 1))
+				for (j = 0; j &lt; 65; j = j + 1)
 					begin
 						#(1)
 							;
-						d = (a * b);
-						if (((c != d) || (c != s))) begin
+						d = a * b;
+						if ((c != d) || (c != s)) begin
 							$display(&#34;a=%h b=%h c=%h d=%h s=%h&#34;, a, b, c, d, s);
 							rc = 1;
 						end
-						b = {b[1:(65 - 1)], 1&#39;b1};
+						b = {b[1:64], 1&#39;b1};
 					end
-				a = {a[1:(65 - 1)], 1&#39;b1};
+				a = {a[1:64], 1&#39;b1};
 			end
 		if (rc)
 			$display(&#34;FAILED&#34;);

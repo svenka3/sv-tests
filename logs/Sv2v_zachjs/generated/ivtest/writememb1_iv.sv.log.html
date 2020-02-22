@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/writememb1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/writememb1.v</a>
-time_elapsed: 0.060s
-ram usage: 11644 KB
+time_elapsed: 0.028s
+ram usage: 15468 KB
 </pre>
 <pre class="log">
 
@@ -26,28 +26,28 @@ module main;
 	reg error;
 	reg [3:0] count;
 	initial begin
-		for (count = 0; (count &lt;= 7); count = (count + 1))
-			array[count] = (1 &lt;&lt; count);
+		for (count = 0; count &lt;= 7; count = count + 1)
+			array[count] = 1 &lt;&lt; count;
 		array[2] = 8&#39;bx0z0x0z0;
 		$writememb(&#34;work/writememb1.dat&#34;, array, 6, 1);
-		for (count = 0; (count &lt;= 7); count = (count + 1))
+		for (count = 0; count &lt;= 7; count = count + 1)
 			array[count] = &#39;bx;
 		error = 0;
 		$readmemb(&#34;work/writememb1.dat&#34;, array);
-		for (count = 0; (count &lt;= 3); count = (count + 1))
-			if ((array[count] !== (1 &lt;&lt; (6 - count)))) begin
+		for (count = 0; count &lt;= 3; count = count + 1)
+			if (array[count] !== (1 &lt;&lt; (6 - count))) begin
 				error = 1;
-				$display(&#34;FAILED - array[count] == %h, s/b %h&#34;, array[count], (1 &lt;&lt; count));
+				$display(&#34;FAILED - array[count] == %h, s/b %h&#34;, array[count], 1 &lt;&lt; count);
 			end
-		if ((array[4] != 8&#39;bx0z0x0z0)) begin
+		if (array[4] != 8&#39;bx0z0x0z0) begin
 			error = 1;
 			$display(&#34;FAILED - array[count] == %h, s/b %h&#34;, array[4], 8&#39;bx0z0x0z0);
 		end
-		if ((array[5] != 8&#39;b00000010)) begin
+		if (array[5] != 8&#39;b00000010) begin
 			error = 1;
-			$display(&#34;FAILED - array[count] == %h, s/b %h&#34;, array[5], (1 &lt;&lt; 5));
+			$display(&#34;FAILED - array[count] == %h, s/b %h&#34;, array[5], 1 &lt;&lt; 5);
 		end
-		if ((error == 0))
+		if (error == 0)
 			$display(&#34;PASSED\n&#34;);
 		$finish;
 	end

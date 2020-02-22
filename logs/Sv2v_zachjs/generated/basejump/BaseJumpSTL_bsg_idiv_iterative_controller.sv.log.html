@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_idiv_iterative_controller.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_idiv_iterative_controller.v</a>
-time_elapsed: 0.808s
-ram usage: 16720 KB
+time_elapsed: 0.488s
+ram usage: 14184 KB
 </pre>
 <pre class="log">
 
@@ -120,8 +120,8 @@ module bsg_idiv_iterative_controller (
 	always @(posedge clk_i) begin
 		add_neg_last &lt;= adder_result_is_neg_i;
 		if (neg_ld) begin
-			q_neg &lt;= ((opA_is_neg_i ^ opC_is_neg_i) &amp; signed_div_r_i);
-			r_neg &lt;= (opC_is_neg_i &amp; signed_div_r_i);
+			q_neg &lt;= (opA_is_neg_i ^ opC_is_neg_i) &amp; signed_div_r_i;
+			r_neg &lt;= opC_is_neg_i &amp; signed_div_r_i;
 		end
 	end
 	always @(posedge clk_i)
@@ -166,7 +166,7 @@ module bsg_idiv_iterative_controller (
 				opC_ld_o = 1&#39;b0;
 				neg_ld = 1&#39;b1;
 				adder_cin_o = 1&#39;b1;
-				opA_ld_o = (opA_is_neg_i &amp; signed_div_r_i);
+				opA_ld_o = opA_is_neg_i &amp; signed_div_r_i;
 			end
 			NEG1: begin
 				next_state = SHIFT;
@@ -175,7 +175,7 @@ module bsg_idiv_iterative_controller (
 				opB_ld_o = 1&#39;b0;
 				opC_sel_o = 3&#39;b010;
 				adder_cin_o = 1&#39;b1;
-				opC_ld_o = (opC_is_neg_i &amp; signed_div_r_i);
+				opC_ld_o = opC_is_neg_i &amp; signed_div_r_i;
 			end
 			SHIFT: begin
 				next_state = CALC0;
@@ -259,8 +259,8 @@ module bsg_idiv_iterative_controller (
 			end
 		endcase
 	end
-	assign ready_o = (state == WAIT);
-	assign v_o = (state == DONE);
+	assign ready_o = state == WAIT;
+	assign v_o = state == DONE;
 endmodule
 
 </pre>

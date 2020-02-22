@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_locking_arb_fixed.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_locking_arb_fixed.v</a>
-time_elapsed: 0.376s
-ram usage: 13684 KB
+time_elapsed: 0.348s
+ram usage: 13768 KB
 </pre>
 <pre class="log">
 
@@ -33,14 +33,14 @@ module bsg_locking_arb_fixed (
 	input clk_i;
 	input ready_i;
 	input unlock_i;
-	input [(inputs_p - 1):0] reqs_i;
-	output wire [(inputs_p - 1):0] grants_o;
-	wire [(inputs_p - 1):0] not_req_mask_r;
-	wire [(inputs_p - 1):0] req_mask_r;
+	input [inputs_p - 1:0] reqs_i;
+	output wire [inputs_p - 1:0] grants_o;
+	wire [inputs_p - 1:0] not_req_mask_r;
+	wire [inputs_p - 1:0] req_mask_r;
 	bsg_dff_reset_en #(.width_p(inputs_p)) req_words_reg(
 		.clk_i(clk_i),
 		.reset_i(unlock_i),
-		.en_i((&amp;req_mask_r &amp; |grants_o)),
+		.en_i(&amp;req_mask_r &amp; |grants_o),
 		.data_i(~grants_o),
 		.data_o(not_req_mask_r)
 	);
@@ -50,7 +50,7 @@ module bsg_locking_arb_fixed (
 		.lo_to_hi_p(lo_to_hi_p)
 	) fixed_arb(
 		.ready_i(ready_i),
-		.reqs_i((reqs_i &amp; req_mask_r)),
+		.reqs_i(reqs_i &amp; req_mask_r),
 		.grants_o(grants_o)
 	);
 endmodule

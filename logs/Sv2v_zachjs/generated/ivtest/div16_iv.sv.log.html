@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html" target="file-frame">third_party/tests/ivtest/contrib/div16.v</a>
-time_elapsed: 0.256s
-ram usage: 12348 KB
+time_elapsed: 0.176s
+ram usage: 12792 KB
 </pre>
 <pre class="log">
 
@@ -35,18 +35,18 @@ module div16 (
 	input clk;
 	input resetb;
 	input start;
-	input [(N - 1):0] a;
-	input [(N - 1):0] b;
-	output [(N - 1):0] q;
-	output [(N - 1):0] r;
+	input [N - 1:0] a;
+	input [N - 1:0] b;
+	output [N - 1:0] q;
+	output [N - 1:0] r;
 	output done;
-	reg [(N - 1):0] q;
+	reg [N - 1:0] q;
 	reg done;
-	reg [(N - 1):0] power;
-	reg [(N - 1):0] accum;
-	reg [((2 * N) - 1):0] bpower;
+	reg [N - 1:0] power;
+	reg [N - 1:0] accum;
+	reg [(2 * N) - 1:0] bpower;
 	assign r = accum;
-	wire [((2 * N) - 1):0] accum_minus_bpower = (accum - bpower);
+	wire [(2 * N) - 1:0] accum_minus_bpower = accum - bpower;
 	always @(posedge clk or negedge resetb)
 		if (~resetb) begin
 			q &lt;= 0;
@@ -58,17 +58,17 @@ module div16 (
 		else if (start) begin
 			q &lt;= 0;
 			accum &lt;= a;
-			power[(N - 1)] &lt;= 1&#39;b1;
-			bpower &lt;= (b &lt;&lt; (N - 1));
+			power[N - 1] &lt;= 1&#39;b1;
+			bpower &lt;= b &lt;&lt; (N - 1);
 			done &lt;= 0;
 		end
-		else if ((power != 0)) begin
-			if (~accum_minus_bpower[((2 * N) - 1)]) begin
-				q &lt;= (q | power);
+		else if (power != 0) begin
+			if (~accum_minus_bpower[(2 * N) - 1]) begin
+				q &lt;= q | power;
 				accum &lt;= accum_minus_bpower;
 			end
-			power &lt;= (power &gt;&gt; 1);
-			bpower &lt;= (bpower &gt;&gt; 1);
+			power &lt;= power &gt;&gt; 1;
+			bpower &lt;= bpower &gt;&gt; 1;
 		end
 		else
 			done &lt;= 1;
@@ -99,9 +99,9 @@ module test_div16;
 		#(200)
 			;
 		$display(&#34;16-bit Dividend, 8-bit divisor&#34;);
-		repeat (25) do_divide($random, ($random &amp; 255));
+		repeat (25) do_divide($random, $random &amp; 255);
 		$display(&#34;\n16-bit Dividend, 12-bit divisor&#34;);
-		repeat (25) do_divide($random, ($random &amp; 4095));
+		repeat (25) do_divide($random, $random &amp; 4095);
 		$display(&#34;\n16-bit Dividend, 16-bit divisor&#34;);
 		repeat (25) do_divide($random, $random);
 		$display(&#34;\nSpecial Cases:&#34;);
@@ -109,7 +109,7 @@ module test_div16;
 		do_divide(312, 1);
 		do_divide(0, 42);
 		do_divide(312, 0);
-		if ((num_errors === 0))
+		if (num_errors === 0)
 			$display(&#34;\n\nPASSED&#34;);
 		else
 			$display(&#34;\n\nFAILED - There were %0d Errors.&#34;, num_errors);
@@ -131,15 +131,15 @@ module test_div16;
 				;
 			#(1)
 				;
-			$display(&#34;Circuit: %0d / %0d = %0d, rem = %0d\t\t......... Reality: %0d, rem = %0d&#34;, arga, argb, q, r, (a / b), (a % b));
-			if ((b !== 0)) begin
-				if ((q !== (a / b))) begin
+			$display(&#34;Circuit: %0d / %0d = %0d, rem = %0d\t\t......... Reality: %0d, rem = %0d&#34;, arga, argb, q, r, a / b, a % b);
+			if (b !== 0) begin
+				if (q !== (a / b)) begin
 					$display(&#34;   Error!  Unexpected Quotient\n\n&#34;);
-					num_errors = (num_errors + 1);
+					num_errors = num_errors + 1;
 				end
-				if ((r !== (a % b))) begin
+				if (r !== (a % b)) begin
 					$display(&#34;   Error!  Unexpected Remainder\n\n&#34;);
-					num_errors = (num_errors + 1);
+					num_errors = num_errors + 1;
 				end
 			end
 		end

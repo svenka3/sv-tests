@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_pseudo_large.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_pseudo_large.v</a>
-time_elapsed: 0.592s
-ram usage: 14592 KB
+time_elapsed: 0.484s
+ram usage: 15828 KB
 </pre>
 <pre class="log">
 
@@ -37,15 +37,15 @@ module bsg_fifo_1r1w_pseudo_large (
 	parameter verbose_p = 0;
 	input clk_i;
 	input reset_i;
-	input [(width_p - 1):0] data_i;
+	input [width_p - 1:0] data_i;
 	input v_i;
 	output ready_o;
 	output v_o;
-	output [(width_p - 1):0] data_o;
+	output [width_p - 1:0] data_o;
 	input yumi_i;
 	wire big_full_lo;
 	wire big_empty_lo;
-	wire [(width_p - 1):0] big_data_lo;
+	wire [width_p - 1:0] big_data_lo;
 	reg big_enq;
 	reg big_deq;
 	reg big_deq_r;
@@ -54,7 +54,7 @@ module bsg_fifo_1r1w_pseudo_large (
 	reg little_valid;
 	reg big_valid;
 	generate
-		if (early_yumi_p) assign little_will_have_space = (little_ready_lo | yumi_i);
+		if (early_yumi_p) assign little_will_have_space = little_ready_lo | yumi_i;
 		else assign little_will_have_space = little_ready_lo;
 	endgenerate
 	always @(posedge clk_i)
@@ -64,36 +64,36 @@ module bsg_fifo_1r1w_pseudo_large (
 			big_deq_r &lt;= big_deq;
 	wire ready_o_int = ~big_full_lo;
 	assign ready_o = ready_o_int;
-	wire bypass_mode = (v_i &amp; ~big_enq);
-	wire [31:0] num_elements_debug = ((big1p.num_elements_debug + big_deq_r) + little2p.num_elements_debug);
+	wire bypass_mode = v_i &amp; ~big_enq;
+	wire [31:0] num_elements_debug = (big1p.num_elements_debug + big_deq_r) + little2p.num_elements_debug;
 	reg big_enq_r;
 	always @(posedge clk_i)
 		if (reset_i)
 			big_enq_r &lt;= 0;
 		else
-			big_enq_r &lt;= (big_enq_r | big_enq);
+			big_enq_r &lt;= big_enq_r | big_enq;
 	always @(negedge clk_i)
-		if (((verbose_p &amp; (reset_i === 0)) &amp; (~big_enq_r &amp; big_enq)))
+		if ((verbose_p &amp; (reset_i === 0)) &amp; (~big_enq_r &amp; big_enq))
 			$display(&#34;## %L: overflowing into big fifo for the first time (%m)&#34;);
 	always @(*) begin
 		if (big_deq_r) begin
 			little_valid = 1&#39;b1;
 			big_enq = v_i;
-			big_deq = ((~big_empty_lo &amp; ~big_enq) &amp; ~v_o);
+			big_deq = (~big_empty_lo &amp; ~big_enq) &amp; ~v_o;
 		end
 		else if (big_empty_lo) begin
-			little_valid = (v_i &amp; little_will_have_space);
-			big_enq = (v_i &amp; ~little_will_have_space);
+			little_valid = v_i &amp; little_will_have_space;
+			big_enq = v_i &amp; ~little_will_have_space;
 			big_deq = 1&#39;b0;
 		end
 		else begin
 			little_valid = 1&#39;b0;
-			big_enq = (v_i &amp; ~big_full_lo);
-			big_deq = (~big_enq &amp; little_will_have_space);
+			big_enq = v_i &amp; ~big_full_lo;
+			big_deq = ~big_enq &amp; little_will_have_space;
 		end
-		big_valid = (big_enq | big_deq);
+		big_valid = big_enq | big_deq;
 	end
-	wire [(width_p - 1):0] little_data = (big_deq_r ? big_data_lo : data_i);
+	wire [width_p - 1:0] little_data = (big_deq_r ? big_data_lo : data_i);
 	bsg_fifo_1rw_large #(
 		.width_p(width_p),
 		.els_p(els_p),

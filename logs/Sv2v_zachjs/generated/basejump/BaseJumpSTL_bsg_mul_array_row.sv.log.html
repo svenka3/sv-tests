@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_mul_array_row.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_mul_array_row.v</a>
-time_elapsed: 0.452s
-ram usage: 15880 KB
+time_elapsed: 0.324s
+ram usage: 14820 KB
 </pre>
 <pre class="log">
 
@@ -42,40 +42,40 @@ module bsg_mul_array_row (
 	input clk_i;
 	input rst_i;
 	input v_i;
-	input [(width_p - 1):0] a_i;
-	input [(width_p - 1):0] b_i;
-	input [(width_p - 1):0] s_i;
+	input [width_p - 1:0] a_i;
+	input [width_p - 1:0] b_i;
+	input [width_p - 1:0] s_i;
 	input c_i;
 	input [row_idx_p:0] prod_accum_i;
-	output reg [(width_p - 1):0] a_o;
-	output reg [(width_p - 1):0] b_o;
-	output reg [(width_p - 1):0] s_o;
+	output reg [width_p - 1:0] a_o;
+	output reg [width_p - 1:0] b_o;
+	output reg [width_p - 1:0] s_o;
 	output reg c_o;
-	output reg [(row_idx_p + 1):0] prod_accum_o;
-	wire [(width_p - 1):0] pp;
-	wire [(width_p - 1):0] ps;
+	output reg [row_idx_p + 1:0] prod_accum_o;
+	wire [width_p - 1:0] pp;
+	wire [width_p - 1:0] ps;
 	wire pc;
 	bsg_and #(.width_p(width_p)) and0(
 		.a_i(a_i),
-		.b_i({width_p {b_i[(row_idx_p + 1)]}}),
+		.b_i({width_p {b_i[row_idx_p + 1]}}),
 		.o(pp)
 	);
 	bsg_adder_ripple_carry #(.width_p(width_p)) adder0(
 		.a_i(pp),
-		.b_i({c_i, s_i[(width_p - 1):1]}),
+		.b_i({c_i, s_i[width_p - 1:1]}),
 		.s_o(ps),
 		.c_o(pc)
 	);
-	reg [(width_p - 1):0] a_r;
-	reg [(width_p - 1):0] b_r;
-	reg [(width_p - 1):0] s_r;
+	reg [width_p - 1:0] a_r;
+	reg [width_p - 1:0] b_r;
+	reg [width_p - 1:0] s_r;
 	reg c_r;
-	reg [(row_idx_p + 1):0] prod_accum_r;
-	reg [(width_p - 1):0] a_n;
-	reg [(width_p - 1):0] b_n;
-	reg [(width_p - 1):0] s_n;
+	reg [row_idx_p + 1:0] prod_accum_r;
+	reg [width_p - 1:0] a_n;
+	reg [width_p - 1:0] b_n;
+	reg [width_p - 1:0] s_n;
 	reg c_n;
-	reg [(row_idx_p + 1):0] prod_accum_n;
+	reg [row_idx_p + 1:0] prod_accum_n;
 	generate
 		if (pipeline_p) begin
 			always @(posedge clk_i)

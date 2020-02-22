@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/partsel.v.html" target="file-frame">third_party/tools/yosys/tests/simple/partsel.v</a>
-time_elapsed: 0.180s
-ram usage: 12808 KB
+time_elapsed: 0.316s
+ram usage: 11132 KB
 </pre>
 <pre class="log">
 
@@ -31,9 +31,9 @@ module partsel_test001 (
 	input [31:0] data;
 	output [3:0] slice_up;
 	output [3:0] slice_down;
-	wire [5:0] offset = (idx &lt;&lt; 2);
+	wire [5:0] offset = idx &lt;&lt; 2;
 	assign slice_up = data[offset+:4];
-	assign slice_down = data[(offset + 3)-:4];
+	assign slice_down = data[offset + 3-:4];
 endmodule
 module partsel_test002 (
 	clk,
@@ -124,57 +124,57 @@ module partsel_test002 (
 	output reg [7:0] r1;
 	output reg [0:7] r2;
 	assign x1 = a;
-	assign x2 = (a + b);
+	assign x2 = a + b;
 	assign x3 = b;
 	assign x4 = a;
-	assign x5 = (a + b);
+	assign x5 = a + b;
 	assign x6 = b;
 	assign y1 = a[4+:3];
-	assign y2 = (a[4+:3] + b[4+:3]);
+	assign y2 = a[4+:3] + b[4+:3];
 	assign y3 = b[4+:3];
 	assign y4 = a[4+:3];
-	assign y5 = (a[4+:3] + b[4+:3]);
+	assign y5 = a[4+:3] + b[4+:3];
 	assign y6 = b[4+:3];
 	assign z1 = a[4-:3];
-	assign z2 = (a[4-:3] + b[4-:3]);
+	assign z2 = a[4-:3] + b[4-:3];
 	assign z3 = b[4-:3];
 	assign z4 = a[4-:3];
-	assign z5 = (a[4-:3] + b[4-:3]);
+	assign z5 = a[4-:3] + b[4-:3];
 	assign z6 = b[4-:3];
 	assign w1 = a[6:3];
-	assign w2 = (a[6:3] + b[3:6]);
+	assign w2 = a[6:3] + b[3:6];
 	assign w3 = b[3:6];
 	assign w4 = a[6:3];
-	assign w5 = (a[6:3] + b[3:6]);
+	assign w5 = a[6:3] + b[3:6];
 	assign w6 = b[3:6];
 	assign p1 = a[s];
 	assign p2 = b[s];
-	assign p3 = a[(s + 2)+:2];
-	assign p4 = b[(s + 2)+:2];
-	assign p5 = a[(s + 2)-:2];
-	assign p6 = b[(s + 2)-:2];
+	assign p3 = a[s + 2+:2];
+	assign p4 = b[s + 2+:2];
+	assign p5 = a[s + 2-:2];
+	assign p6 = b[s + 2-:2];
 	assign q1 = a[s];
 	assign q2 = b[s];
-	assign q3 = a[(s + 2)+:2];
-	assign q4 = b[(s + 2)+:2];
-	assign q5 = a[(s + 2)-:2];
-	assign q6 = b[(s + 2)-:2];
+	assign q3 = a[s + 2+:2];
+	assign q4 = b[s + 2+:2];
+	assign q5 = a[s + 2-:2];
+	assign q6 = b[s + 2-:2];
 	always @(posedge clk)
 		if (rst)
-			{r1, r2} = (16&#39;h1337 ^ {a, b});
+			{r1, r2} = 16&#39;h1337 ^ {a, b};
 		else
 			case (s)
 				0: begin
-					r1[3:0] &lt;= (r2[0:3] ^ x1);
-					r2[4:7] &lt;= (r1[7:4] ^ x4);
+					r1[3:0] &lt;= r2[0:3] ^ x1;
+					r2[4:7] &lt;= r1[7:4] ^ x4;
 				end
 				1: begin
-					r1[2+:3] &lt;= (r2[5-:3] + x1);
-					r2[3+:3] &lt;= (r1[6-:3] + x4);
+					r1[2+:3] &lt;= r2[5-:3] + x1;
+					r2[3+:3] &lt;= r1[6-:3] + x4;
 				end
 				2: begin
-					r1[6-:3] &lt;= (r2[3+:3] - x1);
-					r2[7-:3] &lt;= (r1[4+:3] - x4);
+					r1[6-:3] &lt;= r2[3+:3] - x1;
+					r2[7-:3] &lt;= r1[4+:3] - x4;
 				end
 				3: begin
 					r1 &lt;= r2;

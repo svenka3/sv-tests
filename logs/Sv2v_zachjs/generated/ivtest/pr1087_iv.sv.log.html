@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v</a>
-time_elapsed: 0.124s
-ram usage: 9904 KB
+time_elapsed: 0.144s
+ram usage: 11596 KB
 </pre>
 <pre class="log">
 
@@ -29,13 +29,13 @@ module COUNTER (
 	parameter CBITS = 3;
 	input CLOCK_I;
 	input nARST_I;
-	output [(CBITS - 1):0] COUNT_O;
-	reg [(CBITS - 1):0] COUNT_O;
+	output [CBITS - 1:0] COUNT_O;
+	reg [CBITS - 1:0] COUNT_O;
 	always @(posedge CLOCK_I or negedge nARST_I)
-		if ((nARST_I == 1&#39;b0))
+		if (nARST_I == 1&#39;b0)
 			COUNT_O &lt;= {CBITS {1&#39;b0}};
 		else
-			COUNT_O &lt;= (COUNT_O + 1);
+			COUNT_O &lt;= COUNT_O + 1;
 endmodule
 module MULTIPLE_COUNTERS (
 	CLOCK_I,
@@ -46,8 +46,8 @@ module MULTIPLE_COUNTERS (
 	parameter CBITS = 4;
 	input CLOCK_I;
 	input nARST_I;
-	output [((M * CBITS) - 1):0] COUNT_O;
-	COUNTER #(.CBITS(CBITS)) INST_COUNTER [(M - 1):0] (
+	output [(M * CBITS) - 1:0] COUNT_O;
+	COUNTER #(.CBITS(CBITS)) INST_COUNTER [M - 1:0] (
 		CLOCK_I,
 		nARST_I,
 		COUNT_O
@@ -59,7 +59,7 @@ module TEST_COUNTER;
 	reg CLOCK;
 	reg nARST;
 	wire CTRL_I;
-	wire [((M * CBITS) - 1):0] COUNTS;
+	wire [(M * CBITS) - 1:0] COUNTS;
 	MULTIPLE_COUNTERS #(
 		.M(M),
 		.CBITS(CBITS)

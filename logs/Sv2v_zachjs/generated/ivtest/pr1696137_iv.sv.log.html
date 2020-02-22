@@ -16,19 +16,19 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1696137.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1696137.v</a>
-time_elapsed: 0.076s
-ram usage: 11304 KB
+time_elapsed: 0.052s
+ram usage: 12360 KB
 </pre>
 <pre class="log">
 
 module ExplodedArrays1;
-	reg [7:0] data [0:(25600 - 1)];
+	reg [7:0] data [0:25599];
 	integer idx;
 	initial begin
-		for (idx = 0; (idx &lt; 25600); idx = (idx + 1))
+		for (idx = 0; idx &lt; 25600; idx = idx + 1)
 			data[idx] = idx[7:0];
-		for (idx = 0; (idx &lt; 256); idx = (idx + 1))
-			if ((data[idx] !== idx)) begin
+		for (idx = 0; idx &lt; 256; idx = idx + 1)
+			if (data[idx] !== idx) begin
 				$display(&#34;FAILED -- data[%d] = %d (%h)&#34;, idx, data[idx], data[idx]);
 				$finish;
 			end

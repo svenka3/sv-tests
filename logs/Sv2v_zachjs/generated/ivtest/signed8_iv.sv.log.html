@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/signed8.v.html" target="file-frame">third_party/tests/ivtest/ivltests/signed8.v</a>
-time_elapsed: 0.088s
-ram usage: 9668 KB
+time_elapsed: 0.060s
+ram usage: 10532 KB
 </pre>
 <pre class="log">
 
@@ -32,7 +32,7 @@ module mult58s (
 	wire signed [12:0] pt;
 	wire signed [5:0] ta;
 	assign ta = a;
-	assign pt = (b * ta);
+	assign pt = b * ta;
 	assign p = pt;
 endmodule
 module test_mult;
@@ -46,12 +46,12 @@ module test_mult;
 		p
 	);
 	initial begin
-		for (a = 0; (a &lt; (1 &lt;&lt; 5)); a = (a + 1))
-			for (b = -127; (b &lt; 128); b = (b + 1))
+		for (a = 0; a &lt; (1 &lt;&lt; 5); a = a + 1)
+			for (b = -127; b &lt; 128; b = b + 1)
 				begin
-					prod = (a * b);
+					prod = a * b;
 					#(1)
-						if ((p !== prod[15:0])) begin
+						if (p !== prod[15:0]) begin
 							$display(&#34;Error Miscompare with a=%h, b=%h expect = %0d (%h) acutal = %h&#34;, a[4:0], b[7:0], prod, prod[15:0], p);
 							$finish;
 						end

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v</a>
-time_elapsed: 0.204s
-ram usage: 10352 KB
+time_elapsed: 0.116s
+ram usage: 10072 KB
 </pre>
 <pre class="log">
 
@@ -29,8 +29,8 @@ module test;
 		reg [31:0] d;
 		a = 5&#39;h14;
 		b = $signed(a);
-		c = _$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)));
-		d = $signed(_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2))));
+		c = _$Finv5(_$Fsub8(_$Fadd8(32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1)), 32&#39;h69), 32&#39;h50 * 32&#39;h2));
+		d = $signed(_$Finv5(_$Fsub8(_$Fadd8(32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1)), 32&#39;h69), 32&#39;h50 * 32&#39;h2)));
 		$write(&#34;a is %0h; b is %0h; c is %0h; d is %0h\n&#34;, a, b, c, d);
 	end
 	function [4:0] _$Finv5;
@@ -43,31 +43,31 @@ module test;
 		input reg r;
 		reg [7:0] l;
 		reg [7:0] r;
-		_$Fsub8 = (l - r);
+		_$Fsub8 = l - r;
 	endfunction
 	function [7:0] _$Fadd8;
 		input reg l;
 		input reg r;
 		reg [7:0] l;
 		reg [7:0] r;
-		_$Fadd8 = (l + r);
+		_$Fadd8 = l + r;
 	endfunction
 	function [31:0] _$Fsll32;
 		input reg l;
 		input reg r;
 		reg [31:0] l;
 		integer r;
-		if ((r &lt; 0)) begin
-			if (((r + 32) &lt;= 0))
+		if (r &lt; 0) begin
+			if ((r + 32) &lt;= 0)
 				_$Fsll32 = 32&#39;b0;
 			else
-				_$Fsll32 = (l &gt;&gt; -r);
+				_$Fsll32 = l &gt;&gt; -r;
 		end
-		else if ((r &gt; 0)) begin
-			if ((r &gt;= 32))
+		else if (r &gt; 0) begin
+			if (r &gt;= 32)
 				_$Fsll32 = 32&#39;b0;
 			else
-				_$Fsll32 = (l &lt;&lt; r);
+				_$Fsll32 = l &lt;&lt; r;
 		end
 		else
 			_$Fsll32 = l;
@@ -77,17 +77,17 @@ module test;
 		input reg r;
 		reg [31:0] l;
 		integer r;
-		if ((r &lt; 0)) begin
-			if (((r + 32) &lt;= 0))
+		if (r &lt; 0) begin
+			if ((r + 32) &lt;= 0)
 				_$Fsrl32 = 32&#39;b0;
 			else
-				_$Fsrl32 = (l &lt;&lt; -r);
+				_$Fsrl32 = l &lt;&lt; -r;
 		end
-		else if ((r &gt; 0)) begin
-			if ((r &gt;= 32))
+		else if (r &gt; 0) begin
+			if (r &gt;= 32)
 				_$Fsrl32 = 32&#39;b0;
 			else
-				_$Fsrl32 = (l &gt;&gt; r);
+				_$Fsrl32 = l &gt;&gt; r;
 		end
 		else
 			_$Fsrl32 = l;

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_idiv_iterative.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_idiv_iterative.v</a>
-time_elapsed: 0.732s
-ram usage: 15688 KB
+time_elapsed: 0.484s
+ram usage: 14188 KB
 </pre>
 <pre class="log">
 
@@ -58,8 +58,8 @@ module bsg_idiv_iterative (
 	wire signed_div_r;
 	wire [31:0] dividend_r;
 	wire [31:0] divisor_r;
-	wire divisor_msb = (signed_div_r &amp; divisor_r[31]);
-	wire dividend_msb = (signed_div_r &amp; dividend_r[31]);
+	wire divisor_msb = signed_div_r &amp; divisor_r[31];
+	wire dividend_msb = signed_div_r &amp; dividend_r[31];
 	wire latch_inputs;
 	bsg_dff_en #(.width_p(1)) req_reg(
 		.data_i(signed_div_i),
@@ -79,7 +79,7 @@ module bsg_idiv_iterative (
 		.en_i(latch_inputs),
 		.clk_i(clk_i)
 	);
-	wire zero_divisor_li = ~|divisor_r;
+	wire zero_divisor_li = ~(|divisor_r);
 	wire opA_sel;
 	wire [32:0] opA_mux;
 	wire [32:0] add_out;

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/task_func.v.html" target="file-frame">third_party/tools/yosys/tests/simple/task_func.v</a>
-time_elapsed: 0.124s
-ram usage: 12564 KB
+time_elapsed: 0.252s
+ram usage: 12352 KB
 </pre>
 <pre class="log">
 
@@ -43,7 +43,7 @@ module task_func_test01 (
 		input reg [3:0] s1;
 		input reg [3:0] s2;
 		input reg [3:0] s3;
-		sum_shift = ((s1 + (s2 &lt;&lt; 2)) + (s3 &lt;&lt; 4));
+		sum_shift = (s1 + (s2 &lt;&lt; 2)) + (s3 &lt;&lt; 4);
 	endfunction
 	task reset_w;
 		
@@ -52,12 +52,12 @@ module task_func_test01 (
 	task add_to;
 		output [7:0] out;
 		input reg [7:0] in;
-		out = (out + in);
+		out = out + in;
 	endtask
 	always @(posedge clk) begin
 		x = sum_shift(a, b, c);
 		y = sum_shift(a[7:4], b[5:2], c[3:0]);
-		z = (sum_shift(a[0], b[5:4], (c &gt;&gt; 5)) ^ sum_shift(1, 2, 3));
+		z = sum_shift(a[0], b[5:4], c &gt;&gt; 5) ^ sum_shift(1, 2, 3);
 		reset_w;
 		add_to(w, x);
 		add_to(w, y);
@@ -86,7 +86,7 @@ module task_func_test02 (
 		input reg [3:0] s1;
 		input reg [3:0] s2;
 		input reg [3:0] s3;
-		sum_shift = ((s1 + (s2 &lt;&lt; 2)) + (s3 &lt;&lt; 4));
+		sum_shift = (s1 + (s2 &lt;&lt; 2)) + (s3 &lt;&lt; 4);
 	endfunction
 	task reset_w;
 		
@@ -95,12 +95,12 @@ module task_func_test02 (
 	task add_to;
 		output [7:0] out;
 		input reg [7:0] in;
-		out = (out + in);
+		out = out + in;
 	endtask
 	always @(posedge clk) begin
 		x = sum_shift(a, b, c);
 		y = sum_shift(a[7:4], b[5:2], c[3:0]);
-		z = (sum_shift(a[0], b[5:4], (c &gt;&gt; 5)) ^ sum_shift(1, 2, 3));
+		z = sum_shift(a[0], b[5:4], c &gt;&gt; 5) ^ sum_shift(1, 2, 3);
 		reset_w;
 		add_to(w, x);
 		add_to(w, y);
@@ -121,8 +121,8 @@ module task_func_test03 (
 		input reg [7:0] b;
 		begin : TEST
 			integer i;
-			for (i = 0; (i &lt;= 7); i = (i + 1))
-				test[i] = (a[i] &amp; b[i]);
+			for (i = 0; i &lt;= 7; i = i + 1)
+				test[i] = a[i] &amp; b[i];
 		end
 	endfunction
 endmodule
@@ -143,23 +143,23 @@ module task_func_test04 (
 	function [7:0] test1;
 		input reg [7:0] i;
 		parameter p = 42;
-		test1 = (i + p);
+		test1 = i + p;
 	endfunction
 	function [7:0] test2;
 		input reg [7:0] i;
-		parameter p2 = (p + 42);
-		test2 = (i + p2);
+		parameter p2 = p + 42;
+		test2 = i + p2;
 	endfunction
 	function [7:0] test3;
 		input reg [7:0] i;
-		test3 = (i + p);
+		test3 = i + p;
 	endfunction
 	function [7:0] test4;
 		input reg [7:0] i;
-		parameter px = (p + 13);
-		parameter p3 = (px - 37);
-		parameter p4 = (p3 ^ px);
-		test4 = (i + p4);
+		parameter px = p + 13;
+		parameter p3 = px - 37;
+		parameter p4 = p3 ^ px;
+		test4 = i + p4;
 	endfunction
 	assign out1 = test1(in);
 	assign out2 = test2(in);

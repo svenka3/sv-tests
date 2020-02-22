@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_mul.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_mul.v</a>
-time_elapsed: 0.984s
-ram usage: 15980 KB
+time_elapsed: 1.124s
+ram usage: 18500 KB
 </pre>
 <pre class="log">
 
@@ -43,11 +43,11 @@ module bsg_fpu_mul (
 	input reset_i;
 	input en_i;
 	input v_i;
-	input [(e_p + m_p):0] a_i;
-	input [(e_p + m_p):0] b_i;
+	input [e_p + m_p:0] a_i;
+	input [e_p + m_p:0] b_i;
 	output wire ready_o;
 	output wire v_o;
-	output reg [(e_p + m_p):0] z_o;
+	output reg [e_p + m_p:0] z_o;
 	output reg unimplemented_o;
 	output reg invalid_o;
 	output reg overflow_o;
@@ -57,9 +57,9 @@ module bsg_fpu_mul (
 	reg v_2_r;
 	reg v_3_r;
 	wire stall;
-	assign stall = (v_3_r &amp; ~yumi_i);
+	assign stall = v_3_r &amp; ~yumi_i;
 	assign v_o = v_3_r;
-	assign ready_o = (~stall &amp; en_i);
+	assign ready_o = ~stall &amp; en_i;
 	wire a_zero;
 	wire a_nan;
 	wire a_sig_nan;
@@ -76,10 +76,10 @@ module bsg_fpu_mul (
 	wire man_b_zero;
 	wire b_denormal;
 	wire sign_b;
-	wire [(e_p - 1):0] exp_a;
-	wire [(e_p - 1):0] exp_b;
-	wire [(m_p - 1):0] man_a;
-	wire [(m_p - 1):0] man_b;
+	wire [e_p - 1:0] exp_a;
+	wire [e_p - 1:0] exp_b;
+	wire [m_p - 1:0] man_a;
+	wire [m_p - 1:0] man_b;
 	bsg_fpu_preprocess #(
 		.e_p(e_p),
 		.m_p(m_p)
@@ -113,17 +113,17 @@ module bsg_fpu_mul (
 		.man_o(man_b)
 	);
 	wire final_sign;
-	assign final_sign = (sign_a ^ sign_b);
+	assign final_sign = sign_a ^ sign_b;
 	wire [e_p:0] exp_sum;
-	assign exp_sum = (({1&#39;b0, exp_a} + {1&#39;b0, exp_b}) + 9&#39;b1);
-	wire [(e_p - 1):0] exp_sum_unbiased;
-	assign exp_sum_unbiased = {~exp_sum[(e_p - 1)], exp_sum[(e_p - 2):0]};
+	assign exp_sum = ({1&#39;b0, exp_a} + {1&#39;b0, exp_b}) + 9&#39;b1;
+	wire [e_p - 1:0] exp_sum_unbiased;
+	assign exp_sum_unbiased = {~exp_sum[e_p - 1], exp_sum[e_p - 2:0]};
 	wire [m_p:0] man_a_norm;
 	wire [m_p:0] man_b_norm;
 	assign man_a_norm = {1&#39;b1, man_a};
 	assign man_b_norm = {1&#39;b1, man_b};
 	reg final_sign_1_r;
-	reg [(e_p - 1):0] exp_sum_unbiased_1_r;
+	reg [e_p - 1:0] exp_sum_unbiased_1_r;
 	reg a_sig_nan_1_r;
 	reg b_sig_nan_1_r;
 	reg a_nan_1_r;
@@ -140,7 +140,7 @@ module bsg_fpu_mul (
 	always @(posedge clk_i)
 		if (reset_i)
 			v_1_r &lt;= 1&#39;b0;
-		else if ((~stall &amp; en_i)) begin
+		else if (~stall &amp; en_i) begin
 			v_1_r &lt;= v_i;
 			if (v_i) begin
 				final_sign_1_r &lt;= final_sign;
@@ -160,14 +160,14 @@ module bsg_fpu_mul (
 				man_b_norm_r &lt;= man_b_norm;
 			end
 		end
-	wire [(((m_p + 1) * 2) - 1):0] man_prod;
-	bsg_mul_synth #(.width_p((m_p + 1))) mul_synth(
+	wire [((m_p + 1) * 2) - 1:0] man_prod;
+	bsg_mul_synth #(.width_p(m_p + 1)) mul_synth(
 		.a_i(man_a_norm_r),
 		.b_i(man_b_norm_r),
 		.o(man_prod)
 	);
-	reg [(((m_p + 1) * 2) - 1):0] man_prod_2_r;
-	reg [(e_p - 1):0] exp_sum_unbiased_2_r;
+	reg [((m_p + 1) * 2) - 1:0] man_prod_2_r;
+	reg [e_p - 1:0] exp_sum_unbiased_2_r;
 	reg a_sig_nan_2_r;
 	reg b_sig_nan_2_r;
 	reg a_nan_2_r;
@@ -183,7 +183,7 @@ module bsg_fpu_mul (
 	always @(posedge clk_i)
 		if (reset_i)
 			v_2_r &lt;= 1&#39;b0;
-		else if ((~stall &amp; en_i)) begin
+		else if (~stall &amp; en_i) begin
 			v_2_r &lt;= v_1_r;
 			if (v_1_r) begin
 				man_prod_2_r &lt;= man_prod;
@@ -205,18 +205,18 @@ module bsg_fpu_mul (
 	wire sticky;
 	wire round;
 	wire guard;
-	assign sticky = |man_prod_2_r[(m_p - 2):0];
-	assign round = man_prod_2_r[(m_p - 1)];
+	assign sticky = |man_prod_2_r[m_p - 2:0];
+	assign round = man_prod_2_r[m_p - 1];
 	assign guard = man_prod_2_r[m_p];
 	wire round_up;
-	assign round_up = (sticky ? (man_prod_2_r[((2 * (m_p + 1)) - 1)] ? guard : round) : (guard &amp; (round | (man_prod_2_r[((2 * (m_p + 1)) - 1)] &amp; man_prod_2_r[(m_p + 1)]))));
+	assign round_up = (sticky ? (man_prod_2_r[(2 * (m_p + 1)) - 1] ? guard : round) : guard &amp; (round | (man_prod_2_r[(2 * (m_p + 1)) - 1] &amp; man_prod_2_r[m_p + 1])));
 	wire [e_p:0] final_exp;
-	assign final_exp = ({1&#39;b0, exp_sum_unbiased_2_r} + man_prod_2_r[((2 * (m_p + 1)) - 1)]);
-	wire [(m_p - 1):0] shifted_mantissa;
-	assign shifted_mantissa = (man_prod_2_r[((2 * (m_p + 1)) - 1)] ? man_prod_2_r[(m_p + 1)+:m_p] : man_prod_2_r[m_p+:m_p]);
-	wire [((e_p + m_p) - 1):0] pre_roundup;
-	assign pre_roundup = {final_exp[(e_p - 1):0], shifted_mantissa};
-	reg [((e_p + m_p) - 1):0] pre_roundup_3_r;
+	assign final_exp = {1&#39;b0, exp_sum_unbiased_2_r} + man_prod_2_r[(2 * (m_p + 1)) - 1];
+	wire [m_p - 1:0] shifted_mantissa;
+	assign shifted_mantissa = (man_prod_2_r[(2 * (m_p + 1)) - 1] ? man_prod_2_r[m_p + 1+:m_p] : man_prod_2_r[m_p+:m_p]);
+	wire [(e_p + m_p) - 1:0] pre_roundup;
+	assign pre_roundup = {final_exp[e_p - 1:0], shifted_mantissa};
+	reg [(e_p + m_p) - 1:0] pre_roundup_3_r;
 	reg round_up_3_r;
 	reg final_sign_3_r;
 	reg a_sig_nan_3_r;
@@ -234,7 +234,7 @@ module bsg_fpu_mul (
 	always @(posedge clk_i)
 		if (reset_i)
 			v_3_r &lt;= 1&#39;b0;
-		else if ((~stall &amp; en_i)) begin
+		else if (~stall &amp; en_i) begin
 			v_3_r &lt;= v_2_r;
 			if (v_2_r) begin
 				pre_roundup_3_r &lt;= pre_roundup;
@@ -255,26 +255,26 @@ module bsg_fpu_mul (
 			end
 		end
 	wire carry_into_exp;
-	assign carry_into_exp = &amp;{round_up_3_r, pre_roundup_3_r[(m_p - 1):0]};
+	assign carry_into_exp = &amp;{round_up_3_r, pre_roundup_3_r[m_p - 1:0]};
 	wire round_overflow;
-	wire [((e_p + m_p) - 1):0] rounded;
-	assign {round_overflow, rounded} = (pre_roundup_3_r + round_up_3_r);
+	wire [(e_p + m_p) - 1:0] rounded;
+	assign {round_overflow, rounded} = pre_roundup_3_r + round_up_3_r;
 	reg sgn;
 	always @(*) begin
 		sgn = final_sign_3_r;
-		if ((a_sig_nan_3_r | b_sig_nan_3_r)) begin
+		if (a_sig_nan_3_r | b_sig_nan_3_r) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b1;
 			overflow_o = 1&#39;b0;
 			underflow_o = 1&#39;b0;
-			z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b0, {(m_p - 1) {1&#39;b1}}};
+			z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b0, {m_p - 1 {1&#39;b1}}};
 		end
-		else if ((a_nan_3_r | b_nan_3_r)) begin
+		else if (a_nan_3_r | b_nan_3_r) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b0;
 			underflow_o = 1&#39;b0;
-			z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {(m_p - 1) {1&#39;b0}}};
+			z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {m_p - 1 {1&#39;b0}}};
 		end
 		else if (a_infty_3_r) begin
 			if (b_zero_3_r) begin
@@ -282,7 +282,7 @@ module bsg_fpu_mul (
 				invalid_o = 1&#39;b1;
 				overflow_o = 1&#39;b0;
 				underflow_o = 1&#39;b0;
-				z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {(m_p - 1) {1&#39;b0}}};
+				z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {m_p - 1 {1&#39;b0}}};
 			end
 			else begin
 				unimplemented_o = 1&#39;b0;
@@ -298,7 +298,7 @@ module bsg_fpu_mul (
 				invalid_o = 1&#39;b1;
 				overflow_o = 1&#39;b0;
 				underflow_o = 1&#39;b0;
-				z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {(m_p - 1) {1&#39;b0}}};
+				z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {m_p - 1 {1&#39;b0}}};
 			end
 			else begin
 				unimplemented_o = 1&#39;b0;
@@ -308,54 +308,54 @@ module bsg_fpu_mul (
 				z_o = {sgn, {e_p {1&#39;b1}}, {m_p {1&#39;b0}}};
 			end
 		end
-		else if ((a_zero_3_r | b_zero_3_r)) begin
+		else if (a_zero_3_r | b_zero_3_r) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b0;
 			underflow_o = 1&#39;b0;
-			z_o = {sgn, {(e_p + m_p) {1&#39;b0}}};
+			z_o = {sgn, {e_p + m_p {1&#39;b0}}};
 		end
-		else if ((a_denormal_3_r &amp; b_denormal_3_r)) begin
+		else if (a_denormal_3_r &amp; b_denormal_3_r) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b0;
 			underflow_o = 1&#39;b1;
-			z_o = {sgn, {(e_p + m_p) {1&#39;b0}}};
+			z_o = {sgn, {e_p + m_p {1&#39;b0}}};
 		end
-		else if ((a_denormal_3_r | b_denormal_3_r)) begin
+		else if (a_denormal_3_r | b_denormal_3_r) begin
 			unimplemented_o = 1&#39;b1;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b0;
 			underflow_o = 1&#39;b0;
-			z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {(m_p - 1) {1&#39;b0}}};
+			z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {m_p - 1 {1&#39;b0}}};
 		end
-		else if ((exp_sum_3_r[(e_p - 1)+:2] == 2&#39;b0)) begin
+		else if (exp_sum_3_r[e_p - 1+:2] == 2&#39;b0) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b0;
 			underflow_o = 1&#39;b1;
-			z_o = {sgn, {(e_p + m_p) {1&#39;b0}}};
+			z_o = {sgn, {e_p + m_p {1&#39;b0}}};
 		end
-		else if (((exp_sum_3_r[(e_p - 1)+:2] == 2&#39;b11) | final_exp_3_r[e_p])) begin
+		else if ((exp_sum_3_r[e_p - 1+:2] == 2&#39;b11) | final_exp_3_r[e_p]) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b1;
 			underflow_o = 1&#39;b0;
 			z_o = {sgn, {e_p {1&#39;b1}}, {m_p {1&#39;b0}}};
 		end
-		else if (((pre_roundup_3_r[m_p+:e_p] == {e_p {1&#39;b1}}) &amp; (pre_roundup_3_r[m_p] | carry_into_exp))) begin
+		else if ((pre_roundup_3_r[m_p+:e_p] == {e_p {1&#39;b1}}) &amp; (pre_roundup_3_r[m_p] | carry_into_exp)) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b1;
 			underflow_o = 1&#39;b0;
 			z_o = {sgn, {e_p {1&#39;b1}}, {m_p {1&#39;b0}}};
 		end
-		else if (((pre_roundup_3_r[m_p+:e_p] == {e_p {1&#39;b0}}) &amp; ~carry_into_exp)) begin
+		else if ((pre_roundup_3_r[m_p+:e_p] == {e_p {1&#39;b0}}) &amp; ~carry_into_exp) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b0;
 			underflow_o = 1&#39;b1;
-			z_o = {sgn, {(e_p + m_p) {1&#39;b0}}};
+			z_o = {sgn, {e_p + m_p {1&#39;b0}}};
 		end
 		else begin
 			unimplemented_o = 1&#39;b0;

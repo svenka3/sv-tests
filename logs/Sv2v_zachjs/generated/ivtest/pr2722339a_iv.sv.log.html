@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2722339a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2722339a.v</a>
-time_elapsed: 0.132s
-ram usage: 10100 KB
+time_elapsed: 0.096s
+ram usage: 11724 KB
 </pre>
 <pre class="log">
 
@@ -31,32 +31,32 @@ module top;
 	wire [15:0] rss;
 	reg signed [15:0] res;
 	integer i;
-	assign ruu = (a / b);
-	assign rsu = ($signed(a) / b);
-	assign rus = (a / $signed(b));
-	assign rss = ($signed(a) / $signed(b));
+	assign ruu = a / b;
+	assign rsu = $signed(a) / b;
+	assign rus = a / $signed(b);
+	assign rss = $signed(a) / $signed(b);
 	initial begin
 		pass = 1&#39;b1;
-		for (i = 0; (i &lt; 1000); i = (i + 1))
+		for (i = 0; i &lt; 1000; i = i + 1)
 			begin
 				a = $random;
 				b = $random;
 				#(1)
 					;
-				if ((ruu !== (a / b))) begin
-					$display(&#34;FAILED: u/u (%b/%b) gave %b, expected %b&#34;, a, b, ruu, (a / b));
+				if (ruu !== (a / b)) begin
+					$display(&#34;FAILED: u/u (%b/%b) gave %b, expected %b&#34;, a, b, ruu, a / b);
 					pass = 1&#39;b0;
 				end
-				if ((rsu !== (a / b))) begin
-					$display(&#34;FAILED: s/u (%b/%b) gave %b, expected %b&#34;, a, b, rsu, (a / b));
+				if (rsu !== (a / b)) begin
+					$display(&#34;FAILED: s/u (%b/%b) gave %b, expected %b&#34;, a, b, rsu, a / b);
 					pass = 1&#39;b0;
 				end
-				if ((rus !== (a / b))) begin
-					$display(&#34;FAILED: u/s (%b/%b) gave %b, expected %b&#34;, a, b, rus, (a / b));
+				if (rus !== (a / b)) begin
+					$display(&#34;FAILED: u/s (%b/%b) gave %b, expected %b&#34;, a, b, rus, a / b);
 					pass = 1&#39;b0;
 				end
-				res = ($signed(a) / $signed(b));
-				if ((rss !== res)) begin
+				res = $signed(a) / $signed(b);
+				if (rss !== res) begin
 					$display(&#34;FAILED: s/s (%b/%b) gave %b, expected %b&#34;, a, b, rss, res);
 					pass = 1&#39;b0;
 				end

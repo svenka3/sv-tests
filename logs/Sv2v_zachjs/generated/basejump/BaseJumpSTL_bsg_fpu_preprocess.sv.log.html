@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_preprocess.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_preprocess.v</a>
-time_elapsed: 0.352s
-ram usage: 15712 KB
+time_elapsed: 0.336s
+ram usage: 15468 KB
 </pre>
 <pre class="log">
 
@@ -36,7 +36,7 @@ module bsg_fpu_preprocess (
 );
 	parameter e_p = &#34;inv&#34;;
 	parameter m_p = &#34;inv&#34;;
-	input [(e_p + m_p):0] a_i;
+	input [e_p + m_p:0] a_i;
 	output wire zero_o;
 	output wire nan_o;
 	output wire sig_nan_o;
@@ -45,24 +45,24 @@ module bsg_fpu_preprocess (
 	output wire man_zero_o;
 	output wire denormal_o;
 	output wire sign_o;
-	output wire [(e_p - 1):0] exp_o;
-	output wire [(m_p - 1):0] man_o;
-	assign man_o = a_i[(m_p - 1):0];
+	output wire [e_p - 1:0] exp_o;
+	output wire [m_p - 1:0] man_o;
+	assign man_o = a_i[m_p - 1:0];
 	assign exp_o = a_i[m_p+:e_p];
-	assign sign_o = a_i[(e_p + m_p)];
+	assign sign_o = a_i[e_p + m_p];
 	wire mantissa_zero;
 	wire exp_zero;
 	wire exp_ones;
-	assign mantissa_zero = (man_o == {m_p {1&#39;b0}});
-	assign exp_zero = (exp_o == {e_p {1&#39;b0}});
-	assign exp_ones = (exp_o == {e_p {1&#39;b1}});
-	assign zero_o = (exp_zero &amp; mantissa_zero);
-	assign nan_o = (exp_ones &amp; ~mantissa_zero);
-	assign sig_nan_o = (nan_o &amp; ~man_o[(m_p - 1)]);
-	assign infty_o = (exp_ones &amp; mantissa_zero);
+	assign mantissa_zero = man_o == {m_p {1&#39;b0}};
+	assign exp_zero = exp_o == {e_p {1&#39;b0}};
+	assign exp_ones = exp_o == {e_p {1&#39;b1}};
+	assign zero_o = exp_zero &amp; mantissa_zero;
+	assign nan_o = exp_ones &amp; ~mantissa_zero;
+	assign sig_nan_o = nan_o &amp; ~man_o[m_p - 1];
+	assign infty_o = exp_ones &amp; mantissa_zero;
 	assign exp_zero_o = exp_zero;
 	assign man_zero_o = mantissa_zero;
-	assign denormal_o = (exp_zero &amp; ~mantissa_zero);
+	assign denormal_o = exp_zero &amp; ~mantissa_zero;
 endmodule
 
 </pre>

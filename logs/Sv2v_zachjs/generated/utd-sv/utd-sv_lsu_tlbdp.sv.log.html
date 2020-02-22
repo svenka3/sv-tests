@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/lsu_tlbdp.v.html" target="file-frame">third_party/tests/utd-sv/lsu_tlbdp.v</a>
-time_elapsed: 0.268s
-ram usage: 12592 KB
+time_elapsed: 0.312s
+ram usage: 14152 KB
 </pre>
 <pre class="log">
 
@@ -91,8 +91,8 @@ module lsu_tlbdp (
 	assign tlb_tte_data_mx_sel1 = tlb_rd_tte_data_21_16_sel_buf;
 	assign tlb_tte_data_mx_sel0 = tlb_rd_tte_data_15_13_sel_buf;
 	assign pg_sz_b0 = tlb_tte_data_mx_sel0;
-	assign pg_sz_b1 = ((~tlb_tte_data_mx_sel2 &amp; tlb_tte_data_mx_sel1) &amp; tlb_tte_data_mx_sel0);
-	assign pg_sz_b2 = ((tlb_tte_data_mx_sel2 &amp; tlb_tte_data_mx_sel1) &amp; tlb_tte_data_mx_sel0);
+	assign pg_sz_b1 = (~tlb_tte_data_mx_sel2 &amp; tlb_tte_data_mx_sel1) &amp; tlb_tte_data_mx_sel0;
+	assign pg_sz_b2 = (tlb_tte_data_mx_sel2 &amp; tlb_tte_data_mx_sel1) &amp; tlb_tte_data_mx_sel0;
 	assign lsu_tte_pg_sz_b2 = pg_sz_b2;
 	assign lsu_tte_pg_sz_b1 = pg_sz_b1;
 	assign lsu_tte_pg_sz_b0 = pg_sz_b0;
@@ -116,7 +116,7 @@ module lsu_tlbdp (
 		.si(),
 		.so()
 	);
-	assign stb_cam_vld = ((ld_inst_vld_m &amp; (tlb_cam_hit | dtlb_bypass_m)) &amp; ~(asi_internal_m &amp; lsu_alt_space_m));
+	assign stb_cam_vld = (ld_inst_vld_m &amp; (tlb_cam_hit | dtlb_bypass_m)) &amp; ~(asi_internal_m &amp; lsu_alt_space_m);
 	wire [58:0] tlb_rd_tte_tag_buf;
 	wire [42:0] tlb_rd_tte_data_buf;
 	wire lsu_tte_pg_sz_b1_buf;
@@ -146,8 +146,8 @@ module lsu_tlbdp (
 	wire lsu_rd_tte_tag_parity;
 	assign lsu_rd_tte_data_parity = ^tlb_rd_tte_data_buf[41:0];
 	assign lsu_rd_tte_tag_parity = ^{tlb_rd_tte_tag_buf[58:55], tlb_rd_tte_tag_buf[53:27], tlb_rd_tte_tag_buf[25], tlb_rd_tte_tag_buf[23:0]};
-	assign tte_data_parity_error = (tlb_rd_tte_data_parity ^ lsu_rd_tte_data_parity);
-	assign tte_tag_parity_error = (tlb_rd_tte_tag_parity ^ lsu_rd_tte_tag_parity);
+	assign tte_data_parity_error = tlb_rd_tte_data_parity ^ lsu_rd_tte_data_parity;
+	assign tte_tag_parity_error = tlb_rd_tte_tag_parity ^ lsu_rd_tte_tag_parity;
 	assign cache_way_hit_buf1[3:0] = cache_way_hit[3:0];
 	assign cache_way_hit_buf2[3:0] = cache_way_hit[3:0];
 endmodule

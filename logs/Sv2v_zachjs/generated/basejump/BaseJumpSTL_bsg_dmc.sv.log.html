@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc.v</a>
-time_elapsed: 0.684s
-ram usage: 15136 KB
+time_elapsed: 0.532s
+ram usage: 16672 KB
 </pre>
 <pre class="log">
 
@@ -78,23 +78,23 @@ module bsg_dmc (
 	parameter ui_data_width_p = &#34;inv&#34;;
 	parameter burst_data_width_p = &#34;inv&#34;;
 	parameter dq_data_width_p = &#34;inv&#34;;
-	localparam ui_mask_width_lp = (ui_data_width_p &gt;&gt; 3);
-	localparam dfi_data_width_lp = (dq_data_width_p &lt;&lt; 1);
-	localparam dfi_mask_width_lp = ((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1);
-	localparam dq_group_lp = (dq_data_width_p &gt;&gt; 3);
+	localparam ui_mask_width_lp = ui_data_width_p &gt;&gt; 3;
+	localparam dfi_data_width_lp = dq_data_width_p &lt;&lt; 1;
+	localparam dfi_mask_width_lp = (dq_data_width_p &gt;&gt; 3) &lt;&lt; 1;
+	localparam dq_group_lp = dq_data_width_p &gt;&gt; 3;
 	input bsg_dmc_s dmc_p_i;
 	input sys_rst_i;
-	input [(ui_addr_width_p - 1):0] app_addr_i;
+	input [ui_addr_width_p - 1:0] app_addr_i;
 	input [2:0] app_cmd_i;
 	input app_en_i;
 	output app_rdy_o;
 	input app_wdf_wren_i;
-	input [(ui_data_width_p - 1):0] app_wdf_data_i;
-	input [(ui_mask_width_lp - 1):0] app_wdf_mask_i;
+	input [ui_data_width_p - 1:0] app_wdf_data_i;
+	input [ui_mask_width_lp - 1:0] app_wdf_mask_i;
 	input app_wdf_end_i;
 	output app_wdf_rdy_o;
 	output app_rd_data_valid_o;
-	output [(ui_data_width_p - 1):0] app_rd_data_o;
+	output [ui_data_width_p - 1:0] app_rd_data_o;
 	output app_rd_data_end_o;
 	input app_ref_req_i;
 	output app_ref_ack_o;
@@ -114,19 +114,19 @@ module bsg_dmc (
 	output ddr_we_n_o;
 	output ddr_reset_n_o;
 	output ddr_odt_o;
-	output [(dq_group_lp - 1):0] ddr_dm_oen_o;
-	output [(dq_group_lp - 1):0] ddr_dm_o;
-	output [(dq_group_lp - 1):0] ddr_dqs_p_oen_o;
-	output [(dq_group_lp - 1):0] ddr_dqs_p_ien_o;
-	output [(dq_group_lp - 1):0] ddr_dqs_p_o;
-	input [(dq_group_lp - 1):0] ddr_dqs_p_i;
-	output [(dq_group_lp - 1):0] ddr_dqs_n_oen_o;
-	output [(dq_group_lp - 1):0] ddr_dqs_n_ien_o;
-	output [(dq_group_lp - 1):0] ddr_dqs_n_o;
-	input [(dq_group_lp - 1):0] ddr_dqs_n_i;
-	output [(dq_data_width_p - 1):0] ddr_dq_oen_o;
-	output [(dq_data_width_p - 1):0] ddr_dq_o;
-	input [(dq_data_width_p - 1):0] ddr_dq_i;
+	output [dq_group_lp - 1:0] ddr_dm_oen_o;
+	output [dq_group_lp - 1:0] ddr_dm_o;
+	output [dq_group_lp - 1:0] ddr_dqs_p_oen_o;
+	output [dq_group_lp - 1:0] ddr_dqs_p_ien_o;
+	output [dq_group_lp - 1:0] ddr_dqs_p_o;
+	input [dq_group_lp - 1:0] ddr_dqs_p_i;
+	output [dq_group_lp - 1:0] ddr_dqs_n_oen_o;
+	output [dq_group_lp - 1:0] ddr_dqs_n_ien_o;
+	output [dq_group_lp - 1:0] ddr_dqs_n_o;
+	input [dq_group_lp - 1:0] ddr_dqs_n_i;
+	output [dq_data_width_p - 1:0] ddr_dq_oen_o;
+	output [dq_data_width_p - 1:0] ddr_dq_o;
+	input [dq_data_width_p - 1:0] ddr_dq_i;
 	input ui_clk_i;
 	input dfi_clk_2x_i;
 	input dfi_clk_i;
@@ -144,10 +144,10 @@ module bsg_dmc (
 	wire dfi_reset_n;
 	wire dfi_odt;
 	wire dfi_wrdata_en;
-	wire [(dfi_data_width_lp - 1):0] dfi_wrdata;
-	wire [(dfi_mask_width_lp - 1):0] dfi_wrdata_mask;
+	wire [dfi_data_width_lp - 1:0] dfi_wrdata;
+	wire [dfi_mask_width_lp - 1:0] dfi_wrdata_mask;
 	wire dfi_rddata_en;
-	wire [(dfi_data_width_lp - 1):0] dfi_rddata;
+	wire [dfi_data_width_lp - 1:0] dfi_rddata;
 	wire dfi_rddata_valid;
 	assign device_temp_o = 12&#39;d0;
 	bsg_sync_sync #(.width_p(1)) ui_reset_inst(

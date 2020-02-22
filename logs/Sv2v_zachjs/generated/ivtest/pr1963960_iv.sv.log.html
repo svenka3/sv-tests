@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1963960.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1963960.v</a>
-time_elapsed: 0.084s
-ram usage: 11828 KB
+time_elapsed: 0.164s
+ram usage: 11780 KB
 </pre>
 <pre class="log">
 
@@ -25,46 +25,46 @@ module top;
 	integer chr;
 	integer fd;
 	integer code;
-	wire [(14 * 8):1] str;
+	wire [112:1] str;
 	initial begin
 		fd = $fopen(&#34;work/test.txt&#34;, &#34;w&#34;);
-		if ((fd == 0)) begin
+		if (fd == 0) begin
 			$display(&#34;Failed to open test file for writing!&#34;);
 			$finish;
 		end
 		$fdisplay(fd, &#34;Hello World!&#34;);
 		$fclose(fd);
 		fd = $fopen(&#34;work/test.txt&#34;, &#34;r&#34;);
-		if ((fd == 0)) begin
+		if (fd == 0) begin
 			$display(&#34;Failed to open test file for reading!&#34;);
 			$finish;
 		end
 		chr = $fgetc(fd);
-		if ((chr != &#34;H&#34;)) begin
+		if (chr != &#34;H&#34;) begin
 			$display(&#34;Failed first character read!&#34;);
 			$finish;
 		end
 		code = $ungetc(chr, fd);
-		if ((code == -1)) begin
+		if (code == -1) begin
 			$display(&#34;Failed to ungetc() character!&#34;);
 			$finish;
 		end
 		chr = $fgetc(fd);
-		if ((chr != &#34;H&#34;)) begin
+		if (chr != &#34;H&#34;) begin
 			$display(&#34;Failed first character reread!&#34;);
 			$finish;
 		end
 		code = $ungetc(chr, fd);
-		if ((code == -1)) begin
+		if (code == -1) begin
 			$display(&#34;Failed to ungetc() character (2)!&#34;);
 			$finish;
 		end
 		code = $fgets(str, fd);
-		if ((code == 0)) begin
+		if (code == 0) begin
 			$display(&#34;Failed to read characters!&#34;);
 			$finish;
 		end
-		if ((str[(13 * 8):9] != &#34;Hello World!&#34;)) begin
+		if (str[104:9] != &#34;Hello World!&#34;) begin
 			$display(&#34;Read wrong characters!&#34;);
 			$finish;
 		end

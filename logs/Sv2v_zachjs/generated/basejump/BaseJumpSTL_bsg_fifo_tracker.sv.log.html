@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_tracker.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_tracker.v</a>
-time_elapsed: 0.596s
-ram usage: 15968 KB
+time_elapsed: 0.540s
+ram usage: 15872 KB
 </pre>
 <pre class="log">
 
@@ -33,19 +33,19 @@ module bsg_fifo_tracker (
 	empty_o
 );
 	parameter els_p = -1;
-	parameter ptr_width_lp = ((els_p == 1) ? 1 : $clog2(els_p));
+	parameter ptr_width_lp = (els_p == 1 ? 1 : $clog2(els_p));
 	input clk_i;
 	input reset_i;
 	input enq_i;
 	input deq_i;
-	output [(ptr_width_lp - 1):0] wptr_r_o;
-	output [(ptr_width_lp - 1):0] rptr_r_o;
-	output [(ptr_width_lp - 1):0] rptr_n_o;
+	output [ptr_width_lp - 1:0] wptr_r_o;
+	output [ptr_width_lp - 1:0] rptr_r_o;
+	output [ptr_width_lp - 1:0] rptr_n_o;
 	output full_o;
 	output empty_o;
-	wire [(ptr_width_lp - 1):0] rptr_r;
-	wire [(ptr_width_lp - 1):0] rptr_n;
-	wire [(ptr_width_lp - 1):0] wptr_r;
+	wire [ptr_width_lp - 1:0] rptr_r;
+	wire [ptr_width_lp - 1:0] rptr_n;
+	wire [ptr_width_lp - 1:0] wptr_r;
 	assign wptr_r_o = wptr_r;
 	assign rptr_r_o = rptr_r;
 	assign rptr_n_o = rptr_n;
@@ -79,13 +79,13 @@ module bsg_fifo_tracker (
 			enq_r &lt;= 1&#39;b0;
 			deq_r &lt;= 1&#39;b1;
 		end
-		else if ((enq_i | deq_i)) begin
+		else if (enq_i | deq_i) begin
 			enq_r &lt;= enq_i;
 			deq_r &lt;= deq_i;
 		end
-	assign equal_ptrs = (rptr_r == wptr_r);
-	assign empty = (equal_ptrs &amp; deq_r);
-	assign full = (equal_ptrs &amp; enq_r);
+	assign equal_ptrs = rptr_r == wptr_r;
+	assign empty = equal_ptrs &amp; deq_r;
+	assign full = equal_ptrs &amp; enq_r;
 	assign full_o = full;
 	assign empty_o = empty;
 endmodule

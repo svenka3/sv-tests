@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ga_mod1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ga_mod1.v</a>
-time_elapsed: 0.084s
-ram usage: 9552 KB
+time_elapsed: 0.044s
+ram usage: 10588 KB
 </pre>
 <pre class="log">
 
@@ -43,22 +43,22 @@ module main;
 		a,
 		b
 	);
-	always @(a or b) rslt = (a &amp; b);
+	always @(a or b) rslt = a &amp; b;
 	initial begin
 		error = 0;
 		#(1)
 			;
-		for (a = 16&#39;h1; (a != 16&#39;hffff); a = ((a &lt;&lt; 1) | 1))
-			for (b = 16&#39;hffff; (b !== 16&#39;h0); b = (b &gt;&gt; 1))
+		for (a = 16&#39;h1; a != 16&#39;hffff; a = (a &lt;&lt; 1) | 1)
+			for (b = 16&#39;hffff; b !== 16&#39;h0; b = b &gt;&gt; 1)
 				begin
 					#(1)
 						;
-					if ((out !== rslt)) begin
+					if (out !== rslt) begin
 						$display(&#34;FAILED - GA And a=%h,b=%h,expct=%h - rcvd=%h&#34;, a, b, rslt, out);
 						error = 1;
 					end
 				end
-		if ((error == 0))
+		if (error == 0)
 			$display(&#34;PASSED&#34;);
 	end
 endmodule

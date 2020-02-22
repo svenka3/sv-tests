@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v</a>
-time_elapsed: 0.380s
-ram usage: 14176 KB
+time_elapsed: 0.336s
+ram usage: 14968 KB
 </pre>
 <pre class="log">
 
@@ -32,11 +32,11 @@ module bsg_wait_cycles (
 	input reset_i;
 	input activate_i;
 	output reg ready_r_o;
-	reg [($clog2((cycles_p + 1)) - 1):0] ctr_r;
-	reg [($clog2((cycles_p + 1)) - 1):0] ctr_n;
+	reg [$clog2(cycles_p + 1) - 1:0] ctr_r;
+	reg [$clog2(cycles_p + 1) - 1:0] ctr_n;
 	always @(posedge clk_i) begin
 		ctr_r &lt;= ctr_n;
-		ready_r_o &lt;= (ctr_n == cycles_p);
+		ready_r_o &lt;= ctr_n == cycles_p;
 	end
 	always @(*) begin
 		ctr_n = ctr_r;
@@ -44,8 +44,8 @@ module bsg_wait_cycles (
 			ctr_n = cycles_p;
 		else if (activate_i)
 			ctr_n = 0;
-		else if ((ctr_r != cycles_p))
-			ctr_n = (ctr_r + 1&#39;b1);
+		else if (ctr_r != cycles_p)
+			ctr_n = ctr_r + 1&#39;b1;
 	end
 endmodule
 

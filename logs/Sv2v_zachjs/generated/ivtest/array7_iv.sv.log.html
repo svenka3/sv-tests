@@ -16,31 +16,31 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/array7.v.html" target="file-frame">third_party/tests/ivtest/ivltests/array7.v</a>
-time_elapsed: 0.044s
-ram usage: 11388 KB
+time_elapsed: 0.088s
+ram usage: 11384 KB
 </pre>
 <pre class="log">
 
 module main;
 	localparam ISIZE = 6;
 	localparam JSIZE = 8;
-	reg [7:0] array [0:(ISIZE - 1)][0:(JSIZE - 1)];
+	reg [7:0] array [0:ISIZE - 1][0:JSIZE - 1];
 	reg [3:0] idx;
 	reg [3:0] jdx;
 	integer count;
 	initial begin
-		for (idx = 0; (idx &lt; ISIZE); idx = (idx + 1))
-			for (jdx = 0; (jdx &lt; JSIZE); jdx = (jdx + 1))
+		for (idx = 0; idx &lt; ISIZE; idx = idx + 1)
+			for (jdx = 0; jdx &lt; JSIZE; jdx = jdx + 1)
 				array[idx][jdx] = {idx, jdx};
-		if ((array[3][2] !== 8&#39;h32)) begin
+		if (array[3][2] !== 8&#39;h32) begin
 			$display(&#34;FAILED -- array[3][2] == %h&#34;, array[3][2]);
 			$finish;
 		end
-		for (count = 0; (count &lt; 4096); count = (count + 1))
+		for (count = 0; count &lt; 4096; count = count + 1)
 			begin
-				idx = ($random % ISIZE);
-				jdx = ($random % JSIZE);
-				if ((array[idx][jdx] !== {idx, jdx})) begin
+				idx = $random % ISIZE;
+				jdx = $random % JSIZE;
+				if (array[idx][jdx] !== {idx, jdx}) begin
 					$display(&#34;FAILED -- array[%d][%d] == %h&#34;, idx, jdx, array[idx][jdx]);
 					$finish;
 				end

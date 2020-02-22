@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_sticky.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_sticky.v</a>
-time_elapsed: 0.316s
-ram usage: 13220 KB
+time_elapsed: 0.308s
+ram usage: 14660 KB
 </pre>
 <pre class="log">
 
@@ -27,10 +27,10 @@ module bsg_fpu_sticky (
 	sticky_o
 );
 	parameter width_p = &#34;inv&#34;;
-	input [(width_p - 1):0] i;
-	input [($clog2((width_p + 1)) - 1):0] shamt_i;
+	input [width_p - 1:0] i;
+	input [$clog2(width_p + 1) - 1:0] shamt_i;
 	output wire sticky_o;
-	wire [(width_p - 1):0] scan_out;
+	wire [width_p - 1:0] scan_out;
 	bsg_scan #(
 		.width_p(width_p),
 		.or_p(1),
@@ -41,7 +41,7 @@ module bsg_fpu_sticky (
 	);
 	wire [width_p:0] answer;
 	assign answer = {scan_out, 1&#39;b0};
-	assign sticky_o = ((shamt_i &gt; width_p) ? answer[width_p] : answer[shamt_i]);
+	assign sticky_o = (shamt_i &gt; width_p ? answer[width_p] : answer[shamt_i]);
 endmodule
 
 </pre>

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_counter_overflow_set_en.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_counter_overflow_set_en.v</a>
-time_elapsed: 0.348s
-ram usage: 15200 KB
+time_elapsed: 0.216s
+ram usage: 14828 KB
 </pre>
 <pre class="log">
 
@@ -30,21 +30,21 @@ module bsg_counter_overflow_set_en (
 	overflow_o
 );
 	parameter max_val_p = -1;
-	parameter lg_max_val_lp = (((max_val_p + 1) == 1) ? 1 : $clog2((max_val_p + 1)));
+	parameter lg_max_val_lp = ((max_val_p + 1) == 1 ? 1 : $clog2(max_val_p + 1));
 	input clk_i;
 	input en_i;
 	input set_i;
-	input [(lg_max_val_lp - 1):0] val_i;
-	output reg [(lg_max_val_lp - 1):0] count_o;
+	input [lg_max_val_lp - 1:0] val_i;
+	output reg [lg_max_val_lp - 1:0] count_o;
 	output wire overflow_o;
-	assign overflow_o = (count_o == max_val_p);
+	assign overflow_o = count_o == max_val_p;
 	always @(posedge clk_i)
 		if (set_i)
 			count_o &lt;= val_i;
 		else if (overflow_o)
 			count_o &lt;= {lg_max_val_lp {1&#39;b0}};
 		else if (en_i)
-			count_o &lt;= (count_o + 1&#39;b1);
+			count_o &lt;= count_o + 1&#39;b1;
 endmodule
 
 </pre>

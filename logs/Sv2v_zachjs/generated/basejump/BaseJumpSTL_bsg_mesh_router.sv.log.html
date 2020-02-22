@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_mesh_router.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_mesh_router.v</a>
-time_elapsed: 2.516s
-ram usage: 15388 KB
+time_elapsed: 1.784s
+ram usage: 20680 KB
 </pre>
 <pre class="log">
 
@@ -44,81 +44,81 @@ module bsg_mesh_router_dor_decoder (
 	parameter XY_order_p = 1;
 	input clk_i;
 	input reset_i;
-	input [(dirs_lp - 1):0] v_i;
-	input [(((dirs_lp - 1) &gt;= 0) ? (((x_cord_width_p - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p)) + ((x_cord_width_p - 1) - 1))) : (((x_cord_width_p - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) + (((dirs_lp - 1) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p)) + (((x_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((x_cord_width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) : (((x_cord_width_p - 1) &gt;= 0) ? ((dirs_lp - 1) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) : ((x_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p)))))] x_dirs_i;
-	input [(((dirs_lp - 1) &gt;= 0) ? (((y_cord_width_p - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p)) + ((y_cord_width_p - 1) - 1))) : (((y_cord_width_p - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) + (((dirs_lp - 1) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p)) + (((y_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((y_cord_width_p - 1) &gt;= 0) ? 0 : (y_cord_width_p - 1)) : (((y_cord_width_p - 1) &gt;= 0) ? ((dirs_lp - 1) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) : ((y_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p)))))] y_dirs_i;
-	input [(x_cord_width_p - 1):0] my_x_i;
-	input [(y_cord_width_p - 1):0] my_y_i;
-	output [(((dirs_lp - 1) &gt;= 0) ? (((dirs_lp - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp)) + ((dirs_lp - 1) - 1))) : (((dirs_lp - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp)) + (((dirs_lp - 1) + ((dirs_lp - 1) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((dirs_lp - 1) &gt;= 0) ? 0 : (dirs_lp - 1)) : (((dirs_lp - 1) &gt;= 0) ? ((dirs_lp - 1) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) : ((dirs_lp - 1) + ((dirs_lp - 1) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp)))))] req_o;
-	wire [(dirs_lp - 1):0] x_eq;
-	wire [(dirs_lp - 1):0] x_gt;
-	wire [(dirs_lp - 1):0] x_lt;
-	wire [(dirs_lp - 1):0] y_eq;
-	wire [(dirs_lp - 1):0] y_gt;
-	wire [(dirs_lp - 1):0] y_lt;
-	wire [(dirs_lp - 1):0] v_i_stub = (v_i &amp; ~stub_p);
+	input [dirs_lp - 1:0] v_i;
+	input [((dirs_lp - 1) &gt;= 0 ? ((x_cord_width_p - 1) &gt;= 0 ? (dirs_lp * x_cord_width_p) + -1 : (dirs_lp * (2 - x_cord_width_p)) + ((x_cord_width_p - 1) - 1)) : ((x_cord_width_p - 1) &gt;= 0 ? ((2 - dirs_lp) * x_cord_width_p) + (((dirs_lp - 1) * x_cord_width_p) - 1) : ((2 - dirs_lp) * (2 - x_cord_width_p)) + (((x_cord_width_p - 1) + ((dirs_lp - 1) * (2 - x_cord_width_p))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((x_cord_width_p - 1) &gt;= 0 ? 0 : x_cord_width_p - 1) : ((x_cord_width_p - 1) &gt;= 0 ? (dirs_lp - 1) * x_cord_width_p : (x_cord_width_p - 1) + ((dirs_lp - 1) * (2 - x_cord_width_p))))] x_dirs_i;
+	input [((dirs_lp - 1) &gt;= 0 ? ((y_cord_width_p - 1) &gt;= 0 ? (dirs_lp * y_cord_width_p) + -1 : (dirs_lp * (2 - y_cord_width_p)) + ((y_cord_width_p - 1) - 1)) : ((y_cord_width_p - 1) &gt;= 0 ? ((2 - dirs_lp) * y_cord_width_p) + (((dirs_lp - 1) * y_cord_width_p) - 1) : ((2 - dirs_lp) * (2 - y_cord_width_p)) + (((y_cord_width_p - 1) + ((dirs_lp - 1) * (2 - y_cord_width_p))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((y_cord_width_p - 1) &gt;= 0 ? 0 : y_cord_width_p - 1) : ((y_cord_width_p - 1) &gt;= 0 ? (dirs_lp - 1) * y_cord_width_p : (y_cord_width_p - 1) + ((dirs_lp - 1) * (2 - y_cord_width_p))))] y_dirs_i;
+	input [x_cord_width_p - 1:0] my_x_i;
+	input [y_cord_width_p - 1:0] my_y_i;
+	output [((dirs_lp - 1) &gt;= 0 ? ((dirs_lp - 1) &gt;= 0 ? (dirs_lp * dirs_lp) + -1 : (dirs_lp * (2 - dirs_lp)) + ((dirs_lp - 1) - 1)) : ((dirs_lp - 1) &gt;= 0 ? ((2 - dirs_lp) * dirs_lp) + (((dirs_lp - 1) * dirs_lp) - 1) : ((2 - dirs_lp) * (2 - dirs_lp)) + (((dirs_lp - 1) + ((dirs_lp - 1) * (2 - dirs_lp))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((dirs_lp - 1) &gt;= 0 ? 0 : dirs_lp - 1) : ((dirs_lp - 1) &gt;= 0 ? (dirs_lp - 1) * dirs_lp : (dirs_lp - 1) + ((dirs_lp - 1) * (2 - dirs_lp))))] req_o;
+	wire [dirs_lp - 1:0] x_eq;
+	wire [dirs_lp - 1:0] x_gt;
+	wire [dirs_lp - 1:0] x_lt;
+	wire [dirs_lp - 1:0] y_eq;
+	wire [dirs_lp - 1:0] y_gt;
+	wire [dirs_lp - 1:0] y_lt;
+	wire [dirs_lp - 1:0] v_i_stub = v_i &amp; ~stub_p;
 	genvar i;
 	genvar j;
 	generate
-		for (i = 0; (i &lt; dirs_lp); i = (i + 1)) begin : comps
-			assign x_eq[i] = (x_dirs_i[((((x_cord_width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))))+:(((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))] == my_x_i);
-			assign y_eq[i] = (y_dirs_i[((((y_cord_width_p - 1) &gt;= 0) ? 0 : (y_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))))+:(((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))] == my_y_i);
-			assign x_gt[i] = (x_dirs_i[((((x_cord_width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))))+:(((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))] &gt; my_x_i);
-			assign y_gt[i] = (y_dirs_i[((((y_cord_width_p - 1) &gt;= 0) ? 0 : (y_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))))+:(((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))] &gt; my_y_i);
-			assign x_lt[i] = (~x_gt[i] &amp; ~x_eq[i]);
-			assign y_lt[i] = (~y_gt[i] &amp; ~y_eq[i]);
+		for (i = 0; i &lt; dirs_lp; i = i + 1) begin : comps
+			assign x_eq[i] = x_dirs_i[((x_cord_width_p - 1) &gt;= 0 ? 0 : x_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p))+:((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p)] == my_x_i;
+			assign y_eq[i] = y_dirs_i[((y_cord_width_p - 1) &gt;= 0 ? 0 : y_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p))+:((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p)] == my_y_i;
+			assign x_gt[i] = x_dirs_i[((x_cord_width_p - 1) &gt;= 0 ? 0 : x_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p))+:((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p)] &gt; my_x_i;
+			assign y_gt[i] = y_dirs_i[((y_cord_width_p - 1) &gt;= 0 ? 0 : y_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p))+:((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p)] &gt; my_y_i;
+			assign x_lt[i] = ~x_gt[i] &amp; ~x_eq[i];
+			assign y_lt[i] = ~y_gt[i] &amp; ~y_eq[i];
 		end
 	endgenerate
 	generate
-		if ((XY_order_p == 1)) begin : XY_dor
-			for (i = W; (i &lt;= E); i = (i + 1)) begin : x2y
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))] = ((v_i_stub[i] &amp; x_eq[i]) &amp; y_lt[i]);
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))] = ((v_i_stub[i] &amp; x_eq[i]) &amp; y_gt[i]);
+		if (XY_order_p == 1) begin : XY_dor
+			for (i = W; i &lt;= E; i = i + 1) begin : x2y
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))] = (v_i_stub[i] &amp; x_eq[i]) &amp; y_lt[i];
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))] = (v_i_stub[i] &amp; x_eq[i]) &amp; y_gt[i];
 			end
-			for (i = N; (i &lt;= S); i = (i + 1)) begin : y2x
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))] = 1&#39;b0;
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))] = 1&#39;b0;
+			for (i = N; i &lt;= S; i = i + 1) begin : y2x
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))] = 1&#39;b0;
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))] = 1&#39;b0;
 			end
-			for (i = W; (i &lt;= E); i = (i + 1)) begin
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))] = ((i == W) ? 1&#39;b0 : (v_i_stub[i] &amp; x_lt[i]));
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))] = ((i == E) ? 1&#39;b0 : (v_i_stub[i] &amp; x_gt[i]));
+			for (i = W; i &lt;= E; i = i + 1) begin
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))] = (i == W ? 1&#39;b0 : v_i_stub[i] &amp; x_lt[i]);
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))] = (i == E ? 1&#39;b0 : v_i_stub[i] &amp; x_gt[i]);
 			end
-			for (i = N; (i &lt;= S); i = (i + 1)) begin
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))] = ((i == N) ? 1&#39;b0 : ((v_i_stub[i] &amp; x_eq[i]) &amp; y_lt[i]));
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))] = ((i == S) ? 1&#39;b0 : ((v_i_stub[i] &amp; x_eq[i]) &amp; y_gt[i]));
+			for (i = N; i &lt;= S; i = i + 1) begin
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))] = (i == N ? 1&#39;b0 : (v_i_stub[i] &amp; x_eq[i]) &amp; y_lt[i]);
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))] = (i == S ? 1&#39;b0 : (v_i_stub[i] &amp; x_eq[i]) &amp; y_gt[i]);
 			end
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))] = (v_i_stub[P] &amp; x_gt[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))] = (v_i_stub[P] &amp; x_lt[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))] = ((v_i_stub[P] &amp; x_eq[P]) &amp; y_eq[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))] = ((v_i_stub[P] &amp; x_eq[P]) &amp; y_gt[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))] = ((v_i_stub[P] &amp; x_eq[P]) &amp; y_lt[P]);
-			for (i = W; (i &lt;= S); i = (i + 1)) assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))] = ((v_i_stub[i] &amp; x_eq[i]) &amp; y_eq[i]);
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))] = v_i_stub[P] &amp; x_gt[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))] = v_i_stub[P] &amp; x_lt[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))] = (v_i_stub[P] &amp; x_eq[P]) &amp; y_eq[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))] = (v_i_stub[P] &amp; x_eq[P]) &amp; y_gt[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))] = (v_i_stub[P] &amp; x_eq[P]) &amp; y_lt[P];
+			for (i = W; i &lt;= S; i = i + 1) assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))] = (v_i_stub[i] &amp; x_eq[i]) &amp; y_eq[i];
 			always @(negedge clk_i)
 				;
 		end
 		else begin : YX_dor
-			for (i = W; (i &lt;= E); i = (i + 1)) begin : x2y
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))] = 1&#39;b0;
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))] = 1&#39;b0;
+			for (i = W; i &lt;= E; i = i + 1) begin : x2y
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))] = 1&#39;b0;
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))] = 1&#39;b0;
 			end
-			for (i = N; (i &lt;= S); i = (i + 1)) begin : y2x
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))] = ((v_i_stub[i] &amp; y_eq[i]) &amp; x_lt[i]);
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))] = ((v_i_stub[i] &amp; y_eq[i]) &amp; x_gt[i]);
+			for (i = N; i &lt;= S; i = i + 1) begin : y2x
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))] = (v_i_stub[i] &amp; y_eq[i]) &amp; x_lt[i];
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))] = (v_i_stub[i] &amp; y_eq[i]) &amp; x_gt[i];
 			end
-			for (i = N; (i &lt;= S); i = (i + 1)) begin
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))] = ((i == N) ? 1&#39;b0 : (v_i_stub[i] &amp; y_lt[i]));
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))] = ((i == S) ? 1&#39;b0 : (v_i_stub[i] &amp; y_gt[i]));
+			for (i = N; i &lt;= S; i = i + 1) begin
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))] = (i == N ? 1&#39;b0 : v_i_stub[i] &amp; y_lt[i]);
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))] = (i == S ? 1&#39;b0 : v_i_stub[i] &amp; y_gt[i]);
 			end
-			for (i = W; (i &lt;= E); i = (i + 1)) begin
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))] = ((i == W) ? 1&#39;b0 : ((v_i_stub[i] &amp; y_eq[i]) &amp; x_lt[i]));
-				assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))] = ((i == E) ? 1&#39;b0 : ((v_i_stub[i] &amp; y_eq[i]) &amp; x_gt[i]));
+			for (i = W; i &lt;= E; i = i + 1) begin
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))] = (i == W ? 1&#39;b0 : (v_i_stub[i] &amp; y_eq[i]) &amp; x_lt[i]);
+				assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))] = (i == E ? 1&#39;b0 : (v_i_stub[i] &amp; y_eq[i]) &amp; x_gt[i]);
 			end
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))] = (v_i_stub[P] &amp; y_gt[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))] = (v_i_stub[P] &amp; y_lt[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))] = ((v_i_stub[P] &amp; x_eq[P]) &amp; y_eq[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))] = ((v_i_stub[P] &amp; y_eq[P]) &amp; x_gt[P]);
-			assign req_o[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))] = ((v_i_stub[P] &amp; y_eq[P]) &amp; x_lt[P]);
-			for (i = W; (i &lt;= S); i = (i + 1)) assign req_o[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))] = ((v_i_stub[i] &amp; x_eq[i]) &amp; y_eq[i]);
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))] = v_i_stub[P] &amp; y_gt[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))] = v_i_stub[P] &amp; y_lt[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))] = (v_i_stub[P] &amp; x_eq[P]) &amp; y_eq[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))] = (v_i_stub[P] &amp; y_eq[P]) &amp; x_gt[P];
+			assign req_o[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))] = (v_i_stub[P] &amp; y_eq[P]) &amp; x_lt[P];
+			for (i = W; i &lt;= S; i = i + 1) assign req_o[(((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))] = (v_i_stub[i] &amp; x_eq[i]) &amp; y_eq[i];
 			always @(negedge clk_i)
 				;
 		end
@@ -151,26 +151,26 @@ module bsg_mesh_router (
 	parameter XY_order_p = 1;
 	input clk_i;
 	input reset_i;
-	input [(((dirs_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((dirs_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((dirs_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_i;
-	input [(dirs_lp - 1):0] v_i;
-	output wire [(dirs_lp - 1):0] yumi_o;
-	input [(dirs_lp - 1):0] ready_i;
-	output [(((dirs_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((dirs_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((dirs_lp - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_o;
-	output wire [(dirs_lp - 1):0] v_o;
-	input [(x_cord_width_p - 1):0] my_x_i;
-	input [(y_cord_width_p - 1):0] my_y_i;
-	wire [(((dirs_lp - 1) &gt;= 0) ? (((x_cord_width_p - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p)) + ((x_cord_width_p - 1) - 1))) : (((x_cord_width_p - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) + (((dirs_lp - 1) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p)) + (((x_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((x_cord_width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) : (((x_cord_width_p - 1) &gt;= 0) ? ((dirs_lp - 1) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))) : ((x_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (x_cord_width_p - 1)) ? (2 - x_cord_width_p) : x_cord_width_p)))))] x_dirs;
-	wire [(((dirs_lp - 1) &gt;= 0) ? (((y_cord_width_p - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p)) + ((y_cord_width_p - 1) - 1))) : (((y_cord_width_p - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) + (((dirs_lp - 1) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p)) + (((y_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((y_cord_width_p - 1) &gt;= 0) ? 0 : (y_cord_width_p - 1)) : (((y_cord_width_p - 1) &gt;= 0) ? ((dirs_lp - 1) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))) : ((y_cord_width_p - 1) + ((dirs_lp - 1) * ((0 &gt;= (y_cord_width_p - 1)) ? (2 - y_cord_width_p) : y_cord_width_p)))))] y_dirs;
-	wire [(dirs_lp - 1):0] ready_i_stub = (ready_i | stub_p);
-	wire [(dirs_lp - 1):0] v_i_stub = (v_i &amp; ~stub_p);
+	input [((dirs_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (dirs_lp * width_p) + -1 : (dirs_lp * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - dirs_lp) * width_p) + (((dirs_lp - 1) * width_p) - 1) : ((2 - dirs_lp) * (2 - width_p)) + (((width_p - 1) + ((dirs_lp - 1) * (2 - width_p))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (dirs_lp - 1) * width_p : (width_p - 1) + ((dirs_lp - 1) * (2 - width_p))))] data_i;
+	input [dirs_lp - 1:0] v_i;
+	output wire [dirs_lp - 1:0] yumi_o;
+	input [dirs_lp - 1:0] ready_i;
+	output [((dirs_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (dirs_lp * width_p) + -1 : (dirs_lp * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - dirs_lp) * width_p) + (((dirs_lp - 1) * width_p) - 1) : ((2 - dirs_lp) * (2 - width_p)) + (((width_p - 1) + ((dirs_lp - 1) * (2 - width_p))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (dirs_lp - 1) * width_p : (width_p - 1) + ((dirs_lp - 1) * (2 - width_p))))] data_o;
+	output wire [dirs_lp - 1:0] v_o;
+	input [x_cord_width_p - 1:0] my_x_i;
+	input [y_cord_width_p - 1:0] my_y_i;
+	wire [((dirs_lp - 1) &gt;= 0 ? ((x_cord_width_p - 1) &gt;= 0 ? (dirs_lp * x_cord_width_p) + -1 : (dirs_lp * (2 - x_cord_width_p)) + ((x_cord_width_p - 1) - 1)) : ((x_cord_width_p - 1) &gt;= 0 ? ((2 - dirs_lp) * x_cord_width_p) + (((dirs_lp - 1) * x_cord_width_p) - 1) : ((2 - dirs_lp) * (2 - x_cord_width_p)) + (((x_cord_width_p - 1) + ((dirs_lp - 1) * (2 - x_cord_width_p))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((x_cord_width_p - 1) &gt;= 0 ? 0 : x_cord_width_p - 1) : ((x_cord_width_p - 1) &gt;= 0 ? (dirs_lp - 1) * x_cord_width_p : (x_cord_width_p - 1) + ((dirs_lp - 1) * (2 - x_cord_width_p))))] x_dirs;
+	wire [((dirs_lp - 1) &gt;= 0 ? ((y_cord_width_p - 1) &gt;= 0 ? (dirs_lp * y_cord_width_p) + -1 : (dirs_lp * (2 - y_cord_width_p)) + ((y_cord_width_p - 1) - 1)) : ((y_cord_width_p - 1) &gt;= 0 ? ((2 - dirs_lp) * y_cord_width_p) + (((dirs_lp - 1) * y_cord_width_p) - 1) : ((2 - dirs_lp) * (2 - y_cord_width_p)) + (((y_cord_width_p - 1) + ((dirs_lp - 1) * (2 - y_cord_width_p))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((y_cord_width_p - 1) &gt;= 0 ? 0 : y_cord_width_p - 1) : ((y_cord_width_p - 1) &gt;= 0 ? (dirs_lp - 1) * y_cord_width_p : (y_cord_width_p - 1) + ((dirs_lp - 1) * (2 - y_cord_width_p))))] y_dirs;
+	wire [dirs_lp - 1:0] ready_i_stub = ready_i | stub_p;
+	wire [dirs_lp - 1:0] v_i_stub = v_i &amp; ~stub_p;
 	genvar i;
 	generate
-		for (i = 0; (i &lt; dirs_lp); i = (i + 1)) begin : reshape
-			assign x_dirs[((((x_cord_width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))))+:(((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))] = data_i[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((width_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) : (0 - ((((width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) - (width_p - 1)))))+:(((width_p - 1) &gt;= 0) ? x_cord_width_p : x_cord_width_p)];
-			assign y_dirs[((((y_cord_width_p - 1) &gt;= 0) ? 0 : (y_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))))+:(((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))] = data_i[(((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((width_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? x_cord_width_p : (x_cord_width_p + (y_cord_width_p - 1))) : (0 - ((((width_p - 1) &gt;= 0) ? x_cord_width_p : (x_cord_width_p + (y_cord_width_p - 1))) - (width_p - 1)))))+:(((width_p - 1) &gt;= 0) ? y_cord_width_p : y_cord_width_p)];
+		for (i = 0; i &lt; dirs_lp; i = i + 1) begin : reshape
+			assign x_dirs[((x_cord_width_p - 1) &gt;= 0 ? 0 : x_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p))+:((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p)] = data_i[((width_p - 1) &gt;= 0 ? (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : (((((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? 0 : width_p - 1)) - x_cord_width_p) + 1)+:x_cord_width_p];
+			assign y_dirs[((y_cord_width_p - 1) &gt;= 0 ? 0 : y_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p))+:((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p)] = data_i[((width_p - 1) &gt;= 0 ? (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? x_cord_width_p : 0 - (x_cord_width_p - (width_p - 1))) : (((((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? x_cord_width_p : 0 - (x_cord_width_p - (width_p - 1)))) - y_cord_width_p) + 1)+:y_cord_width_p];
 		end
 	endgenerate
-	wire [(((dirs_lp - 1) &gt;= 0) ? (((dirs_lp - 1) &gt;= 0) ? (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + -1) : (((((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp)) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp)) + ((dirs_lp - 1) - 1))) : (((dirs_lp - 1) &gt;= 0) ? ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) - 1)) : ((((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp)) + (((dirs_lp - 1) + ((dirs_lp - 1) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp))) - 1)))):(((dirs_lp - 1) &gt;= 0) ? (((dirs_lp - 1) &gt;= 0) ? 0 : (dirs_lp - 1)) : (((dirs_lp - 1) &gt;= 0) ? ((dirs_lp - 1) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) : ((dirs_lp - 1) + ((dirs_lp - 1) * ((0 &gt;= (dirs_lp - 1)) ? (2 - dirs_lp) : dirs_lp)))))] req;
+	wire [((dirs_lp - 1) &gt;= 0 ? ((dirs_lp - 1) &gt;= 0 ? (dirs_lp * dirs_lp) + -1 : (dirs_lp * (2 - dirs_lp)) + ((dirs_lp - 1) - 1)) : ((dirs_lp - 1) &gt;= 0 ? ((2 - dirs_lp) * dirs_lp) + (((dirs_lp - 1) * dirs_lp) - 1) : ((2 - dirs_lp) * (2 - dirs_lp)) + (((dirs_lp - 1) + ((dirs_lp - 1) * (2 - dirs_lp))) - 1))):((dirs_lp - 1) &gt;= 0 ? ((dirs_lp - 1) &gt;= 0 ? 0 : dirs_lp - 1) : ((dirs_lp - 1) &gt;= 0 ? (dirs_lp - 1) * dirs_lp : (dirs_lp - 1) + ((dirs_lp - 1) * (2 - dirs_lp))))] req;
 	bsg_mesh_router_dor_decoder #(
 		.x_cord_width_p(x_cord_width_p),
 		.y_cord_width_p(y_cord_width_p),
@@ -229,25 +229,25 @@ module bsg_mesh_router (
 	wire E_sel_n;
 	wire E_sel_s;
 	generate
-		if ((XY_order_p == 1)) begin
+		if (XY_order_p == 1) begin
 			bsg_round_robin_arb #(.inputs_p(2)) west_rr_arb(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[W]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))]}),
 				.grants_o({W_gnt_e, W_gnt_p}),
 				.sel_one_hot_o({W_sel_e, W_sel_p}),
 				.v_o(v_o[W]),
 				.tag_o(),
-				.yumi_i((v_o[W] &amp; ready_i_stub[W]))
+				.yumi_i(v_o[W] &amp; ready_i_stub[W])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(2)
 			) mux_data_west(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({W_sel_p, W_sel_e}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 			assign W_gnt_n = 1&#39;b0;
 			assign W_gnt_s = 1&#39;b0;
@@ -257,43 +257,43 @@ module bsg_mesh_router (
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[W]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1)))]}),
 				.grants_o({W_gnt_e, W_gnt_p, W_gnt_n, W_gnt_s}),
 				.sel_one_hot_o({W_sel_e, W_sel_p, W_sel_n, W_sel_s}),
 				.v_o(v_o[W]),
 				.tag_o(),
-				.yumi_i((v_o[W] &amp; ready_i_stub[W]))
+				.yumi_i(v_o[W] &amp; ready_i_stub[W])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(4)
 			) mux_data_west(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({W_sel_p, W_sel_e, W_sel_n, W_sel_s}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 		end
 	endgenerate
 	generate
-		if ((XY_order_p == 1)) begin
+		if (XY_order_p == 1) begin
 			bsg_round_robin_arb #(.inputs_p(2)) east_rr_arb(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[E]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))]}),
 				.grants_o({E_gnt_w, E_gnt_p}),
 				.sel_one_hot_o({E_sel_w, E_sel_p}),
 				.v_o(v_o[E]),
 				.tag_o(),
-				.yumi_i((v_o[E] &amp; ready_i_stub[E]))
+				.yumi_i(v_o[E] &amp; ready_i_stub[E])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(2)
 			) mux_data_east(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({E_sel_p, E_sel_w}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 			assign E_gnt_n = 1&#39;b0;
 			assign E_gnt_s = 1&#39;b0;
@@ -303,43 +303,43 @@ module bsg_mesh_router (
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[E]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1)))]}),
 				.grants_o({E_gnt_w, E_gnt_p, E_gnt_n, E_gnt_s}),
 				.sel_one_hot_o({E_sel_w, E_sel_p, E_sel_n, E_sel_s}),
 				.v_o(v_o[E]),
 				.tag_o(),
-				.yumi_i((v_o[E] &amp; ready_i_stub[E]))
+				.yumi_i(v_o[E] &amp; ready_i_stub[E])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(4)
 			) mux_data_east(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({E_sel_p, E_sel_w, E_sel_n, E_sel_s}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 		end
 	endgenerate
 	generate
-		if ((XY_order_p == 1)) begin
+		if (XY_order_p == 1) begin
 			bsg_round_robin_arb #(.inputs_p(4)) north_rr_arb(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[N]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))]}),
 				.grants_o({N_gnt_s, N_gnt_e, N_gnt_w, N_gnt_p}),
 				.sel_one_hot_o({N_sel_s, N_sel_e, N_sel_w, N_sel_p}),
 				.v_o(v_o[N]),
 				.tag_o(),
-				.yumi_i((v_o[N] &amp; ready_i_stub[N]))
+				.yumi_i(v_o[N] &amp; ready_i_stub[N])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(4)
 			) mux_data_north(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({N_sel_p, N_sel_e, N_sel_s, N_sel_w}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 		end
 		else begin
@@ -349,43 +349,43 @@ module bsg_mesh_router (
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[N]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1)))]}),
 				.grants_o({N_gnt_s, N_gnt_p}),
 				.sel_one_hot_o({N_sel_s, N_sel_p}),
 				.v_o(v_o[N]),
 				.tag_o(),
-				.yumi_i((v_o[N] &amp; ready_i_stub[N]))
+				.yumi_i(v_o[N] &amp; ready_i_stub[N])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(2)
 			) mux_data_north(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({N_sel_p, N_sel_s}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 		end
 	endgenerate
 	generate
-		if ((XY_order_p == 1)) begin
+		if (XY_order_p == 1) begin
 			bsg_round_robin_arb #(.inputs_p(4)) south_rr_arb(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[S]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))]}),
 				.grants_o({S_gnt_n, S_gnt_e, S_gnt_w, S_gnt_p}),
 				.sel_one_hot_o({S_sel_n, S_sel_e, S_sel_w, S_sel_p}),
 				.v_o(v_o[S]),
 				.tag_o(),
-				.yumi_i((v_o[S] &amp; ready_i_stub[S]))
+				.yumi_i(v_o[S] &amp; ready_i_stub[S])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(4)
 			) mux_data_south(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({S_sel_p, S_sel_e, S_sel_n, S_sel_w}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 		end
 		else begin
@@ -395,20 +395,20 @@ module bsg_mesh_router (
 				.clk_i(clk_i),
 				.reset_i(reset_i),
 				.grants_en_i(ready_i_stub[S]),
-				.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))))]}),
+				.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1)))]}),
 				.grants_o({S_gnt_n, S_gnt_p}),
 				.sel_one_hot_o({S_sel_n, S_sel_p}),
 				.v_o(v_o[S]),
 				.tag_o(),
-				.yumi_i((v_o[S] &amp; ready_i_stub[S]))
+				.yumi_i(v_o[S] &amp; ready_i_stub[S])
 			);
 			bsg_mux_one_hot #(
 				.width_p(width_p),
 				.els_p(2)
 			) mux_data_south(
-				.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+				.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 				.sel_one_hot_i({S_sel_p, S_sel_n}),
-				.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+				.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 			);
 		end
 	endgenerate
@@ -416,49 +416,49 @@ module bsg_mesh_router (
 		.clk_i(clk_i),
 		.reset_i(reset_i),
 		.grants_en_i(ready_i_stub[P]),
-		.reqs_i({req[(((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))], req[(((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))) + (((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))))]}),
+		.reqs_i({req[(((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))], req[(((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)) + ((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1)))]}),
 		.grants_o({P_gnt_s, P_gnt_n, P_gnt_e, P_gnt_w, P_gnt_p}),
 		.sel_one_hot_o({P_sel_s, P_sel_n, P_sel_e, P_sel_w, P_sel_p}),
 		.v_o(v_o[P]),
 		.tag_o(),
-		.yumi_i((v_o[P] &amp; ready_i_stub[P]))
+		.yumi_i(v_o[P] &amp; ready_i_stub[P])
 	);
 	bsg_mux_one_hot #(
 		.width_p(width_p),
 		.els_p(5)
 	) mux_data_proc(
-		.data_i({data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? E : (0 - (E - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? S : (0 - (S - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? W : (0 - (W - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? N : (0 - (N - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))]}),
+		.data_i({data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? E : 0 - (E - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? S : 0 - (S - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? W : 0 - (W - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? N : 0 - (N - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)]}),
 		.sel_one_hot_i({P_sel_p, P_sel_e, P_sel_s, P_sel_w, P_sel_n}),
-		.data_o(data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? P : (0 - (P - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))])
+		.data_o(data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? P : 0 - (P - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
 	);
-	assign yumi_o[P] = ((((E_gnt_p | N_gnt_p) | S_gnt_p) | P_gnt_p) | W_gnt_p);
+	assign yumi_o[P] = (((E_gnt_p | N_gnt_p) | S_gnt_p) | P_gnt_p) | W_gnt_p;
 	generate
-		if ((XY_order_p == 1)) begin
-			assign yumi_o[W] = (((E_gnt_w | N_gnt_w) | S_gnt_w) | P_gnt_w);
-			assign yumi_o[E] = (((W_gnt_e | N_gnt_e) | S_gnt_e) | P_gnt_e);
-			assign yumi_o[N] = (S_gnt_n | P_gnt_n);
-			assign yumi_o[S] = (N_gnt_s | P_gnt_s);
+		if (XY_order_p == 1) begin
+			assign yumi_o[W] = ((E_gnt_w | N_gnt_w) | S_gnt_w) | P_gnt_w;
+			assign yumi_o[E] = ((W_gnt_e | N_gnt_e) | S_gnt_e) | P_gnt_e;
+			assign yumi_o[N] = S_gnt_n | P_gnt_n;
+			assign yumi_o[S] = N_gnt_s | P_gnt_s;
 		end
 		else begin
-			assign yumi_o[W] = (E_gnt_w | P_gnt_w);
-			assign yumi_o[E] = (W_gnt_e | P_gnt_e);
-			assign yumi_o[N] = (((S_gnt_n | W_gnt_n) | E_gnt_n) | P_gnt_n);
-			assign yumi_o[S] = (((N_gnt_s | W_gnt_s) | E_gnt_s) | P_gnt_s);
+			assign yumi_o[W] = E_gnt_w | P_gnt_w;
+			assign yumi_o[E] = W_gnt_e | P_gnt_e;
+			assign yumi_o[N] = ((S_gnt_n | W_gnt_n) | E_gnt_n) | P_gnt_n;
+			assign yumi_o[S] = ((N_gnt_s | W_gnt_s) | E_gnt_s) | P_gnt_s;
 		end
 	endgenerate
 	generate
-		if (debug_p) for (i = P; (i &lt;= S); i = (i + 1)) begin : rof
+		if (debug_p) for (i = P; i &lt;= S; i = i + 1) begin : rof
 			Dirs dir = sv2v_cast_6BBBC(i);
 			always @(negedge clk_i) begin
 				if (v_i_stub[i])
-					$display(&#34;%m wants to send %x to {x,y}={%x,%x} from dir %s, req[SNEWP] = %b, ready_i[SNEWP] = %b&#34;, data_i[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], x_dirs[((((x_cord_width_p - 1) &gt;= 0) ? 0 : (x_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))))+:(((x_cord_width_p - 1) &gt;= 0) ? x_cord_width_p : (2 - x_cord_width_p))], y_dirs[((((y_cord_width_p - 1) &gt;= 0) ? 0 : (y_cord_width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))))+:(((y_cord_width_p - 1) &gt;= 0) ? y_cord_width_p : (2 - y_cord_width_p))], dir.name(), req[((((dirs_lp - 1) &gt;= 0) ? 0 : (dirs_lp - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))))+:(((dirs_lp - 1) &gt;= 0) ? dirs_lp : (2 - dirs_lp))], ready_i_stub);
+					$display(&#34;%m wants to send %x to {x,y}={%x,%x} from dir %s, req[SNEWP] = %b, ready_i[SNEWP] = %b&#34;, data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], x_dirs[((x_cord_width_p - 1) &gt;= 0 ? 0 : x_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p))+:((x_cord_width_p - 1) &gt;= 0 ? x_cord_width_p : 2 - x_cord_width_p)], y_dirs[((y_cord_width_p - 1) &gt;= 0 ? 0 : y_cord_width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p))+:((y_cord_width_p - 1) &gt;= 0 ? y_cord_width_p : 2 - y_cord_width_p)], dir.name(), req[((dirs_lp - 1) &gt;= 0 ? 0 : dirs_lp - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp))+:((dirs_lp - 1) &gt;= 0 ? dirs_lp : 2 - dirs_lp)], ready_i_stub);
 				if (v_o[i])
-					$display(&#34;%m sending %x in dir %s&#34;, data_o[((((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) + ((((dirs_lp - 1) &gt;= 0) ? i : (0 - (i - (dirs_lp - 1)))) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))))+:(((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))], dir.name());
+					$display(&#34;%m sending %x in dir %s&#34;, data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((dirs_lp - 1) &gt;= 0 ? i : 0 - (i - (dirs_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)], dir.name());
 			end
 		end
 	endgenerate
-	function automatic [(Dirs - 1):0] sv2v_cast_6BBBC;
-		input reg [(Dirs - 1):0] inp;
+	function automatic [Dirs - 1:0] sv2v_cast_6BBBC;
+		input reg [Dirs - 1:0] inp;
 		sv2v_cast_6BBBC = inp;
 	endfunction
 endmodule

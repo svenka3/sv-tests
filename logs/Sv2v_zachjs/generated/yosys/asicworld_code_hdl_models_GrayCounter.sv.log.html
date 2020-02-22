@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v</a>
-time_elapsed: 0.064s
-ram usage: 11404 KB
+time_elapsed: 0.116s
+ram usage: 11220 KB
 </pre>
 <pre class="log">
 
@@ -28,19 +28,19 @@ module GrayCounter (
 	Clk
 );
 	parameter COUNTER_WIDTH = 4;
-	output reg [(COUNTER_WIDTH - 1):0] GrayCount_out;
+	output reg [COUNTER_WIDTH - 1:0] GrayCount_out;
 	input wire Enable_in;
 	input wire Clear_in;
 	input wire Clk;
-	reg [(COUNTER_WIDTH - 1):0] BinaryCount;
+	reg [COUNTER_WIDTH - 1:0] BinaryCount;
 	always @(posedge Clk)
 		if (Clear_in) begin
-			BinaryCount &lt;= ({COUNTER_WIDTH {1&#39;b 0}} + 1);
+			BinaryCount &lt;= {COUNTER_WIDTH {1&#39;b 0}} + 1;
 			GrayCount_out &lt;= {COUNTER_WIDTH {1&#39;b 0}};
 		end
 		else if (Enable_in) begin
-			BinaryCount &lt;= (BinaryCount + 1);
-			GrayCount_out &lt;= {BinaryCount[(COUNTER_WIDTH - 1)], (BinaryCount[(COUNTER_WIDTH - 2):0] ^ BinaryCount[(COUNTER_WIDTH - 1):1])};
+			BinaryCount &lt;= BinaryCount + 1;
+			GrayCount_out &lt;= {BinaryCount[COUNTER_WIDTH - 1], BinaryCount[COUNTER_WIDTH - 2:0] ^ BinaryCount[COUNTER_WIDTH - 1:1]};
 		end
 endmodule
 

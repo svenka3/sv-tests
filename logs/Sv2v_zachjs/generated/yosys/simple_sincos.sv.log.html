@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/sincos.v.html" target="file-frame">third_party/tools/yosys/tests/simple/sincos.v</a>
-time_elapsed: 0.180s
-ram usage: 10804 KB
+time_elapsed: 0.084s
+ram usage: 10596 KB
 </pre>
 <pre class="log">
 
@@ -42,14 +42,14 @@ module d (
 	input reset;
 	(* gentb_constant = 1&#39;b0 *) wire reset;
 	always @(posedge clock or posedge reset) begin : DESIGN_PROCESSOR
-		reg [(5 - 1):0] i;
-		reg [(1 - 1):0] state;
-		reg signed [(20 - 1):0] dz;
-		reg signed [(20 - 1):0] dx;
-		reg signed [(20 - 1):0] dy;
-		reg signed [(20 - 1):0] y;
-		reg signed [(20 - 1):0] x;
-		reg signed [(20 - 1):0] z;
+		reg [4:0] i;
+		reg [0:0] state;
+		reg signed [19:0] dz;
+		reg signed [19:0] dx;
+		reg signed [19:0] dy;
+		reg signed [19:0] y;
+		reg signed [19:0] x;
+		reg signed [19:0] z;
 		if (reset) begin
 			state = 1&#39;b0;
 			cos_z0 &lt;= 1;
@@ -72,8 +72,8 @@ module d (
 						state = 1&#39;b1;
 					end
 				1&#39;b1: begin
-					dx = $signed((y &gt;&gt;&gt; $signed({1&#39;b0, i})));
-					dy = $signed((x &gt;&gt;&gt; $signed({1&#39;b0, i})));
+					dx = $signed(y &gt;&gt;&gt; $signed({1&#39;b0, i}));
+					dy = $signed(x &gt;&gt;&gt; $signed({1&#39;b0, i}));
 					case (i)
 						0: dz = 205887;
 						1: dz = 121542;
@@ -95,24 +95,24 @@ module d (
 						17: dz = 2;
 						default: dz = 1;
 					endcase
-					if ((z &gt;= 0)) begin
-						x = (x - dx);
-						y = (y + dy);
-						z = (z - dz);
+					if (z &gt;= 0) begin
+						x = x - dx;
+						y = y + dy;
+						z = z - dz;
 					end
 					else begin
-						x = (x + dx);
-						y = (y - dy);
-						z = (z + dz);
+						x = x + dx;
+						y = y - dy;
+						z = z + dz;
 					end
-					if ((i == (19 - 1))) begin
+					if (i == 18) begin
 						cos_z0 &lt;= x;
 						sin_z0 &lt;= y;
 						state = 1&#39;b0;
 						done &lt;= 1&#39;b1;
 					end
 					else
-						i = (i + 1);
+						i = i + 1;
 				end
 			endcase
 	end

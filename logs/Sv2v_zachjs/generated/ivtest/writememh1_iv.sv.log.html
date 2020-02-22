@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/writememh1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/writememh1.v</a>
-time_elapsed: 0.104s
-ram usage: 11244 KB
+time_elapsed: 0.088s
+ram usage: 10808 KB
 </pre>
 <pre class="log">
 
@@ -26,19 +26,19 @@ module main;
 	reg error;
 	reg [3:0] count;
 	initial begin
-		for (count = 0; (count &lt;= 7); count = (count + 1))
-			array[count] = (1 &lt;&lt; count);
+		for (count = 0; count &lt;= 7; count = count + 1)
+			array[count] = 1 &lt;&lt; count;
 		$writememh(&#34;work/writememh1.dat&#34;, array);
-		for (count = 0; (count &lt;= 7); count = (count + 1))
+		for (count = 0; count &lt;= 7; count = count + 1)
 			array[count] = &#39;bx;
 		error = 0;
 		$readmemh(&#34;work/writememh1.dat&#34;, array);
-		for (count = 0; (count &lt;= 7); count = (count + 1))
-			if ((array[count] !== (1 &lt;&lt; count))) begin
+		for (count = 0; count &lt;= 7; count = count + 1)
+			if (array[count] !== (1 &lt;&lt; count)) begin
 				error = 1;
-				$display(&#34;FAILED - array[count] == %h, s/b %h&#34;, array[count], (1 &lt;&lt; count));
+				$display(&#34;FAILED - array[count] == %h, s/b %h&#34;, array[count], 1 &lt;&lt; count);
 			end
-		if ((error == 0))
+		if (error == 0)
 			$display(&#34;PASSED\n&#34;);
 		$finish;
 	end

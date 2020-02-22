@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v</a>
-time_elapsed: 0.776s
-ram usage: 18008 KB
+time_elapsed: 0.428s
+ram usage: 16352 KB
 </pre>
 <pre class="log">
 
@@ -36,34 +36,34 @@ module bsg_trace_replay (
 	done_o,
 	error_o
 );
-	localparam [(opcode_width_lp - 1):0] eNop = 4&#39;d0;
-	localparam [(opcode_width_lp - 1):0] eSend = 4&#39;d1;
-	localparam [(opcode_width_lp - 1):0] eReceive = 4&#39;d2;
-	localparam [(opcode_width_lp - 1):0] eDone = 4&#39;d3;
-	localparam [(opcode_width_lp - 1):0] eFinish = 4&#39;d4;
-	localparam [(opcode_width_lp - 1):0] eCycleDec = 4&#39;d5;
-	localparam [(opcode_width_lp - 1):0] eCycleInit = 4&#39;d6;
+	localparam [opcode_width_lp - 1:0] eNop = 4&#39;d0;
+	localparam [opcode_width_lp - 1:0] eSend = 4&#39;d1;
+	localparam [opcode_width_lp - 1:0] eReceive = 4&#39;d2;
+	localparam [opcode_width_lp - 1:0] eDone = 4&#39;d3;
+	localparam [opcode_width_lp - 1:0] eFinish = 4&#39;d4;
+	localparam [opcode_width_lp - 1:0] eCycleDec = 4&#39;d5;
+	localparam [opcode_width_lp - 1:0] eCycleInit = 4&#39;d6;
 	parameter payload_width_p = 80;
 	parameter rom_addr_width_p = 6;
-	parameter counter_width_p = ((payload_width_p &lt; 16) ? payload_width_p : 16);
+	parameter counter_width_p = (payload_width_p &lt; 16 ? payload_width_p : 16);
 	parameter opcode_width_lp = 4;
 	input clk_i;
 	input reset_i;
 	input en_i;
 	input v_i;
-	input [(payload_width_p - 1):0] data_i;
+	input [payload_width_p - 1:0] data_i;
 	output reg ready_o;
 	output reg v_o;
-	output wire [(payload_width_p - 1):0] data_o;
+	output wire [payload_width_p - 1:0] data_o;
 	input yumi_i;
-	output [(rom_addr_width_p - 1):0] rom_addr_o;
-	input [((payload_width_p + 4) - 1):0] rom_data_i;
+	output [rom_addr_width_p - 1:0] rom_addr_o;
+	input [(payload_width_p + 4) - 1:0] rom_data_i;
 	output wire done_o;
 	output wire error_o;
-	reg [(counter_width_p - 1):0] cycle_ctr_r;
-	reg [(counter_width_p - 1):0] cycle_ctr_n;
-	reg [(rom_addr_width_p - 1):0] addr_r;
-	wire [(rom_addr_width_p - 1):0] addr_n;
+	reg [counter_width_p - 1:0] cycle_ctr_r;
+	reg [counter_width_p - 1:0] cycle_ctr_n;
+	reg [rom_addr_width_p - 1:0] addr_r;
+	wire [rom_addr_width_p - 1:0] addr_n;
 	reg done_r;
 	reg done_n;
 	reg error_r;
@@ -88,12 +88,12 @@ module bsg_trace_replay (
 	wire [3:0] op;
 	assign op = rom_data_i[payload_width_p+:4];
 	reg instr_completed;
-	assign addr_n = (instr_completed ? (addr_r + 1&#39;b1) : addr_r);
+	assign addr_n = (instr_completed ? addr_r + 1&#39;b1 : addr_r);
 	always @(*) begin
 		v_o = 1&#39;b0;
 		ready_o = done_r;
 		done_n = done_r;
-		if (((!done_r &amp; en_i) &amp; ~reset_i))
+		if ((!done_r &amp; en_i) &amp; ~reset_i)
 			case (op)
 				eSend: v_o = 1&#39;b1;
 				eReceive: ready_o = 1&#39;b1;
@@ -106,7 +106,7 @@ module bsg_trace_replay (
 		instr_completed = 1&#39;b0;
 		error_n = error_r;
 		cycle_ctr_n = cycle_ctr_r;
-		if (((!done_r &amp; en_i) &amp; ~reset_i))
+		if ((!done_r &amp; en_i) &amp; ~reset_i)
 			case (op)
 				eNop: instr_completed = 1&#39;b1;
 				eSend:
@@ -115,17 +115,17 @@ module bsg_trace_replay (
 				eReceive:
 					if (v_i) begin
 						instr_completed = 1&#39;b1;
-						if ((error_r == 0))
-							error_n = (data_i != data_o);
+						if (error_r == 0)
+							error_n = data_i != data_o;
 					end
 				eDone: instr_completed = 1&#39;b1;
 				eFinish: instr_completed = 1&#39;b1;
 				eCycleDec: begin
-					cycle_ctr_n = (cycle_ctr_r - 1&#39;b1);
-					instr_completed = ~|cycle_ctr_r;
+					cycle_ctr_n = cycle_ctr_r - 1&#39;b1;
+					instr_completed = ~(|cycle_ctr_r);
 				end
 				eCycleInit: begin
-					cycle_ctr_n = rom_data_i[(counter_width_p - 1):0];
+					cycle_ctr_n = rom_data_i[counter_width_p - 1:0];
 					instr_completed = 1;
 				end
 				default:
@@ -133,12 +133,12 @@ module bsg_trace_replay (
 			endcase
 	end
 	always @(negedge clk_i)
-		if (((instr_completed &amp; ~reset_i) &amp; ~done_r)) begin
+		if ((instr_completed &amp; ~reset_i) &amp; ~done_r) begin
 			case (op)
 				eSend:
 					$display(&#34;### bsg_trace_replay SEND %d&#39;b%b (%m)&#34;, payload_width_p, data_o);
 				eReceive:
-					if ((data_i !== data_o)) begin
+					if (data_i !== data_o) begin
 						$display(&#34;############################################################################&#34;);
 						$display(&#34;### bsg_trace_replay RECEIVE unmatched (%m) &#34;);
 						$display(&#34;###    &#34;);

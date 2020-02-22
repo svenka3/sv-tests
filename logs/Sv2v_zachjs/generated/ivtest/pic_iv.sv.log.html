@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/contrib/pic.v.html" target="file-frame">third_party/tests/ivtest/contrib/pic.v</a>
-time_elapsed: 2.620s
-ram usage: 19768 KB
+time_elapsed: 1.312s
+ram usage: 28732 KB
 </pre>
 <pre class="log">
 
@@ -52,20 +52,20 @@ module picalu (
 	parameter ALUOP_SWAP = 4&#39;b0111;
 	always @(a or b or cin or op)
 		case (op)
-			ALUOP_ADD: {addercout, y} &lt;= (a + b);
-			ALUOP_SUB: {addercout, y} &lt;= (a - b);
-			ALUOP_AND: {addercout, y} &lt;= {1&#39;b0, (a &amp; b)};
-			ALUOP_OR: {addercout, y} &lt;= {1&#39;b0, (a | b)};
-			ALUOP_XOR: {addercout, y} &lt;= {1&#39;b0, (a ^ b)};
+			ALUOP_ADD: {addercout, y} &lt;= a + b;
+			ALUOP_SUB: {addercout, y} &lt;= a - b;
+			ALUOP_AND: {addercout, y} &lt;= {1&#39;b0, a &amp; b};
+			ALUOP_OR: {addercout, y} &lt;= {1&#39;b0, a | b};
+			ALUOP_XOR: {addercout, y} &lt;= {1&#39;b0, a ^ b};
 			ALUOP_COM: {addercout, y} &lt;= {1&#39;b0, ~a};
 			ALUOP_ROR: {addercout, y} &lt;= {a[0], cin, a[7:1]};
 			ALUOP_ROL: {addercout, y} &lt;= {a[7], a[6:0], cin};
 			ALUOP_SWAP: {addercout, y} &lt;= {1&#39;b0, a[3:0], a[7:4]};
 			default: {addercout, y} &lt;= {1&#39;b0, 8&#39;h00};
 		endcase
-	always @(y) zout &lt;= (y == 8&#39;h00);
+	always @(y) zout &lt;= y == 8&#39;h00;
 	always @(addercout or op)
-		if ((op == ALUOP_SUB))
+		if (op == ALUOP_SUB)
 			cout &lt;= ~addercout;
 		else
 			cout &lt;= addercout;
@@ -214,12 +214,12 @@ module piccpu (
 	assign debuginst = inst;
 	assign debugstatus = status;
 	always @(fsel or fsr)
-		if ((fsel == INDF_ADDRESS))
+		if (fsel == INDF_ADDRESS)
 			fileaddr &lt;= fsr[6:0];
 		else
 			fileaddr &lt;= {fsr[6:5], fsel};
-	always @(regfilesel or fwe) regfilewe &lt;= (regfilesel &amp; fwe);
-	always @(regfilesel or aluasel or alubsel) regfilere &lt;= (regfilesel &amp; ((aluasel == ALUASEL_SBUS) | (alubsel == ALUBSEL_SBUS)));
+	always @(regfilesel or fwe) regfilewe &lt;= regfilesel &amp; fwe;
+	always @(regfilesel or aluasel or alubsel) regfilere &lt;= regfilesel &amp; ((aluasel == ALUASEL_SBUS) | (alubsel == ALUBSEL_SBUS));
 	always @(fileaddr)
 		casex (fileaddr)
 			7&#39;bXX00XXX: begin
@@ -275,11 +275,11 @@ module piccpu (
 			3&#39;b110: bdec &lt;= 8&#39;b01000000;
 			3&#39;b111: bdec &lt;= 8&#39;b10000000;
 		endcase
-	always @(bdec or bdpol) bd &lt;= (bdec ^ bdpol);
+	always @(bdec or bdpol) bd &lt;= bdec ^ bdpol;
 	always @(posedge clk)
 		if (reset)
 			inst &lt;= 12&#39;h000;
-		else if ((skip == 1&#39;b1))
+		else if (skip == 1&#39;b1)
 			inst &lt;= 12&#39;b000000000000;
 		else
 			inst &lt;= pdata;
@@ -314,51 +314,51 @@ module piccpu (
 	always @(posedge clk)
 		if (reset)
 			tmr0 &lt;= 8&#39;h00;
-		else if (((fwe &amp; specialsel) &amp; (fsel == TMR0_ADDRESS)))
+		else if ((fwe &amp; specialsel) &amp; (fsel == TMR0_ADDRESS))
 			tmr0 &lt;= dbus;
 		else
 			case (option[2:0])
 				3&#39;b000:
 					if (~|(prescaler &amp; 8&#39;b00000001))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 				3&#39;b001:
 					if (~|(prescaler &amp; 8&#39;b00000011))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 				3&#39;b010:
 					if (~|(prescaler &amp; 8&#39;b00000111))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 				3&#39;b011:
 					if (~|(prescaler &amp; 8&#39;b00001111))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 				3&#39;b100:
 					if (~|(prescaler &amp; 8&#39;b00011111))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 				3&#39;b101:
 					if (~|(prescaler &amp; 8&#39;b00111111))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 				3&#39;b110:
 					if (~|(prescaler &amp; 8&#39;b01111111))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 				3&#39;b111:
 					if (~|(prescaler &amp; 8&#39;b11111111))
-						tmr0 &lt;= (tmr0 + 1);
+						tmr0 &lt;= tmr0 + 1;
 			endcase
 	always @(posedge clk)
 		if (reset)
 			prescaler &lt;= 8&#39;h00;
 		else
-			prescaler &lt;= (prescaler + 1);
+			prescaler &lt;= prescaler + 1;
 	always @(posedge clk)
 		if (reset)
 			status &lt;= 8&#39;h00;
-		else if (((fwe &amp; specialsel) &amp; (fsel == STATUS_ADDRESS)))
+		else if ((fwe &amp; specialsel) &amp; (fsel == STATUS_ADDRESS))
 			status &lt;= dbus;
 		else
 			status &lt;= {status[7], status[6], status[5], status[4], status[3], (zwe ? aluz : status[2]), status[1], (cwe ? alucout : status[0])};
 	always @(posedge clk)
 		if (reset)
 			fsr &lt;= 8&#39;h00;
-		else if (((fwe &amp; specialsel) &amp; (fsel == FSR_ADDRESS)))
+		else if ((fwe &amp; specialsel) &amp; (fsel == FSR_ADDRESS))
 			fsr &lt;= dbus;
 	always @(posedge clk)
 		if (reset)
@@ -373,31 +373,31 @@ module piccpu (
 	always @(posedge clk)
 		if (reset)
 			portb &lt;= 8&#39;h00;
-		else if ((((fwe &amp; specialsel) &amp; (fsel == PORTB_ADDRESS)) &amp; ~istris))
+		else if (((fwe &amp; specialsel) &amp; (fsel == PORTB_ADDRESS)) &amp; ~istris)
 			portb &lt;= dbus;
 	always @(portb) portbout &lt;= portb;
 	always @(posedge clk)
 		if (reset)
 			portc &lt;= 8&#39;h00;
-		else if ((((fwe &amp; specialsel) &amp; (fsel == PORTC_ADDRESS)) &amp; ~istris))
+		else if (((fwe &amp; specialsel) &amp; (fsel == PORTC_ADDRESS)) &amp; ~istris)
 			portc &lt;= dbus;
 	always @(portc) portcout &lt;= portc;
 	always @(posedge clk)
 		if (reset)
 			trisa &lt;= 8&#39;hff;
-		else if ((((fwe &amp; specialsel) &amp; (fsel == PORTA_ADDRESS)) &amp; istris))
+		else if (((fwe &amp; specialsel) &amp; (fsel == PORTA_ADDRESS)) &amp; istris)
 			trisa &lt;= dbus;
 	always @(posedge clk)
 		if (reset)
 			trisb &lt;= 8&#39;hff;
-		else if ((((fwe &amp; specialsel) &amp; (fsel == PORTB_ADDRESS)) &amp; istris))
+		else if (((fwe &amp; specialsel) &amp; (fsel == PORTB_ADDRESS)) &amp; istris)
 			trisb &lt;= dbus;
 	always @(posedge clk)
 		if (reset)
 			trisc &lt;= 8&#39;hff;
-		else if ((((fwe &amp; specialsel) &amp; (fsel == PORTC_ADDRESS)) &amp; istris))
+		else if (((fwe &amp; specialsel) &amp; (fsel == PORTC_ADDRESS)) &amp; istris)
 			trisc &lt;= dbus;
-	always @(pc) pcplus1 &lt;= (pc + 1);
+	always @(pc) pcplus1 &lt;= pc + 1;
 	parameter PC_SELECT_PCPLUS1 = 3&#39;b000;
 	parameter PC_SELECT_K = 3&#39;b001;
 	parameter PC_SELECT_STACK1 = 3&#39;b010;
@@ -416,7 +416,7 @@ module piccpu (
 			3&#39;b111: pc &lt;= pc;
 		endcase
 	always @(inst or stacklevel or reset)
-		if ((reset == 1&#39;b1))
+		if (reset == 1&#39;b1)
 			pcinsel &lt;= PC_SELECT_RESET_VECTOR;
 		else
 			casex ({inst, stacklevel})
@@ -432,7 +432,7 @@ module piccpu (
 	always @(posedge clk)
 		if (reset)
 			stack1 &lt;= 9&#39;h000;
-		else if ((inst[11:8] == 4&#39;b1001))
+		else if (inst[11:8] == 4&#39;b1001)
 			case (stacklevel)
 				2&#39;b00: begin
 					stack1 &lt;= pc;
@@ -448,7 +448,7 @@ module piccpu (
 					$display(&#34;Too many CALLs!!&#34;);
 			endcase
 	always @(posedge clk)
-		if ((reset == 1&#39;b1))
+		if (reset == 1&#39;b1)
 			stacklevel &lt;= 2&#39;b00;
 		else
 			casex ({inst, stacklevel})
@@ -467,11 +467,11 @@ module piccpu (
 	always @(posedge clk)
 		if (reset)
 			special_peripheral_writeable_bits &lt;= 4&#39;b0000;
-		else if (((fwe &amp; expsel) &amp; (fileaddr == EXPADDRESS_LILADDER)))
+		else if ((fwe &amp; expsel) &amp; (fileaddr == EXPADDRESS_LILADDER))
 			special_peripheral_writeable_bits &lt;= dbus;
-	always @(special_peripheral_writeable_bits) special_peripheral_readeable_bits &lt;= (special_peripheral_writeable_bits + 1);
+	always @(special_peripheral_writeable_bits) special_peripheral_readeable_bits &lt;= special_peripheral_writeable_bits + 1;
 	always @(fileaddr or special_peripheral_readeable_bits)
-		if ((fileaddr == EXPADDRESS_LILADDER))
+		if (fileaddr == EXPADDRESS_LILADDER)
 			ebus &lt;= special_peripheral_readeable_bits;
 		else
 			ebus &lt;= 8&#39;hff;
@@ -599,11 +599,11 @@ module picregs (
 		if (we)
 			;
 		if (~reset)
-			cycle_counter = (cycle_counter + 1);
+			cycle_counter = cycle_counter + 1;
 	end
 	always @(bank or location or re or commonblockout or highblock0out or highblock1out or highblock2out or highblock3out)
 		if (re) begin
-			if ((location[4:3] == 2&#39;b01))
+			if (location[4:3] == 2&#39;b01)
 				dout &lt;= commonblockout;
 			else if (location[4])
 				case (bank)
@@ -626,7 +626,7 @@ module picregs (
 			highblock3sel &lt;= 1&#39;b0;
 		end
 		else if (we) begin
-			if ((location[4:3] == 2&#39;b01)) begin
+			if (location[4:3] == 2&#39;b01) begin
 				commonblocksel &lt;= 1&#39;b1;
 				highblock0sel &lt;= 1&#39;b0;
 				highblock1sel &lt;= 1&#39;b0;
@@ -682,7 +682,7 @@ module picregs (
 			3&#39;h7: commonblockout &lt;= r15;
 		endcase
 	always @(posedge clk)
-		if ((we &amp; commonblocksel))
+		if (we &amp; commonblocksel)
 			case (location[2:0])
 				3&#39;h0: r8 &lt;= commonblockin;
 				3&#39;h1: r9 &lt;= commonblockin;
@@ -729,7 +729,7 @@ module picregs (
 			4&#39;hF: highblock0out &lt;= r31;
 		endcase
 	always @(posedge clk)
-		if ((we &amp; highblock0sel))
+		if (we &amp; highblock0sel)
 			case (location[3:0])
 				4&#39;h0: r16 &lt;= highblock0in;
 				4&#39;h1: r17 &lt;= highblock0in;
@@ -784,7 +784,7 @@ module picregs (
 			4&#39;hF: highblock1out &lt;= r63;
 		endcase
 	always @(posedge clk)
-		if ((we &amp; highblock1sel))
+		if (we &amp; highblock1sel)
 			case (location[3:0])
 				4&#39;h0: r48 &lt;= highblock1in;
 				4&#39;h1: r49 &lt;= highblock1in;
@@ -839,7 +839,7 @@ module picregs (
 			4&#39;hF: highblock2out &lt;= r95;
 		endcase
 	always @(posedge clk)
-		if ((we &amp; highblock2sel))
+		if (we &amp; highblock2sel)
 			case (location[3:0])
 				4&#39;h0: r80 &lt;= highblock2in;
 				4&#39;h1: r81 &lt;= highblock2in;
@@ -893,7 +893,7 @@ module picregs (
 			4&#39;hF: highblock3out &lt;= 8&#39;hff;
 		endcase
 	always @(posedge clk)
-		if ((we &amp; highblock3sel))
+		if (we &amp; highblock3sel)
 			case (location[3:0])
 				4&#39;h0: r112 &lt;= highblock3in;
 				4&#39;h1: r113 &lt;= highblock3in;
@@ -1188,12 +1188,12 @@ module pictest;
 		forever begin
 			@(posedge clk)
 				;
-			cycles = (cycles + 1);
-			if (((cycles % 256) == 0))
+			cycles = cycles + 1;
+			if ((cycles % 256) == 0)
 				if (dbg_showcycles)
 					$display(&#34;#Cycles = %0d&#34;, cycles);
 			if (dbg_limitcycles)
-				if ((cycles &gt; dbg_maxcycles)) begin
+				if (cycles &gt; dbg_maxcycles) begin
 					$display(&#34;Maximum cycles (%0d) Exceeded.  Halting simulation.&#34;, dbg_maxcycles);
 					$finish;
 				end
@@ -1215,7 +1215,7 @@ module pictest;
 		forever begin
 			@(negedge clk)
 				;
-			if ((debugw != last_debugw))
+			if (debugw != last_debugw)
 				$display(&#34;W = %0h&#34;, debugw);
 			last_debugw = debugw;
 		end
@@ -1231,135 +1231,135 @@ module pictest;
 		forever begin
 			@(negedge clk)
 				;
-			if ((debuginst[11:0] == 12&#39;b0000_0000_0000))
+			if (debuginst[11:0] == 12&#39;b0000_0000_0000)
 				$display(&#34;%h NOP&#34;, last_pc);
-			else if ((debuginst[11:5] == 7&#39;b0000_001))
+			else if (debuginst[11:5] == 7&#39;b0000_001)
 				$display(&#34;%h MOVWF  f=0x%0h&#34;, last_pc, debuginst[4:0]);
-			else if ((debuginst == 12&#39;b0000_0100_0000))
+			else if (debuginst == 12&#39;b0000_0100_0000)
 				$display(&#34;%h CLRW&#34;, last_pc);
-			else if ((debuginst[11:5] == 7&#39;b0000_011))
+			else if (debuginst[11:5] == 7&#39;b0000_011)
 				$display(&#34;%h CLRF  f=0x%0h&#34;, last_pc, debuginst[4:0]);
-			else if ((debuginst[11:6] == 7&#39;b0000_10)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0000_10) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h SUBWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h SUBWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0000_11)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0000_11) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h DECF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h DECF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0001_00)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0001_00) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h IORWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h IORWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0001_01)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0001_01) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h ANDWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h ANDWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0001_10)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0001_10) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;XORWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h XORWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0001_11)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0001_11) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h ADDWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h ADDWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0010_00)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0010_00) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h MOVF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h MOVF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0010_01)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0010_01) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h COMF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h COMF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0010_10)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0010_10) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h INCF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h INCF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0010_11)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0010_11) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h DECFSZ  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h DECFSZ  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0011_00)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0011_00) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h RRF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h RRF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0011_01)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0011_01) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h RLF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h RLF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0011_10)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0011_10) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h SWAPF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h SWAPF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:6] == 7&#39;b0011_11)) begin
-				if ((piccpu_inst.d == 0))
+			else if (debuginst[11:6] == 7&#39;b0011_11) begin
+				if (piccpu_inst.d == 0)
 					$display(&#34;%h INCFSZ  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h INCFSZ  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if ((debuginst[11:8] == 4&#39;b0100))
+			else if (debuginst[11:8] == 4&#39;b0100)
 				$display(&#34;%h BCF  f=0x%0h, bit=%0d&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
-			else if ((debuginst[11:8] == 4&#39;b0101))
+			else if (debuginst[11:8] == 4&#39;b0101)
 				$display(&#34;%h BCF  f=0x%0h, bit=%0d&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
-			else if ((debuginst[11:8] == 4&#39;b0110)) begin
+			else if (debuginst[11:8] == 4&#39;b0110) begin
 				if (piccpu_inst.skip)
 					$display(&#34;%h BTFSC  f=0x%0h, bit=%0d  {Will Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 				else
 					$display(&#34;%h BTFSC  f=0x%0h, bit=%0d  {Will NOT Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 			end
-			else if ((debuginst[11:8] == 4&#39;b0111)) begin
+			else if (debuginst[11:8] == 4&#39;b0111) begin
 				if (piccpu_inst.skip)
 					$display(&#34;%h BTFSS  f=0x%0h, bit=%0d  {Will Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 				else
 					$display(&#34;%h BTFSS  f=0x%0h, bit=%0d  {Will NOT Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 			end
-			else if ((debuginst[11:0] == 16&#39;b0000_0000_0010))
+			else if (debuginst[11:0] == 16&#39;b0000_0000_0010)
 				$display(&#34;%h OPTION&#34;, last_pc);
-			else if ((debuginst[11:0] == 16&#39;b0000_0000_0011))
+			else if (debuginst[11:0] == 16&#39;b0000_0000_0011)
 				$display(&#34;%h SLEEP&#34;, last_pc);
-			else if ((debuginst[11:0] == 16&#39;b0000_0000_0100))
+			else if (debuginst[11:0] == 16&#39;b0000_0000_0100)
 				$display(&#34;%h CLRWDT&#34;, last_pc);
-			else if ((debuginst[11:3] == 13&#39;b0000_0000_0))
+			else if (debuginst[11:3] == 13&#39;b0000_0000_0)
 				$display(&#34;%h TRIS,  f=0x%0h&#34;, last_pc, debuginst[2:0]);
-			else if ((debuginst[11:8] == 4&#39;b1000))
+			else if (debuginst[11:8] == 4&#39;b1000)
 				$display(&#34;%h RETLW,  k=0x%0h&#34;, last_pc, debuginst[7:0]);
-			else if ((debuginst[11:8] == 4&#39;b1001))
+			else if (debuginst[11:8] == 4&#39;b1001)
 				$display(&#34;%h CALL,  k=0x%0h&#34;, last_pc, debuginst[7:0]);
-			else if ((debuginst[11:9] == 3&#39;b101))
+			else if (debuginst[11:9] == 3&#39;b101)
 				$display(&#34;%h GOTO,  k=0x%0h&#34;, last_pc, debuginst[8:0]);
-			else if ((debuginst[11:8] == 4&#39;b1100))
+			else if (debuginst[11:8] == 4&#39;b1100)
 				$display(&#34;%h MOVLW,  k=0x%0h&#34;, last_pc, debuginst[7:0]);
-			else if ((debuginst[11:8] == 4&#39;b1101))
+			else if (debuginst[11:8] == 4&#39;b1101)
 				$display(&#34;%h IORLW,  k=0x%0h&#34;, last_pc, debuginst[7:0]);
-			else if ((debuginst[11:8] == 4&#39;b1110))
+			else if (debuginst[11:8] == 4&#39;b1110)
 				$display(&#34;%h ANDLW,  k=0x%0h&#34;, last_pc, debuginst[7:0]);
-			else if ((debuginst[11:8] == 4&#39;b1111))
+			else if (debuginst[11:8] == 4&#39;b1111)
 				$display(&#34;%h XORLW,  k=0x%0h&#34;, last_pc, debuginst[7:0]);
 			else
 				$display(&#34;Hmmm!  instruction not recognized?! %0h&#34;, debuginst);

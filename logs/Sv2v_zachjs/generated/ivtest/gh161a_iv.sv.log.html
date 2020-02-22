@@ -16,25 +16,25 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/gh161a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/gh161a.v</a>
-time_elapsed: 0.040s
-ram usage: 11400 KB
+time_elapsed: 0.068s
+ram usage: 11608 KB
 </pre>
 <pre class="log">
 
 module test;
 	reg [127:0] main;
 	initial begin
-		main[127:96] = 32&#39;hCAFE;
-		main[95:64] = 32&#39;h00000001;
-		main[0+:32] = 32&#39;hACE;
-		main[32+:32] = 32&#39;hECA;
+		main[127-:32] = 32&#39;hCAFE;
+		main[95-:32] = 32&#39;h00000001;
+		main[31-:32] = 32&#39;hACE;
+		main[63-:32] = 32&#39;hECA;
 		$display(&#34;main=0x%08X&#34;, main);
-		if ((main !== 128&#39;h0000cafe0000000100000eca00000ace)) begin
+		if (main !== 128&#39;h0000cafe0000000100000eca00000ace) begin
 			$display(&#34;FAILED -- main != 128&#39;h0000cafe0000000100000eca00000ace&#34;);
 			$finish;
 		end
-		$display(&#34;main.row_local=0x%08X&#34;, main[127:96]);
-		$display(&#34;main.sub=0x%08X&#34;, main[95:64]);
+		$display(&#34;main.row_local=0x%08X&#34;, main[127-:32]);
+		$display(&#34;main.sub=0x%08X&#34;, main[95-:32]);
 		$display(&#34;PASSED&#34;);
 		$finish;
 	end

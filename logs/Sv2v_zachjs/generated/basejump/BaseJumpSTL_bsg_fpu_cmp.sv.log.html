@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_cmp.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_cmp.v</a>
-time_elapsed: 0.764s
-ram usage: 14224 KB
+time_elapsed: 0.376s
+ram usage: 15908 KB
 </pre>
 <pre class="log">
 
@@ -35,15 +35,15 @@ module bsg_fpu_cmp (
 );
 	parameter e_p = &#34;inv&#34;;
 	parameter m_p = &#34;inv&#34;;
-	input [(e_p + m_p):0] a_i;
-	input [(e_p + m_p):0] b_i;
+	input [e_p + m_p:0] a_i;
+	input [e_p + m_p:0] b_i;
 	output reg eq_o;
 	output reg lt_o;
 	output reg le_o;
 	output reg lt_le_invalid_o;
 	output reg eq_invalid_o;
-	output reg [(e_p + m_p):0] min_o;
-	output reg [(e_p + m_p):0] max_o;
+	output reg [e_p + m_p:0] min_o;
+	output reg [e_p + m_p:0] max_o;
 	output reg min_max_invalid_o;
 	wire a_zero;
 	wire a_nan;
@@ -88,20 +88,20 @@ module bsg_fpu_cmp (
 		.man_o()
 	);
 	wire mag_a_lt;
-	bsg_less_than #(.width_p((e_p + m_p))) lt_mag(
-		.a_i(a_i[0+:(e_p + m_p)]),
-		.b_i(b_i[0+:(e_p + m_p)]),
+	bsg_less_than #(.width_p(e_p + m_p)) lt_mag(
+		.a_i(a_i[0+:e_p + m_p]),
+		.b_i(b_i[0+:e_p + m_p]),
 		.o(mag_a_lt)
 	);
 	always @(*)
-		if ((a_nan | b_nan)) begin
+		if (a_nan | b_nan) begin
 			eq_o = 1&#39;b0;
 			lt_o = 1&#39;b0;
 			le_o = 1&#39;b0;
 			lt_le_invalid_o = 1&#39;b1;
-			eq_invalid_o = (a_sig_nan | b_sig_nan);
+			eq_invalid_o = a_sig_nan | b_sig_nan;
 		end
-		else if ((a_zero &amp; b_zero)) begin
+		else if (a_zero &amp; b_zero) begin
 			eq_o = 1&#39;b1;
 			lt_o = 1&#39;b0;
 			le_o = 1&#39;b1;
@@ -109,13 +109,13 @@ module bsg_fpu_cmp (
 			eq_invalid_o = 1&#39;b0;
 		end
 		else begin
-			eq_o = (a_i == b_i);
+			eq_o = a_i == b_i;
 			lt_le_invalid_o = 1&#39;b0;
 			eq_invalid_o = 1&#39;b0;
 			case ({a_sign, b_sign})
 				2&#39;b00: begin
 					lt_o = mag_a_lt;
-					le_o = (mag_a_lt | eq_o);
+					le_o = mag_a_lt | eq_o;
 				end
 				2&#39;b01: begin
 					lt_o = 1&#39;b0;
@@ -126,32 +126,32 @@ module bsg_fpu_cmp (
 					le_o = 1&#39;b1;
 				end
 				2&#39;b11: begin
-					lt_o = (~mag_a_lt &amp; ~eq_o);
-					le_o = (~mag_a_lt | eq_o);
+					lt_o = ~mag_a_lt &amp; ~eq_o;
+					le_o = ~mag_a_lt | eq_o;
 				end
 			endcase
 		end
 	always @(*)
-		if ((a_nan &amp; b_nan)) begin
-			min_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {(m_p - 1) {1&#39;b0}}};
-			max_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {(m_p - 1) {1&#39;b0}}};
-			min_max_invalid_o = (a_sig_nan | b_sig_nan);
+		if (a_nan &amp; b_nan) begin
+			min_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {m_p - 1 {1&#39;b0}}};
+			max_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {m_p - 1 {1&#39;b0}}};
+			min_max_invalid_o = a_sig_nan | b_sig_nan;
 		end
-		else if ((a_nan &amp; ~b_nan)) begin
+		else if (a_nan &amp; ~b_nan) begin
 			min_o = b_i;
 			max_o = b_i;
 			min_max_invalid_o = a_sig_nan;
 		end
-		else if ((~a_nan &amp; b_nan)) begin
+		else if (~a_nan &amp; b_nan) begin
 			min_o = a_i;
 			max_o = a_i;
 			min_max_invalid_o = b_sig_nan;
 		end
 		else begin
 			min_max_invalid_o = 1&#39;b0;
-			if ((a_zero &amp; b_zero)) begin
-				min_o = {(a_sign | b_sign), {(e_p + m_p) {1&#39;b0}}};
-				max_o = {(a_sign &amp; b_sign), {(e_p + m_p) {1&#39;b0}}};
+			if (a_zero &amp; b_zero) begin
+				min_o = {a_sign | b_sign, {e_p + m_p {1&#39;b0}}};
+				max_o = {a_sign &amp; b_sign, {e_p + m_p {1&#39;b0}}};
 			end
 			else if (lt_o) begin
 				min_o = a_i;

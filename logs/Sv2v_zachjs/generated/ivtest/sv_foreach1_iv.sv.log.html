@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sv_foreach1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sv_foreach1.v</a>
-time_elapsed: 0.104s
-ram usage: 11924 KB
+time_elapsed: 0.120s
+ram usage: 12044 KB
 </pre>
 <pre class="log">
 
@@ -27,21 +27,21 @@ module main;
 	reg [3:0] idx1;
 	reg [3:0] idx2;
 	initial begin
-		for (idx1 = 0; (idx1 &lt; 4); idx1 = (idx1 + 1))
-			for (idx2 = 0; (idx2 &lt;= 7); idx2 = (idx2 + 1))
+		for (idx1 = 0; idx1 &lt; 4; idx1 = idx1 + 1)
+			for (idx2 = 0; idx2 &lt;= 7; idx2 = idx2 + 1)
 				foo[idx1][idx2] = {idx1[1:0], idx2[2:0]};
 		begin : sv2v_autoblock_1
 			integer ia;
-			for (ia = 0; ((-1 == 1) ? (ia &gt;= 3) : (ia &lt;= 3)); ia = (ia - -1))
+			for (ia = 0; ia &lt;= 3; ia = ia + 1)
 				begin : sv2v_autoblock_2
 					integer ib;
-					for (ib = 0; ((-1 == 1) ? (ib &gt;= 7) : (ib &lt;= 7)); ib = (ib - -1))
+					for (ib = 0; ib &lt;= 7; ib = ib + 1)
 						begin
-							if (((ia &gt; 3) || (ib &gt; 7))) begin
+							if ((ia &gt; 3) || (ib &gt; 7)) begin
 								$display(&#34;FAILED -- index out of range: ia=%0d, ib=%0d&#34;, ia, ib);
 								$finish;
 							end
-							if ((foo[ia][ib] !== {ia[1:0], ib[2:0]})) begin
+							if (foo[ia][ib] !== {ia[1:0], ib[2:0]}) begin
 								$display(&#34;FAILED -- foo[%0d][%0d] == %b&#34;, ia, ib, foo[ia][ib]);
 								$finish;
 							end
@@ -49,9 +49,9 @@ module main;
 						end
 				end
 		end
-		for (idx1 = 0; (idx1 &lt; 4); idx1 = (idx1 + 1))
-			for (idx2 = 0; (idx2 &lt;= 7); idx2 = (idx2 + 1))
-				if ((foo[idx1][idx2] !== 5&#39;bzzzz)) begin
+		for (idx1 = 0; idx1 &lt; 4; idx1 = idx1 + 1)
+			for (idx2 = 0; idx2 &lt;= 7; idx2 = idx2 + 1)
+				if (foo[idx1][idx2] !== 5&#39;bzzzz) begin
 					$display(&#34;FAILED -- foreach failed to visit foo[%0d][%0d]&#34;, idx1, idx2);
 					$finish;
 				end

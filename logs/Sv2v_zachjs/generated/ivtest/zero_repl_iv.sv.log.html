@@ -16,20 +16,20 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/zero_repl.v.html" target="file-frame">third_party/tests/ivtest/ivltests/zero_repl.v</a>
-time_elapsed: 0.080s
-ram usage: 11496 KB
+time_elapsed: 0.064s
+ram usage: 11352 KB
 </pre>
 <pre class="log">
 
 module test;
 	parameter width = 32;
-	localparam fill = (32 - width);
+	localparam fill = 32 - width;
 	localparam extend = 0;
 	reg passed;
-	reg [(width - 1):0] in;
+	reg [width - 1:0] in;
 	reg [31:0] lat1;
 	reg [31:0] lat2;
-	wire sign_bit = in[(width - 1)];
+	wire sign_bit = in[width - 1];
 	wire lsb = in[0];
 	initial begin
 		passed = 1&#39;b1;
@@ -38,11 +38,11 @@ module test;
 		lat2 = {{fill {sign_bit}}, in, {extend {lsb}}};
 		#(1)
 			;
-		if ((lat1 !== 32&#39;h80000001)) begin
+		if (lat1 !== 32&#39;h80000001) begin
 			$display(&#34;FAILED: zero-replication (NB): got %h&#34;, lat1);
 			passed = 1&#39;b0;
 		end
-		if ((lat2 !== 32&#39;h80000001)) begin
+		if (lat2 !== 32&#39;h80000001) begin
 			$display(&#34;FAILED: zero-replication (B): got %h&#34;, lat2);
 			passed = 1&#39;b0;
 		end

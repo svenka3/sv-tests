@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/vhdl_ssub23_bit.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vhdl_ssub23_bit.v</a>
-time_elapsed: 0.144s
-ram usage: 11960 KB
+time_elapsed: 0.184s
+ram usage: 12068 KB
 </pre>
 <pre class="log">
 
@@ -30,11 +30,11 @@ module check (
 	input signed [22:0] b;
 	input signed [22:0] c;
 	wire signed [22:0] int_AB;
-	assign int_AB = (a - b);
+	assign int_AB = a - b;
 	always @(a or b or int_AB or c) begin
 		#(1)
 			;
-		if ((int_AB != c)) begin
+		if (int_AB != c) begin
 			$display(&#34;ERROR&#34;);
 			$finish;
 		end
@@ -46,16 +46,16 @@ module stimulus (
 );
 	output reg signed [22:0] A;
 	output reg signed [22:0] B;
-	parameter MAX = (1 &lt;&lt; 23);
+	parameter MAX = 1 &lt;&lt; 23;
 	parameter S = 10000;
 	reg [31:0] i;
 	initial begin
 		A = 0;
 		B = 0;
-		for (i = 0; (i &lt; S); i = (i + 1))
+		for (i = 0; i &lt; S; i = i + 1)
 			begin
-				#(1) A = ($random % MAX);
-				B = ($random % MAX);
+				#(1) A = $random % MAX;
+				B = $random % MAX;
 			end
 		#(1) A = 0;
 		B = 0;

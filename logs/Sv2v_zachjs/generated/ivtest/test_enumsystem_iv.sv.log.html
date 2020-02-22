@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/test_enumsystem.v.html" target="file-frame">third_party/tests/ivtest/ivltests/test_enumsystem.v</a>
-time_elapsed: 0.072s
-ram usage: 12328 KB
+time_elapsed: 0.144s
+ram usage: 10628 KB
 </pre>
 <pre class="log">
 
@@ -35,7 +35,7 @@ module stim (
 		if (reset)
 			count &lt;= 3&#39;b0;
 		else
-			count &lt;= (count + 1);
+			count &lt;= count + 1;
 	initial begin
 		en = 1;
 		repeat (100) @(posedge clk)
@@ -65,8 +65,8 @@ module scoreboard (
 		forever begin
 			#(1)
 				;
-			if ((en == 0)) begin
-				if ((y !== 4&#39;b0000)) begin
+			if (en == 0) begin
+				if (y !== 4&#39;b0000) begin
 					$display(&#34;ERROR&#34;);
 					$finish;
 				end
@@ -76,27 +76,27 @@ module scoreboard (
 					;
 				case (count)
 					0:
-						if ((y !== 4&#39;b1000)) begin
+						if (y !== 4&#39;b1000) begin
 							$display(&#34;ERROR&#34;);
 							$finish;
 						end
 					1:
-						if ((y !== 4&#39;b0100)) begin
+						if (y !== 4&#39;b0100) begin
 							$display(&#34;ERROR&#34;);
 							$finish;
 						end
 					2:
-						if ((y !== 4&#39;b0010)) begin
+						if (y !== 4&#39;b0010) begin
 							$display(&#34;ERROR&#34;);
 							$finish;
 						end
 					3:
-						if ((y !== 4&#39;b0001)) begin
+						if (y !== 4&#39;b0001) begin
 							$display(&#34;ERROR&#34;);
 							$finish;
 						end
 					default:
-						if (((y !== 4&#39;b1111) &amp;&amp; (en == 1))) begin
+						if ((y !== 4&#39;b1111) &amp;&amp; (en == 1)) begin
 							$display(&#34;ERROR here, en = %d&#34;, en);
 							$finish;
 						end
@@ -107,7 +107,7 @@ module scoreboard (
 endmodule
 module test;
 	parameter T = 10;
-	parameter S = ((2 * 10) * 150);
+	parameter S = 3000;
 	reg clk = 0;
 	reg reset = 0;
 	wire en;

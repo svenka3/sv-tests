@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v</a>
-time_elapsed: 0.376s
-ram usage: 15964 KB
+time_elapsed: 0.396s
+ram usage: 13580 KB
 </pre>
 <pre class="log">
 
@@ -35,11 +35,11 @@ module bsg_credit_to_token (
 	input credit_i;
 	input ready_i;
 	output token_o;
-	localparam counter_width_lp = $clog2((max_val_p + 1));
-	localparam step_width_lp = $clog2((decimation_p + 1));
-	wire [(counter_width_lp - 1):0] count;
-	wire [(step_width_lp - 1):0] up;
-	wire [(step_width_lp - 1):0] down;
+	localparam counter_width_lp = $clog2(max_val_p + 1);
+	localparam step_width_lp = $clog2(decimation_p + 1);
+	wire [counter_width_lp - 1:0] count;
+	wire [step_width_lp - 1:0] up;
+	wire [step_width_lp - 1:0] down;
 	wire token_ready;
 	wire token_almost_ready;
 	bsg_counter_up_down_variable #(
@@ -53,14 +53,14 @@ module bsg_credit_to_token (
 		.down_i(down),
 		.count_o(count)
 	);
-	assign up = {{(step_width_lp - 1) {1&#39;b0}}, credit_i};
-	assign down = (token_o ? sv2v_cast_1B62F($unsigned(decimation_p)) : sv2v_cast_1B62F(0));
-	assign token_ready = (count &gt;= decimation_p);
-	assign token_almost_ready = (count &gt;= $unsigned((decimation_p - 1)));
-	assign token_o = (ready_i &amp; (token_ready | (token_almost_ready &amp; credit_i)));
-	function automatic [($clog2((decimation_p + 1)) - 1):0] sv2v_cast_1B62F;
-		input reg [($clog2((decimation_p + 1)) - 1):0] inp;
-		sv2v_cast_1B62F = inp;
+	assign up = {{step_width_lp - 1 {1&#39;b0}}, credit_i};
+	assign down = (token_o ? sv2v_cast_20BB6($unsigned(decimation_p)) : sv2v_cast_20BB6(0));
+	assign token_ready = count &gt;= decimation_p;
+	assign token_almost_ready = count &gt;= $unsigned(decimation_p - 1);
+	assign token_o = ready_i &amp; (token_ready | (token_almost_ready &amp; credit_i));
+	function automatic [$clog2(decimation_p + 1) - 1:0] sv2v_cast_20BB6;
+		input reg [$clog2(decimation_p + 1) - 1:0] inp;
+		sv2v_cast_20BB6 = inp;
 	endfunction
 endmodule
 

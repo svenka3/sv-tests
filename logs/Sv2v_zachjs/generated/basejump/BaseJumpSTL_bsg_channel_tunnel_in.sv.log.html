@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_channel_tunnel_in.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_channel_tunnel_in.v</a>
-time_elapsed: 0.676s
-ram usage: 14108 KB
+time_elapsed: 0.260s
+ram usage: 15908 KB
 </pre>
 <pre class="log">
 
@@ -40,28 +40,28 @@ module bsg_channel_tunnel_in (
 	parameter remote_credits_p = &#34;inv&#34;;
 	parameter use_pseudo_large_fifo_p = 0;
 	parameter lg_credit_decimation_p = 4;
-	parameter tag_width_lp = $clog2((num_in_p + 1));
-	parameter tagged_width_lp = (tag_width_lp + width_p);
-	parameter lg_remote_credits_lp = $clog2((remote_credits_p + 1));
+	parameter tag_width_lp = $clog2(num_in_p + 1);
+	parameter tagged_width_lp = tag_width_lp + width_p;
+	parameter lg_remote_credits_lp = $clog2(remote_credits_p + 1);
 	input clk_i;
 	input reset_i;
-	input [(tagged_width_lp - 1):0] data_i;
+	input [tagged_width_lp - 1:0] data_i;
 	input v_i;
 	output yumi_o;
-	output [(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + -1) : (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + ((width_p - 1) - 1))) : (((width_p - 1) &gt;= 0) ? ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) + (((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) - 1)) : ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)) + (((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p))) - 1)))):(((num_in_p - 1) &gt;= 0) ? (((width_p - 1) &gt;= 0) ? 0 : (width_p - 1)) : (((width_p - 1) &gt;= 0) ? ((num_in_p - 1) * (((width_p - 1) &gt;= 0) ? width_p : (2 - width_p))) : ((width_p - 1) + ((num_in_p - 1) * ((0 &gt;= (width_p - 1)) ? (2 - width_p) : width_p)))))] data_o;
-	output [(num_in_p - 1):0] v_o;
-	input [(num_in_p - 1):0] yumi_i;
-	output [(((num_in_p - 1) &gt;= 0) ? (((lg_remote_credits_lp - 1) &gt;= 0) ? (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) + -1) : (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp)) + ((lg_remote_credits_lp - 1) - 1))) : (((lg_remote_credits_lp - 1) &gt;= 0) ? ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) + (((num_in_p - 1) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) - 1)) : ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp)) + (((lg_remote_credits_lp - 1) + ((num_in_p - 1) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp))) - 1)))):(((num_in_p - 1) &gt;= 0) ? (((lg_remote_credits_lp - 1) &gt;= 0) ? 0 : (lg_remote_credits_lp - 1)) : (((lg_remote_credits_lp - 1) &gt;= 0) ? ((num_in_p - 1) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) : ((lg_remote_credits_lp - 1) + ((num_in_p - 1) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp)))))] credit_local_return_data_o;
+	output [((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] data_o;
+	output [num_in_p - 1:0] v_o;
+	input [num_in_p - 1:0] yumi_i;
+	output [((num_in_p - 1) &gt;= 0 ? ((lg_remote_credits_lp - 1) &gt;= 0 ? (num_in_p * lg_remote_credits_lp) + -1 : (num_in_p * (2 - lg_remote_credits_lp)) + ((lg_remote_credits_lp - 1) - 1)) : ((lg_remote_credits_lp - 1) &gt;= 0 ? ((2 - num_in_p) * lg_remote_credits_lp) + (((num_in_p - 1) * lg_remote_credits_lp) - 1) : ((2 - num_in_p) * (2 - lg_remote_credits_lp)) + (((lg_remote_credits_lp - 1) + ((num_in_p - 1) * (2 - lg_remote_credits_lp))) - 1))):((num_in_p - 1) &gt;= 0 ? ((lg_remote_credits_lp - 1) &gt;= 0 ? 0 : lg_remote_credits_lp - 1) : ((lg_remote_credits_lp - 1) &gt;= 0 ? (num_in_p - 1) * lg_remote_credits_lp : (lg_remote_credits_lp - 1) + ((num_in_p - 1) * (2 - lg_remote_credits_lp))))] credit_local_return_data_o;
 	output credit_local_return_v_o;
-	output [(((num_in_p - 1) &gt;= 0) ? (((lg_remote_credits_lp - 1) &gt;= 0) ? (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) + -1) : (((((num_in_p - 1) &gt;= 0) ? num_in_p : (2 - num_in_p)) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp)) + ((lg_remote_credits_lp - 1) - 1))) : (((lg_remote_credits_lp - 1) &gt;= 0) ? ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) + (((num_in_p - 1) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) - 1)) : ((((0 &gt;= (num_in_p - 1)) ? (2 - num_in_p) : num_in_p) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp)) + (((lg_remote_credits_lp - 1) + ((num_in_p - 1) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp))) - 1)))):(((num_in_p - 1) &gt;= 0) ? (((lg_remote_credits_lp - 1) &gt;= 0) ? 0 : (lg_remote_credits_lp - 1)) : (((lg_remote_credits_lp - 1) &gt;= 0) ? ((num_in_p - 1) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))) : ((lg_remote_credits_lp - 1) + ((num_in_p - 1) * ((0 &gt;= (lg_remote_credits_lp - 1)) ? (2 - lg_remote_credits_lp) : lg_remote_credits_lp)))))] credit_remote_return_data_o;
+	output [((num_in_p - 1) &gt;= 0 ? ((lg_remote_credits_lp - 1) &gt;= 0 ? (num_in_p * lg_remote_credits_lp) + -1 : (num_in_p * (2 - lg_remote_credits_lp)) + ((lg_remote_credits_lp - 1) - 1)) : ((lg_remote_credits_lp - 1) &gt;= 0 ? ((2 - num_in_p) * lg_remote_credits_lp) + (((num_in_p - 1) * lg_remote_credits_lp) - 1) : ((2 - num_in_p) * (2 - lg_remote_credits_lp)) + (((lg_remote_credits_lp - 1) + ((num_in_p - 1) * (2 - lg_remote_credits_lp))) - 1))):((num_in_p - 1) &gt;= 0 ? ((lg_remote_credits_lp - 1) &gt;= 0 ? 0 : lg_remote_credits_lp - 1) : ((lg_remote_credits_lp - 1) &gt;= 0 ? (num_in_p - 1) * lg_remote_credits_lp : (lg_remote_credits_lp - 1) + ((num_in_p - 1) * (2 - lg_remote_credits_lp))))] credit_remote_return_data_o;
 	input credit_remote_return_yumi_i;
 	wire credit_v_lo;
-	wire [(width_p - 1):0] credit_data_lo;
+	wire [width_p - 1:0] credit_data_lo;
 	bsg_1_to_n_tagged_fifo #(
 		.width_p(width_p),
-		.num_out_p((num_in_p + 1)),
+		.num_out_p(num_in_p + 1),
 		.els_p(remote_credits_p),
-		.unbuffered_mask_p((1 &lt;&lt; num_in_p)),
+		.unbuffered_mask_p(1 &lt;&lt; num_in_p),
 		.use_pseudo_large_fifo_p(use_pseudo_large_fifo_p)
 	) b1_ntf(
 		.clk_i(clk_i),
@@ -74,12 +74,12 @@ module bsg_channel_tunnel_in (
 		.data_o({credit_data_lo, data_o}),
 		.yumi_i({1&#39;b0, yumi_i})
 	);
-	assign credit_local_return_data_o = credit_data_lo[0+:(num_in_p * lg_remote_credits_lp)];
+	assign credit_local_return_data_o = credit_data_lo[0+:num_in_p * lg_remote_credits_lp];
 	assign credit_local_return_v_o = credit_v_lo;
-	wire [(num_in_p - 1):0] sent = (v_o &amp; yumi_i);
+	wire [num_in_p - 1:0] sent = v_o &amp; yumi_i;
 	genvar i;
 	generate
-		for (i = 0; (i &lt; num_in_p); i = (i + 1)) begin : rof
+		for (i = 0; i &lt; num_in_p; i = i + 1) begin : rof
 			bsg_counter_clear_up #(
 				.max_val_p(remote_credits_p),
 				.init_val_p(0)
@@ -88,7 +88,7 @@ module bsg_channel_tunnel_in (
 				.reset_i(reset_i),
 				.clear_i(credit_remote_return_yumi_i),
 				.up_i(sent[i]),
-				.count_o(credit_remote_return_data_o[((((lg_remote_credits_lp - 1) &gt;= 0) ? 0 : (lg_remote_credits_lp - 1)) + ((((num_in_p - 1) &gt;= 0) ? i : (0 - (i - (num_in_p - 1)))) * (((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))))+:(((lg_remote_credits_lp - 1) &gt;= 0) ? lg_remote_credits_lp : (2 - lg_remote_credits_lp))])
+				.count_o(credit_remote_return_data_o[((lg_remote_credits_lp - 1) &gt;= 0 ? 0 : lg_remote_credits_lp - 1) + (((num_in_p - 1) &gt;= 0 ? i : 0 - (i - (num_in_p - 1))) * ((lg_remote_credits_lp - 1) &gt;= 0 ? lg_remote_credits_lp : 2 - lg_remote_credits_lp))+:((lg_remote_credits_lp - 1) &gt;= 0 ? lg_remote_credits_lp : 2 - lg_remote_credits_lp)])
 			);
 		end
 	endgenerate

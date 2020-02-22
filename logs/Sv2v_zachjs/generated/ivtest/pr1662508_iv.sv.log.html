@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1662508.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1662508.v</a>
-time_elapsed: 0.128s
-ram usage: 9972 KB
+time_elapsed: 0.052s
+ram usage: 11860 KB
 </pre>
 <pre class="log">
 
@@ -44,7 +44,7 @@ module ram_test;
 	reg fail = 0;
 	integer cc;
 	initial begin
-		for (cc = 0; (cc &lt; 33); cc = (cc + 1))
+		for (cc = 0; cc &lt; 33; cc = cc + 1)
 			begin
 				clk = 0;
 				#(5)
@@ -63,8 +63,8 @@ module ram_test;
 	reg [15:0] data = 0;
 	always @(posedge clk) begin
 		addr &lt;= cc;
-		data &lt;= (cc * cc);
-		we &lt;= (cc &lt; 16);
+		data &lt;= cc * cc;
+		we &lt;= cc &lt; 16;
 	end
 	wire [15:0] read_bus;
 	ram ram(
@@ -77,7 +77,7 @@ module ram_test;
 	always @(negedge clk)
 		if (~we) begin
 			$display(&#34;%d %d&#34;, addr, read_bus);
-			if ((read_bus !== (addr[3:0] * addr[3:0])))
+			if (read_bus !== (addr[3:0] * addr[3:0]))
 				fail = 1;
 		end
 endmodule

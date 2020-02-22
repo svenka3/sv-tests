@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/ctu_sync_header.v.html" target="file-frame">third_party/tests/utd-sv/ctu_sync_header.v</a>
-time_elapsed: 0.140s
-ram usage: 12732 KB
+time_elapsed: 0.204s
+ram usage: 12748 KB
 </pre>
 <pre class="log">
 
@@ -120,8 +120,8 @@ module ctu_sync_header (
 		.si(si),
 		.se(se)
 	);
-	assign pulse_cnt_dn_nxt = (pulse_cnt == 3&#39;b111);
-	assign pulse_cnt_nxt = (~pulse_cnt_dn_nxt ? (pulse_cnt + 3&#39;b001) : pulse_cnt);
+	assign pulse_cnt_dn_nxt = pulse_cnt == 3&#39;b111;
+	assign pulse_cnt_nxt = (~pulse_cnt_dn_nxt ? pulse_cnt + 3&#39;b001 : pulse_cnt);
 	dffrl_async_ns #(3) u_pulse_cnt(
 		.din(pulse_cnt_nxt),
 		.clk(cmp_clk),
@@ -134,19 +134,19 @@ module ctu_sync_header (
 		.rst_l(start_clk_early_jl),
 		.q(pulse_filter)
 	);
-	assign jbus_rx_sync_nxt = (jbus_rx_sync_local &amp; pulse_filter);
+	assign jbus_rx_sync_nxt = jbus_rx_sync_local &amp; pulse_filter;
 	dff_ns u_jbus_rx_sync(
 		.q(jbus_rx_sync),
 		.din(jbus_rx_sync_nxt),
 		.clk(cmp_clk)
 	);
-	assign jbus_tx_sync_nxt = (jbus_tx_sync_local &amp; pulse_filter);
+	assign jbus_tx_sync_nxt = jbus_tx_sync_local &amp; pulse_filter;
 	dff_ns u_jbus_tx_sync(
 		.q(jbus_tx_sync),
 		.din(jbus_tx_sync_nxt),
 		.clk(cmp_clk)
 	);
-	assign ctu_dram_tx_sync_early_nxt = (dram_tx_sync_local &amp; pulse_filter);
+	assign ctu_dram_tx_sync_early_nxt = dram_tx_sync_local &amp; pulse_filter;
 	dff_ns u_dram_tx_sync_early(
 		.q(ctu_dram_tx_sync_early),
 		.din(ctu_dram_tx_sync_early_nxt),

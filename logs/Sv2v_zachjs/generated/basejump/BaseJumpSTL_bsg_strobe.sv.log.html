@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_strobe.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_strobe.v</a>
-time_elapsed: 0.376s
-ram usage: 13408 KB
+time_elapsed: 0.332s
+ram usage: 15288 KB
 </pre>
 <pre class="log">
 
@@ -31,20 +31,20 @@ module bsg_strobe (
 	parameter harden_p = 0;
 	input clk_i;
 	input reset_r_i;
-	input [(width_p - 1):0] init_val_r_i;
+	input [width_p - 1:0] init_val_r_i;
 	output reg strobe_r_o;
 	localparam debug_lp = 0;
 	wire strobe_n;
 	wire strobe_n_buf;
-	wire [(width_p - 1):0] S_r;
-	wire [(width_p - 1):0] S_n;
-	wire [(width_p - 1):0] S_n_n;
-	wire [(width_p - 1):0] C_n_prereset;
-	wire [((width_p - 1) - 1):0] C_r;
-	wire [((width_p - 1) - 1):0] C_n;
-	wire new_val = (reset_r_i | strobe_n);
+	wire [width_p - 1:0] S_r;
+	wire [width_p - 1:0] S_n;
+	wire [width_p - 1:0] S_n_n;
+	wire [width_p - 1:0] C_n_prereset;
+	wire [(width_p - 1) - 1:0] C_r;
+	wire [(width_p - 1) - 1:0] C_n;
+	wire new_val = reset_r_i | strobe_n;
 	bsg_dff #(
-		.width_p((width_p - 1)),
+		.width_p(width_p - 1),
 		.harden_p(harden_p),
 		.strength_p(2)
 	) C_reg(
@@ -87,12 +87,12 @@ module bsg_strobe (
 		.o(C_n_prereset)
 	);
 	bsg_nor3 #(
-		.width_p((width_p - 1)),
+		.width_p(width_p - 1),
 		.harden_p(1)
 	) nor3_C_n(
-		.a_i({(width_p - 1) {strobe_n_buf}}),
-		.b_i(C_n_prereset[0+:(width_p - 1)]),
-		.c_i({(width_p - 1) {reset_r_i}}),
+		.a_i({width_p - 1 {strobe_n_buf}}),
+		.b_i(C_n_prereset[0+:width_p - 1]),
+		.c_i({width_p - 1 {reset_r_i}}),
 		.o(C_n)
 	);
 	bsg_reduce #(
@@ -111,7 +111,7 @@ module bsg_strobe (
 	generate
 		if (debug_lp) begin : debug
 			always @(negedge clk_i)
-				$display(&#34;%t (C=%b,S=%b) reset_r_i=%d new_val=%b init_val=%d val(C,S)=%b C^S=%b&#34;, $time, C_r, S_r, reset_r_i, new_val, init_val_r_i, ((C_r &lt;&lt; 1) + S_r), strobe_n);
+				$display(&#34;%t (C=%b,S=%b) reset_r_i=%d new_val=%b init_val=%d val(C,S)=%b C^S=%b&#34;, $time, C_r, S_r, reset_r_i, new_val, init_val_r_i, (C_r &lt;&lt; 1) + S_r, strobe_n);
 		end
 	endgenerate
 	always @(negedge clk_i)

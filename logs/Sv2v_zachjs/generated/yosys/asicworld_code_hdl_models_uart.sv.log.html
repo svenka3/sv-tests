@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_uart.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_uart.v</a>
-time_elapsed: 0.100s
-ram usage: 10816 KB
+time_elapsed: 0.140s
+ram usage: 10732 KB
 </pre>
 <pre class="log">
 
@@ -85,23 +85,23 @@ module uart (
 				rx_empty &lt;= 1;
 			end
 			if (rx_enable) begin
-				if ((!rx_busy &amp;&amp; !rx_d2)) begin
+				if (!rx_busy &amp;&amp; !rx_d2) begin
 					rx_busy &lt;= 1;
 					rx_sample_cnt &lt;= 1;
 					rx_cnt &lt;= 0;
 				end
 				if (rx_busy) begin
-					rx_sample_cnt &lt;= (rx_sample_cnt + 1);
-					if ((rx_sample_cnt == 7))
-						if (((rx_d2 == 1) &amp;&amp; (rx_cnt == 0)))
+					rx_sample_cnt &lt;= rx_sample_cnt + 1;
+					if (rx_sample_cnt == 7)
+						if ((rx_d2 == 1) &amp;&amp; (rx_cnt == 0))
 							rx_busy &lt;= 0;
 						else begin
-							rx_cnt &lt;= (rx_cnt + 1);
-							if (((rx_cnt &gt; 0) &amp;&amp; (rx_cnt &lt; 9)))
-								rx_reg[(rx_cnt - 1)] &lt;= rx_d2;
-							if ((rx_cnt == 9)) begin
+							rx_cnt &lt;= rx_cnt + 1;
+							if ((rx_cnt &gt; 0) &amp;&amp; (rx_cnt &lt; 9))
+								rx_reg[rx_cnt - 1] &lt;= rx_d2;
+							if (rx_cnt == 9) begin
 								rx_busy &lt;= 0;
-								if ((rx_d2 == 0))
+								if (rx_d2 == 0)
 									rx_frame_err &lt;= 1;
 								else begin
 									rx_empty &lt;= 0;
@@ -131,13 +131,13 @@ module uart (
 					tx_reg &lt;= tx_data;
 					tx_empty &lt;= 0;
 				end
-			if ((tx_enable &amp;&amp; !tx_empty)) begin
-				tx_cnt &lt;= (tx_cnt + 1);
-				if ((tx_cnt == 0))
+			if (tx_enable &amp;&amp; !tx_empty) begin
+				tx_cnt &lt;= tx_cnt + 1;
+				if (tx_cnt == 0)
 					tx_out &lt;= 0;
-				if (((tx_cnt &gt; 0) &amp;&amp; (tx_cnt &lt; 9)))
-					tx_out &lt;= tx_reg[(tx_cnt - 1)];
-				if ((tx_cnt == 9)) begin
+				if ((tx_cnt &gt; 0) &amp;&amp; (tx_cnt &lt; 9))
+					tx_out &lt;= tx_reg[tx_cnt - 1];
+				if (tx_cnt == 9) begin
 					tx_out &lt;= 1;
 					tx_cnt &lt;= 0;
 					tx_empty &lt;= 1;

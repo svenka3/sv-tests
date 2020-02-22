@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p790.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p790.sv</a>
-time_elapsed: 0.096s
-ram usage: 13804 KB
+time_elapsed: 0.088s
+ram usage: 11732 KB
 </pre>
 <pre class="log">
 
@@ -26,12 +26,12 @@ module gray2bin1 (
 	gray
 );
 	parameter SIZE = 8;
-	output [(SIZE - 1):0] bin;
-	input [(SIZE - 1):0] gray;
+	output [SIZE - 1:0] bin;
+	input [SIZE - 1:0] gray;
 	genvar i;
 	generate
-		for (i = 0; (i &lt; SIZE); i = (i + 1)) begin : bitnum
-			assign bin[i] = ^gray[(SIZE - 1):i];
+		for (i = 0; i &lt; SIZE; i = i + 1) begin : bitnum
+			assign bin[i] = ^gray[SIZE - 1:i];
 		end
 	endgenerate
 endmodule
@@ -43,22 +43,22 @@ module addergen1 (
 	ci
 );
 	parameter SIZE = 4;
-	output [(SIZE - 1):0] sum;
+	output [SIZE - 1:0] sum;
 	output co;
-	input [(SIZE - 1):0] a;
-	input [(SIZE - 1):0] b;
+	input [SIZE - 1:0] a;
+	input [SIZE - 1:0] b;
 	input ci;
 	wire [SIZE:0] c;
-	wire [(SIZE - 1):0] t [1:3];
+	wire [SIZE - 1:0] t [1:3];
 	genvar i;
 	assign c[0] = ci;
 	generate
-		for (i = 0; (i &lt; SIZE); i = (i + 1)) begin : bitnum
+		for (i = 0; i &lt; SIZE; i = i + 1) begin : bitnum
 			xor g1 (t[1][i], a[i], b[i]);
 			xor g2 (sum[i], t[1][i], c[i]);
 			and g3 (t[2][i], a[i], b[i]);
 			and g4 (t[3][i], t[1][i], c[i]);
-			or g5 (c[(i + 1)], t[2][i], t[3][i]);
+			or g5 (c[i + 1], t[2][i], t[3][i]);
 		end
 	endgenerate
 	assign co = c[SIZE];

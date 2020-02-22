@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_hash_bank.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_hash_bank.v</a>
-time_elapsed: 0.752s
-ram usage: 15256 KB
+time_elapsed: 0.512s
+ram usage: 16020 KB
 </pre>
 <pre class="log">
 
@@ -28,39 +28,39 @@ module bsg_hash_bank (
 );
 	parameter banks_p = &#34;inv&#34;;
 	parameter width_p = &#34;inv&#34;;
-	parameter index_width_lp = $clog2(((((2 ** width_p) + banks_p) - 1) / banks_p));
-	parameter lg_banks_lp = ((banks_p == 1) ? 1 : $clog2(banks_p));
+	parameter index_width_lp = $clog2((((2 ** width_p) + banks_p) - 1) / banks_p);
+	parameter lg_banks_lp = (banks_p == 1 ? 1 : $clog2(banks_p));
 	parameter debug_lp = 0;
-	input [(width_p - 1):0] i;
-	output [(lg_banks_lp - 1):0] bank_o;
-	output [(index_width_lp - 1):0] index_o;
+	input [width_p - 1:0] i;
+	output [lg_banks_lp - 1:0] bank_o;
+	output [index_width_lp - 1:0] index_o;
 	genvar j;
 	generate
-		if ((banks_p == 1)) begin : hash1
+		if (banks_p == 1) begin : hash1
 			assign index_o = i;
 			assign bank_o = 1&#39;b0;
 		end
-		else if ((banks_p == 2)) begin : hash2
-			assign bank_o = i[(width_p - 1)];
-			assign index_o = i[(width_p - 2):0];
+		else if (banks_p == 2) begin : hash2
+			assign bank_o = i[width_p - 1];
+			assign index_o = i[width_p - 2:0];
 		end
 		else if (~banks_p[0]) begin : hashpow2
-			assign bank_o[0] = i[(width_p - 1)];
+			assign bank_o[0] = i[width_p - 1];
 			bsg_hash_bank #(
-				.banks_p((banks_p &gt;&gt; 1)),
-				.width_p((width_p - 1))
+				.banks_p(banks_p &gt;&gt; 1),
+				.width_p(width_p - 1)
 			) bhb(
-				.i(i[(width_p - 2):0]),
-				.bank_o(bank_o[(lg_banks_lp - 1):1]),
+				.i(i[width_p - 2:0]),
+				.bank_o(bank_o[lg_banks_lp - 1:1]),
 				.index_o(index_o)
 			);
 		end
-		else if (((banks_p &amp; (banks_p + 1)) == 0)) begin : hash3
-			if (((width_p % lg_banks_lp) != 0)) begin : odd
+		else if ((banks_p &amp; (banks_p + 1)) == 0) begin : hash3
+			if ((width_p % lg_banks_lp) != 0) begin : odd
 				wire _unused;
 				bsg_hash_bank #(
 					.banks_p(banks_p),
-					.width_p((width_p + 1))
+					.width_p(width_p + 1)
 				) hf(
 					.i({i, 1&#39;b0}),
 					.bank_o(bank_o),
@@ -68,9 +68,9 @@ module bsg_hash_bank (
 				);
 			end
 			else begin : even
-				localparam frac_width_lp = (width_p / lg_banks_lp);
-				wire [(((lg_banks_lp - 1) &gt;= 0) ? (((frac_width_lp - 1) &gt;= 0) ? (((((lg_banks_lp - 1) &gt;= 0) ? lg_banks_lp : (2 - lg_banks_lp)) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) + -1) : (((((lg_banks_lp - 1) &gt;= 0) ? lg_banks_lp : (2 - lg_banks_lp)) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp)) + ((frac_width_lp - 1) - 1))) : (((frac_width_lp - 1) &gt;= 0) ? ((((0 &gt;= (lg_banks_lp - 1)) ? (2 - lg_banks_lp) : lg_banks_lp) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) + (((lg_banks_lp - 1) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) - 1)) : ((((0 &gt;= (lg_banks_lp - 1)) ? (2 - lg_banks_lp) : lg_banks_lp) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp))) - 1)))):(((lg_banks_lp - 1) &gt;= 0) ? (((frac_width_lp - 1) &gt;= 0) ? 0 : (frac_width_lp - 1)) : (((frac_width_lp - 1) &gt;= 0) ? ((lg_banks_lp - 1) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) : ((frac_width_lp - 1) + ((lg_banks_lp - 1) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp)))))] unzippered;
-				wire [(frac_width_lp - 1):0] one_one;
+				localparam frac_width_lp = width_p / lg_banks_lp;
+				wire [((lg_banks_lp - 1) &gt;= 0 ? ((frac_width_lp - 1) &gt;= 0 ? (lg_banks_lp * frac_width_lp) + -1 : (lg_banks_lp * (2 - frac_width_lp)) + ((frac_width_lp - 1) - 1)) : ((frac_width_lp - 1) &gt;= 0 ? ((2 - lg_banks_lp) * frac_width_lp) + (((lg_banks_lp - 1) * frac_width_lp) - 1) : ((2 - lg_banks_lp) * (2 - frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))) - 1))):((lg_banks_lp - 1) &gt;= 0 ? ((frac_width_lp - 1) &gt;= 0 ? 0 : frac_width_lp - 1) : ((frac_width_lp - 1) &gt;= 0 ? (lg_banks_lp - 1) * frac_width_lp : (frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))))] unzippered;
+				wire [frac_width_lp - 1:0] one_one;
 				bsg_reduce_segmented #(
 					.segments_p(frac_width_lp),
 					.segment_width_p(lg_banks_lp),
@@ -86,7 +86,7 @@ module bsg_hash_bank (
 					.i(i),
 					.o(unzippered)
 				);
-				wire [(frac_width_lp - 1):0] one_one_and_scan;
+				wire [frac_width_lp - 1:0] one_one_and_scan;
 				bsg_scan #(
 					.width_p(frac_width_lp),
 					.and_p(1)
@@ -94,17 +94,17 @@ module bsg_hash_bank (
 					.i(one_one),
 					.o(one_one_and_scan)
 				);
-				wire [(frac_width_lp - 1):0] not_one_one_and_scan = ~one_one_and_scan;
-				wire [(frac_width_lp - 1):0] shifty;
-				if ((frac_width_lp &gt; 1)) assign shifty = {1&#39;b1, one_one_and_scan[(frac_width_lp - 1):1]};
+				wire [frac_width_lp - 1:0] not_one_one_and_scan = ~one_one_and_scan;
+				wire [frac_width_lp - 1:0] shifty;
+				if (frac_width_lp &gt; 1) assign shifty = {1&#39;b1, one_one_and_scan[frac_width_lp - 1:1]};
 				else assign shifty = 1&#39;b1;
-				wire [(frac_width_lp - 1):0] border = (not_one_one_and_scan &amp; shifty);
-				wire [(((lg_banks_lp - 1) &gt;= 0) ? (((frac_width_lp - 1) &gt;= 0) ? (((((lg_banks_lp - 1) &gt;= 0) ? lg_banks_lp : (2 - lg_banks_lp)) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) + -1) : (((((lg_banks_lp - 1) &gt;= 0) ? lg_banks_lp : (2 - lg_banks_lp)) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp)) + ((frac_width_lp - 1) - 1))) : (((frac_width_lp - 1) &gt;= 0) ? ((((0 &gt;= (lg_banks_lp - 1)) ? (2 - lg_banks_lp) : lg_banks_lp) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) + (((lg_banks_lp - 1) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) - 1)) : ((((0 &gt;= (lg_banks_lp - 1)) ? (2 - lg_banks_lp) : lg_banks_lp) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp))) - 1)))):(((lg_banks_lp - 1) &gt;= 0) ? (((frac_width_lp - 1) &gt;= 0) ? 0 : (frac_width_lp - 1)) : (((frac_width_lp - 1) &gt;= 0) ? ((lg_banks_lp - 1) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))) : ((frac_width_lp - 1) + ((lg_banks_lp - 1) * ((0 &gt;= (frac_width_lp - 1)) ? (2 - frac_width_lp) : frac_width_lp)))))] bits;
-				for (j = 1; (j &lt; lg_banks_lp); j = (j + 1)) begin : rof2
-					assign bits[((((frac_width_lp - 1) &gt;= 0) ? 0 : (frac_width_lp - 1)) + ((((lg_banks_lp - 1) &gt;= 0) ? j : (0 - (j - (lg_banks_lp - 1)))) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))))+:(((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))] = (unzippered[((((frac_width_lp - 1) &gt;= 0) ? 0 : (frac_width_lp - 1)) + ((((lg_banks_lp - 1) &gt;= 0) ? j : (0 - (j - (lg_banks_lp - 1)))) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))))+:(((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))] &amp; ~(border | one_one_and_scan));
+				wire [frac_width_lp - 1:0] border = not_one_one_and_scan &amp; shifty;
+				wire [((lg_banks_lp - 1) &gt;= 0 ? ((frac_width_lp - 1) &gt;= 0 ? (lg_banks_lp * frac_width_lp) + -1 : (lg_banks_lp * (2 - frac_width_lp)) + ((frac_width_lp - 1) - 1)) : ((frac_width_lp - 1) &gt;= 0 ? ((2 - lg_banks_lp) * frac_width_lp) + (((lg_banks_lp - 1) * frac_width_lp) - 1) : ((2 - lg_banks_lp) * (2 - frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))) - 1))):((lg_banks_lp - 1) &gt;= 0 ? ((frac_width_lp - 1) &gt;= 0 ? 0 : frac_width_lp - 1) : ((frac_width_lp - 1) &gt;= 0 ? (lg_banks_lp - 1) * frac_width_lp : (frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))))] bits;
+				for (j = 1; j &lt; lg_banks_lp; j = j + 1) begin : rof2
+					assign bits[((frac_width_lp - 1) &gt;= 0 ? 0 : frac_width_lp - 1) + (((lg_banks_lp - 1) &gt;= 0 ? j : 0 - (j - (lg_banks_lp - 1))) * ((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp))+:((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp)] = unzippered[((frac_width_lp - 1) &gt;= 0 ? 0 : frac_width_lp - 1) + (((lg_banks_lp - 1) &gt;= 0 ? j : 0 - (j - (lg_banks_lp - 1))) * ((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp))+:((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp)] &amp; ~(border | one_one_and_scan);
 				end
-				assign bits[((((frac_width_lp - 1) &gt;= 0) ? 0 : (frac_width_lp - 1)) + ((((lg_banks_lp - 1) &gt;= 0) ? 0 : (lg_banks_lp - 1)) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))))+:(((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))] = (one_one_and_scan | ((unzippered[((((frac_width_lp - 1) &gt;= 0) ? 0 : (frac_width_lp - 1)) + ((((lg_banks_lp - 1) &gt;= 0) ? 0 : (lg_banks_lp - 1)) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))))+:(((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))] &amp; ~one_one_and_scan) &amp; ~border));
-				wire [(width_p - 1):0] transpose_lo;
+				assign bits[((frac_width_lp - 1) &gt;= 0 ? 0 : frac_width_lp - 1) + (((lg_banks_lp - 1) &gt;= 0 ? 0 : lg_banks_lp - 1) * ((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp))+:((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp)] = one_one_and_scan | ((unzippered[((frac_width_lp - 1) &gt;= 0 ? 0 : frac_width_lp - 1) + (((lg_banks_lp - 1) &gt;= 0 ? 0 : lg_banks_lp - 1) * ((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp))+:((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp)] &amp; ~one_one_and_scan) &amp; ~border);
+				wire [width_p - 1:0] transpose_lo;
 				bsg_transpose #(
 					.els_p(lg_banks_lp),
 					.width_p(frac_width_lp)
@@ -112,9 +112,9 @@ module bsg_hash_bank (
 					.i(bits),
 					.o(transpose_lo)
 				);
-				assign index_o = transpose_lo[(index_width_lp - 1):0];
-				for (j = 0; (j &lt; lg_banks_lp); j = (j + 1)) begin : rof1
-					assign bank_o[j] = |(border &amp; unzippered[((((frac_width_lp - 1) &gt;= 0) ? 0 : (frac_width_lp - 1)) + ((((lg_banks_lp - 1) &gt;= 0) ? j : (0 - (j - (lg_banks_lp - 1)))) * (((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))))+:(((frac_width_lp - 1) &gt;= 0) ? frac_width_lp : (2 - frac_width_lp))]);
+				assign index_o = transpose_lo[index_width_lp - 1:0];
+				for (j = 0; j &lt; lg_banks_lp; j = j + 1) begin : rof1
+					assign bank_o[j] = |(border &amp; unzippered[((frac_width_lp - 1) &gt;= 0 ? 0 : frac_width_lp - 1) + (((lg_banks_lp - 1) &gt;= 0 ? j : 0 - (j - (lg_banks_lp - 1))) * ((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp))+:((frac_width_lp - 1) &gt;= 0 ? frac_width_lp : 2 - frac_width_lp)]);
 				end
 			end
 		end

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/partselsynth.v.html" target="file-frame">third_party/tests/ivtest/ivltests/partselsynth.v</a>
-time_elapsed: 0.096s
-ram usage: 11596 KB
+time_elapsed: 0.068s
+ram usage: 9840 KB
 </pre>
 <pre class="log">
 
@@ -29,12 +29,12 @@ module main;
 	reg [7:0] scon;
 	reg val;
 	always @(val_in or bar_a or bar_b or scon[7:6] or enable)
-		if ((scon[7:6] == 2&#39;b10))
+		if (scon[7:6] == 2&#39;b10)
 			val = 1&#39;b1;
 		else if (enable)
 			val = val_in;
 		else
-			val = (!bar_b &amp; bar_a);
+			val = !bar_b &amp; bar_a;
 	(* ivl_synthesis_off *) initial begin
 		val_in = 0;
 		enable = 0;
@@ -42,32 +42,32 @@ module main;
 		bar_a = 0;
 		scon = 8&#39;b10_000000;
 		#(1)
-			if ((val !== 1&#39;b1)) begin
+			if (val !== 1&#39;b1) begin
 				$display(&#34;FAILED -- scon=%b, val=%b&#34;, scon, val);
 				$finish;
 			end
 		scon = 0;
 		enable = 1;
 		#(1)
-			if ((val !== 1&#39;b0)) begin
+			if (val !== 1&#39;b0) begin
 				$display(&#34;FAILED -- scon=%b, enable=%b, val=%b&#34;, scon, enable, val);
 				$finish;
 			end
 		val_in = 1;
 		#(1)
-			if ((val !== 1&#39;b1)) begin
+			if (val !== 1&#39;b1) begin
 				$display(&#34;FAILED -- scon=%b, enable=%b, val_in=%b, val=%b&#34;, scon, enable, val_in, val);
 				$finish;
 			end
 		enable = 0;
 		#(1)
-			if ((val !== 1&#39;b0)) begin
+			if (val !== 1&#39;b0) begin
 				$display(&#34;FAILED -- scon=%b, enable=%b, val=%b&#34;, scon, enable, val);
 				$finish;
 			end
 		bar_a = 1;
 		#(1)
-			if ((val !== 1&#39;b1)) begin
+			if (val !== 1&#39;b1) begin
 				$display(&#34;FAILED -- scon=%b, enable=%b, bar_a==%b, bar_b=%b, val=%b&#34;, scon, enable, bar_a, bar_b, val);
 				$finish;
 			end

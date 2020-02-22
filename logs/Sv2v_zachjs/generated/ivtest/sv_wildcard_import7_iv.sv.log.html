@@ -16,15 +16,15 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sv_wildcard_import7.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sv_wildcard_import7.v</a>
-time_elapsed: 0.072s
-ram usage: 11368 KB
+time_elapsed: 0.116s
+ram usage: 9700 KB
 </pre>
 <pre class="log">
 
 module test;
 	reg [15:0] s;
 	parameter p1 = 1;
-	localparam p2 = (p1 + 2);
+	localparam p2 = p1 + 2;
 	reg [15:0] my_v;
 	initial begin
 		my_v = p1;
@@ -32,22 +32,22 @@ module test;
 			-&gt; e;
 	end
 	initial begin
-		@(e) s[15:0] = my_v;
+		@(e) s[15-:16] = my_v;
 		h(f(1));
-		if (((p2 === 3) &amp;&amp; (s[15:0] === 3)))
+		if ((p2 === 3) &amp;&amp; (s[15-:16] === 3))
 			$display(&#34;PASSED&#34;);
 		else
 			$display(&#34;FAILED&#34;);
 	end
 	function [15:0] f;
 		input reg [15:0] g;
-		f = (g + 1);
+		f = g + 1;
 	endfunction
 	task h;
 		reg [15:0] i;
 		begin
-			s[15:0] = (s[15:0] + i);
-			$display(s[15:0]);
+			s[15-:16] = s[15-:16] + i;
+			$display(s[15-:16]);
 		end
 	endtask
 endmodule

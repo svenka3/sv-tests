@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_fsm_using_always.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_fsm_using_always.v</a>
-time_elapsed: 0.080s
-ram usage: 12496 KB
+time_elapsed: 0.108s
+ram usage: 12288 KB
 </pre>
 <pre class="log">
 
@@ -45,25 +45,25 @@ module fsm_using_always (
 	parameter IDLE = 3&#39;b001;
 	parameter GNT0 = 3&#39;b010;
 	parameter GNT1 = 3&#39;b100;
-	reg [(SIZE - 1):0] state;
-	reg [(SIZE - 1):0] next_state;
+	reg [SIZE - 1:0] state;
+	reg [SIZE - 1:0] next_state;
 	always @(state or req_0 or req_1) begin : FSM_COMBO
 		next_state = 3&#39;b000;
 		case (state)
 			IDLE:
-				if ((req_0 == 1&#39;b1))
+				if (req_0 == 1&#39;b1)
 					next_state = GNT0;
-				else if ((req_1 == 1&#39;b1))
+				else if (req_1 == 1&#39;b1)
 					next_state = GNT1;
 				else
 					next_state = IDLE;
 			GNT0:
-				if ((req_0 == 1&#39;b1))
+				if (req_0 == 1&#39;b1)
 					next_state = GNT0;
 				else
 					next_state = IDLE;
 			GNT1:
-				if ((req_1 == 1&#39;b1))
+				if (req_1 == 1&#39;b1)
 					next_state = GNT1;
 				else
 					next_state = IDLE;
@@ -71,13 +71,13 @@ module fsm_using_always (
 		endcase
 	end
 	always @(posedge clock) begin : FSM_SEQ
-		if ((reset == 1&#39;b1))
+		if (reset == 1&#39;b1)
 			state &lt;= #(1) IDLE;
 		else
 			state &lt;= #(1) next_state;
 	end
 	always @(posedge clock) begin : OUTPUT_LOGIC
-		if ((reset == 1&#39;b1)) begin
+		if (reset == 1&#39;b1) begin
 			gnt_0 &lt;= #(1) 1&#39;b0;
 			gnt_1 &lt;= #(1) 1&#39;b0;
 		end

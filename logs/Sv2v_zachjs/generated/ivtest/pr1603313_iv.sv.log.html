@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1603313.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1603313.v</a>
-time_elapsed: 0.080s
-ram usage: 9764 KB
+time_elapsed: 0.076s
+ram usage: 12836 KB
 </pre>
 <pre class="log">
 
@@ -41,7 +41,7 @@ module TestMultiplier;
 		left = ONE;
 		right = ONE;
 		#(10)
-			if ((exp !== 3&#39;b011))
+			if (exp !== 3&#39;b011)
 				$display(&#34;FAIL: expected %b, got %b&#34;, 3&#39;b011, exp);
 			else
 				$display(&#34;PASSED&#34;);
@@ -59,12 +59,12 @@ module Multiplier (
 	input [5:0] right;
 	output [2:0] exp;
 	reg [2:0] exp;
-	wire signed [2:0] expl = (left[5:3] - 3);
-	wire signed [2:0] expr = (right[5:3] - 3);
+	wire signed [2:0] expl = left[5:3] - 3;
+	wire signed [2:0] expr = right[5:3] - 3;
 	reg signed [3:0] sumExp;
 	always @(posedge clk) begin
-		sumExp &lt;= (((expl + expr) &lt; -2) ? -3 : (expl + expr));
-		exp[2:0] &lt;= (sumExp + 3);
+		sumExp &lt;= ((expl + expr) &lt; -2 ? -3 : expl + expr);
+		exp[2:0] &lt;= sumExp + 3;
 	end
 endmodule
 

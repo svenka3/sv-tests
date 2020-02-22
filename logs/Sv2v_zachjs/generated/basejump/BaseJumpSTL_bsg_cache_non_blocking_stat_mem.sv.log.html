@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_stat_mem.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_stat_mem.v</a>
-time_elapsed: 0.920s
-ram usage: 16000 KB
+time_elapsed: 1.336s
+ram usage: 14584 KB
 </pre>
 <pre class="log">
 
@@ -81,20 +81,20 @@ module bsg_cache_non_blocking_stat_mem (
 	localparam [3:0] SEND_DMA_REQ2 = 9;
 	parameter ways_p = &#34;inv&#34;;
 	parameter sets_p = &#34;inv&#34;;
-	parameter lg_sets_lp = ((sets_p == 1) ? 1 : $clog2(sets_p));
-	parameter stat_mem_pkt_width_lp = ((3 + ((ways_p == 1) ? 1 : $clog2(ways_p))) + ((sets_p == 1) ? 1 : $clog2(sets_p)));
+	parameter lg_sets_lp = (sets_p == 1 ? 1 : $clog2(sets_p));
+	parameter stat_mem_pkt_width_lp = (3 + (ways_p == 1 ? 1 : $clog2(ways_p))) + (sets_p == 1 ? 1 : $clog2(sets_p));
 	input clk_i;
 	input reset_i;
 	input v_i;
-	input [(stat_mem_pkt_width_lp - 1):0] stat_mem_pkt_i;
-	output wire [(ways_p - 1):0] dirty_o;
-	output wire [(ways_p - 2):0] lru_bits_o;
-	localparam stat_info_width_lp = ((ways_p + ways_p) - 1);
-	wire [(((3 + (((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p))))) + (((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p))))) - 1):0] stat_mem_pkt;
+	input [stat_mem_pkt_width_lp - 1:0] stat_mem_pkt_i;
+	output wire [ways_p - 1:0] dirty_o;
+	output wire [ways_p - 2:0] lru_bits_o;
+	localparam stat_info_width_lp = (ways_p + ways_p) - 1;
+	wire [((3 + (((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) + (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p)))) - 1:0] stat_mem_pkt;
 	assign stat_mem_pkt = stat_mem_pkt_i;
-	reg [(((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + (((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))) - 1):0] data_li;
-	wire [(((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + (((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))) - 1):0] data_lo;
-	reg [(((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + (((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))) - 1):0] mask_li;
+	reg [(((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) - 1:0] data_li;
+	wire [(((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) - 1:0] data_lo;
+	reg [(((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) - 1:0] mask_li;
 	reg w_li;
 	bsg_mem_1rw_sync_mask_write_bit #(
 		.width_p(stat_info_width_lp),
@@ -105,78 +105,78 @@ module bsg_cache_non_blocking_stat_mem (
 		.reset_i(reset_i),
 		.v_i(v_i),
 		.w_i(w_li),
-		.addr_i(stat_mem_pkt[((((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p)))) + -1):0]),
+		.addr_i(stat_mem_pkt[(((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1-:(((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1) &gt;= 0 ? (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) : 1 - ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1))]),
 		.w_mask_i(mask_li),
 		.data_i(data_li),
 		.data_o(data_lo)
 	);
-	wire [(ways_p - 1):0] way_decode_lo;
+	wire [ways_p - 1:0] way_decode_lo;
 	bsg_decode #(.num_out_p(ways_p)) way_demux(
-		.i(stat_mem_pkt[((((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p)))) + ((((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p)))) + -1)):(((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p))))]),
+		.i(stat_mem_pkt[(((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1)-:(((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1)) &gt;= (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) ? (((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1)) - (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p)))) + 1 : ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) - ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1))) + 1)]),
 		.o(way_decode_lo)
 	);
-	wire [(ways_p - 2):0] lru_decode_data_lo;
-	wire [(ways_p - 2):0] lru_decode_mask_lo;
+	wire [ways_p - 2:0] lru_decode_data_lo;
+	wire [ways_p - 2:0] lru_decode_mask_lo;
 	bsg_lru_pseudo_tree_decode #(.ways_p(ways_p)) lru_decode(
-		.way_id_i(stat_mem_pkt[((((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p)))) + ((((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p)))) + -1)):(((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p))))]),
+		.way_id_i(stat_mem_pkt[(((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1)-:(((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1)) &gt;= (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) ? (((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1)) - (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p)))) + 1 : ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) - ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1))) + 1)]),
 		.data_o(lru_decode_data_lo),
 		.mask_o(lru_decode_mask_lo)
 	);
 	always @(*) begin
 		w_li = 1&#39;b0;
-		data_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = 1&#39;sb0;
-		mask_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = 1&#39;sb0;
-		data_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
-		mask_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
-		case (stat_mem_pkt[(3 + ((((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p)))) + ((((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p)))) + -1))):((((((ways_p == 1) ? 1 : $clog2(ways_p)) - 1) &gt;= 0) ? ((ways_p == 1) ? 1 : $clog2(ways_p)) : (2 - ((ways_p == 1) ? 1 : $clog2(ways_p)))) + (((((sets_p == 1) ? 1 : $clog2(sets_p)) - 1) &gt;= 0) ? ((sets_p == 1) ? 1 : $clog2(sets_p)) : (2 - ((sets_p == 1) ? 1 : $clog2(sets_p)))))])
+		data_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = 1&#39;sb0;
+		mask_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = 1&#39;sb0;
+		data_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
+		mask_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
+		case (stat_mem_pkt[3 + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1))-:((3 + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1))) &gt;= ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p)))) ? ((3 + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1))) - ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))))) + 1 : (((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + (((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p)))) - (3 + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + ((((sets_p == 1 ? 1 : $clog2(sets_p)) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) : 2 - (sets_p == 1 ? 1 : $clog2(sets_p))) + -1)))) + 1)])
 			e_stat_read: begin
 				w_li = 1&#39;b0;
-				data_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = 1&#39;sb0;
-				mask_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = 1&#39;sb0;
-				data_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
-				mask_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
+				data_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = 1&#39;sb0;
+				mask_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = 1&#39;sb0;
+				data_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
+				mask_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
 			end
 			e_stat_clear_dirty: begin
 				w_li = 1&#39;b1;
-				data_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = 1&#39;sb0;
-				mask_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = 1&#39;sb0;
-				data_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
-				mask_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = way_decode_lo;
+				data_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = 1&#39;sb0;
+				mask_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = 1&#39;sb0;
+				data_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
+				mask_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = way_decode_lo;
 			end
 			e_stat_set_lru: begin
 				w_li = 1&#39;b1;
-				data_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = lru_decode_data_lo;
-				mask_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = lru_decode_mask_lo;
-				data_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
-				mask_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
+				data_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = lru_decode_data_lo;
+				mask_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = lru_decode_mask_lo;
+				data_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
+				mask_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
 			end
 			e_stat_set_lru_and_dirty: begin
 				w_li = 1&#39;b1;
-				data_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = lru_decode_data_lo;
-				mask_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = lru_decode_mask_lo;
-				data_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = {ways_p {1&#39;b1}};
-				mask_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = way_decode_lo;
+				data_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = lru_decode_data_lo;
+				mask_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = lru_decode_mask_lo;
+				data_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = {ways_p {1&#39;b1}};
+				mask_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = way_decode_lo;
 			end
 			e_stat_set_lru_and_clear_dirty: begin
 				w_li = 1&#39;b1;
-				data_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = lru_decode_data_lo;
-				mask_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = lru_decode_mask_lo;
-				data_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = {ways_p {1&#39;b0}};
-				mask_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = way_decode_lo;
+				data_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = lru_decode_data_lo;
+				mask_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = lru_decode_mask_lo;
+				data_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = {ways_p {1&#39;b0}};
+				mask_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = way_decode_lo;
 			end
 			e_stat_reset: begin
 				w_li = 1&#39;b1;
-				data_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = 1&#39;sb0;
-				mask_li[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0] = {(ways_p - 1) {1&#39;b1}};
-				data_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = 1&#39;sb0;
-				mask_li[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))] = way_decode_lo;
+				data_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = 1&#39;sb0;
+				mask_li[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))] = {ways_p - 1 {1&#39;b1}};
+				data_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = 1&#39;sb0;
+				mask_li[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)] = way_decode_lo;
 			end
 			default:
 				;
 		endcase
 	end
-	assign lru_bits_o = data_lo[((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1):0];
-	assign dirty_o = data_lo[((((ways_p - 1) &gt;= 0) ? ways_p : (2 - ways_p)) + ((((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p)) + -1)):(((ways_p - 2) &gt;= 0) ? ((ways_p - 2) + 1) : (3 - ways_p))];
+	assign lru_bits_o = data_lo[((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1-:((((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1) &gt;= 0 ? ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) : 1 - (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))];
+	assign dirty_o = data_lo[((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)-:((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) &gt;= ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) ? ((((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1)) - ((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) - (((ways_p - 1) &gt;= 0 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? (ways_p - 2) + 1 : 3 - ways_p) + -1))) + 1)];
 endmodule
 
 </pre>
