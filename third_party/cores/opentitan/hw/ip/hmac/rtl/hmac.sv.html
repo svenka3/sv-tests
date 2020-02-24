@@ -557,7 +557,14 @@
 <a href="#l-549">549</a>
 <a href="#l-550">550</a>
 <a href="#l-551">551</a>
-<a href="#l-552">552</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-552">552</a>
+<a href="#l-553">553</a>
+<a href="#l-554">554</a>
+<a href="#l-555">555</a>
+<a href="#l-556">556</a>
+<a href="#l-557">557</a>
+<a href="#l-558">558</a>
+<a href="#l-559">559</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -717,7 +724,7 @@
 <a name="l-158"></a>  <span class="c1">/////////////////////</span>
 <a name="l-159"></a>  <span class="c1">// Control signals //</span>
 <a name="l-160"></a>  <span class="c1">/////////////////////</span>
-<a name="l-161"></a>  <span class="k">assign</span> <span class="n">hash_start</span> <span class="o">=</span> <span class="n">reg_hash_start</span> <span class="o">&amp;</span> <span class="n">sha_en</span><span class="p">;</span>
+<a name="l-161"></a>  <span class="k">assign</span> <span class="n">hash_start</span> <span class="o">=</span> <span class="n">reg_hash_start</span> <span class="o">&amp;</span> <span class="n">sha_en</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">cfg_block</span><span class="p">;</span>
 <a name="l-162"></a>
 <a name="l-163"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-164"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
@@ -984,131 +991,138 @@
 <a name="l-425"></a>  <span class="c1">// HMAC Error Handling //</span>
 <a name="l-426"></a>  <span class="c1">/////////////////////////</span>
 <a name="l-427"></a>  <span class="k">logic</span> <span class="n">msg_push_sha_disabled</span><span class="p">,</span> <span class="n">hash_start_sha_disabled</span><span class="p">,</span> <span class="n">update_seckey_inprocess</span><span class="p">;</span>
-<a name="l-428"></a>  <span class="k">assign</span> <span class="n">msg_push_sha_disabled</span> <span class="o">=</span> <span class="n">msg_write</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">sha_en</span><span class="p">;</span>
-<a name="l-429"></a>  <span class="k">assign</span> <span class="n">hash_start_sha_disabled</span> <span class="o">=</span> <span class="n">reg_hash_start</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">sha_en</span><span class="p">;</span>
-<a name="l-430"></a>
-<a name="l-431"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-432"></a>    <span class="n">update_seckey_inprocess</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-433"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">cfg_block</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-434"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">8</span> <span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-435"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">reg2hw</span><span class="p">.</span><span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">qe</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-436"></a>          <span class="n">update_seckey_inprocess</span> <span class="o">=</span> <span class="n">update_seckey_inprocess</span> <span class="o">|</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-437"></a>        <span class="k">end</span>
-<a name="l-438"></a>      <span class="k">end</span>
-<a name="l-439"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-440"></a>      <span class="n">update_seckey_inprocess</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-441"></a>    <span class="k">end</span>
-<a name="l-442"></a>  <span class="k">end</span>
-<a name="l-443"></a>
-<a name="l-444"></a>  <span class="c1">// Update ERR_CODE register and interrupt only when no pending interrupt.</span>
-<a name="l-445"></a>  <span class="c1">// This ensures only the first event of the series of events can be seen to sw.</span>
-<a name="l-446"></a>  <span class="c1">// It is recommended that the software reads ERR_CODE register when interrupt</span>
-<a name="l-447"></a>  <span class="c1">// is pending to avoid any race conditions.</span>
-<a name="l-448"></a>  <span class="k">assign</span> <span class="n">err_valid</span> <span class="o">=</span> <span class="o">~</span><span class="n">reg2hw</span><span class="p">.</span><span class="n">intr_state</span><span class="p">.</span><span class="n">hmac_err</span><span class="p">.</span><span class="n">q</span> <span class="o">&amp;</span>
-<a name="l-449"></a>                   <span class="p">(</span> <span class="n">msg_push_sha_disabled</span> <span class="o">|</span> <span class="n">hash_start_sha_disabled</span>
-<a name="l-450"></a>                   <span class="o">|</span> <span class="n">update_seckey_inprocess</span><span class="p">);</span>
-<a name="l-451"></a>
-<a name="l-452"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-453"></a>    <span class="n">err_code</span> <span class="o">=</span> <span class="n">NoError</span><span class="p">;</span>
-<a name="l-454"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span>
-<a name="l-455"></a>      <span class="nl">msg_push_sha_disabled:</span> <span class="k">begin</span>
-<a name="l-456"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">SwPushMsgWhenShaDisabled</span><span class="p">;</span>
-<a name="l-457"></a>      <span class="k">end</span>
-<a name="l-458"></a>      <span class="nl">hash_start_sha_disabled:</span> <span class="k">begin</span>
-<a name="l-459"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">SwHashStartWhenShaDisabled</span><span class="p">;</span>
-<a name="l-460"></a>      <span class="k">end</span>
-<a name="l-461"></a>
-<a name="l-462"></a>      <span class="nl">update_seckey_inprocess:</span> <span class="k">begin</span>
-<a name="l-463"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">SwUpdateSecretKeyInProcess</span><span class="p">;</span>
-<a name="l-464"></a>      <span class="k">end</span>
-<a name="l-465"></a>
-<a name="l-466"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-467"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">NoError</span><span class="p">;</span>
-<a name="l-468"></a>      <span class="k">end</span>
-<a name="l-469"></a>    <span class="k">endcase</span>
-<a name="l-470"></a>  <span class="k">end</span>
+<a name="l-428"></a>  <span class="k">logic</span> <span class="n">hash_start_active</span><span class="p">;</span>  <span class="c1">// `reg_hash_start` set when hash already in active</span>
+<a name="l-429"></a>  <span class="k">assign</span> <span class="n">msg_push_sha_disabled</span> <span class="o">=</span> <span class="n">msg_write</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">sha_en</span><span class="p">;</span>
+<a name="l-430"></a>  <span class="k">assign</span> <span class="n">hash_start_sha_disabled</span> <span class="o">=</span> <span class="n">reg_hash_start</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">sha_en</span><span class="p">;</span>
+<a name="l-431"></a>  <span class="k">assign</span> <span class="n">hash_start_active</span> <span class="o">=</span> <span class="n">reg_hash_start</span> <span class="o">&amp;</span> <span class="n">cfg_block</span><span class="p">;</span>
+<a name="l-432"></a>
+<a name="l-433"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-434"></a>    <span class="n">update_seckey_inprocess</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-435"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">cfg_block</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-436"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">8</span> <span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-437"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">reg2hw</span><span class="p">.</span><span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">qe</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-438"></a>          <span class="n">update_seckey_inprocess</span> <span class="o">=</span> <span class="n">update_seckey_inprocess</span> <span class="o">|</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-439"></a>        <span class="k">end</span>
+<a name="l-440"></a>      <span class="k">end</span>
+<a name="l-441"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-442"></a>      <span class="n">update_seckey_inprocess</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-443"></a>    <span class="k">end</span>
+<a name="l-444"></a>  <span class="k">end</span>
+<a name="l-445"></a>
+<a name="l-446"></a>  <span class="c1">// Update ERR_CODE register and interrupt only when no pending interrupt.</span>
+<a name="l-447"></a>  <span class="c1">// This ensures only the first event of the series of events can be seen to sw.</span>
+<a name="l-448"></a>  <span class="c1">// It is recommended that the software reads ERR_CODE register when interrupt</span>
+<a name="l-449"></a>  <span class="c1">// is pending to avoid any race conditions.</span>
+<a name="l-450"></a>  <span class="k">assign</span> <span class="n">err_valid</span> <span class="o">=</span> <span class="o">~</span><span class="n">reg2hw</span><span class="p">.</span><span class="n">intr_state</span><span class="p">.</span><span class="n">hmac_err</span><span class="p">.</span><span class="n">q</span> <span class="o">&amp;</span>
+<a name="l-451"></a>                   <span class="p">(</span> <span class="n">msg_push_sha_disabled</span> <span class="o">|</span> <span class="n">hash_start_sha_disabled</span>
+<a name="l-452"></a>                   <span class="o">|</span> <span class="n">update_seckey_inprocess</span> <span class="o">|</span> <span class="n">hash_start_active</span><span class="p">);</span>
+<a name="l-453"></a>
+<a name="l-454"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-455"></a>    <span class="n">err_code</span> <span class="o">=</span> <span class="n">NoError</span><span class="p">;</span>
+<a name="l-456"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span>
+<a name="l-457"></a>      <span class="nl">msg_push_sha_disabled:</span> <span class="k">begin</span>
+<a name="l-458"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">SwPushMsgWhenShaDisabled</span><span class="p">;</span>
+<a name="l-459"></a>      <span class="k">end</span>
+<a name="l-460"></a>      <span class="nl">hash_start_sha_disabled:</span> <span class="k">begin</span>
+<a name="l-461"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">SwHashStartWhenShaDisabled</span><span class="p">;</span>
+<a name="l-462"></a>      <span class="k">end</span>
+<a name="l-463"></a>
+<a name="l-464"></a>      <span class="nl">update_seckey_inprocess:</span> <span class="k">begin</span>
+<a name="l-465"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">SwUpdateSecretKeyInProcess</span><span class="p">;</span>
+<a name="l-466"></a>      <span class="k">end</span>
+<a name="l-467"></a>
+<a name="l-468"></a>      <span class="nl">hash_start_active:</span> <span class="k">begin</span>
+<a name="l-469"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">SwHashStartWhenActive</span><span class="p">;</span>
+<a name="l-470"></a>      <span class="k">end</span>
 <a name="l-471"></a>
-<a name="l-472"></a>  <span class="c1">/////////////////////</span>
-<a name="l-473"></a>  <span class="c1">// Hardware Alerts //</span>
-<a name="l-474"></a>  <span class="c1">/////////////////////</span>
-<a name="l-475"></a>
-<a name="l-476"></a>  <span class="c1">// TODO: add CSR with REGWEN to test alert via SW</span>
-<a name="l-477"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumAlerts</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">alerts</span><span class="p">;</span>
-<a name="l-478"></a>  <span class="k">assign</span> <span class="n">alerts</span> <span class="o">=</span> <span class="p">{</span><span class="n">msg_push_sha_disabled</span><span class="p">};</span>
-<a name="l-479"></a>
-<a name="l-480"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">j</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">hmac_pkg</span><span class="o">::</span><span class="n">NumAlerts</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_alert_tx</span>
-<a name="l-481"></a>    <span class="n">prim_alert_sender</span> <span class="p">#(</span>
-<a name="l-482"></a>      <span class="p">.</span><span class="n">AsyncOn</span><span class="p">(</span><span class="n">hmac_pkg</span><span class="o">::</span><span class="n">AlertAsyncOn</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-<a name="l-483"></a>    <span class="p">)</span> <span class="n">i_prim_alert_sender</span> <span class="p">(</span>
-<a name="l-484"></a>      <span class="p">.</span><span class="n">clk_i</span>      <span class="p">(</span> <span class="n">clk_i</span>         <span class="p">),</span>
-<a name="l-485"></a>      <span class="p">.</span><span class="n">rst_ni</span>     <span class="p">(</span> <span class="n">rst_ni</span>        <span class="p">),</span>
-<a name="l-486"></a>      <span class="p">.</span><span class="n">alert_i</span>    <span class="p">(</span> <span class="n">alerts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>     <span class="p">),</span>
-<a name="l-487"></a>      <span class="p">.</span><span class="n">alert_rx_i</span> <span class="p">(</span> <span class="n">alert_rx_i</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">),</span>
-<a name="l-488"></a>      <span class="p">.</span><span class="n">alert_tx_o</span> <span class="p">(</span> <span class="n">alert_tx_o</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">)</span>
-<a name="l-489"></a>    <span class="p">);</span>
-<a name="l-490"></a>  <span class="k">end</span> <span class="o">:</span> <span class="n">gen_alert_tx</span>
-<a name="l-491"></a>
-<a name="l-492"></a>  <span class="c1">//////////////////////////////////////////////</span>
-<a name="l-493"></a>  <span class="c1">// Assertions, Assumptions, and Coverpoints //</span>
-<a name="l-494"></a>  <span class="c1">//////////////////////////////////////////////</span>
-<a name="l-495"></a>
-<a name="l-496"></a><span class="no">`ifndef</span> <span class="n">VERILATOR</span>
-<a name="l-497"></a><span class="no">`ifndef</span> <span class="n">SYNTHESIS</span>
-<a name="l-498"></a>  <span class="c1">// HMAC assumes TL-UL mask is byte-aligned.</span>
-<a name="l-499"></a>    <span class="k">property</span> <span class="n">wmask_bytealign_p</span><span class="p">(</span><span class="n">wmask_byte</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst_n</span><span class="p">);</span>
-<a name="l-500"></a>      <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mh">0</span><span class="p">)</span>
-<a name="l-501"></a>        <span class="n">msg_fifo_req</span> <span class="o">&amp;</span> <span class="n">msg_fifo_we</span> <span class="o">|-&gt;</span> <span class="n">wmask_byte</span> <span class="k">inside</span> <span class="p">{</span><span class="m">&#39;0</span><span class="p">,</span> <span class="m">&#39;1</span><span class="p">};</span>
-<a name="l-502"></a>    <span class="k">endproperty</span>
-<a name="l-503"></a>
-<a name="l-504"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">gen_assert_wmask_bytealign</span>
-<a name="l-505"></a>      <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span><span class="n">wmask_bytealign_p</span><span class="p">(</span><span class="n">msg_fifo_wmask</span><span class="p">[</span><span class="mh">8</span><span class="o">*</span><span class="n">i</span><span class="o">+:</span><span class="mh">8</span><span class="p">],</span> <span class="n">clk_i</span><span class="p">,</span> <span class="n">rst_ni</span><span class="p">));</span>
-<a name="l-506"></a>    <span class="k">end</span>
-<a name="l-507"></a>
-<a name="l-508"></a>  <span class="c1">// To pass FPV, this shouldn&#39;t add pragma translate_off even these two signals</span>
-<a name="l-509"></a>  <span class="c1">// are used in Assertion only</span>
-<a name="l-510"></a>  <span class="k">logic</span> <span class="n">in_process</span><span class="p">;</span>
-<a name="l-511"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-512"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span>               <span class="n">in_process</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-513"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">reg_hash_process</span><span class="p">)</span> <span class="n">in_process</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-514"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">reg_hash_done</span><span class="p">)</span>    <span class="n">in_process</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-515"></a>  <span class="k">end</span>
-<a name="l-516"></a>
-<a name="l-517"></a>  <span class="k">logic</span> <span class="n">initiated</span><span class="p">;</span>
-<a name="l-518"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-519"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span>               <span class="n">initiated</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-520"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">hash_start</span><span class="p">)</span>       <span class="n">initiated</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-521"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">reg_hash_process</span><span class="p">)</span> <span class="n">initiated</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-522"></a>  <span class="k">end</span>
-<a name="l-523"></a>
-<a name="l-524"></a>  <span class="c1">// the host doesn&#39;t write data after hash_process until hash_start.</span>
-<a name="l-525"></a>  <span class="c1">// Same as &quot;message_length shouldn&#39;t be changed between hash_process and done</span>
-<a name="l-526"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidWriteAssert</span><span class="p">,</span> <span class="n">msg_fifo_req</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">in_process</span><span class="p">)</span>
-<a name="l-527"></a>
-<a name="l-528"></a>  <span class="c1">// `hash_process` shall be toggle and paired with `hash_start`.</span>
-<a name="l-529"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidHashStartAssert</span><span class="p">,</span> <span class="n">hash_start</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">initiated</span><span class="p">)</span>
-<a name="l-530"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidHashProcessAssert</span><span class="p">,</span> <span class="n">reg_hash_process</span> <span class="o">|-&gt;</span> <span class="n">initiated</span><span class="p">)</span>
-<a name="l-531"></a>
-<a name="l-532"></a>  <span class="c1">// between `hash_done` and `hash_start`, message FIFO should be empty</span>
-<a name="l-533"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MsgFifoEmptyWhenNoOpAssert</span><span class="p">,</span>
-<a name="l-534"></a>          <span class="o">!</span><span class="n">in_process</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">initiated</span> <span class="o">|-&gt;</span> <span class="n">$stable</span><span class="p">(</span><span class="n">message_length</span><span class="p">))</span>
-<a name="l-535"></a>
-<a name="l-536"></a>  <span class="c1">// hmac_en should be modified only when the logic is Idle</span>
-<a name="l-537"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidHmacEnConditionAssert</span><span class="p">,</span>
-<a name="l-538"></a>          <span class="n">hmac_en</span> <span class="o">!=</span> <span class="n">$past</span><span class="p">(</span><span class="n">hmac_en</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">in_process</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">initiated</span><span class="p">)</span>
-<a name="l-539"></a>
-<a name="l-540"></a>  <span class="c1">// All outputs should be known value after reset</span>
-<a name="l-541"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntrHmacDoneOKnown</span><span class="p">,</span> <span class="n">intr_hmac_done_o</span><span class="p">)</span>
-<a name="l-542"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntrFifoFullOKnown</span><span class="p">,</span> <span class="n">intr_fifo_full_o</span><span class="p">)</span>
-<a name="l-543"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlODValidKnown</span><span class="p">,</span> <span class="n">tl_o</span><span class="p">.</span><span class="n">d_valid</span><span class="p">)</span>
-<a name="l-544"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlOAReadyKnown</span><span class="p">,</span> <span class="n">tl_o</span><span class="p">.</span><span class="n">a_ready</span><span class="p">)</span>
-<a name="l-545"></a>
-<a name="l-546"></a>  <span class="c1">// Alert outputs</span>
-<a name="l-547"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">AlertTxOKnown</span><span class="p">,</span> <span class="n">alert_tx_o</span><span class="p">)</span>
-<a name="l-548"></a>
-<a name="l-549"></a><span class="no">`endif</span> <span class="c1">// SYNTHESIS</span>
-<a name="l-550"></a><span class="no">`endif</span> <span class="c1">// VERILATOR</span>
-<a name="l-551"></a>
-<a name="l-552"></a><span class="k">endmodule</span>
+<a name="l-472"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-473"></a>        <span class="n">err_code</span> <span class="o">=</span> <span class="n">NoError</span><span class="p">;</span>
+<a name="l-474"></a>      <span class="k">end</span>
+<a name="l-475"></a>    <span class="k">endcase</span>
+<a name="l-476"></a>  <span class="k">end</span>
+<a name="l-477"></a>
+<a name="l-478"></a>  <span class="c1">/////////////////////</span>
+<a name="l-479"></a>  <span class="c1">// Hardware Alerts //</span>
+<a name="l-480"></a>  <span class="c1">/////////////////////</span>
+<a name="l-481"></a>
+<a name="l-482"></a>  <span class="c1">// TODO: add CSR with REGWEN to test alert via SW</span>
+<a name="l-483"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumAlerts</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">alerts</span><span class="p">;</span>
+<a name="l-484"></a>  <span class="k">assign</span> <span class="n">alerts</span> <span class="o">=</span> <span class="p">{</span><span class="n">msg_push_sha_disabled</span><span class="p">};</span>
+<a name="l-485"></a>
+<a name="l-486"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">j</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">hmac_pkg</span><span class="o">::</span><span class="n">NumAlerts</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_alert_tx</span>
+<a name="l-487"></a>    <span class="n">prim_alert_sender</span> <span class="p">#(</span>
+<a name="l-488"></a>      <span class="p">.</span><span class="n">AsyncOn</span><span class="p">(</span><span class="n">hmac_pkg</span><span class="o">::</span><span class="n">AlertAsyncOn</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+<a name="l-489"></a>    <span class="p">)</span> <span class="n">i_prim_alert_sender</span> <span class="p">(</span>
+<a name="l-490"></a>      <span class="p">.</span><span class="n">clk_i</span>      <span class="p">(</span> <span class="n">clk_i</span>         <span class="p">),</span>
+<a name="l-491"></a>      <span class="p">.</span><span class="n">rst_ni</span>     <span class="p">(</span> <span class="n">rst_ni</span>        <span class="p">),</span>
+<a name="l-492"></a>      <span class="p">.</span><span class="n">alert_i</span>    <span class="p">(</span> <span class="n">alerts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>     <span class="p">),</span>
+<a name="l-493"></a>      <span class="p">.</span><span class="n">alert_rx_i</span> <span class="p">(</span> <span class="n">alert_rx_i</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">),</span>
+<a name="l-494"></a>      <span class="p">.</span><span class="n">alert_tx_o</span> <span class="p">(</span> <span class="n">alert_tx_o</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">)</span>
+<a name="l-495"></a>    <span class="p">);</span>
+<a name="l-496"></a>  <span class="k">end</span> <span class="o">:</span> <span class="n">gen_alert_tx</span>
+<a name="l-497"></a>
+<a name="l-498"></a>  <span class="c1">//////////////////////////////////////////////</span>
+<a name="l-499"></a>  <span class="c1">// Assertions, Assumptions, and Coverpoints //</span>
+<a name="l-500"></a>  <span class="c1">//////////////////////////////////////////////</span>
+<a name="l-501"></a>
+<a name="l-502"></a><span class="no">`ifndef</span> <span class="n">VERILATOR</span>
+<a name="l-503"></a><span class="no">`ifndef</span> <span class="n">SYNTHESIS</span>
+<a name="l-504"></a>  <span class="c1">// HMAC assumes TL-UL mask is byte-aligned.</span>
+<a name="l-505"></a>    <span class="k">property</span> <span class="n">wmask_bytealign_p</span><span class="p">(</span><span class="n">wmask_byte</span><span class="p">,</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rst_n</span><span class="p">);</span>
+<a name="l-506"></a>      <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mh">0</span><span class="p">)</span>
+<a name="l-507"></a>        <span class="n">msg_fifo_req</span> <span class="o">&amp;</span> <span class="n">msg_fifo_we</span> <span class="o">|-&gt;</span> <span class="n">wmask_byte</span> <span class="k">inside</span> <span class="p">{</span><span class="m">&#39;0</span><span class="p">,</span> <span class="m">&#39;1</span><span class="p">};</span>
+<a name="l-508"></a>    <span class="k">endproperty</span>
+<a name="l-509"></a>
+<a name="l-510"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">gen_assert_wmask_bytealign</span>
+<a name="l-511"></a>      <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span><span class="n">wmask_bytealign_p</span><span class="p">(</span><span class="n">msg_fifo_wmask</span><span class="p">[</span><span class="mh">8</span><span class="o">*</span><span class="n">i</span><span class="o">+:</span><span class="mh">8</span><span class="p">],</span> <span class="n">clk_i</span><span class="p">,</span> <span class="n">rst_ni</span><span class="p">));</span>
+<a name="l-512"></a>    <span class="k">end</span>
+<a name="l-513"></a>
+<a name="l-514"></a>  <span class="c1">// To pass FPV, this shouldn&#39;t add pragma translate_off even these two signals</span>
+<a name="l-515"></a>  <span class="c1">// are used in Assertion only</span>
+<a name="l-516"></a>  <span class="k">logic</span> <span class="n">in_process</span><span class="p">;</span>
+<a name="l-517"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-518"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span>               <span class="n">in_process</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-519"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">reg_hash_process</span><span class="p">)</span> <span class="n">in_process</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-520"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">reg_hash_done</span><span class="p">)</span>    <span class="n">in_process</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-521"></a>  <span class="k">end</span>
+<a name="l-522"></a>
+<a name="l-523"></a>  <span class="k">logic</span> <span class="n">initiated</span><span class="p">;</span>
+<a name="l-524"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-525"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span>               <span class="n">initiated</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-526"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">hash_start</span><span class="p">)</span>       <span class="n">initiated</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-527"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">reg_hash_process</span><span class="p">)</span> <span class="n">initiated</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-528"></a>  <span class="k">end</span>
+<a name="l-529"></a>
+<a name="l-530"></a>  <span class="c1">// the host doesn&#39;t write data after hash_process until hash_start.</span>
+<a name="l-531"></a>  <span class="c1">// Same as &quot;message_length shouldn&#39;t be changed between hash_process and done</span>
+<a name="l-532"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidWriteAssert</span><span class="p">,</span> <span class="n">msg_fifo_req</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">in_process</span><span class="p">)</span>
+<a name="l-533"></a>
+<a name="l-534"></a>  <span class="c1">// `hash_process` shall be toggle and paired with `hash_start`.</span>
+<a name="l-535"></a>  <span class="c1">// Below condition is covered by the design (2020-02-19)</span>
+<a name="l-536"></a>  <span class="c1">//`ASSERT(ValidHashStartAssert, hash_start |-&gt; !initiated)</span>
+<a name="l-537"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidHashProcessAssert</span><span class="p">,</span> <span class="n">reg_hash_process</span> <span class="o">|-&gt;</span> <span class="n">initiated</span><span class="p">)</span>
+<a name="l-538"></a>
+<a name="l-539"></a>  <span class="c1">// between `hash_done` and `hash_start`, message FIFO should be empty</span>
+<a name="l-540"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MsgFifoEmptyWhenNoOpAssert</span><span class="p">,</span>
+<a name="l-541"></a>          <span class="o">!</span><span class="n">in_process</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">initiated</span> <span class="o">|-&gt;</span> <span class="n">$stable</span><span class="p">(</span><span class="n">message_length</span><span class="p">))</span>
+<a name="l-542"></a>
+<a name="l-543"></a>  <span class="c1">// hmac_en should be modified only when the logic is Idle</span>
+<a name="l-544"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidHmacEnConditionAssert</span><span class="p">,</span>
+<a name="l-545"></a>          <span class="n">hmac_en</span> <span class="o">!=</span> <span class="n">$past</span><span class="p">(</span><span class="n">hmac_en</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">in_process</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">initiated</span><span class="p">)</span>
+<a name="l-546"></a>
+<a name="l-547"></a>  <span class="c1">// All outputs should be known value after reset</span>
+<a name="l-548"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntrHmacDoneOKnown</span><span class="p">,</span> <span class="n">intr_hmac_done_o</span><span class="p">)</span>
+<a name="l-549"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntrFifoFullOKnown</span><span class="p">,</span> <span class="n">intr_fifo_full_o</span><span class="p">)</span>
+<a name="l-550"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlODValidKnown</span><span class="p">,</span> <span class="n">tl_o</span><span class="p">.</span><span class="n">d_valid</span><span class="p">)</span>
+<a name="l-551"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlOAReadyKnown</span><span class="p">,</span> <span class="n">tl_o</span><span class="p">.</span><span class="n">a_ready</span><span class="p">)</span>
+<a name="l-552"></a>
+<a name="l-553"></a>  <span class="c1">// Alert outputs</span>
+<a name="l-554"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">AlertTxOKnown</span><span class="p">,</span> <span class="n">alert_tx_o</span><span class="p">)</span>
+<a name="l-555"></a>
+<a name="l-556"></a><span class="no">`endif</span> <span class="c1">// SYNTHESIS</span>
+<a name="l-557"></a><span class="no">`endif</span> <span class="c1">// VERILATOR</span>
+<a name="l-558"></a>
+<a name="l-559"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi_rx.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi_rx.v</a>
-time_elapsed: 0.608s
-ram usage: 13552 KB
+time_elapsed: 0.444s
+ram usage: 13744 KB
 </pre>
 <pre class="log">
 
@@ -51,6 +51,7 @@ module bsg_cache_to_axi_rx (
 	parameter num_cache_p = &#34;inv&#34;;
 	parameter data_width_p = &#34;inv&#34;;
 	parameter block_size_in_words_p = &#34;inv&#34;;
+	parameter tag_fifo_els_p = num_cache_p;
 	parameter axi_id_width_p = &#34;inv&#34;;
 	parameter axi_addr_width_p = &#34;inv&#34;;
 	parameter axi_data_width_p = &#34;inv&#34;;
@@ -86,24 +87,25 @@ module bsg_cache_to_axi_rx (
 	wire [1:0] unused_rresp = axi_rresp_i;
 	wire unused_rlast = axi_rlast_i;
 	wire tag_fifo_v_li;
+	wire tag_fifo_ready_lo;
 	wire tag_fifo_v_lo;
 	reg tag_fifo_yumi_li;
 	wire [lg_num_cache_lp - 1:0] tag_lo;
 	bsg_fifo_1r1w_small #(
 		.width_p(lg_num_cache_lp),
-		.els_p(num_cache_p)
+		.els_p(tag_fifo_els_p)
 	) tag_fifo(
 		.clk_i(clk_i),
 		.reset_i(reset_i),
 		.v_i(tag_fifo_v_li),
-		.ready_o(),
+		.ready_o(tag_fifo_ready_lo),
 		.data_i(tag_i),
 		.v_o(tag_fifo_v_lo),
 		.data_o(tag_lo),
 		.yumi_i(tag_fifo_yumi_li)
 	);
-	assign yumi_o = v_i &amp; axi_arready_i;
-	assign tag_fifo_v_li = yumi_o;
+	assign yumi_o = (v_i &amp; axi_arready_i) &amp; tag_fifo_ready_lo;
+	assign tag_fifo_v_li = v_i &amp; axi_arready_i;
 	assign axi_arid_o = {axi_id_width_p {1&#39;b0}};
 	assign axi_araddr_o = axi_addr_i;
 	assign axi_arlen_o = sv2v_cast_8(axi_burst_len_p - 1);
@@ -112,7 +114,7 @@ module bsg_cache_to_axi_rx (
 	assign axi_arcache_o = 4&#39;b0000;
 	assign axi_arprot_o = 2&#39;b00;
 	assign axi_arlock_o = 1&#39;b0;
-	assign axi_arvalid_o = v_i;
+	assign axi_arvalid_o = v_i &amp; tag_fifo_ready_lo;
 	wire piso_v_lo;
 	wire [data_width_p - 1:0] piso_data_lo;
 	wire piso_yumi_li;

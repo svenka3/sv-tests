@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_output_control.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_output_control.v</a>
-time_elapsed: 0.484s
-ram usage: 15204 KB
+time_elapsed: 0.376s
+ram usage: 15264 KB
 </pre>
 <pre class="log">
 
@@ -63,11 +63,11 @@ module bsg_wormhole_router_output_control (
 		.sel_one_hot_o(),
 		.v_o(),
 		.tag_o(),
-		.yumi_i(free_to_schedule &amp; valid_o)
+		.yumi_i((free_to_schedule &amp; ready_i) &amp; valid_o)
 	);
 	assign scheduled_n = grants_lo | scheduled_with_release;
 	assign data_sel_o = scheduled_n;
-	assign valid_o = ready_i &amp; |(scheduled_n &amp; valid_i);
+	assign valid_o = |(scheduled_n &amp; valid_i);
 	assign yumi_o = (ready_i ? scheduled_n &amp; valid_i : 1&#39;sb0);
 endmodule
 

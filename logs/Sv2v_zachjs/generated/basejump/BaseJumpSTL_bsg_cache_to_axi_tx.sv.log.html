@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi_tx.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi_tx.v</a>
-time_elapsed: 1.048s
-ram usage: 14288 KB
+time_elapsed: 0.616s
+ram usage: 14392 KB
 </pre>
 <pre class="log">
 
@@ -54,6 +54,7 @@ module bsg_cache_to_axi_tx (
 	parameter num_cache_p = &#34;inv&#34;;
 	parameter data_width_p = &#34;inv&#34;;
 	parameter block_size_in_words_p = &#34;inv&#34;;
+	parameter tag_fifo_els_p = num_cache_p;
 	parameter axi_id_width_p = &#34;inv&#34;;
 	parameter axi_addr_width_p = &#34;inv&#34;;
 	parameter axi_data_width_p = &#34;inv&#34;;
@@ -90,17 +91,18 @@ module bsg_cache_to_axi_tx (
 	input axi_bvalid_i;
 	output wire axi_bready_o;
 	wire tag_fifo_v_li;
+	wire tag_fifo_ready_lo;
 	wire tag_fifo_v_lo;
 	reg tag_fifo_yumi_li;
 	wire [lg_num_cache_lp - 1:0] tag_lo;
 	bsg_fifo_1r1w_small #(
 		.width_p(lg_num_cache_lp),
-		.els_p(num_cache_p)
+		.els_p(tag_fifo_els_p)
 	) tag_fifo(
 		.clk_i(clk_i),
 		.reset_i(reset_i),
 		.v_i(tag_fifo_v_li),
-		.ready_o(),
+		.ready_o(tag_fifo_ready_lo),
 		.data_i(tag_i),
 		.v_o(tag_fifo_v_lo),
 		.data_o(tag_lo),
@@ -109,8 +111,8 @@ module bsg_cache_to_axi_tx (
 	wire [axi_id_width_p - 1:0] unused_bid = axi_bid_i;
 	wire [1:0] unused_bresp = axi_bresp_i;
 	wire unused_bvalid = axi_bvalid_i;
-	assign yumi_o = v_i &amp; axi_awready_i;
-	assign tag_fifo_v_li = yumi_o;
+	assign yumi_o = (v_i &amp; axi_awready_i) &amp; tag_fifo_ready_lo;
+	assign tag_fifo_v_li = v_i &amp; axi_awready_i;
 	assign axi_awid_o = {axi_id_width_p {1&#39;b0}};
 	assign axi_awaddr_o = axi_addr_i;
 	assign axi_awlen_o = sv2v_cast_8(axi_burst_len_p - 1);
@@ -119,7 +121,7 @@ module bsg_cache_to_axi_tx (
 	assign axi_awcache_o = 4&#39;b0000;
 	assign axi_awprot_o = 2&#39;b00;
 	assign axi_awlock_o = 1&#39;b0;
-	assign axi_awvalid_o = v_i;
+	assign axi_awvalid_o = v_i &amp; tag_fifo_ready_lo;
 	wire sipo_v_li;
 	wire sipo_ready_lo;
 	wire [data_width_p - 1:0] sipo_data_li;
