@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_data_mem.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_data_mem.v</a>
-time_elapsed: 0.856s
-ram usage: 16700 KB
+time_elapsed: 1.404s
+ram usage: 15608 KB
 </pre>
 <pre class="log">
 
@@ -138,24 +138,24 @@ module bsg_cache_non_blocking_data_mem (
 		.data_o(input_mux_mask_lo)
 	);
 	generate
-		genvar input_sel_i;
-		for (input_sel_i = 0; input_sel_i &lt; data_sel_mux_els_lp; input_sel_i = input_sel_i + 1) begin : input_sel
-			assign input_mux_data_li[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? input_sel_i : 0 - (input_sel_i - (data_sel_mux_els_lp - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)] = {data_width_p / (8 * (2 ** input_sel_i)) {data_mem_pkt[((data_width_p - 1) &gt;= 0 ? (((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + -1)) - (data_width_p - 1) : ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) - (8 * (2 ** input_sel_i))) + 1)+:8 * (2 ** input_sel_i)]}};
-			if (input_sel_i == (data_sel_mux_els_lp - 1)) begin : max_size
-				assign input_mux_mask_li[((data_mask_width_lp - 1) &gt;= 0 ? 0 : data_mask_width_lp - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? input_sel_i : 0 - (input_sel_i - (data_sel_mux_els_lp - 1))) * ((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp))+:((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp)] = {data_mask_width_lp {1&#39;b1}};
+		genvar i;
+		for (i = 0; i &lt; data_sel_mux_els_lp; i = i + 1) begin : input_sel
+			assign input_mux_data_li[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? i : 0 - (i - (data_sel_mux_els_lp - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)] = {data_width_p / (8 * (2 ** i)) {data_mem_pkt[((data_width_p - 1) &gt;= 0 ? (((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + -1)) - (data_width_p - 1) : ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) - (8 * (2 ** i))) + 1)+:8 * (2 ** i)]}};
+			if (i == (data_sel_mux_els_lp - 1)) begin : max_size
+				assign input_mux_mask_li[((data_mask_width_lp - 1) &gt;= 0 ? 0 : data_mask_width_lp - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? i : 0 - (i - (data_sel_mux_els_lp - 1))) * ((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp))+:((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp)] = {data_mask_width_lp {1&#39;b1}};
 			end
 			else begin : non_max_size
-				wire [(data_width_p / (8 * (2 ** input_sel_i))) - 1:0] decode_lo;
-				bsg_decode #(.num_out_p(data_width_p / (8 * (2 ** input_sel_i)))) dec(
-					.i(data_mem_pkt[((((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) - 1) &gt;= 0 ? (((((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) - 1) &gt;= 0 ? ((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) : 2 - ((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3))) + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + (((((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p))) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)) : 2 - ((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)))) + (((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + -1))))) - ((((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) - 1) - input_sel_i) : ((((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + (((((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p))) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)) : 2 - ((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)))) + (((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + (((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3))))) + (0 - input_sel_i)) - ((byte_sel_width_lp - input_sel_i) &gt; 1 ? byte_sel_width_lp - input_sel_i : 1)) + 1)+:((byte_sel_width_lp - input_sel_i) &gt; 1 ? byte_sel_width_lp - input_sel_i : 1)]),
+				wire [(data_width_p / (8 * (2 ** i))) - 1:0] decode_lo;
+				bsg_decode #(.num_out_p(data_width_p / (8 * (2 ** i)))) dec(
+					.i(data_mem_pkt[((((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) - 1) &gt;= 0 ? (((((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) - 1) &gt;= 0 ? ((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) : 2 - ((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3))) + ((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + (((((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p))) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)) : 2 - ((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)))) + (((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + ((((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + -1))))) - ((((data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(data_width_p &gt;&gt; 3)) - 1) - i) : ((((((ways_p == 1 ? 1 : $clog2(ways_p)) - 1) &gt;= 0 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + (((((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p))) - 1) &gt;= 0 ? (sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)) : 2 - ((sets_p == 1 ? 1 : $clog2(sets_p)) + (block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)))) + (((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p) + (((data_width_p &gt;&gt; 3) - 1) &gt;= 0 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3))))) + (0 - i)) - ((byte_sel_width_lp - i) &gt; 1 ? byte_sel_width_lp - i : 1)) + 1)+:((byte_sel_width_lp - i) &gt; 1 ? byte_sel_width_lp - i : 1)]),
 					.o(decode_lo)
 				);
 				bsg_expand_bitmask #(
-					.in_width_p(data_width_p / (8 * (2 ** input_sel_i))),
-					.expand_p(2 ** input_sel_i)
+					.in_width_p(data_width_p / (8 * (2 ** i))),
+					.expand_p(2 ** i)
 				) exp(
 					.i(decode_lo),
-					.o(input_mux_mask_li[((data_mask_width_lp - 1) &gt;= 0 ? 0 : data_mask_width_lp - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? input_sel_i : 0 - (input_sel_i - (data_sel_mux_els_lp - 1))) * ((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp))+:((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp)])
+					.o(input_mux_mask_li[((data_mask_width_lp - 1) &gt;= 0 ? 0 : data_mask_width_lp - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? i : 0 - (i - (data_sel_mux_els_lp - 1))) * ((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp))+:((data_mask_width_lp - 1) &gt;= 0 ? data_mask_width_lp : 2 - data_mask_width_lp)])
 				);
 			end
 		end
@@ -182,22 +182,21 @@ module bsg_cache_non_blocking_data_mem (
 		.data_o(data_o)
 	);
 	generate
-		genvar output_sel_i;
-		for (output_sel_i = 0; output_sel_i &lt; data_sel_mux_els_lp; output_sel_i = output_sel_i + 1) begin : output_sel
-			if (output_sel_i == (data_sel_mux_els_lp - 1)) begin : max_size
-				assign output_mux_data_li[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? output_sel_i : 0 - (output_sel_i - (data_sel_mux_els_lp - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)] = data_lo;
+		for (i = 0; i &lt; data_sel_mux_els_lp; i = i + 1) begin : output_sel
+			if (i == (data_sel_mux_els_lp - 1)) begin : max_size
+				assign output_mux_data_li[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? i : 0 - (i - (data_sel_mux_els_lp - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)] = data_lo;
 			end
 			else begin : non_max_size
-				wire [(8 * (2 ** output_sel_i)) - 1:0] selected_bytes;
+				wire [(8 * (2 ** i)) - 1:0] selected_bytes;
 				bsg_mux #(
-					.width_p(8 * (2 ** output_sel_i)),
-					.els_p(data_width_p / (8 * (2 ** output_sel_i)))
+					.width_p(8 * (2 ** i)),
+					.els_p(data_width_p / (8 * (2 ** i)))
 				) byte_mux(
 					.data_i(data_lo),
-					.sel_i(byte_sel_r[output_sel_i+:((byte_sel_width_lp - output_sel_i) &gt; 1 ? byte_sel_width_lp - output_sel_i : 1)]),
+					.sel_i(byte_sel_r[i+:((byte_sel_width_lp - i) &gt; 1 ? byte_sel_width_lp - i : 1)]),
 					.data_o(selected_bytes)
 				);
-				assign output_mux_data_li[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? output_sel_i : 0 - (output_sel_i - (data_sel_mux_els_lp - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)] = {{data_width_p - (8 * (2 ** output_sel_i)) {sigext_op_r &amp; selected_bytes[(8 * (2 ** output_sel_i)) - 1]}}, selected_bytes};
+				assign output_mux_data_li[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((data_sel_mux_els_lp - 1) &gt;= 0 ? i : 0 - (i - (data_sel_mux_els_lp - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)] = {{data_width_p - (8 * (2 ** i)) {sigext_op_r &amp; selected_bytes[(8 * (2 ** i)) - 1]}}, selected_bytes};
 			end
 		end
 	endgenerate

@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_nonsynth_mem_1rw_sync_mask_write_byte_assoc.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_nonsynth_mem_1rw_sync_mask_write_byte_assoc.v</a>
-time_elapsed: 0.424s
-ram usage: 14744 KB
+time_elapsed: 0.440s
+ram usage: 14876 KB
 </pre>
 <pre class="log">
 
@@ -43,19 +43,19 @@ module bsg_nonsynth_mem_1rw_sync_mask_write_byte_assoc (
 	input [write_mask_width_lp - 1:0] write_mask_i;
 	output [data_width_p - 1:0] data_o;
 	generate
-		genvar bk_i;
-		for (bk_i = 0; bk_i &lt; write_mask_width_lp; bk_i = bk_i + 1) begin : bk
+		genvar i;
+		for (i = 0; i &lt; write_mask_width_lp; i = i + 1) begin : bk
 			bsg_nonsynth_mem_1rw_sync_assoc #(
 				.addr_width_p(addr_width_p),
 				.width_p(8)
 			) mem_1rw_sync(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
-				.data_i(data_i[bk_i * 8+:8]),
+				.data_i(data_i[i * 8+:8]),
 				.addr_i(addr_i),
 				.v_i(v_i),
-				.w_i(w_i &amp; write_mask_i[bk_i]),
-				.data_o(data_o[bk_i * 8+:8])
+				.w_i(w_i &amp; write_mask_i[i]),
+				.data_o(data_o[i * 8+:8])
 			);
 		end
 	endgenerate

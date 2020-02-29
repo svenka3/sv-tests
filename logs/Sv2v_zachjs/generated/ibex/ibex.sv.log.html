@@ -16,8 +16,8 @@ top_module: ibex_core
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/ibex/shared/rtl/prim_clock_gating.sv.html" target="file-frame">third_party/cores/ibex/shared/rtl/prim_clock_gating.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pkg.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pkg.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_alu.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_alu.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_compressed_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_compressed_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_controller.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_controller.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_cs_registers.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_cs_registers.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_ex_block.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_ex_block.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_id_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_id_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_if_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_if_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_load_store_unit.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_load_store_unit.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_slow.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_slow.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_fast.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_fast.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_fetch_fifo.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_fetch_fifo.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pmp.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pmp.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_core.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_core.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_register_file_ff.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_register_file_ff.sv</a>
-time_elapsed: 21.744s
-ram usage: 139744 KB
+time_elapsed: 23.828s
+ram usage: 141804 KB
 </pre>
 <pre class="log">
 
@@ -308,9 +308,9 @@ module ibex_alu (
 	wire [31:0] operand_a_rev;
 	wire [32:0] operand_b_neg;
 	generate
-		genvar gen_rev_operand_a_k;
-		for (gen_rev_operand_a_k = 0; gen_rev_operand_a_k &lt; 32; gen_rev_operand_a_k = gen_rev_operand_a_k + 1) begin : gen_rev_operand_a
-			assign operand_a_rev[gen_rev_operand_a_k] = operand_a_i[31 - gen_rev_operand_a_k];
+		genvar k;
+		for (k = 0; k &lt; 32; k = k + 1) begin : gen_rev_operand_a
+			assign operand_a_rev[k] = operand_a_i[31 - k];
 		end
 	endgenerate
 	reg adder_op_b_negate;
@@ -350,9 +350,9 @@ module ibex_alu (
 	assign shift_right_result_ext = $unsigned(shift_right_result_signed);
 	assign shift_right_result = shift_right_result_ext[31:0];
 	generate
-		genvar gen_rev_shift_right_result_j;
-		for (gen_rev_shift_right_result_j = 0; gen_rev_shift_right_result_j &lt; 32; gen_rev_shift_right_result_j = gen_rev_shift_right_result_j + 1) begin : gen_rev_shift_right_result
-			assign shift_left_result[gen_rev_shift_right_result_j] = shift_right_result[31 - gen_rev_shift_right_result_j];
+		genvar j;
+		for (j = 0; j &lt; 32; j = j + 1) begin : gen_rev_shift_right_result
+			assign shift_left_result[j] = shift_right_result[31 - j];
 		end
 	endgenerate
 	assign shift_result = (shift_left ? shift_left_result : shift_right_result);
@@ -1816,7 +1816,7 @@ module ibex_cs_registers (
 	localparam [5:0] EXC_CAUSE_IRQ_EXTERNAL_M = {1&#39;b1, 5&#39;d11};
 	localparam [5:0] EXC_CAUSE_IRQ_NM = {1&#39;b1, 5&#39;d31};
 	localparam [1:0] MXL = 2&#39;d1;
-	localparam [31:0] MISA_VALUE = (((((((((((0 &lt;&lt; 0) | (1 &lt;&lt; 2)) | (0 &lt;&lt; 3)) | (sv2v_cast_32(RV32E) &lt;&lt; 4)) | (0 &lt;&lt; 5)) | (1 &lt;&lt; 8)) | (sv2v_cast_32(RV32M) &lt;&lt; 12)) | (0 &lt;&lt; 13)) | (0 &lt;&lt; 18)) | (1 &lt;&lt; 20)) | (0 &lt;&lt; 23)) | (sv2v_cast_32(MXL) &lt;&lt; 30);
+	localparam [31:0] MISA_VALUE = (((((((((((0 &lt;&lt; 0) | (1 &lt;&lt; 2)) | (0 &lt;&lt; 3)) | (sv2v_cast_32(RV32E) &lt;&lt; 4)) | (0 &lt;&lt; 5)) | (sv2v_cast_32(!RV32E) &lt;&lt; 8)) | (sv2v_cast_32(RV32M) &lt;&lt; 12)) | (0 &lt;&lt; 13)) | (0 &lt;&lt; 18)) | (1 &lt;&lt; 20)) | (0 &lt;&lt; 23)) | (sv2v_cast_32(MXL) &lt;&lt; 30);
 	reg [31:0] exception_pc;
 	reg [1:0] priv_lvl_q;
 	reg [1:0] priv_lvl_d;
@@ -2159,86 +2159,83 @@ module ibex_cs_registers (
 	assign priv_mode_if_o = priv_lvl_d;
 	assign priv_mode_lsu_o = (mstatus_q[1] ? mstatus_q[3-:2] : priv_lvl_q);
 	generate
+		genvar i;
 		if (PMPEnable) begin : g_pmp_registers
 			reg [5:0] pmp_cfg [0:PMPNumRegions - 1];
 			reg [5:0] pmp_cfg_wdata [0:PMPNumRegions - 1];
 			reg [31:0] pmp_addr [0:PMPNumRegions - 1];
 			wire [PMPNumRegions - 1:0] pmp_cfg_we;
 			wire [PMPNumRegions - 1:0] pmp_addr_we;
-			genvar g_exp_rd_data_i;
-			for (g_exp_rd_data_i = 0; g_exp_rd_data_i &lt; PMP_MAX_REGIONS; g_exp_rd_data_i = g_exp_rd_data_i + 1) begin : g_exp_rd_data
-				if (g_exp_rd_data_i &lt; PMPNumRegions) begin : g_implemented_regions
-					assign pmp_cfg_rdata[g_exp_rd_data_i] = {pmp_cfg[g_exp_rd_data_i][5], 2&#39;b00, pmp_cfg[g_exp_rd_data_i][4-:2], pmp_cfg[g_exp_rd_data_i][2], pmp_cfg[g_exp_rd_data_i][1], pmp_cfg[g_exp_rd_data_i][0]};
+			for (i = 0; i &lt; PMP_MAX_REGIONS; i = i + 1) begin : g_exp_rd_data
+				if (i &lt; PMPNumRegions) begin : g_implemented_regions
+					assign pmp_cfg_rdata[i] = {pmp_cfg[i][5], 2&#39;b00, pmp_cfg[i][4-:2], pmp_cfg[i][2], pmp_cfg[i][1], pmp_cfg[i][0]};
 					if (PMPGranularity == 0) begin : g_pmp_g0
-						always @(*) pmp_addr_rdata[g_exp_rd_data_i] = pmp_addr[g_exp_rd_data_i];
+						always @(*) pmp_addr_rdata[i] = pmp_addr[i];
 					end
 					else if (PMPGranularity == 1) begin : g_pmp_g1
 						always @(*) begin
-							pmp_addr_rdata[g_exp_rd_data_i] = pmp_addr[g_exp_rd_data_i];
-							if ((pmp_cfg[g_exp_rd_data_i][4-:2] == PMP_MODE_OFF) || (pmp_cfg[g_exp_rd_data_i][4-:2] == PMP_MODE_TOR))
-								pmp_addr_rdata[g_exp_rd_data_i][PMPGranularity - 1:0] = 1&#39;sb0;
+							pmp_addr_rdata[i] = pmp_addr[i];
+							if ((pmp_cfg[i][4-:2] == PMP_MODE_OFF) || (pmp_cfg[i][4-:2] == PMP_MODE_TOR))
+								pmp_addr_rdata[i][PMPGranularity - 1:0] = 1&#39;sb0;
 						end
 					end
 					else begin : g_pmp_g2
 						always @(*) begin
-							pmp_addr_rdata[g_exp_rd_data_i] = pmp_addr[g_exp_rd_data_i];
-							if ((pmp_cfg[g_exp_rd_data_i][4-:2] == PMP_MODE_OFF) || (pmp_cfg[g_exp_rd_data_i][4-:2] == PMP_MODE_TOR))
-								pmp_addr_rdata[g_exp_rd_data_i][PMPGranularity - 1:0] = 1&#39;sb0;
-							else if (pmp_cfg[g_exp_rd_data_i][4-:2] == PMP_MODE_NAPOT)
-								pmp_addr_rdata[g_exp_rd_data_i][PMPGranularity - 2:0] = 1&#39;sb1;
+							pmp_addr_rdata[i] = pmp_addr[i];
+							if ((pmp_cfg[i][4-:2] == PMP_MODE_OFF) || (pmp_cfg[i][4-:2] == PMP_MODE_TOR))
+								pmp_addr_rdata[i][PMPGranularity - 1:0] = 1&#39;sb0;
+							else if (pmp_cfg[i][4-:2] == PMP_MODE_NAPOT)
+								pmp_addr_rdata[i][PMPGranularity - 2:0] = 1&#39;sb1;
 						end
 					end
 				end
 				else begin : g_other_regions
-					assign pmp_cfg_rdata[g_exp_rd_data_i] = 1&#39;sb0;
-					always @(*) pmp_addr_rdata[g_exp_rd_data_i] = 1&#39;sb0;
+					assign pmp_cfg_rdata[i] = 1&#39;sb0;
+					always @(*) pmp_addr_rdata[i] = 1&#39;sb0;
 				end
 			end
-			genvar g_pmp_csrs_i;
-			for (g_pmp_csrs_i = 0; g_pmp_csrs_i &lt; PMPNumRegions; g_pmp_csrs_i = g_pmp_csrs_i + 1) begin : g_pmp_csrs
-				assign pmp_cfg_we[g_pmp_csrs_i] = (csr_we_int &amp; ~pmp_cfg[g_pmp_csrs_i][5]) &amp; (csr_addr == (CSR_OFF_PMP_CFG + (g_pmp_csrs_i[11:0] &gt;&gt; 2)));
-				always @(*) pmp_cfg_wdata[g_pmp_csrs_i][5] = csr_wdata_int[((g_pmp_csrs_i % 4) * PMP_CFG_W) + 7];
+			for (i = 0; i &lt; PMPNumRegions; i = i + 1) begin : g_pmp_csrs
+				assign pmp_cfg_we[i] = (csr_we_int &amp; ~pmp_cfg[i][5]) &amp; (csr_addr == (CSR_OFF_PMP_CFG + (i[11:0] &gt;&gt; 2)));
+				always @(*) pmp_cfg_wdata[i][5] = csr_wdata_int[((i % 4) * PMP_CFG_W) + 7];
 				always @(*)
-					case (csr_wdata_int[((g_pmp_csrs_i % 4) * PMP_CFG_W) + 3+:2])
-						2&#39;b00: pmp_cfg_wdata[g_pmp_csrs_i][4-:2] = PMP_MODE_OFF;
-						2&#39;b01: pmp_cfg_wdata[g_pmp_csrs_i][4-:2] = PMP_MODE_TOR;
-						2&#39;b10: pmp_cfg_wdata[g_pmp_csrs_i][4-:2] = (PMPGranularity == 0 ? PMP_MODE_NA4 : PMP_MODE_OFF);
-						2&#39;b11: pmp_cfg_wdata[g_pmp_csrs_i][4-:2] = PMP_MODE_NAPOT;
-						default: pmp_cfg_wdata[g_pmp_csrs_i][4-:2] = PMP_MODE_OFF;
+					case (csr_wdata_int[((i % 4) * PMP_CFG_W) + 3+:2])
+						2&#39;b00: pmp_cfg_wdata[i][4-:2] = PMP_MODE_OFF;
+						2&#39;b01: pmp_cfg_wdata[i][4-:2] = PMP_MODE_TOR;
+						2&#39;b10: pmp_cfg_wdata[i][4-:2] = (PMPGranularity == 0 ? PMP_MODE_NA4 : PMP_MODE_OFF);
+						2&#39;b11: pmp_cfg_wdata[i][4-:2] = PMP_MODE_NAPOT;
+						default: pmp_cfg_wdata[i][4-:2] = PMP_MODE_OFF;
 					endcase
-				always @(*) pmp_cfg_wdata[g_pmp_csrs_i][2] = csr_wdata_int[((g_pmp_csrs_i % 4) * PMP_CFG_W) + 2];
-				always @(*) pmp_cfg_wdata[g_pmp_csrs_i][1] = &amp;csr_wdata_int[(g_pmp_csrs_i % 4) * PMP_CFG_W+:2];
-				always @(*) pmp_cfg_wdata[g_pmp_csrs_i][0] = csr_wdata_int[(g_pmp_csrs_i % 4) * PMP_CFG_W];
+				always @(*) pmp_cfg_wdata[i][2] = csr_wdata_int[((i % 4) * PMP_CFG_W) + 2];
+				always @(*) pmp_cfg_wdata[i][1] = &amp;csr_wdata_int[(i % 4) * PMP_CFG_W+:2];
+				always @(*) pmp_cfg_wdata[i][0] = csr_wdata_int[(i % 4) * PMP_CFG_W];
 				always @(posedge clk_i or negedge rst_ni)
 					if (!rst_ni)
-						pmp_cfg[g_pmp_csrs_i] &lt;= sv2v_cast_6(&#39;b0);
-					else if (pmp_cfg_we[g_pmp_csrs_i])
-						pmp_cfg[g_pmp_csrs_i] &lt;= pmp_cfg_wdata[g_pmp_csrs_i];
-				if (g_pmp_csrs_i &lt; (PMPNumRegions - 1)) begin : g_lower
-					assign pmp_addr_we[g_pmp_csrs_i] = ((csr_we_int &amp; ~pmp_cfg[g_pmp_csrs_i][5]) &amp; (pmp_cfg[g_pmp_csrs_i + 1][4-:2] != PMP_MODE_TOR)) &amp; (csr_addr == (CSR_OFF_PMP_ADDR + g_pmp_csrs_i[11:0]));
+						pmp_cfg[i] &lt;= sv2v_cast_6(&#39;b0);
+					else if (pmp_cfg_we[i])
+						pmp_cfg[i] &lt;= pmp_cfg_wdata[i];
+				if (i &lt; (PMPNumRegions - 1)) begin : g_lower
+					assign pmp_addr_we[i] = ((csr_we_int &amp; ~pmp_cfg[i][5]) &amp; (pmp_cfg[i + 1][4-:2] != PMP_MODE_TOR)) &amp; (csr_addr == (CSR_OFF_PMP_ADDR + i[11:0]));
 				end
 				else begin : g_upper
-					assign pmp_addr_we[g_pmp_csrs_i] = (csr_we_int &amp; ~pmp_cfg[g_pmp_csrs_i][5]) &amp; (csr_addr == (CSR_OFF_PMP_ADDR + g_pmp_csrs_i[11:0]));
+					assign pmp_addr_we[i] = (csr_we_int &amp; ~pmp_cfg[i][5]) &amp; (csr_addr == (CSR_OFF_PMP_ADDR + i[11:0]));
 				end
 				always @(posedge clk_i or negedge rst_ni)
 					if (!rst_ni)
-						pmp_addr[g_pmp_csrs_i] &lt;= &#39;b0;
-					else if (pmp_addr_we[g_pmp_csrs_i])
-						pmp_addr[g_pmp_csrs_i] &lt;= csr_wdata_int;
-				assign csr_pmp_cfg_o[(0 &gt;= (PMPNumRegions - 1) ? g_pmp_csrs_i : (PMPNumRegions - 1) - g_pmp_csrs_i) * 6+:6] = pmp_cfg[g_pmp_csrs_i];
-				assign csr_pmp_addr_o[(0 &gt;= (PMPNumRegions - 1) ? g_pmp_csrs_i : (PMPNumRegions - 1) - g_pmp_csrs_i) * 34+:34] = {pmp_addr[g_pmp_csrs_i], 2&#39;b00};
+						pmp_addr[i] &lt;= &#39;b0;
+					else if (pmp_addr_we[i])
+						pmp_addr[i] &lt;= csr_wdata_int;
+				assign csr_pmp_cfg_o[(0 &gt;= (PMPNumRegions - 1) ? i : (PMPNumRegions - 1) - i) * 6+:6] = pmp_cfg[i];
+				assign csr_pmp_addr_o[(0 &gt;= (PMPNumRegions - 1) ? i : (PMPNumRegions - 1) - i) * 34+:34] = {pmp_addr[i], 2&#39;b00};
 			end
 		end
 		else begin : g_no_pmp_tieoffs
-			genvar g_rdata_i;
-			for (g_rdata_i = 0; g_rdata_i &lt; PMP_MAX_REGIONS; g_rdata_i = g_rdata_i + 1) begin : g_rdata
-				always @(*) pmp_addr_rdata[g_rdata_i] = 1&#39;sb0;
-				assign pmp_cfg_rdata[g_rdata_i] = 1&#39;sb0;
+			for (i = 0; i &lt; PMP_MAX_REGIONS; i = i + 1) begin : g_rdata
+				always @(*) pmp_addr_rdata[i] = 1&#39;sb0;
+				assign pmp_cfg_rdata[i] = 1&#39;sb0;
 			end
-			genvar g_outputs_i;
-			for (g_outputs_i = 0; g_outputs_i &lt; PMPNumRegions; g_outputs_i = g_outputs_i + 1) begin : g_outputs
-				assign csr_pmp_cfg_o[(0 &gt;= (PMPNumRegions - 1) ? g_outputs_i : (PMPNumRegions - 1) - g_outputs_i) * 6+:6] = sv2v_cast_6(1&#39;b0);
-				assign csr_pmp_addr_o[(0 &gt;= (PMPNumRegions - 1) ? g_outputs_i : (PMPNumRegions - 1) - g_outputs_i) * 34+:34] = 1&#39;sb0;
+			for (i = 0; i &lt; PMPNumRegions; i = i + 1) begin : g_outputs
+				assign csr_pmp_cfg_o[(0 &gt;= (PMPNumRegions - 1) ? i : (PMPNumRegions - 1) - i) * 6+:6] = sv2v_cast_6(1&#39;b0);
+				assign csr_pmp_addr_o[(0 &gt;= (PMPNumRegions - 1) ? i : (PMPNumRegions - 1) - i) * 34+:34] = 1&#39;sb0;
 			end
 		end
 	endgenerate
@@ -2302,26 +2299,25 @@ module ibex_cs_registers (
 		end
 	end
 	generate
-		genvar g_mhpmcounter_i;
-		for (g_mhpmcounter_i = 0; g_mhpmcounter_i &lt; 32; g_mhpmcounter_i = g_mhpmcounter_i + 1) begin : g_mhpmcounter
-			if (g_mhpmcounter_i &lt; (3 + MHPMCounterNum)) begin : g_mhpmcounter_exists
-				localparam [31:0] IMHPMCounterWidth = (g_mhpmcounter_i &lt; 3 ? 64 : MHPMCounterWidth);
+		for (i = 0; i &lt; 32; i = i + 1) begin : g_mhpmcounter
+			if (i &lt; (3 + MHPMCounterNum)) begin : g_mhpmcounter_exists
+				localparam [31:0] IMHPMCounterWidth = (i &lt; 3 ? 64 : MHPMCounterWidth);
 				reg [IMHPMCounterWidth - 1:0] mhpmcounter_q;
 				always @(posedge clk_i or negedge rst_ni)
 					if (~rst_ni)
 						mhpmcounter_q &lt;= 1&#39;sb0;
 					else
-						mhpmcounter_q &lt;= mhpmcounter_d[((31 - g_mhpmcounter_i) * 64) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth - 1 : ((IMHPMCounterWidth - 1) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)) - 1)-:((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)];
+						mhpmcounter_q &lt;= mhpmcounter_d[((31 - i) * 64) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth - 1 : ((IMHPMCounterWidth - 1) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)) - 1)-:((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)];
 				if (IMHPMCounterWidth &lt; 64) begin : g_mhpmcounter_narrow
-					assign mhpmcounter[((31 - g_mhpmcounter_i) * 64) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth - 1 : ((IMHPMCounterWidth - 1) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)) - 1)-:((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)] = mhpmcounter_q;
-					assign mhpmcounter[((31 - g_mhpmcounter_i) * 64) + (63 &gt;= IMHPMCounterWidth ? 63 : (63 + (63 &gt;= IMHPMCounterWidth ? 64 - IMHPMCounterWidth : (IMHPMCounterWidth - 63) + 1)) - 1)-:(63 &gt;= IMHPMCounterWidth ? 64 - IMHPMCounterWidth : (IMHPMCounterWidth - 63) + 1)] = 1&#39;sb0;
+					assign mhpmcounter[((31 - i) * 64) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth - 1 : ((IMHPMCounterWidth - 1) + ((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)) - 1)-:((IMHPMCounterWidth - 1) &gt;= 0 ? IMHPMCounterWidth : 2 - IMHPMCounterWidth)] = mhpmcounter_q;
+					assign mhpmcounter[((31 - i) * 64) + (63 &gt;= IMHPMCounterWidth ? 63 : (63 + (63 &gt;= IMHPMCounterWidth ? 64 - IMHPMCounterWidth : (IMHPMCounterWidth - 63) + 1)) - 1)-:(63 &gt;= IMHPMCounterWidth ? 64 - IMHPMCounterWidth : (IMHPMCounterWidth - 63) + 1)] = 1&#39;sb0;
 				end
 				else begin : g_mhpmcounter_full
-					assign mhpmcounter[(31 - g_mhpmcounter_i) * 64+:64] = mhpmcounter_q;
+					assign mhpmcounter[(31 - i) * 64+:64] = mhpmcounter_q;
 				end
 			end
 			else begin : g_no_mhpmcounter
-				assign mhpmcounter[(31 - g_mhpmcounter_i) * 64+:64] = 1&#39;sb0;
+				assign mhpmcounter[(31 - i) * 64+:64] = 1&#39;sb0;
 			end
 		end
 	endgenerate
@@ -5888,10 +5884,11 @@ module ibex_multdiv_fast (
 	reg sign_b;
 	reg mult_valid;
 	wire signed_mult;
-	reg [33:0] mac_res_q;
+	reg [33:0] intermediate_val_q;
+	wire [33:0] intermediate_val_d;
 	reg [33:0] mac_res_d;
-	wire [33:0] mac_res;
 	reg [33:0] op_remainder_d;
+	wire [33:0] mac_res;
 	wire div_sign_a;
 	wire div_sign_b;
 	reg is_greater_equal;
@@ -5910,33 +5907,33 @@ module ibex_multdiv_fast (
 	reg div_valid;
 	reg [4:0] div_counter_q;
 	reg [4:0] div_counter_d;
+	wire multdiv_en;
 	reg [2:0] md_state_q;
 	reg [2:0] md_state_d;
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni) begin
-			mac_res_q &lt;= 1&#39;sb0;
 			div_counter_q &lt;= 1&#39;sb0;
 			md_state_q &lt;= MD_IDLE;
 			op_denominator_q &lt;= 1&#39;sb0;
 			op_numerator_q &lt;= 1&#39;sb0;
 			op_quotient_q &lt;= 1&#39;sb0;
 		end
-		else begin
-			if (div_en_i) begin
-				div_counter_q &lt;= div_counter_d;
-				op_denominator_q &lt;= op_denominator_d;
-				op_numerator_q &lt;= op_numerator_d;
-				op_quotient_q &lt;= op_quotient_d;
-				md_state_q &lt;= md_state_d;
-			end
-			case (1&#39;b1)
-				mult_en_i: mac_res_q &lt;= mac_res_d;
-				div_en_i: mac_res_q &lt;= op_remainder_d;
-				default: mac_res_q &lt;= mac_res_q;
-			endcase
+		else if (div_en_i) begin
+			div_counter_q &lt;= div_counter_d;
+			op_denominator_q &lt;= op_denominator_d;
+			op_numerator_q &lt;= op_numerator_d;
+			op_quotient_q &lt;= op_quotient_d;
+			md_state_q &lt;= md_state_d;
 		end
+	always @(posedge clk_i or negedge rst_ni)
+		if (!rst_ni)
+			intermediate_val_q &lt;= 1&#39;sb0;
+		else if (multdiv_en)
+			intermediate_val_q &lt;= intermediate_val_d;
+	assign multdiv_en = mult_en_i | div_en_i;
+	assign intermediate_val_d = (div_en_i ? op_remainder_d : mac_res_d);
 	assign signed_mult = signed_mode_i != 2&#39;b00;
-	assign multdiv_result_o = (div_en_i ? mac_res_q[31:0] : mac_res_d[31:0]);
+	assign multdiv_result_o = (div_en_i ? intermediate_val_q[31:0] : mac_res_d[31:0]);
 	generate
 		if (SingleCycleMultiply) begin : gen_multiv_single_cycle
 			reg [0:0] mult_state_q;
@@ -5975,8 +5972,8 @@ module ibex_multdiv_fast (
 			assign mult2_sign_b = sign_b;
 			assign mult2_op_a = op_a_i[15:0];
 			assign mult2_op_b = op_b_i[31:16];
-			always @(*) accum[17:0] = mac_res_q[33:16];
-			always @(*) accum[33:18] = {16 {signed_mult &amp; mac_res_q[33]}};
+			always @(*) accum[17:0] = intermediate_val_q[33:16];
+			always @(*) accum[33:18] = {16 {signed_mult &amp; intermediate_val_q[33]}};
 			always @(*) begin
 				mult3_sign_a = sign_a;
 				mult3_sign_b = 1&#39;b0;
@@ -6029,7 +6026,7 @@ module ibex_multdiv_fast (
 				mult_op_b = op_b_i[15:0];
 				sign_a = 1&#39;b0;
 				sign_b = 1&#39;b0;
-				accum = mac_res_q;
+				accum = intermediate_val_q;
 				mac_res_d = mac_res;
 				mult_state_d = mult_state_q;
 				mult_valid = 1&#39;b0;
@@ -6048,9 +6045,9 @@ module ibex_multdiv_fast (
 						mult_op_b = op_b_i[31:16];
 						sign_a = 1&#39;b0;
 						sign_b = signed_mode_i[1] &amp; op_b_i[31];
-						accum = {18&#39;b0, mac_res_q[31:16]};
+						accum = {18&#39;b0, intermediate_val_q[31:16]};
 						if (operator_i == MD_OP_MULL)
-							mac_res_d = {2&#39;b0, mac_res[15:0], mac_res_q[15:0]};
+							mac_res_d = {2&#39;b0, mac_res[15:0], intermediate_val_q[15:0]};
 						else
 							mac_res_d = mac_res;
 						mult_state_d = AHBL;
@@ -6061,13 +6058,13 @@ module ibex_multdiv_fast (
 						sign_a = signed_mode_i[0] &amp; op_a_i[31];
 						sign_b = 1&#39;b0;
 						if (operator_i == MD_OP_MULL) begin
-							accum = {18&#39;b0, mac_res_q[31:16]};
-							mac_res_d = {2&#39;b0, mac_res[15:0], mac_res_q[15:0]};
+							accum = {18&#39;b0, intermediate_val_q[31:16]};
+							mac_res_d = {2&#39;b0, mac_res[15:0], intermediate_val_q[15:0]};
 							mult_valid = 1&#39;b1;
 							mult_state_d = ALBL;
 						end
 						else begin
-							accum = mac_res_q;
+							accum = intermediate_val_q;
 							mac_res_d = mac_res;
 							mult_state_d = AHBH;
 						end
@@ -6077,8 +6074,8 @@ module ibex_multdiv_fast (
 						mult_op_b = op_b_i[31:16];
 						sign_a = signed_mode_i[0] &amp; op_a_i[31];
 						sign_b = signed_mode_i[1] &amp; op_b_i[31];
-						accum[17:0] = mac_res_q[33:16];
-						accum[33:18] = {16 {signed_mult &amp; mac_res_q[33]}};
+						accum[17:0] = intermediate_val_q[33:16];
+						accum[33:18] = {16 {signed_mult &amp; intermediate_val_q[33]}};
 						mac_res_d = mac_res;
 						mult_state_d = ALBL;
 						mult_valid = 1&#39;b1;
@@ -6094,21 +6091,21 @@ module ibex_multdiv_fast (
 		end
 	endgenerate
 	assign res_adder_h = alu_adder_ext_i[33:1];
-	assign next_remainder = (is_greater_equal ? res_adder_h[31:0] : mac_res_q[31:0]);
+	assign next_remainder = (is_greater_equal ? res_adder_h[31:0] : intermediate_val_q[31:0]);
 	assign next_quotient = (is_greater_equal ? {1&#39;b0, op_quotient_q} | {1&#39;b0, one_shift} : {1&#39;b0, op_quotient_q});
 	assign one_shift = {31&#39;b0, 1&#39;b1} &lt;&lt; div_counter_q;
 	always @(*)
-		if ((mac_res_q[31] ^ op_denominator_q[31]) == 1&#39;b0)
+		if ((intermediate_val_q[31] ^ op_denominator_q[31]) == 1&#39;b0)
 			is_greater_equal = res_adder_h[31] == 1&#39;b0;
 		else
-			is_greater_equal = mac_res_q[31];
+			is_greater_equal = intermediate_val_q[31];
 	assign div_sign_a = op_a_i[31] &amp; signed_mode_i[0];
 	assign div_sign_b = op_b_i[31] &amp; signed_mode_i[1];
 	assign div_change_sign = div_sign_a ^ div_sign_b;
 	assign rem_change_sign = div_sign_a;
 	always @(*) begin
 		div_counter_d = div_counter_q - 5&#39;h1;
-		op_remainder_d = mac_res_q;
+		op_remainder_d = intermediate_val_q;
 		op_quotient_d = op_quotient_q;
 		md_state_d = md_state_q;
 		op_numerator_d = op_numerator_q;
@@ -6150,7 +6147,7 @@ module ibex_multdiv_fast (
 				op_remainder_d = {1&#39;b0, next_remainder[31:0], op_numerator_q[div_counter_d]};
 				op_quotient_d = next_quotient[31:0];
 				md_state_d = (div_counter_q == 5&#39;d1 ? MD_LAST : MD_COMP);
-				alu_operand_a_o = {mac_res_q[31:0], 1&#39;b1};
+				alu_operand_a_o = {intermediate_val_q[31:0], 1&#39;b1};
 				alu_operand_b_o = {~op_denominator_q[31:0], 1&#39;b1};
 			end
 			MD_LAST: begin
@@ -6158,18 +6155,18 @@ module ibex_multdiv_fast (
 					op_remainder_d = {1&#39;b0, next_quotient};
 				else
 					op_remainder_d = {2&#39;b0, next_remainder[31:0]};
-				alu_operand_a_o = {mac_res_q[31:0], 1&#39;b1};
+				alu_operand_a_o = {intermediate_val_q[31:0], 1&#39;b1};
 				alu_operand_b_o = {~op_denominator_q[31:0], 1&#39;b1};
 				md_state_d = MD_CHANGE_SIGN;
 			end
 			MD_CHANGE_SIGN: begin
 				md_state_d = MD_FINISH;
 				if (operator_i == MD_OP_DIV)
-					op_remainder_d = (div_change_sign ? {2&#39;h0, alu_adder_i} : mac_res_q);
+					op_remainder_d = (div_change_sign ? {2&#39;h0, alu_adder_i} : intermediate_val_q);
 				else
-					op_remainder_d = (rem_change_sign ? {2&#39;h0, alu_adder_i} : mac_res_q);
+					op_remainder_d = (rem_change_sign ? {2&#39;h0, alu_adder_i} : intermediate_val_q);
 				alu_operand_a_o = {32&#39;h0, 1&#39;b1};
-				alu_operand_b_o = {~mac_res_q[31:0], 1&#39;b1};
+				alu_operand_b_o = {~intermediate_val_q[31:0], 1&#39;b1};
 			end
 			MD_FINISH: begin
 				md_state_d = MD_IDLE;
@@ -6285,17 +6282,17 @@ module ibex_prefetch_buffer (
 	assign instr_addr = (valid_req_q ? stored_addr_q : (branch_i ? addr_i : fetch_addr_q));
 	assign instr_addr_w_aligned = {instr_addr[31:2], 2&#39;b00};
 	generate
-		genvar g_outstanding_reqs_i;
-		for (g_outstanding_reqs_i = 0; g_outstanding_reqs_i &lt; NUM_REQS; g_outstanding_reqs_i = g_outstanding_reqs_i + 1) begin : g_outstanding_reqs
-			if (g_outstanding_reqs_i == 0) begin : g_req0
-				assign rdata_outstanding_n[g_outstanding_reqs_i] = (valid_req &amp; gnt_or_pmp_err) | rdata_outstanding_q[g_outstanding_reqs_i];
-				assign branch_discard_n[g_outstanding_reqs_i] = (((valid_req &amp; gnt_or_pmp_err) &amp; discard_req_d) | (branch_i &amp; rdata_outstanding_q[g_outstanding_reqs_i])) | branch_discard_q[g_outstanding_reqs_i];
-				assign rdata_pmp_err_n[g_outstanding_reqs_i] = ((valid_req &amp; ~rdata_outstanding_q[g_outstanding_reqs_i]) &amp; instr_pmp_err_i) | rdata_pmp_err_q[g_outstanding_reqs_i];
+		genvar i;
+		for (i = 0; i &lt; NUM_REQS; i = i + 1) begin : g_outstanding_reqs
+			if (i == 0) begin : g_req0
+				assign rdata_outstanding_n[i] = (valid_req &amp; gnt_or_pmp_err) | rdata_outstanding_q[i];
+				assign branch_discard_n[i] = (((valid_req &amp; gnt_or_pmp_err) &amp; discard_req_d) | (branch_i &amp; rdata_outstanding_q[i])) | branch_discard_q[i];
+				assign rdata_pmp_err_n[i] = ((valid_req &amp; ~rdata_outstanding_q[i]) &amp; instr_pmp_err_i) | rdata_pmp_err_q[i];
 			end
 			else begin : g_reqtop
-				assign rdata_outstanding_n[g_outstanding_reqs_i] = ((valid_req &amp; gnt_or_pmp_err) &amp; rdata_outstanding_q[g_outstanding_reqs_i - 1]) | rdata_outstanding_q[g_outstanding_reqs_i];
-				assign branch_discard_n[g_outstanding_reqs_i] = ((((valid_req &amp; gnt_or_pmp_err) &amp; discard_req_d) &amp; rdata_outstanding_q[g_outstanding_reqs_i - 1]) | (branch_i &amp; rdata_outstanding_q[g_outstanding_reqs_i])) | branch_discard_q[g_outstanding_reqs_i];
-				assign rdata_pmp_err_n[g_outstanding_reqs_i] = (((valid_req &amp; ~rdata_outstanding_q[g_outstanding_reqs_i]) &amp; instr_pmp_err_i) &amp; rdata_outstanding_q[g_outstanding_reqs_i - 1]) | rdata_pmp_err_q[g_outstanding_reqs_i];
+				assign rdata_outstanding_n[i] = ((valid_req &amp; gnt_or_pmp_err) &amp; rdata_outstanding_q[i - 1]) | rdata_outstanding_q[i];
+				assign branch_discard_n[i] = ((((valid_req &amp; gnt_or_pmp_err) &amp; discard_req_d) &amp; rdata_outstanding_q[i - 1]) | (branch_i &amp; rdata_outstanding_q[i])) | branch_discard_q[i];
+				assign rdata_pmp_err_n[i] = (((valid_req &amp; ~rdata_outstanding_q[i]) &amp; instr_pmp_err_i) &amp; rdata_outstanding_q[i - 1]) | rdata_pmp_err_q[i];
 			end
 		end
 	endgenerate
@@ -6409,20 +6406,20 @@ module ibex_fetch_fifo (
 	assign in_ready_o = ~valid_q[DEPTH - NUM_REQS];
 	assign pop_fifo = (out_ready_i &amp; out_valid_o) &amp; (~aligned_is_compressed | out_addr_o[1]);
 	generate
-		genvar g_fifo_next_i;
-		for (g_fifo_next_i = 0; g_fifo_next_i &lt; (DEPTH - 1); g_fifo_next_i = g_fifo_next_i + 1) begin : g_fifo_next
-			if (g_fifo_next_i == 0) begin : g_ent0
-				assign lowest_free_entry[g_fifo_next_i] = ~valid_q[g_fifo_next_i];
+		genvar i;
+		for (i = 0; i &lt; (DEPTH - 1); i = i + 1) begin : g_fifo_next
+			if (i == 0) begin : g_ent0
+				assign lowest_free_entry[i] = ~valid_q[i];
 			end
 			else begin : g_ent_others
-				assign lowest_free_entry[g_fifo_next_i] = ~valid_q[g_fifo_next_i] &amp; valid_q[g_fifo_next_i - 1];
+				assign lowest_free_entry[i] = ~valid_q[i] &amp; valid_q[i - 1];
 			end
-			assign valid_pushed[g_fifo_next_i] = (in_valid_i &amp; lowest_free_entry[g_fifo_next_i]) | valid_q[g_fifo_next_i];
-			assign valid_popped[g_fifo_next_i] = (pop_fifo ? valid_pushed[g_fifo_next_i + 1] : valid_pushed[g_fifo_next_i]);
-			assign valid_d[g_fifo_next_i] = valid_popped[g_fifo_next_i] &amp; ~clear_i;
-			assign entry_en[g_fifo_next_i] = (valid_pushed[g_fifo_next_i + 1] &amp; pop_fifo) | ((in_valid_i &amp; lowest_free_entry[g_fifo_next_i]) &amp; ~pop_fifo);
-			assign rdata_d[((DEPTH - 1) &gt;= 0 ? g_fifo_next_i : 0 - (g_fifo_next_i - (DEPTH - 1))) * 32+:32] = (valid_q[g_fifo_next_i + 1] ? rdata_q[((DEPTH - 1) &gt;= 0 ? g_fifo_next_i + 1 : 0 - ((g_fifo_next_i + 1) - (DEPTH - 1))) * 32+:32] : in_rdata_i);
-			assign err_d[g_fifo_next_i] = (valid_q[g_fifo_next_i + 1] ? err_q[g_fifo_next_i + 1] : in_err_i);
+			assign valid_pushed[i] = (in_valid_i &amp; lowest_free_entry[i]) | valid_q[i];
+			assign valid_popped[i] = (pop_fifo ? valid_pushed[i + 1] : valid_pushed[i]);
+			assign valid_d[i] = valid_popped[i] &amp; ~clear_i;
+			assign entry_en[i] = (valid_pushed[i + 1] &amp; pop_fifo) | ((in_valid_i &amp; lowest_free_entry[i]) &amp; ~pop_fifo);
+			assign rdata_d[((DEPTH - 1) &gt;= 0 ? i : 0 - (i - (DEPTH - 1))) * 32+:32] = (valid_q[i + 1] ? rdata_q[((DEPTH - 1) &gt;= 0 ? i + 1 : 0 - ((i + 1) - (DEPTH - 1))) * 32+:32] : in_rdata_i);
+			assign err_d[i] = (valid_q[i + 1] ? err_q[i + 1] : in_err_i);
 		end
 	endgenerate
 	assign lowest_free_entry[DEPTH - 1] = ~valid_q[DEPTH - 1] &amp; valid_q[DEPTH - 2];
@@ -6438,12 +6435,11 @@ module ibex_fetch_fifo (
 		else
 			valid_q &lt;= valid_d;
 	generate
-		genvar g_fifo_regs_i;
-		for (g_fifo_regs_i = 0; g_fifo_regs_i &lt; DEPTH; g_fifo_regs_i = g_fifo_regs_i + 1) begin : g_fifo_regs
+		for (i = 0; i &lt; DEPTH; i = i + 1) begin : g_fifo_regs
 			always @(posedge clk_i)
-				if (entry_en[g_fifo_regs_i]) begin
-					rdata_q[((DEPTH - 1) &gt;= 0 ? g_fifo_regs_i : 0 - (g_fifo_regs_i - (DEPTH - 1))) * 32+:32] &lt;= rdata_d[((DEPTH - 1) &gt;= 0 ? g_fifo_regs_i : 0 - (g_fifo_regs_i - (DEPTH - 1))) * 32+:32];
-					err_q[g_fifo_regs_i] &lt;= err_d[g_fifo_regs_i];
+				if (entry_en[i]) begin
+					rdata_q[((DEPTH - 1) &gt;= 0 ? i : 0 - (i - (DEPTH - 1))) * 32+:32] &lt;= rdata_d[((DEPTH - 1) &gt;= 0 ? i : 0 - (i - (DEPTH - 1))) * 32+:32];
+					err_q[i] &lt;= err_d[i];
 				end
 		end
 	endgenerate
@@ -6723,39 +6719,38 @@ module ibex_pmp (
 	wire [((PMPNumChan - 1) &gt;= 0 ? ((PMPNumRegions - 1) &gt;= 0 ? (PMPNumChan * PMPNumRegions) + -1 : (PMPNumChan * (2 - PMPNumRegions)) + ((PMPNumRegions - 1) - 1)) : ((PMPNumRegions - 1) &gt;= 0 ? ((2 - PMPNumChan) * PMPNumRegions) + (((PMPNumChan - 1) * PMPNumRegions) - 1) : ((2 - PMPNumChan) * (2 - PMPNumRegions)) + (((PMPNumRegions - 1) + ((PMPNumChan - 1) * (2 - PMPNumRegions))) - 1))):((PMPNumChan - 1) &gt;= 0 ? ((PMPNumRegions - 1) &gt;= 0 ? 0 : PMPNumRegions - 1) : ((PMPNumRegions - 1) &gt;= 0 ? (PMPNumChan - 1) * PMPNumRegions : (PMPNumRegions - 1) + ((PMPNumChan - 1) * (2 - PMPNumRegions))))] user_access_allowed;
 	wire [PMPNumChan - 1:0] access_fault;
 	generate
-		genvar g_addr_exp_r;
-		for (g_addr_exp_r = 0; g_addr_exp_r &lt; PMPNumRegions; g_addr_exp_r = g_addr_exp_r + 1) begin : g_addr_exp
-			if (g_addr_exp_r == 0) begin : g_entry0
-				assign region_start_addr[g_addr_exp_r] = (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r : (PMPNumRegions - 1) - g_addr_exp_r) * 6) + 4-:2] == PMP_MODE_TOR ? 34&#39;h000000000 : csr_pmp_addr_i[(0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r : (PMPNumRegions - 1) - g_addr_exp_r) * 34+:34]);
+		genvar b;
+		genvar r;
+		for (r = 0; r &lt; PMPNumRegions; r = r + 1) begin : g_addr_exp
+			if (r == 0) begin : g_entry0
+				assign region_start_addr[r] = (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 4-:2] == PMP_MODE_TOR ? 34&#39;h000000000 : csr_pmp_addr_i[(0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 34+:34]);
 			end
 			else begin : g_oth
-				assign region_start_addr[g_addr_exp_r] = (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r : (PMPNumRegions - 1) - g_addr_exp_r) * 6) + 4-:2] == PMP_MODE_TOR ? csr_pmp_addr_i[(0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r - 1 : (PMPNumRegions - 1) - (g_addr_exp_r - 1)) * 34+:34] : csr_pmp_addr_i[(0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r : (PMPNumRegions - 1) - g_addr_exp_r) * 34+:34]);
+				assign region_start_addr[r] = (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 4-:2] == PMP_MODE_TOR ? csr_pmp_addr_i[(0 &gt;= (PMPNumRegions - 1) ? r - 1 : (PMPNumRegions - 1) - (r - 1)) * 34+:34] : csr_pmp_addr_i[(0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 34+:34]);
 			end
-			genvar g_bitmask_b;
-			for (g_bitmask_b = PMPGranularity + 2; g_bitmask_b &lt; 34; g_bitmask_b = g_bitmask_b + 1) begin : g_bitmask
-				if (g_bitmask_b == (PMPGranularity + 2)) begin : g_bit0
-					assign region_addr_mask[g_addr_exp_r][g_bitmask_b] = csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r : (PMPNumRegions - 1) - g_addr_exp_r) * 6) + 4-:2] != PMP_MODE_NAPOT;
+			for (b = PMPGranularity + 2; b &lt; 34; b = b + 1) begin : g_bitmask
+				if (b == (PMPGranularity + 2)) begin : g_bit0
+					assign region_addr_mask[r][b] = csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 4-:2] != PMP_MODE_NAPOT;
 				end
 				else begin : g_others
-					assign region_addr_mask[g_addr_exp_r][g_bitmask_b] = (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r : (PMPNumRegions - 1) - g_addr_exp_r) * 6) + 4-:2] != PMP_MODE_NAPOT) | ~&amp;csr_pmp_addr_i[((0 &gt;= (PMPNumRegions - 1) ? g_addr_exp_r : (PMPNumRegions - 1) - g_addr_exp_r) * 34) + ((g_bitmask_b - 1) &gt;= (PMPGranularity + 2) ? g_bitmask_b - 1 : ((g_bitmask_b - 1) + ((g_bitmask_b - 1) &gt;= (PMPGranularity + 2) ? ((g_bitmask_b - 1) - (PMPGranularity + 2)) + 1 : ((PMPGranularity + 2) - (g_bitmask_b - 1)) + 1)) - 1)-:((g_bitmask_b - 1) &gt;= (PMPGranularity + 2) ? ((g_bitmask_b - 1) - (PMPGranularity + 2)) + 1 : ((PMPGranularity + 2) - (g_bitmask_b - 1)) + 1)];
+					assign region_addr_mask[r][b] = (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 4-:2] != PMP_MODE_NAPOT) | ~&amp;csr_pmp_addr_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 34) + ((b - 1) &gt;= (PMPGranularity + 2) ? b - 1 : ((b - 1) + ((b - 1) &gt;= (PMPGranularity + 2) ? ((b - 1) - (PMPGranularity + 2)) + 1 : ((PMPGranularity + 2) - (b - 1)) + 1)) - 1)-:((b - 1) &gt;= (PMPGranularity + 2) ? ((b - 1) - (PMPGranularity + 2)) + 1 : ((PMPGranularity + 2) - (b - 1)) + 1)];
 				end
 			end
 		end
 	endgenerate
 	generate
-		genvar g_access_check_c;
-		for (g_access_check_c = 0; g_access_check_c &lt; PMPNumChan; g_access_check_c = g_access_check_c + 1) begin : g_access_check
-			genvar g_regions_r;
-			for (g_regions_r = 0; g_regions_r &lt; PMPNumRegions; g_regions_r = g_regions_r + 1) begin : g_regions
-				assign region_match_low[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] = pmp_req_addr_i[((0 &gt;= (PMPNumChan - 1) ? g_access_check_c : (PMPNumChan - 1) - g_access_check_c) * 34) + (33 &gt;= (PMPGranularity + 2) ? 33 : (33 + (33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)) - 1)-:(33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)] &gt;= (region_start_addr[g_regions_r][33:PMPGranularity + 2] &amp; region_addr_mask[g_regions_r]);
-				assign region_match_high[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] = pmp_req_addr_i[((0 &gt;= (PMPNumChan - 1) ? g_access_check_c : (PMPNumChan - 1) - g_access_check_c) * 34) + (33 &gt;= (PMPGranularity + 2) ? 33 : (33 + (33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)) - 1)-:(33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)] &lt;= csr_pmp_addr_i[((0 &gt;= (PMPNumRegions - 1) ? g_regions_r : (PMPNumRegions - 1) - g_regions_r) * 34) + (33 &gt;= (PMPGranularity + 2) ? 33 : (33 + (33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)) - 1)-:(33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)];
-				assign region_match_both[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] = (region_match_low[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] &amp; region_match_high[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))]) &amp; (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_regions_r : (PMPNumRegions - 1) - g_regions_r) * 6) + 4-:2] != PMP_MODE_OFF);
-				assign region_perm_check[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] = (((pmp_req_type_i[(0 &gt;= (PMPNumChan - 1) ? g_access_check_c : (PMPNumChan - 1) - g_access_check_c) * 2+:2] == PMP_ACC_EXEC) &amp; csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_regions_r : (PMPNumRegions - 1) - g_regions_r) * 6) + 2]) | ((pmp_req_type_i[(0 &gt;= (PMPNumChan - 1) ? g_access_check_c : (PMPNumChan - 1) - g_access_check_c) * 2+:2] == PMP_ACC_WRITE) &amp; csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_regions_r : (PMPNumRegions - 1) - g_regions_r) * 6) + 1])) | ((pmp_req_type_i[(0 &gt;= (PMPNumChan - 1) ? g_access_check_c : (PMPNumChan - 1) - g_access_check_c) * 2+:2] == PMP_ACC_READ) &amp; csr_pmp_cfg_i[(0 &gt;= (PMPNumRegions - 1) ? g_regions_r : (PMPNumRegions - 1) - g_regions_r) * 6]);
-				assign machine_access_fault[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] = (region_match_both[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] &amp; csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? g_regions_r : (PMPNumRegions - 1) - g_regions_r) * 6) + 5]) &amp; ~region_perm_check[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))];
-				assign user_access_allowed[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] = region_match_both[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))] &amp; region_perm_check[(((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? g_regions_r : 0 - (g_regions_r - (PMPNumRegions - 1)))];
+		genvar c;
+		for (c = 0; c &lt; PMPNumChan; c = c + 1) begin : g_access_check
+			for (r = 0; r &lt; PMPNumRegions; r = r + 1) begin : g_regions
+				assign region_match_low[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] = pmp_req_addr_i[((0 &gt;= (PMPNumChan - 1) ? c : (PMPNumChan - 1) - c) * 34) + (33 &gt;= (PMPGranularity + 2) ? 33 : (33 + (33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)) - 1)-:(33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)] &gt;= (region_start_addr[r][33:PMPGranularity + 2] &amp; region_addr_mask[r]);
+				assign region_match_high[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] = pmp_req_addr_i[((0 &gt;= (PMPNumChan - 1) ? c : (PMPNumChan - 1) - c) * 34) + (33 &gt;= (PMPGranularity + 2) ? 33 : (33 + (33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)) - 1)-:(33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)] &lt;= csr_pmp_addr_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 34) + (33 &gt;= (PMPGranularity + 2) ? 33 : (33 + (33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)) - 1)-:(33 &gt;= (PMPGranularity + 2) ? 34 - (PMPGranularity + 2) : ((PMPGranularity + 2) - 33) + 1)];
+				assign region_match_both[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] = (region_match_low[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] &amp; region_match_high[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))]) &amp; (csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 4-:2] != PMP_MODE_OFF);
+				assign region_perm_check[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] = (((pmp_req_type_i[(0 &gt;= (PMPNumChan - 1) ? c : (PMPNumChan - 1) - c) * 2+:2] == PMP_ACC_EXEC) &amp; csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 2]) | ((pmp_req_type_i[(0 &gt;= (PMPNumChan - 1) ? c : (PMPNumChan - 1) - c) * 2+:2] == PMP_ACC_WRITE) &amp; csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 1])) | ((pmp_req_type_i[(0 &gt;= (PMPNumChan - 1) ? c : (PMPNumChan - 1) - c) * 2+:2] == PMP_ACC_READ) &amp; csr_pmp_cfg_i[(0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6]);
+				assign machine_access_fault[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] = (region_match_both[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] &amp; csr_pmp_cfg_i[((0 &gt;= (PMPNumRegions - 1) ? r : (PMPNumRegions - 1) - r) * 6) + 5]) &amp; ~region_perm_check[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))];
+				assign user_access_allowed[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] = region_match_both[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))] &amp; region_perm_check[(((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)) + ((PMPNumRegions - 1) &gt;= 0 ? r : 0 - (r - (PMPNumRegions - 1)))];
 			end
-			assign access_fault[g_access_check_c] = (priv_mode_i[(0 &gt;= (PMPNumChan - 1) ? g_access_check_c : (PMPNumChan - 1) - g_access_check_c) * 2+:2] == PRIV_LVL_M ? |machine_access_fault[((PMPNumRegions - 1) &gt;= 0 ? 0 : PMPNumRegions - 1) + (((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions))+:((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)] : ~|user_access_allowed[((PMPNumRegions - 1) &gt;= 0 ? 0 : PMPNumRegions - 1) + (((PMPNumChan - 1) &gt;= 0 ? g_access_check_c : 0 - (g_access_check_c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions))+:((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)]);
-			assign pmp_req_err_o[g_access_check_c] = access_fault[g_access_check_c];
+			assign access_fault[c] = (priv_mode_i[(0 &gt;= (PMPNumChan - 1) ? c : (PMPNumChan - 1) - c) * 2+:2] == PRIV_LVL_M ? |machine_access_fault[((PMPNumRegions - 1) &gt;= 0 ? 0 : PMPNumRegions - 1) + (((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions))+:((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)] : ~|user_access_allowed[((PMPNumRegions - 1) &gt;= 0 ? 0 : PMPNumRegions - 1) + (((PMPNumChan - 1) &gt;= 0 ? c : 0 - (c - (PMPNumChan - 1))) * ((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions))+:((PMPNumRegions - 1) &gt;= 0 ? PMPNumRegions : 2 - PMPNumRegions)]);
+			assign pmp_req_err_o[c] = access_fault[c];
 		end
 	endgenerate
 endmodule

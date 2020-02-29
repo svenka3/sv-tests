@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_lru_pseudo_tree_encode.v</a>
-time_elapsed: 0.364s
-ram usage: 13164 KB
+time_elapsed: 0.280s
+ram usage: 14896 KB
 </pre>
 <pre class="log">
 
@@ -30,19 +30,19 @@ module bsg_lru_pseudo_tree_encode (
 	input [ways_p - 2:0] lru_i;
 	output wire [lg_ways_lp - 1:0] way_id_o;
 	generate
-		genvar rank_i;
-		for (rank_i = 0; rank_i &lt; lg_ways_lp; rank_i = rank_i + 1) begin : rank
-			if (rank_i == 0) begin : z
+		genvar i;
+		for (i = 0; i &lt; lg_ways_lp; i = i + 1) begin : rank
+			if (i == 0) begin : z
 				assign way_id_o[lg_ways_lp - 1] = lru_i[0];
 			end
 			else begin : nz
 				bsg_mux #(
 					.width_p(1),
-					.els_p(2 ** rank_i)
+					.els_p(2 ** i)
 				) mux(
-					.data_i(lru_i[(2 ** rank_i) - 1+:2 ** rank_i]),
-					.sel_i(way_id_o[lg_ways_lp - 1-:rank_i]),
-					.data_o(way_id_o[(lg_ways_lp - 1) - rank_i])
+					.data_i(lru_i[(2 ** i) - 1+:2 ** i]),
+					.sel_i(way_id_o[lg_ways_lp - 1-:i]),
+					.data_o(way_id_o[(lg_ways_lp - 1) - i])
 				);
 			end
 		end

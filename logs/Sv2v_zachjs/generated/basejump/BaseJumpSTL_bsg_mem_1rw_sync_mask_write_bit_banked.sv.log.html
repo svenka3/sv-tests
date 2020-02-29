@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_bit_banked.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_bit_banked.v</a>
-time_elapsed: 0.548s
-ram usage: 14148 KB
+time_elapsed: 0.536s
+ram usage: 14300 KB
 </pre>
 <pre class="log">
 
@@ -50,9 +50,10 @@ module bsg_mem_1rw_sync_mask_write_bit_banked (
 	input [width_p - 1:0] w_mask_i;
 	output [width_p - 1:0] data_o;
 	generate
+		genvar i;
+		genvar j;
 		if (num_depth_bank_p == 1) begin : db1
-			genvar wb_i;
-			for (wb_i = 0; wb_i &lt; num_width_bank_p; wb_i = wb_i + 1) begin : wb
+			for (i = 0; i &lt; num_width_bank_p; i = i + 1) begin : wb
 				bsg_mem_1rw_sync_mask_write_bit #(
 					.width_p(bank_width_lp),
 					.els_p(bank_depth_lp),
@@ -63,9 +64,9 @@ module bsg_mem_1rw_sync_mask_write_bit_banked (
 					.v_i(v_i),
 					.w_i(w_i),
 					.addr_i(addr_i),
-					.data_i(data_i[bank_width_lp * wb_i+:bank_width_lp]),
-					.w_mask_i(w_mask_i[bank_width_lp * wb_i+:bank_width_lp]),
-					.data_o(data_o[bank_width_lp * wb_i+:bank_width_lp])
+					.data_i(data_i[bank_width_lp * i+:bank_width_lp]),
+					.w_mask_i(w_mask_i[bank_width_lp * i+:bank_width_lp]),
+					.data_o(data_o[bank_width_lp * i+:bank_width_lp])
 				);
 			end
 		end
@@ -79,10 +80,8 @@ module bsg_mem_1rw_sync_mask_write_bit_banked (
 				.v_i(v_i),
 				.o(bank_v_li)
 			);
-			genvar wb_i;
-			for (wb_i = 0; wb_i &lt; num_width_bank_p; wb_i = wb_i + 1) begin : wb
-				genvar db_j;
-				for (db_j = 0; db_j &lt; num_depth_bank_p; db_j = db_j + 1) begin : db
+			for (i = 0; i &lt; num_width_bank_p; i = i + 1) begin : wb
+				for (j = 0; j &lt; num_depth_bank_p; j = j + 1) begin : db
 					bsg_mem_1rw_sync_mask_write_bit #(
 						.width_p(bank_width_lp),
 						.els_p(bank_depth_lp),
@@ -90,12 +89,12 @@ module bsg_mem_1rw_sync_mask_write_bit_banked (
 					) bank(
 						.clk_i(clk_i),
 						.reset_i(reset_i),
-						.v_i(bank_v_li[db_j]),
+						.v_i(bank_v_li[j]),
 						.w_i(w_i),
 						.addr_i(bank_addr_li),
-						.data_i(data_i[wb_i * bank_width_lp+:bank_width_lp]),
-						.w_mask_i(w_mask_i[wb_i * bank_width_lp+:bank_width_lp]),
-						.data_o(bank_data_lo[((width_p - 1) &gt;= 0 ? (((num_depth_bank_p - 1) &gt;= 0 ? db_j : 0 - (db_j - (num_depth_bank_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? wb_i * bank_width_lp : 0 - ((wb_i * bank_width_lp) - (width_p - 1))) : (((((num_depth_bank_p - 1) &gt;= 0 ? db_j : 0 - (db_j - (num_depth_bank_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? wb_i * bank_width_lp : 0 - ((wb_i * bank_width_lp) - (width_p - 1)))) - bank_width_lp) + 1)+:bank_width_lp])
+						.data_i(data_i[i * bank_width_lp+:bank_width_lp]),
+						.w_mask_i(w_mask_i[i * bank_width_lp+:bank_width_lp]),
+						.data_o(bank_data_lo[((width_p - 1) &gt;= 0 ? (((num_depth_bank_p - 1) &gt;= 0 ? j : 0 - (j - (num_depth_bank_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? i * bank_width_lp : 0 - ((i * bank_width_lp) - (width_p - 1))) : (((((num_depth_bank_p - 1) &gt;= 0 ? j : 0 - (j - (num_depth_bank_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) + ((width_p - 1) &gt;= 0 ? i * bank_width_lp : 0 - ((i * bank_width_lp) - (width_p - 1)))) - bank_width_lp) + 1)+:bank_width_lp])
 					);
 				end
 			end

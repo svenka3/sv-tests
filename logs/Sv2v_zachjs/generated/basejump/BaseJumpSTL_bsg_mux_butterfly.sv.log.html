@@ -16,8 +16,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_mux_butterfly.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_mux_butterfly.v</a>
-time_elapsed: 0.320s
-ram usage: 15084 KB
+time_elapsed: 0.740s
+ram usage: 13316 KB
 </pre>
 <pre class="log">
 
@@ -35,14 +35,14 @@ module bsg_mux_butterfly (
 	wire [(lg_els_lp &gt;= 0 ? (((els_p * width_p) - 1) &gt;= 0 ? ((lg_els_lp + 1) * (els_p * width_p)) + -1 : ((lg_els_lp + 1) * (2 - (els_p * width_p))) + (((els_p * width_p) - 1) - 1)) : (((els_p * width_p) - 1) &gt;= 0 ? ((1 - lg_els_lp) * (els_p * width_p)) + ((lg_els_lp * (els_p * width_p)) - 1) : ((1 - lg_els_lp) * (2 - (els_p * width_p))) + ((((els_p * width_p) - 1) + (lg_els_lp * (2 - (els_p * width_p)))) - 1))):(lg_els_lp &gt;= 0 ? (((els_p * width_p) - 1) &gt;= 0 ? 0 : (els_p * width_p) - 1) : (((els_p * width_p) - 1) &gt;= 0 ? lg_els_lp * (els_p * width_p) : ((els_p * width_p) - 1) + (lg_els_lp * (2 - (els_p * width_p)))))] data_stage;
 	assign data_stage[(((els_p * width_p) - 1) &gt;= 0 ? 0 : (els_p * width_p) - 1) + ((lg_els_lp &gt;= 0 ? 0 : lg_els_lp) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p)))+:(((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))] = data_i;
 	generate
-		genvar mux_stage_i;
-		for (mux_stage_i = 0; mux_stage_i &lt; lg_els_lp; mux_stage_i = mux_stage_i + 1) begin : mux_stage
-			genvar mux_swap_j;
-			for (mux_swap_j = 0; mux_swap_j &lt; (els_p / (2 ** (mux_stage_i + 1))); mux_swap_j = mux_swap_j + 1) begin : mux_swap
-				bsg_swap #(.width_p(width_p * (2 ** mux_stage_i))) swap_inst(
-					.data_i(data_stage[(((els_p * width_p) - 1) &gt;= 0 ? ((lg_els_lp &gt;= 0 ? mux_stage_i : 0 - (mux_stage_i - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j : 0 - ((((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j) - ((els_p * width_p) - 1))) : ((((lg_els_lp &gt;= 0 ? mux_stage_i : 0 - (mux_stage_i - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j : 0 - ((((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j) - ((els_p * width_p) - 1)))) - ((2 * width_p) * (2 ** mux_stage_i))) + 1)+:(2 * width_p) * (2 ** mux_stage_i)]),
-					.swap_i(sel_i[mux_stage_i]),
-					.data_o(data_stage[(((els_p * width_p) - 1) &gt;= 0 ? ((lg_els_lp &gt;= 0 ? mux_stage_i + 1 : 0 - ((mux_stage_i + 1) - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j : 0 - ((((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j) - ((els_p * width_p) - 1))) : ((((lg_els_lp &gt;= 0 ? mux_stage_i + 1 : 0 - ((mux_stage_i + 1) - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j : 0 - ((((2 * width_p) * (2 ** mux_stage_i)) * mux_swap_j) - ((els_p * width_p) - 1)))) - ((2 * width_p) * (2 ** mux_stage_i))) + 1)+:(2 * width_p) * (2 ** mux_stage_i)])
+		genvar i;
+		genvar j;
+		for (i = 0; i &lt; lg_els_lp; i = i + 1) begin : mux_stage
+			for (j = 0; j &lt; (els_p / (2 ** (i + 1))); j = j + 1) begin : mux_swap
+				bsg_swap #(.width_p(width_p * (2 ** i))) swap_inst(
+					.data_i(data_stage[(((els_p * width_p) - 1) &gt;= 0 ? ((lg_els_lp &gt;= 0 ? i : 0 - (i - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** i)) * j : 0 - ((((2 * width_p) * (2 ** i)) * j) - ((els_p * width_p) - 1))) : ((((lg_els_lp &gt;= 0 ? i : 0 - (i - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** i)) * j : 0 - ((((2 * width_p) * (2 ** i)) * j) - ((els_p * width_p) - 1)))) - ((2 * width_p) * (2 ** i))) + 1)+:(2 * width_p) * (2 ** i)]),
+					.swap_i(sel_i[i]),
+					.data_o(data_stage[(((els_p * width_p) - 1) &gt;= 0 ? ((lg_els_lp &gt;= 0 ? i + 1 : 0 - ((i + 1) - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** i)) * j : 0 - ((((2 * width_p) * (2 ** i)) * j) - ((els_p * width_p) - 1))) : ((((lg_els_lp &gt;= 0 ? i + 1 : 0 - ((i + 1) - lg_els_lp)) * (((els_p * width_p) - 1) &gt;= 0 ? els_p * width_p : 2 - (els_p * width_p))) + (((els_p * width_p) - 1) &gt;= 0 ? ((2 * width_p) * (2 ** i)) * j : 0 - ((((2 * width_p) * (2 ** i)) * j) - ((els_p * width_p) - 1)))) - ((2 * width_p) * (2 ** i))) + 1)+:(2 * width_p) * (2 ** i)])
 				);
 			end
 		end
