@@ -17,8 +17,8 @@ top_module: ibex_core
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/ibex/shared/rtl/prim_clock_gating.sv.html" target="file-frame">third_party/cores/ibex/shared/rtl/prim_clock_gating.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pkg.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pkg.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_alu.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_alu.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_compressed_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_compressed_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_controller.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_controller.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_cs_registers.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_cs_registers.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_ex_block.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_ex_block.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_id_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_id_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_if_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_if_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_load_store_unit.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_load_store_unit.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_slow.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_slow.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_fast.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_fast.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_fetch_fifo.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_fetch_fifo.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pmp.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pmp.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_core.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_core.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_register_file_ff.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_register_file_ff.sv</a>
-time_elapsed: 23.776s
-ram usage: 147600 KB
+time_elapsed: 18.252s
+ram usage: 150160 KB
 </pre>
 <pre class="log">
 
@@ -1534,10 +1534,12 @@ module ibex_cs_registers (
 	branch_taken_i,
 	mem_load_i,
 	mem_store_i,
-	dside_wait_i
+	dside_wait_i,
+	mul_wait_i,
+	div_wait_i
 );
 	parameter DbgTriggerEn = 0;
-	parameter [31:0] MHPMCounterNum = 8;
+	parameter [31:0] MHPMCounterNum = 10;
 	parameter [31:0] MHPMCounterWidth = 40;
 	parameter PMPEnable = 0;
 	parameter [31:0] PMPGranularity = 0;
@@ -1600,6 +1602,8 @@ module ibex_cs_registers (
 	input wire mem_load_i;
 	input wire mem_store_i;
 	input wire dside_wait_i;
+	input wire mul_wait_i;
+	input wire div_wait_i;
 	parameter [31:0] PMP_MAX_REGIONS = 16;
 	parameter [31:0] PMP_CFG_W = 8;
 	parameter [31:0] PMP_I = 0;
@@ -2288,7 +2292,9 @@ module ibex_cs_registers (
 		mhpmcounter_incr[8] = branch_i;
 		mhpmcounter_incr[9] = branch_taken_i;
 		mhpmcounter_incr[10] = instr_ret_compressed_i;
-		begin : sv2v_autoblock_22
+		mhpmcounter_incr[11] = mul_wait_i;
+		mhpmcounter_incr[12] = div_wait_i;
+		begin : sv2v_autoblock_21
 			reg [31:0] i;
 			for (i = 3 + MHPMCounterNum; i &lt; 32; i = i + 1)
 				begin : gen_mhpmcounter_incr_inactive
@@ -2297,7 +2303,7 @@ module ibex_cs_registers (
 		end
 	end
 	always @(*) begin : gen_mhpmevent
-		begin : sv2v_autoblock_23
+		begin : sv2v_autoblock_22
 			reg signed [31:0] i;
 			for (i = 0; i &lt; 32; i = i + 1)
 				begin : gen_mhpmevent_active
@@ -2306,7 +2312,7 @@ module ibex_cs_registers (
 				end
 		end
 		mhpmevent[1] = 1&#39;sb0;
-		begin : sv2v_autoblock_24
+		begin : sv2v_autoblock_23
 			reg [31:0] i;
 			for (i = 3 + MHPMCounterNum; i &lt; 32; i = i + 1)
 				begin : gen_mhpmevent_inactive
@@ -3723,6 +3729,8 @@ module ibex_id_stage (
 	perf_branch_o,
 	perf_tbranch_o,
 	perf_dside_wait_o,
+	perf_mul_wait_o,
+	perf_div_wait_o,
 	instr_id_done_o,
 	instr_id_done_compressed_o
 );
@@ -3828,6 +3836,8 @@ module ibex_id_stage (
 	output reg perf_branch_o;
 	output wire perf_tbranch_o;
 	output wire perf_dside_wait_o;
+	output wire perf_mul_wait_o;
+	output wire perf_div_wait_o;
 	output wire instr_id_done_o;
 	output wire instr_id_done_compressed_o;
 	parameter [31:0] PMP_MAX_REGIONS = 16;
@@ -4364,11 +4374,12 @@ module ibex_id_stage (
 								id_fsm_d = MULTI_CYCLE;
 							else if (~lsu_req_done_i)
 								id_fsm_d = MULTI_CYCLE;
-						multdiv_en_dec: begin
-							id_fsm_d = MULTI_CYCLE;
-							rf_we_raw = 1&#39;b0;
-							stall_multdiv = 1&#39;b1;
-						end
+						multdiv_en_dec:
+							if (~ex_valid_i) begin
+								id_fsm_d = MULTI_CYCLE;
+								rf_we_raw = 1&#39;b0;
+								stall_multdiv = 1&#39;b1;
+							end
 						branch_in_dec: begin
 							id_fsm_d = (branch_decision_i ? MULTI_CYCLE : FIRST_CYCLE);
 							stall_branch = branch_decision_i;
@@ -4472,6 +4483,8 @@ module ibex_id_stage (
 			assign instr_id_done_o = instr_done;
 		end
 	endgenerate
+	assign perf_mul_wait_o = stall_multdiv &amp; mult_en_dec;
+	assign perf_div_wait_o = stall_multdiv &amp; div_en_dec;
 	assign instr_id_done_compressed_o = instr_id_done_o &amp; instr_is_compressed_i;
 	function automatic [11:0] sv2v_cast_12;
 		input reg [11:0] inp;
@@ -4526,8 +4539,8 @@ module ibex_if_stage (
 	input wire [31:0] instr_rdata_i;
 	input wire instr_err_i;
 	input wire instr_pmp_err_i;
-	output reg instr_valid_id_o;
-	output reg instr_new_id_o;
+	output wire instr_valid_id_o;
+	output wire instr_new_id_o;
 	output reg [31:0] instr_rdata_id_o;
 	output reg [31:0] instr_rdata_alu_id_o;
 	output reg [15:0] instr_rdata_c_id_o;
@@ -4794,14 +4807,15 @@ module ibex_if_stage (
 	localparam [5:0] EXC_CAUSE_IRQ_TIMER_M = {1&#39;b1, 5&#39;d07};
 	localparam [5:0] EXC_CAUSE_IRQ_EXTERNAL_M = {1&#39;b1, 5&#39;d11};
 	localparam [5:0] EXC_CAUSE_IRQ_NM = {1&#39;b1, 5&#39;d31};
-	reg offset_in_init_d;
-	reg offset_in_init_q;
-	wire have_instr;
+	wire instr_valid_id_d;
+	reg instr_valid_id_q;
+	wire instr_new_id_d;
+	reg instr_new_id_q;
 	wire prefetch_busy;
-	reg branch_req;
+	wire branch_req;
 	reg [31:0] fetch_addr_n;
 	wire fetch_valid;
-	reg fetch_ready;
+	wire fetch_ready;
 	wire [31:0] fetch_rdata;
 	wire [31:0] fetch_addr;
 	wire fetch_err;
@@ -4855,32 +4869,8 @@ module ibex_if_stage (
 		.instr_pmp_err_i(instr_pmp_err_i),
 		.busy_o(prefetch_busy)
 	);
-	always @(posedge clk_i or negedge rst_ni)
-		if (!rst_ni)
-			offset_in_init_q &lt;= 1&#39;b1;
-		else
-			offset_in_init_q &lt;= offset_in_init_d;
-	always @(*) begin
-		offset_in_init_d = offset_in_init_q;
-		fetch_ready = 1&#39;b0;
-		branch_req = 1&#39;b0;
-		if (offset_in_init_q) begin
-			if (req_i) begin
-				branch_req = 1&#39;b1;
-				offset_in_init_d = 1&#39;b0;
-			end
-		end
-		else if (fetch_valid)
-			if (req_i &amp;&amp; if_id_pipe_reg_we) begin
-				fetch_ready = 1&#39;b1;
-				offset_in_init_d = 1&#39;b0;
-			end
-		if (pc_set_i) begin
-			branch_req = 1&#39;b1;
-			offset_in_init_d = 1&#39;b0;
-		end
-	end
-	assign have_instr = fetch_valid &amp; ~(offset_in_init_q | pc_set_i);
+	assign branch_req = pc_set_i;
+	assign fetch_ready = id_in_ready_i;
 	assign pc_if_o = fetch_addr;
 	assign if_busy_o = prefetch_busy;
 	wire [31:0] instr_decompressed;
@@ -4895,35 +4885,30 @@ module ibex_if_stage (
 		.is_compressed_o(instr_is_compressed_int),
 		.illegal_instr_o(illegal_c_insn)
 	);
-	assign if_id_pipe_reg_we = have_instr &amp; id_in_ready_i;
-	always @(posedge clk_i or negedge rst_ni) begin : if_id_pipeline_regs
+	assign instr_valid_id_d = ((fetch_valid &amp; id_in_ready_i) &amp; ~pc_set_i) | (instr_valid_id_q &amp; ~instr_valid_clear_i);
+	assign instr_new_id_d = fetch_valid &amp; id_in_ready_i;
+	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni) begin
-			instr_new_id_o &lt;= 1&#39;b0;
-			instr_valid_id_o &lt;= 1&#39;b0;
-			instr_rdata_id_o &lt;= 1&#39;sb0;
-			instr_rdata_alu_id_o &lt;= 1&#39;sb0;
-			instr_fetch_err_o &lt;= 1&#39;sb0;
-			instr_rdata_c_id_o &lt;= 1&#39;sb0;
-			instr_is_compressed_id_o &lt;= 1&#39;b0;
-			illegal_c_insn_id_o &lt;= 1&#39;b0;
-			pc_id_o &lt;= 1&#39;sb0;
+			instr_valid_id_q &lt;= 1&#39;b0;
+			instr_new_id_q &lt;= 1&#39;b0;
 		end
 		else begin
-			instr_new_id_o &lt;= if_id_pipe_reg_we;
-			if (if_id_pipe_reg_we) begin
-				instr_valid_id_o &lt;= 1&#39;b1;
-				instr_rdata_id_o &lt;= instr_decompressed;
-				instr_rdata_alu_id_o &lt;= instr_decompressed;
-				instr_fetch_err_o &lt;= fetch_err;
-				instr_rdata_c_id_o &lt;= fetch_rdata[15:0];
-				instr_is_compressed_id_o &lt;= instr_is_compressed_int;
-				illegal_c_insn_id_o &lt;= illegal_c_insn;
-				pc_id_o &lt;= pc_if_o;
-			end
-			else if (instr_valid_clear_i)
-				instr_valid_id_o &lt;= 1&#39;b0;
+			instr_valid_id_q &lt;= instr_valid_id_d;
+			instr_new_id_q &lt;= instr_new_id_d;
 		end
-	end
+	assign instr_valid_id_o = instr_valid_id_q;
+	assign instr_new_id_o = instr_new_id_q;
+	assign if_id_pipe_reg_we = instr_new_id_d;
+	always @(posedge clk_i)
+		if (if_id_pipe_reg_we) begin
+			instr_rdata_id_o &lt;= instr_decompressed;
+			instr_rdata_alu_id_o &lt;= instr_decompressed;
+			instr_fetch_err_o &lt;= fetch_err;
+			instr_rdata_c_id_o &lt;= fetch_rdata[15:0];
+			instr_is_compressed_id_o &lt;= instr_is_compressed_int;
+			illegal_c_insn_id_o &lt;= illegal_c_insn;
+			pc_id_o &lt;= pc_if_o;
+		end
 endmodule
 module ibex_load_store_unit (
 	clk_i,
@@ -6167,6 +6152,7 @@ module ibex_multdiv_fast (
 				mac_res_d = {2&#39;b0, mac_res[15:0], mult1_res[15:0]};
 				mult_valid = mult_en_i;
 				mult_state_d = MULL;
+				mult_hold = 1&#39;b0;
 				case (mult_state_q)
 					MULL:
 						if (operator_i != MD_OP_MULL) begin
@@ -6174,6 +6160,8 @@ module ibex_multdiv_fast (
 							mult_valid = 1&#39;b0;
 							mult_state_d = MULH;
 						end
+						else
+							mult_hold = ~multdiv_ready_id_i;
 					MULH: begin
 						mult3_sign_a = sign_a;
 						mult3_sign_b = sign_b;
@@ -6185,6 +6173,7 @@ module ibex_multdiv_fast (
 						summand3 = mult3_res;
 						mult_state_d = MULL;
 						mult_valid = 1&#39;b1;
+						mult_hold = ~multdiv_ready_id_i;
 					end
 					default: mult_state_d = MULL;
 				endcase
@@ -7377,6 +7366,8 @@ module ibex_core (
 	wire instr_done_wb;
 	wire perf_iside_wait;
 	wire perf_dside_wait;
+	wire perf_mul_wait;
+	wire perf_div_wait;
 	wire perf_jump;
 	wire perf_branch;
 	wire perf_tbranch;
@@ -7542,6 +7533,8 @@ module ibex_core (
 		.perf_branch_o(perf_branch),
 		.perf_tbranch_o(perf_tbranch),
 		.perf_dside_wait_o(perf_dside_wait),
+		.perf_mul_wait_o(perf_mul_wait),
+		.perf_div_wait_o(perf_div_wait),
 		.instr_id_done_o(instr_id_done),
 		.instr_id_done_compressed_o(instr_id_done_compressed)
 	);
@@ -7729,7 +7722,9 @@ module ibex_core (
 		.branch_taken_i(perf_tbranch),
 		.mem_load_i(perf_load),
 		.mem_store_i(perf_store),
-		.dside_wait_i(perf_dside_wait)
+		.dside_wait_i(perf_dside_wait),
+		.mul_wait_i(perf_mul_wait),
+		.div_wait_i(perf_div_wait)
 	);
 	generate
 		if (PMPEnable) begin : g_pmp
@@ -7805,7 +7800,7 @@ module ibex_register_file (
 	reg [((NUM_WORDS - 1) &gt;= 1 ? ((DataWidth - 1) &gt;= 0 ? ((NUM_WORDS - 1) * DataWidth) + (DataWidth - 1) : ((NUM_WORDS - 1) * (2 - DataWidth)) + (((DataWidth - 1) + (2 - DataWidth)) - 1)) : ((DataWidth - 1) &gt;= 0 ? ((3 - NUM_WORDS) * DataWidth) + (((NUM_WORDS - 1) * DataWidth) - 1) : ((3 - NUM_WORDS) * (2 - DataWidth)) + (((DataWidth - 1) + ((NUM_WORDS - 1) * (2 - DataWidth))) - 1))):((NUM_WORDS - 1) &gt;= 1 ? ((DataWidth - 1) &gt;= 0 ? DataWidth : (DataWidth - 1) + (2 - DataWidth)) : ((DataWidth - 1) &gt;= 0 ? (NUM_WORDS - 1) * DataWidth : (DataWidth - 1) + ((NUM_WORDS - 1) * (2 - DataWidth))))] rf_reg_tmp;
 	reg [NUM_WORDS - 1:1] we_a_dec;
 	always @(*) begin : we_a_decoder
-		begin : sv2v_autoblock_25
+		begin : sv2v_autoblock_24
 			reg [31:0] i;
 			for (i = 1; i &lt; NUM_WORDS; i = i + 1)
 				we_a_dec[i] = (waddr_a_i == sv2v_cast_5(i) ? we_a_i : 1&#39;b0);
@@ -7814,7 +7809,7 @@ module ibex_register_file (
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni)
 			rf_reg_tmp &lt;= {((NUM_WORDS - 1) &gt;= 1 ? NUM_WORDS - 1 : 3 - NUM_WORDS) {1&#39;sb0}};
-		else begin : sv2v_autoblock_26
+		else begin : sv2v_autoblock_25
 			reg signed [31:0] r;
 			for (r = 1; r &lt; NUM_WORDS; r = r + 1)
 				if (we_a_dec[r])

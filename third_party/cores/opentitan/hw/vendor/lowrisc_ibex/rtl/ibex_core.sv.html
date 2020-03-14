@@ -902,7 +902,10 @@
 <a href="#l-894">894</a>
 <a href="#l-895">895</a>
 <a href="#l-896">896</a>
-<a href="#l-897">897</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-897">897</a>
+<a href="#l-898">898</a>
+<a href="#l-899">899</a>
+<a href="#l-900">900</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna, see also CREDITS.md.</span>
 <a name="l-3"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-4"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
@@ -1471,334 +1474,337 @@
 <a name="l-567"></a>      <span class="p">.</span><span class="n">load_err_o</span>            <span class="p">(</span> <span class="n">lsu_load_err</span>        <span class="p">),</span>
 <a name="l-568"></a>      <span class="p">.</span><span class="n">store_err_o</span>           <span class="p">(</span> <span class="n">lsu_store_err</span>       <span class="p">),</span>
 <a name="l-569"></a>
-<a name="l-570"></a>      <span class="p">.</span><span class="n">busy_o</span>                <span class="p">(</span> <span class="n">lsu_busy</span>            <span class="p">)</span>
-<a name="l-571"></a>  <span class="p">);</span>
-<a name="l-572"></a>
-<a name="l-573"></a>
-<a name="l-574"></a>  <span class="c1">/////////////////////////////////////////</span>
-<a name="l-575"></a>  <span class="c1">// CSRs (Control and Status Registers) //</span>
-<a name="l-576"></a>  <span class="c1">/////////////////////////////////////////</span>
-<a name="l-577"></a>
-<a name="l-578"></a>  <span class="k">assign</span> <span class="n">csr_wdata</span>  <span class="o">=</span> <span class="n">alu_operand_a_ex</span><span class="p">;</span>
-<a name="l-579"></a>  <span class="k">assign</span> <span class="n">csr_addr</span>   <span class="o">=</span> <span class="n">csr_num_e</span><span class="p">&#39;(</span><span class="n">csr_access</span> <span class="o">?</span> <span class="n">alu_operand_b_ex</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">:</span> <span class="mh">12</span><span class="mb">&#39;b0</span><span class="p">);</span>
+<a name="l-570"></a>      <span class="p">.</span><span class="n">busy_o</span>                <span class="p">(</span> <span class="n">lsu_busy</span>            <span class="p">),</span>
+<a name="l-571"></a>
+<a name="l-572"></a>      <span class="p">.</span><span class="n">illegal_insn_id_i</span>     <span class="p">(</span> <span class="n">illegal_insn_id</span>     <span class="p">),</span>
+<a name="l-573"></a>      <span class="p">.</span><span class="n">instr_valid_id_i</span>      <span class="p">(</span> <span class="n">instr_valid_id</span>      <span class="p">)</span>
+<a name="l-574"></a>  <span class="p">);</span>
+<a name="l-575"></a>
+<a name="l-576"></a>
+<a name="l-577"></a>  <span class="c1">/////////////////////////////////////////</span>
+<a name="l-578"></a>  <span class="c1">// CSRs (Control and Status Registers) //</span>
+<a name="l-579"></a>  <span class="c1">/////////////////////////////////////////</span>
 <a name="l-580"></a>
-<a name="l-581"></a>  <span class="k">assign</span> <span class="n">perf_load</span>  <span class="o">=</span> <span class="n">data_req_o</span> <span class="o">&amp;</span> <span class="n">data_gnt_i</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">data_we_o</span><span class="p">);</span>
-<a name="l-582"></a>  <span class="k">assign</span> <span class="n">perf_store</span> <span class="o">=</span> <span class="n">data_req_o</span> <span class="o">&amp;</span> <span class="n">data_gnt_i</span> <span class="o">&amp;</span> <span class="n">data_we_o</span><span class="p">;</span>
+<a name="l-581"></a>  <span class="k">assign</span> <span class="n">csr_wdata</span>  <span class="o">=</span> <span class="n">alu_operand_a_ex</span><span class="p">;</span>
+<a name="l-582"></a>  <span class="k">assign</span> <span class="n">csr_addr</span>   <span class="o">=</span> <span class="n">csr_num_e</span><span class="p">&#39;(</span><span class="n">csr_access</span> <span class="o">?</span> <span class="n">alu_operand_b_ex</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">:</span> <span class="mh">12</span><span class="mb">&#39;b0</span><span class="p">);</span>
 <a name="l-583"></a>
-<a name="l-584"></a>  <span class="c1">// CSR access is qualified by instruction fetch error</span>
-<a name="l-585"></a>  <span class="k">assign</span> <span class="n">valid_csr_id</span> <span class="o">=</span> <span class="n">instr_new_id</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_fetch_err</span><span class="p">;</span>
+<a name="l-584"></a>  <span class="k">assign</span> <span class="n">perf_load</span>  <span class="o">=</span> <span class="n">data_req_o</span> <span class="o">&amp;</span> <span class="n">data_gnt_i</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">data_we_o</span><span class="p">);</span>
+<a name="l-585"></a>  <span class="k">assign</span> <span class="n">perf_store</span> <span class="o">=</span> <span class="n">data_req_o</span> <span class="o">&amp;</span> <span class="n">data_gnt_i</span> <span class="o">&amp;</span> <span class="n">data_we_o</span><span class="p">;</span>
 <a name="l-586"></a>
-<a name="l-587"></a>  <span class="n">ibex_cs_registers</span> <span class="p">#(</span>
-<a name="l-588"></a>      <span class="p">.</span><span class="n">DbgTriggerEn</span>     <span class="p">(</span> <span class="n">DbgTriggerEn</span>     <span class="p">),</span>
-<a name="l-589"></a>      <span class="p">.</span><span class="n">MHPMCounterNum</span>   <span class="p">(</span> <span class="n">MHPMCounterNum</span>   <span class="p">),</span>
-<a name="l-590"></a>      <span class="p">.</span><span class="n">MHPMCounterWidth</span> <span class="p">(</span> <span class="n">MHPMCounterWidth</span> <span class="p">),</span>
-<a name="l-591"></a>      <span class="p">.</span><span class="n">PMPEnable</span>        <span class="p">(</span> <span class="n">PMPEnable</span>        <span class="p">),</span>
-<a name="l-592"></a>      <span class="p">.</span><span class="n">PMPGranularity</span>   <span class="p">(</span> <span class="n">PMPGranularity</span>   <span class="p">),</span>
-<a name="l-593"></a>      <span class="p">.</span><span class="n">PMPNumRegions</span>    <span class="p">(</span> <span class="n">PMPNumRegions</span>    <span class="p">),</span>
-<a name="l-594"></a>      <span class="p">.</span><span class="n">RV32E</span>            <span class="p">(</span> <span class="n">RV32E</span>            <span class="p">),</span>
-<a name="l-595"></a>      <span class="p">.</span><span class="n">RV32M</span>            <span class="p">(</span> <span class="n">RV32M</span>            <span class="p">)</span>
-<a name="l-596"></a>  <span class="p">)</span> <span class="n">cs_registers_i</span> <span class="p">(</span>
-<a name="l-597"></a>      <span class="p">.</span><span class="n">clk_i</span>                   <span class="p">(</span> <span class="n">clk</span>                    <span class="p">),</span>
-<a name="l-598"></a>      <span class="p">.</span><span class="n">rst_ni</span>                  <span class="p">(</span> <span class="n">rst_ni</span>                 <span class="p">),</span>
-<a name="l-599"></a>
-<a name="l-600"></a>      <span class="c1">// Hart ID from outside</span>
-<a name="l-601"></a>      <span class="p">.</span><span class="n">hart_id_i</span>               <span class="p">(</span> <span class="n">hart_id_i</span>              <span class="p">),</span>
-<a name="l-602"></a>      <span class="p">.</span><span class="n">priv_mode_id_o</span>          <span class="p">(</span> <span class="n">priv_mode_id</span>           <span class="p">),</span>
-<a name="l-603"></a>      <span class="p">.</span><span class="n">priv_mode_if_o</span>          <span class="p">(</span> <span class="n">priv_mode_if</span>           <span class="p">),</span>
-<a name="l-604"></a>      <span class="p">.</span><span class="n">priv_mode_lsu_o</span>         <span class="p">(</span> <span class="n">priv_mode_lsu</span>          <span class="p">),</span>
-<a name="l-605"></a>
-<a name="l-606"></a>      <span class="c1">// mtvec</span>
-<a name="l-607"></a>      <span class="p">.</span><span class="n">csr_mtvec_o</span>             <span class="p">(</span> <span class="n">csr_mtvec</span>              <span class="p">),</span>
-<a name="l-608"></a>      <span class="p">.</span><span class="n">csr_mtvec_init_i</span>        <span class="p">(</span> <span class="n">csr_mtvec_init</span>         <span class="p">),</span>
-<a name="l-609"></a>      <span class="p">.</span><span class="n">boot_addr_i</span>             <span class="p">(</span> <span class="n">boot_addr_i</span>            <span class="p">),</span>
-<a name="l-610"></a>
-<a name="l-611"></a>      <span class="c1">// Interface to CSRs (SRAM like)</span>
-<a name="l-612"></a>      <span class="p">.</span><span class="n">csr_access_i</span>            <span class="p">(</span> <span class="n">csr_access</span>             <span class="p">),</span>
-<a name="l-613"></a>      <span class="p">.</span><span class="n">csr_addr_i</span>              <span class="p">(</span> <span class="n">csr_addr</span>               <span class="p">),</span>
-<a name="l-614"></a>      <span class="p">.</span><span class="n">csr_wdata_i</span>             <span class="p">(</span> <span class="n">csr_wdata</span>              <span class="p">),</span>
-<a name="l-615"></a>      <span class="p">.</span><span class="n">csr_op_i</span>                <span class="p">(</span> <span class="n">csr_op</span>                 <span class="p">),</span>
-<a name="l-616"></a>      <span class="p">.</span><span class="n">csr_rdata_o</span>             <span class="p">(</span> <span class="n">csr_rdata</span>              <span class="p">),</span>
-<a name="l-617"></a>
-<a name="l-618"></a>      <span class="c1">// Interrupt related control signals</span>
-<a name="l-619"></a>      <span class="p">.</span><span class="n">irq_software_i</span>          <span class="p">(</span> <span class="n">irq_software_i</span>         <span class="p">),</span>
-<a name="l-620"></a>      <span class="p">.</span><span class="n">irq_timer_i</span>             <span class="p">(</span> <span class="n">irq_timer_i</span>            <span class="p">),</span>
-<a name="l-621"></a>      <span class="p">.</span><span class="n">irq_external_i</span>          <span class="p">(</span> <span class="n">irq_external_i</span>         <span class="p">),</span>
-<a name="l-622"></a>      <span class="p">.</span><span class="n">irq_fast_i</span>              <span class="p">(</span> <span class="n">irq_fast_i</span>             <span class="p">),</span>
-<a name="l-623"></a>      <span class="p">.</span><span class="n">nmi_mode_i</span>              <span class="p">(</span> <span class="n">nmi_mode</span>               <span class="p">),</span>
-<a name="l-624"></a>      <span class="p">.</span><span class="n">irq_pending_o</span>           <span class="p">(</span> <span class="n">irq_pending</span>            <span class="p">),</span>
-<a name="l-625"></a>      <span class="p">.</span><span class="n">irqs_o</span>                  <span class="p">(</span> <span class="n">irqs</span>                   <span class="p">),</span>
-<a name="l-626"></a>      <span class="p">.</span><span class="n">csr_mstatus_mie_o</span>       <span class="p">(</span> <span class="n">csr_mstatus_mie</span>        <span class="p">),</span>
-<a name="l-627"></a>      <span class="p">.</span><span class="n">csr_mstatus_tw_o</span>        <span class="p">(</span> <span class="n">csr_mstatus_tw</span>         <span class="p">),</span>
-<a name="l-628"></a>      <span class="p">.</span><span class="n">csr_mepc_o</span>              <span class="p">(</span> <span class="n">csr_mepc</span>               <span class="p">),</span>
-<a name="l-629"></a>
-<a name="l-630"></a>      <span class="c1">// PMP</span>
-<a name="l-631"></a>      <span class="p">.</span><span class="n">csr_pmp_cfg_o</span>           <span class="p">(</span> <span class="n">csr_pmp_cfg</span>            <span class="p">),</span>
-<a name="l-632"></a>      <span class="p">.</span><span class="n">csr_pmp_addr_o</span>          <span class="p">(</span> <span class="n">csr_pmp_addr</span>           <span class="p">),</span>
-<a name="l-633"></a>
-<a name="l-634"></a>      <span class="c1">// debug</span>
-<a name="l-635"></a>      <span class="p">.</span><span class="n">csr_depc_o</span>              <span class="p">(</span> <span class="n">csr_depc</span>               <span class="p">),</span>
-<a name="l-636"></a>      <span class="p">.</span><span class="n">debug_mode_i</span>            <span class="p">(</span> <span class="n">debug_mode</span>             <span class="p">),</span>
-<a name="l-637"></a>      <span class="p">.</span><span class="n">debug_cause_i</span>           <span class="p">(</span> <span class="n">debug_cause</span>            <span class="p">),</span>
-<a name="l-638"></a>      <span class="p">.</span><span class="n">debug_csr_save_i</span>        <span class="p">(</span> <span class="n">debug_csr_save</span>         <span class="p">),</span>
-<a name="l-639"></a>      <span class="p">.</span><span class="n">debug_single_step_o</span>     <span class="p">(</span> <span class="n">debug_single_step</span>      <span class="p">),</span>
-<a name="l-640"></a>      <span class="p">.</span><span class="n">debug_ebreakm_o</span>         <span class="p">(</span> <span class="n">debug_ebreakm</span>          <span class="p">),</span>
-<a name="l-641"></a>      <span class="p">.</span><span class="n">debug_ebreaku_o</span>         <span class="p">(</span> <span class="n">debug_ebreaku</span>          <span class="p">),</span>
-<a name="l-642"></a>      <span class="p">.</span><span class="n">trigger_match_o</span>         <span class="p">(</span> <span class="n">trigger_match</span>          <span class="p">),</span>
-<a name="l-643"></a>
-<a name="l-644"></a>      <span class="p">.</span><span class="n">pc_if_i</span>                 <span class="p">(</span> <span class="n">pc_if</span>                  <span class="p">),</span>
-<a name="l-645"></a>      <span class="p">.</span><span class="n">pc_id_i</span>                 <span class="p">(</span> <span class="n">pc_id</span>                  <span class="p">),</span>
+<a name="l-587"></a>  <span class="c1">// CSR access is qualified by instruction fetch error</span>
+<a name="l-588"></a>  <span class="k">assign</span> <span class="n">valid_csr_id</span> <span class="o">=</span> <span class="n">instr_new_id</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_fetch_err</span><span class="p">;</span>
+<a name="l-589"></a>
+<a name="l-590"></a>  <span class="n">ibex_cs_registers</span> <span class="p">#(</span>
+<a name="l-591"></a>      <span class="p">.</span><span class="n">DbgTriggerEn</span>     <span class="p">(</span> <span class="n">DbgTriggerEn</span>     <span class="p">),</span>
+<a name="l-592"></a>      <span class="p">.</span><span class="n">MHPMCounterNum</span>   <span class="p">(</span> <span class="n">MHPMCounterNum</span>   <span class="p">),</span>
+<a name="l-593"></a>      <span class="p">.</span><span class="n">MHPMCounterWidth</span> <span class="p">(</span> <span class="n">MHPMCounterWidth</span> <span class="p">),</span>
+<a name="l-594"></a>      <span class="p">.</span><span class="n">PMPEnable</span>        <span class="p">(</span> <span class="n">PMPEnable</span>        <span class="p">),</span>
+<a name="l-595"></a>      <span class="p">.</span><span class="n">PMPGranularity</span>   <span class="p">(</span> <span class="n">PMPGranularity</span>   <span class="p">),</span>
+<a name="l-596"></a>      <span class="p">.</span><span class="n">PMPNumRegions</span>    <span class="p">(</span> <span class="n">PMPNumRegions</span>    <span class="p">),</span>
+<a name="l-597"></a>      <span class="p">.</span><span class="n">RV32E</span>            <span class="p">(</span> <span class="n">RV32E</span>            <span class="p">),</span>
+<a name="l-598"></a>      <span class="p">.</span><span class="n">RV32M</span>            <span class="p">(</span> <span class="n">RV32M</span>            <span class="p">)</span>
+<a name="l-599"></a>  <span class="p">)</span> <span class="n">cs_registers_i</span> <span class="p">(</span>
+<a name="l-600"></a>      <span class="p">.</span><span class="n">clk_i</span>                   <span class="p">(</span> <span class="n">clk</span>                    <span class="p">),</span>
+<a name="l-601"></a>      <span class="p">.</span><span class="n">rst_ni</span>                  <span class="p">(</span> <span class="n">rst_ni</span>                 <span class="p">),</span>
+<a name="l-602"></a>
+<a name="l-603"></a>      <span class="c1">// Hart ID from outside</span>
+<a name="l-604"></a>      <span class="p">.</span><span class="n">hart_id_i</span>               <span class="p">(</span> <span class="n">hart_id_i</span>              <span class="p">),</span>
+<a name="l-605"></a>      <span class="p">.</span><span class="n">priv_mode_id_o</span>          <span class="p">(</span> <span class="n">priv_mode_id</span>           <span class="p">),</span>
+<a name="l-606"></a>      <span class="p">.</span><span class="n">priv_mode_if_o</span>          <span class="p">(</span> <span class="n">priv_mode_if</span>           <span class="p">),</span>
+<a name="l-607"></a>      <span class="p">.</span><span class="n">priv_mode_lsu_o</span>         <span class="p">(</span> <span class="n">priv_mode_lsu</span>          <span class="p">),</span>
+<a name="l-608"></a>
+<a name="l-609"></a>      <span class="c1">// mtvec</span>
+<a name="l-610"></a>      <span class="p">.</span><span class="n">csr_mtvec_o</span>             <span class="p">(</span> <span class="n">csr_mtvec</span>              <span class="p">),</span>
+<a name="l-611"></a>      <span class="p">.</span><span class="n">csr_mtvec_init_i</span>        <span class="p">(</span> <span class="n">csr_mtvec_init</span>         <span class="p">),</span>
+<a name="l-612"></a>      <span class="p">.</span><span class="n">boot_addr_i</span>             <span class="p">(</span> <span class="n">boot_addr_i</span>            <span class="p">),</span>
+<a name="l-613"></a>
+<a name="l-614"></a>      <span class="c1">// Interface to CSRs (SRAM like)</span>
+<a name="l-615"></a>      <span class="p">.</span><span class="n">csr_access_i</span>            <span class="p">(</span> <span class="n">csr_access</span>             <span class="p">),</span>
+<a name="l-616"></a>      <span class="p">.</span><span class="n">csr_addr_i</span>              <span class="p">(</span> <span class="n">csr_addr</span>               <span class="p">),</span>
+<a name="l-617"></a>      <span class="p">.</span><span class="n">csr_wdata_i</span>             <span class="p">(</span> <span class="n">csr_wdata</span>              <span class="p">),</span>
+<a name="l-618"></a>      <span class="p">.</span><span class="n">csr_op_i</span>                <span class="p">(</span> <span class="n">csr_op</span>                 <span class="p">),</span>
+<a name="l-619"></a>      <span class="p">.</span><span class="n">csr_rdata_o</span>             <span class="p">(</span> <span class="n">csr_rdata</span>              <span class="p">),</span>
+<a name="l-620"></a>
+<a name="l-621"></a>      <span class="c1">// Interrupt related control signals</span>
+<a name="l-622"></a>      <span class="p">.</span><span class="n">irq_software_i</span>          <span class="p">(</span> <span class="n">irq_software_i</span>         <span class="p">),</span>
+<a name="l-623"></a>      <span class="p">.</span><span class="n">irq_timer_i</span>             <span class="p">(</span> <span class="n">irq_timer_i</span>            <span class="p">),</span>
+<a name="l-624"></a>      <span class="p">.</span><span class="n">irq_external_i</span>          <span class="p">(</span> <span class="n">irq_external_i</span>         <span class="p">),</span>
+<a name="l-625"></a>      <span class="p">.</span><span class="n">irq_fast_i</span>              <span class="p">(</span> <span class="n">irq_fast_i</span>             <span class="p">),</span>
+<a name="l-626"></a>      <span class="p">.</span><span class="n">nmi_mode_i</span>              <span class="p">(</span> <span class="n">nmi_mode</span>               <span class="p">),</span>
+<a name="l-627"></a>      <span class="p">.</span><span class="n">irq_pending_o</span>           <span class="p">(</span> <span class="n">irq_pending</span>            <span class="p">),</span>
+<a name="l-628"></a>      <span class="p">.</span><span class="n">irqs_o</span>                  <span class="p">(</span> <span class="n">irqs</span>                   <span class="p">),</span>
+<a name="l-629"></a>      <span class="p">.</span><span class="n">csr_mstatus_mie_o</span>       <span class="p">(</span> <span class="n">csr_mstatus_mie</span>        <span class="p">),</span>
+<a name="l-630"></a>      <span class="p">.</span><span class="n">csr_mstatus_tw_o</span>        <span class="p">(</span> <span class="n">csr_mstatus_tw</span>         <span class="p">),</span>
+<a name="l-631"></a>      <span class="p">.</span><span class="n">csr_mepc_o</span>              <span class="p">(</span> <span class="n">csr_mepc</span>               <span class="p">),</span>
+<a name="l-632"></a>
+<a name="l-633"></a>      <span class="c1">// PMP</span>
+<a name="l-634"></a>      <span class="p">.</span><span class="n">csr_pmp_cfg_o</span>           <span class="p">(</span> <span class="n">csr_pmp_cfg</span>            <span class="p">),</span>
+<a name="l-635"></a>      <span class="p">.</span><span class="n">csr_pmp_addr_o</span>          <span class="p">(</span> <span class="n">csr_pmp_addr</span>           <span class="p">),</span>
+<a name="l-636"></a>
+<a name="l-637"></a>      <span class="c1">// debug</span>
+<a name="l-638"></a>      <span class="p">.</span><span class="n">csr_depc_o</span>              <span class="p">(</span> <span class="n">csr_depc</span>               <span class="p">),</span>
+<a name="l-639"></a>      <span class="p">.</span><span class="n">debug_mode_i</span>            <span class="p">(</span> <span class="n">debug_mode</span>             <span class="p">),</span>
+<a name="l-640"></a>      <span class="p">.</span><span class="n">debug_cause_i</span>           <span class="p">(</span> <span class="n">debug_cause</span>            <span class="p">),</span>
+<a name="l-641"></a>      <span class="p">.</span><span class="n">debug_csr_save_i</span>        <span class="p">(</span> <span class="n">debug_csr_save</span>         <span class="p">),</span>
+<a name="l-642"></a>      <span class="p">.</span><span class="n">debug_single_step_o</span>     <span class="p">(</span> <span class="n">debug_single_step</span>      <span class="p">),</span>
+<a name="l-643"></a>      <span class="p">.</span><span class="n">debug_ebreakm_o</span>         <span class="p">(</span> <span class="n">debug_ebreakm</span>          <span class="p">),</span>
+<a name="l-644"></a>      <span class="p">.</span><span class="n">debug_ebreaku_o</span>         <span class="p">(</span> <span class="n">debug_ebreaku</span>          <span class="p">),</span>
+<a name="l-645"></a>      <span class="p">.</span><span class="n">trigger_match_o</span>         <span class="p">(</span> <span class="n">trigger_match</span>          <span class="p">),</span>
 <a name="l-646"></a>
-<a name="l-647"></a>      <span class="p">.</span><span class="n">csr_save_if_i</span>           <span class="p">(</span> <span class="n">csr_save_if</span>            <span class="p">),</span>
-<a name="l-648"></a>      <span class="p">.</span><span class="n">csr_save_id_i</span>           <span class="p">(</span> <span class="n">csr_save_id</span>            <span class="p">),</span>
-<a name="l-649"></a>      <span class="p">.</span><span class="n">csr_restore_mret_i</span>      <span class="p">(</span> <span class="n">csr_restore_mret_id</span>    <span class="p">),</span>
-<a name="l-650"></a>      <span class="p">.</span><span class="n">csr_restore_dret_i</span>      <span class="p">(</span> <span class="n">csr_restore_dret_id</span>    <span class="p">),</span>
-<a name="l-651"></a>      <span class="p">.</span><span class="n">csr_save_cause_i</span>        <span class="p">(</span> <span class="n">csr_save_cause</span>         <span class="p">),</span>
-<a name="l-652"></a>      <span class="p">.</span><span class="n">csr_mcause_i</span>            <span class="p">(</span> <span class="n">exc_cause</span>              <span class="p">),</span>
-<a name="l-653"></a>      <span class="p">.</span><span class="n">csr_mtval_i</span>             <span class="p">(</span> <span class="n">csr_mtval</span>              <span class="p">),</span>
-<a name="l-654"></a>      <span class="p">.</span><span class="n">illegal_csr_insn_o</span>      <span class="p">(</span> <span class="n">illegal_csr_insn_id</span>    <span class="p">),</span>
-<a name="l-655"></a>
-<a name="l-656"></a>      <span class="p">.</span><span class="n">instr_new_id_i</span>          <span class="p">(</span> <span class="n">valid_csr_id</span>           <span class="p">),</span>
-<a name="l-657"></a>
-<a name="l-658"></a>      <span class="c1">// performance counter related signals</span>
-<a name="l-659"></a>      <span class="p">.</span><span class="n">instr_ret_i</span>             <span class="p">(</span> <span class="n">instr_ret</span>              <span class="p">),</span>
-<a name="l-660"></a>      <span class="p">.</span><span class="n">instr_ret_compressed_i</span>  <span class="p">(</span> <span class="n">instr_ret_compressed</span>   <span class="p">),</span>
-<a name="l-661"></a>      <span class="p">.</span><span class="n">imiss_i</span>                 <span class="p">(</span> <span class="n">perf_imiss</span>             <span class="p">),</span>
-<a name="l-662"></a>      <span class="p">.</span><span class="n">pc_set_i</span>                <span class="p">(</span> <span class="n">pc_set</span>                 <span class="p">),</span>
-<a name="l-663"></a>      <span class="p">.</span><span class="n">jump_i</span>                  <span class="p">(</span> <span class="n">perf_jump</span>              <span class="p">),</span>
-<a name="l-664"></a>      <span class="p">.</span><span class="n">branch_i</span>                <span class="p">(</span> <span class="n">perf_branch</span>            <span class="p">),</span>
-<a name="l-665"></a>      <span class="p">.</span><span class="n">branch_taken_i</span>          <span class="p">(</span> <span class="n">perf_tbranch</span>           <span class="p">),</span>
-<a name="l-666"></a>      <span class="p">.</span><span class="n">mem_load_i</span>              <span class="p">(</span> <span class="n">perf_load</span>              <span class="p">),</span>
-<a name="l-667"></a>      <span class="p">.</span><span class="n">mem_store_i</span>             <span class="p">(</span> <span class="n">perf_store</span>             <span class="p">),</span>
-<a name="l-668"></a>      <span class="p">.</span><span class="n">lsu_busy_i</span>              <span class="p">(</span> <span class="n">lsu_busy</span>               <span class="p">)</span>
-<a name="l-669"></a>  <span class="p">);</span>
-<a name="l-670"></a>
-<a name="l-671"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">PMPEnable</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_pmp</span>
-<a name="l-672"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">33</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">pmp_req_addr</span> <span class="p">[</span><span class="n">PMP_NUM_CHAN</span><span class="p">];</span>
-<a name="l-673"></a>    <span class="n">pmp_req_e</span>    <span class="n">pmp_req_type</span> <span class="p">[</span><span class="n">PMP_NUM_CHAN</span><span class="p">];</span>
-<a name="l-674"></a>    <span class="n">priv_lvl_e</span>   <span class="n">pmp_priv_lvl</span> <span class="p">[</span><span class="n">PMP_NUM_CHAN</span><span class="p">];</span>
-<a name="l-675"></a>
-<a name="l-676"></a>    <span class="k">assign</span> <span class="n">pmp_req_addr</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">,</span><span class="n">instr_addr_o</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-677"></a>    <span class="k">assign</span> <span class="n">pmp_req_type</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="n">PMP_ACC_EXEC</span><span class="p">;</span>
-<a name="l-678"></a>    <span class="k">assign</span> <span class="n">pmp_priv_lvl</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="n">priv_mode_if</span><span class="p">;</span>
-<a name="l-679"></a>    <span class="k">assign</span> <span class="n">pmp_req_addr</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">,</span><span class="n">data_addr_o</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-680"></a>    <span class="k">assign</span> <span class="n">pmp_req_type</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_we_o</span> <span class="o">?</span> <span class="n">PMP_ACC_WRITE</span> <span class="o">:</span> <span class="n">PMP_ACC_READ</span><span class="p">;</span>
-<a name="l-681"></a>    <span class="k">assign</span> <span class="n">pmp_priv_lvl</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="n">priv_mode_lsu</span><span class="p">;</span>
-<a name="l-682"></a>
-<a name="l-683"></a>    <span class="n">ibex_pmp</span> <span class="p">#(</span>
-<a name="l-684"></a>        <span class="p">.</span><span class="n">PMPGranularity</span>        <span class="p">(</span> <span class="n">PMPGranularity</span> <span class="p">),</span>
-<a name="l-685"></a>        <span class="p">.</span><span class="n">PMPNumChan</span>            <span class="p">(</span> <span class="n">PMP_NUM_CHAN</span>   <span class="p">),</span>
-<a name="l-686"></a>        <span class="p">.</span><span class="n">PMPNumRegions</span>         <span class="p">(</span> <span class="n">PMPNumRegions</span>  <span class="p">)</span>
-<a name="l-687"></a>    <span class="p">)</span> <span class="n">pmp_i</span> <span class="p">(</span>
-<a name="l-688"></a>        <span class="p">.</span><span class="n">clk_i</span>                 <span class="p">(</span> <span class="n">clk</span>            <span class="p">),</span>
-<a name="l-689"></a>        <span class="p">.</span><span class="n">rst_ni</span>                <span class="p">(</span> <span class="n">rst_ni</span>         <span class="p">),</span>
-<a name="l-690"></a>        <span class="c1">// Interface to CSRs</span>
-<a name="l-691"></a>        <span class="p">.</span><span class="n">csr_pmp_cfg_i</span>         <span class="p">(</span> <span class="n">csr_pmp_cfg</span>    <span class="p">),</span>
-<a name="l-692"></a>        <span class="p">.</span><span class="n">csr_pmp_addr_i</span>        <span class="p">(</span> <span class="n">csr_pmp_addr</span>   <span class="p">),</span>
-<a name="l-693"></a>        <span class="p">.</span><span class="n">priv_mode_i</span>           <span class="p">(</span> <span class="n">pmp_priv_lvl</span>   <span class="p">),</span>
-<a name="l-694"></a>        <span class="c1">// Access checking channels</span>
-<a name="l-695"></a>        <span class="p">.</span><span class="n">pmp_req_addr_i</span>        <span class="p">(</span> <span class="n">pmp_req_addr</span>   <span class="p">),</span>
-<a name="l-696"></a>        <span class="p">.</span><span class="n">pmp_req_type_i</span>        <span class="p">(</span> <span class="n">pmp_req_type</span>   <span class="p">),</span>
-<a name="l-697"></a>        <span class="p">.</span><span class="n">pmp_req_err_o</span>         <span class="p">(</span> <span class="n">pmp_req_err</span>    <span class="p">)</span>
-<a name="l-698"></a>    <span class="p">);</span>
-<a name="l-699"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_pmp</span>
-<a name="l-700"></a>    <span class="c1">// Unused signal tieoff</span>
-<a name="l-701"></a>    <span class="n">priv_lvl_e</span> <span class="n">unused_priv_lvl_if</span><span class="p">,</span> <span class="n">unused_priv_lvl_ls</span><span class="p">;</span>
-<a name="l-702"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">33</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">unused_csr_pmp_addr</span> <span class="p">[</span><span class="n">PMPNumRegions</span><span class="p">];</span>
-<a name="l-703"></a>    <span class="n">pmp_cfg_t</span>    <span class="n">unused_csr_pmp_cfg</span>  <span class="p">[</span><span class="n">PMPNumRegions</span><span class="p">];</span>
-<a name="l-704"></a>    <span class="k">assign</span> <span class="n">unused_priv_lvl_if</span> <span class="o">=</span> <span class="n">priv_mode_if</span><span class="p">;</span>
-<a name="l-705"></a>    <span class="k">assign</span> <span class="n">unused_priv_lvl_ls</span> <span class="o">=</span> <span class="n">priv_mode_lsu</span><span class="p">;</span>
-<a name="l-706"></a>    <span class="k">assign</span> <span class="n">unused_csr_pmp_addr</span> <span class="o">=</span> <span class="n">csr_pmp_addr</span><span class="p">;</span>
-<a name="l-707"></a>    <span class="k">assign</span> <span class="n">unused_csr_pmp_cfg</span> <span class="o">=</span> <span class="n">csr_pmp_cfg</span><span class="p">;</span>
-<a name="l-708"></a>
-<a name="l-709"></a>    <span class="c1">// Output tieoff</span>
-<a name="l-710"></a>    <span class="k">assign</span> <span class="n">pmp_req_err</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-711"></a>    <span class="k">assign</span> <span class="n">pmp_req_err</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-712"></a>  <span class="k">end</span>
-<a name="l-713"></a>
-<a name="l-714"></a><span class="no">`ifdef</span> <span class="n">RVFI</span>
-<a name="l-715"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-716"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-717"></a>      <span class="n">rvfi_halt</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-718"></a>      <span class="n">rvfi_trap</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-719"></a>      <span class="n">rvfi_intr</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-720"></a>      <span class="n">rvfi_order</span>             <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-721"></a>      <span class="n">rvfi_insn</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-722"></a>      <span class="n">rvfi_mode</span>              <span class="o">&lt;=</span> <span class="p">{</span><span class="n">PRIV_LVL_M</span><span class="p">};</span>
-<a name="l-723"></a>      <span class="n">rvfi_rs1_addr</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-724"></a>      <span class="n">rvfi_rs2_addr</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-725"></a>      <span class="n">rvfi_pc_rdata</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-726"></a>      <span class="n">rvfi_pc_wdata</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-727"></a>      <span class="n">rvfi_mem_rmask</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-728"></a>      <span class="n">rvfi_mem_wmask</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-729"></a>      <span class="n">rvfi_valid</span>             <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-730"></a>      <span class="n">rvfi_rs1_rdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-731"></a>      <span class="n">rvfi_rs2_rdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-732"></a>      <span class="n">rvfi_rd_wdata</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-733"></a>      <span class="n">rvfi_rd_addr</span>           <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-734"></a>      <span class="n">rvfi_mem_rdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-735"></a>      <span class="n">rvfi_mem_wdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-736"></a>      <span class="n">rvfi_mem_addr</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-737"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-738"></a>      <span class="n">rvfi_halt</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-739"></a>      <span class="n">rvfi_trap</span>              <span class="o">&lt;=</span> <span class="n">illegal_insn_id</span><span class="p">;</span>
-<a name="l-740"></a>      <span class="n">rvfi_intr</span>              <span class="o">&lt;=</span> <span class="n">rvfi_intr_d</span><span class="p">;</span>
-<a name="l-741"></a>      <span class="n">rvfi_order</span>             <span class="o">&lt;=</span> <span class="n">rvfi_order</span> <span class="o">+</span> <span class="mh">64</span><span class="p">&#39;(</span><span class="n">rvfi_valid</span><span class="p">);</span>
-<a name="l-742"></a>      <span class="n">rvfi_insn</span>              <span class="o">&lt;=</span> <span class="n">rvfi_insn_id</span><span class="p">;</span>
-<a name="l-743"></a>      <span class="n">rvfi_mode</span>              <span class="o">&lt;=</span> <span class="p">{</span><span class="n">priv_mode_id</span><span class="p">};</span>
-<a name="l-744"></a>      <span class="n">rvfi_rs1_addr</span>          <span class="o">&lt;=</span> <span class="n">rvfi_rs1_addr_id</span><span class="p">;</span>
-<a name="l-745"></a>      <span class="n">rvfi_rs2_addr</span>          <span class="o">&lt;=</span> <span class="n">rvfi_rs2_addr_id</span><span class="p">;</span>
-<a name="l-746"></a>      <span class="n">rvfi_pc_rdata</span>          <span class="o">&lt;=</span> <span class="n">pc_id</span><span class="p">;</span>
-<a name="l-747"></a>      <span class="n">rvfi_pc_wdata</span>          <span class="o">&lt;=</span> <span class="n">pc_if</span><span class="p">;</span>
-<a name="l-748"></a>      <span class="n">rvfi_mem_rmask</span>         <span class="o">&lt;=</span> <span class="n">rvfi_mem_mask_int</span><span class="p">;</span>
-<a name="l-749"></a>      <span class="n">rvfi_mem_wmask</span>         <span class="o">&lt;=</span> <span class="n">data_we_o</span> <span class="o">?</span> <span class="n">rvfi_mem_mask_int</span> <span class="o">:</span> <span class="mh">4</span><span class="mb">&#39;b0000</span><span class="p">;</span>
-<a name="l-750"></a>      <span class="n">rvfi_valid</span>             <span class="o">&lt;=</span> <span class="n">instr_ret</span><span class="p">;</span>
-<a name="l-751"></a>      <span class="n">rvfi_rs1_rdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_rs1_data_d</span><span class="p">;</span>
-<a name="l-752"></a>      <span class="n">rvfi_rs2_rdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_rs2_data_d</span><span class="p">;</span>
-<a name="l-753"></a>      <span class="n">rvfi_rd_wdata</span>          <span class="o">&lt;=</span> <span class="n">rvfi_rd_wdata_d</span><span class="p">;</span>
-<a name="l-754"></a>      <span class="n">rvfi_rd_addr</span>           <span class="o">&lt;=</span> <span class="n">rvfi_rd_addr_d</span><span class="p">;</span>
-<a name="l-755"></a>      <span class="n">rvfi_mem_rdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_mem_rdata_d</span><span class="p">;</span>
-<a name="l-756"></a>      <span class="n">rvfi_mem_wdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_mem_wdata_d</span><span class="p">;</span>
-<a name="l-757"></a>      <span class="n">rvfi_mem_addr</span>          <span class="o">&lt;=</span> <span class="n">rvfi_mem_addr_d</span><span class="p">;</span>
-<a name="l-758"></a>    <span class="k">end</span>
-<a name="l-759"></a>  <span class="k">end</span>
-<a name="l-760"></a>
-<a name="l-761"></a>  <span class="c1">// Keep the mem data stable for each instruction cycle</span>
-<a name="l-762"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-763"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_insn_new_d</span> <span class="o">&amp;&amp;</span> <span class="n">lsu_data_valid</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-764"></a>      <span class="n">rvfi_mem_addr_d</span>  <span class="o">=</span> <span class="n">alu_adder_result_ex</span><span class="p">;</span>
-<a name="l-765"></a>      <span class="n">rvfi_mem_rdata_d</span> <span class="o">=</span> <span class="n">regfile_wdata_lsu</span><span class="p">;</span>
-<a name="l-766"></a>      <span class="n">rvfi_mem_wdata_d</span> <span class="o">=</span> <span class="n">data_wdata_ex</span><span class="p">;</span>
-<a name="l-767"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-768"></a>      <span class="n">rvfi_mem_addr_d</span>  <span class="o">=</span> <span class="n">rvfi_mem_addr_q</span><span class="p">;</span>
-<a name="l-769"></a>      <span class="n">rvfi_mem_rdata_d</span> <span class="o">=</span> <span class="n">rvfi_mem_rdata_q</span><span class="p">;</span>
-<a name="l-770"></a>      <span class="n">rvfi_mem_wdata_d</span> <span class="o">=</span> <span class="n">rvfi_mem_wdata_q</span><span class="p">;</span>
-<a name="l-771"></a>    <span class="k">end</span>
-<a name="l-772"></a>  <span class="k">end</span>
-<a name="l-773"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-774"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-775"></a>      <span class="n">rvfi_mem_addr_q</span>  <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-776"></a>      <span class="n">rvfi_mem_rdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-777"></a>      <span class="n">rvfi_mem_wdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-778"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-779"></a>      <span class="n">rvfi_mem_addr_q</span>  <span class="o">&lt;=</span> <span class="n">rvfi_mem_addr_d</span><span class="p">;</span>
-<a name="l-780"></a>      <span class="n">rvfi_mem_rdata_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_mem_rdata_d</span><span class="p">;</span>
-<a name="l-781"></a>      <span class="n">rvfi_mem_wdata_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_mem_wdata_d</span><span class="p">;</span>
-<a name="l-782"></a>    <span class="k">end</span>
-<a name="l-783"></a>  <span class="k">end</span>
-<a name="l-784"></a>  <span class="c1">// Byte enable based on data type</span>
-<a name="l-785"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-786"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">data_type_ex</span><span class="p">)</span>
-<a name="l-787"></a>      <span class="mh">2</span><span class="mb">&#39;b00</span><span class="o">:</span>   <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b1111</span><span class="p">;</span>
-<a name="l-788"></a>      <span class="mh">2</span><span class="mb">&#39;b01</span><span class="o">:</span>   <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0011</span><span class="p">;</span>
-<a name="l-789"></a>      <span class="mh">2</span><span class="mb">&#39;b10</span><span class="o">:</span>   <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0001</span><span class="p">;</span>
-<a name="l-790"></a>      <span class="k">default</span><span class="o">:</span> <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0000</span><span class="p">;</span>
-<a name="l-791"></a>    <span class="k">endcase</span>
-<a name="l-792"></a>  <span class="k">end</span>
-<a name="l-793"></a>
-<a name="l-794"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-795"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">instr_is_compressed_id</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-796"></a>      <span class="n">rvfi_insn_id</span> <span class="o">=</span> <span class="p">{</span><span class="mh">16</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">instr_rdata_c_id</span><span class="p">};</span>
-<a name="l-797"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-798"></a>      <span class="n">rvfi_insn_id</span> <span class="o">=</span> <span class="n">instr_rdata_id</span><span class="p">;</span>
-<a name="l-799"></a>    <span class="k">end</span>
-<a name="l-800"></a>  <span class="k">end</span>
-<a name="l-801"></a>
-<a name="l-802"></a>  <span class="c1">// Source register data are kept stable for each instruction cycle</span>
-<a name="l-803"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-804"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">instr_new_id</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-805"></a>      <span class="n">rvfi_rs1_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs1_data_id</span><span class="p">;</span>
-<a name="l-806"></a>      <span class="n">rvfi_rs2_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs2_data_id</span><span class="p">;</span>
-<a name="l-807"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-808"></a>      <span class="n">rvfi_rs1_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs1_data_q</span><span class="p">;</span>
-<a name="l-809"></a>      <span class="n">rvfi_rs2_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs2_data_q</span><span class="p">;</span>
-<a name="l-810"></a>    <span class="k">end</span>
-<a name="l-811"></a>  <span class="k">end</span>
-<a name="l-812"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-813"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-814"></a>      <span class="n">rvfi_rs1_data_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-815"></a>      <span class="n">rvfi_rs2_data_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-816"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-817"></a>      <span class="n">rvfi_rs1_data_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_rs1_data_d</span><span class="p">;</span>
-<a name="l-818"></a>      <span class="n">rvfi_rs2_data_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_rs2_data_d</span><span class="p">;</span>
-<a name="l-819"></a>    <span class="k">end</span>
-<a name="l-820"></a>  <span class="k">end</span>
-<a name="l-821"></a>
-<a name="l-822"></a>  <span class="c1">// RD write register is refreshed only once per cycle and</span>
-<a name="l-823"></a>  <span class="c1">// then it is kept stable for the cycle.</span>
-<a name="l-824"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-825"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_insn_new_d</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-826"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rvfi_rd_we_id</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-827"></a>        <span class="n">rvfi_rd_addr_d</span>    <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-828"></a>        <span class="n">rvfi_rd_wdata_d</span>   <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-829"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-830"></a>        <span class="n">rvfi_rd_addr_d</span> <span class="o">=</span> <span class="n">rvfi_rd_addr_id</span><span class="p">;</span>
-<a name="l-831"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_rd_addr_id</span> <span class="o">==</span> <span class="mh">5&#39;h0</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-832"></a>          <span class="n">rvfi_rd_wdata_d</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-833"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-834"></a>          <span class="n">rvfi_rd_wdata_d</span> <span class="o">=</span> <span class="n">rvfi_rd_wdata_id</span><span class="p">;</span>
-<a name="l-835"></a>        <span class="k">end</span>
-<a name="l-836"></a>      <span class="k">end</span>
-<a name="l-837"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-838"></a>      <span class="n">rvfi_rd_addr_d</span>    <span class="o">=</span> <span class="n">rvfi_rd_addr_q</span><span class="p">;</span>
-<a name="l-839"></a>      <span class="n">rvfi_rd_wdata_d</span>   <span class="o">=</span> <span class="n">rvfi_rd_wdata_q</span><span class="p">;</span>
-<a name="l-840"></a>    <span class="k">end</span>
-<a name="l-841"></a>  <span class="k">end</span>
-<a name="l-842"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-843"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-844"></a>      <span class="n">rvfi_rd_addr_q</span>    <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-845"></a>      <span class="n">rvfi_rd_wdata_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-846"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-847"></a>      <span class="n">rvfi_rd_addr_q</span>    <span class="o">&lt;=</span> <span class="n">rvfi_rd_addr_d</span><span class="p">;</span>
-<a name="l-848"></a>      <span class="n">rvfi_rd_wdata_q</span>   <span class="o">&lt;=</span> <span class="n">rvfi_rd_wdata_d</span><span class="p">;</span>
-<a name="l-849"></a>    <span class="k">end</span>
-<a name="l-850"></a>  <span class="k">end</span>
-<a name="l-851"></a>
-<a name="l-852"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-853"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">instr_new_id</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-854"></a>      <span class="n">rvfi_insn_new_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-855"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-856"></a>      <span class="n">rvfi_insn_new_d</span> <span class="o">=</span> <span class="n">rvfi_insn_new_q</span><span class="p">;</span>
-<a name="l-857"></a>    <span class="k">end</span>
-<a name="l-858"></a>  <span class="k">end</span>
-<a name="l-859"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-860"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-861"></a>      <span class="n">rvfi_insn_new_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-862"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-863"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">instr_ret</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-864"></a>        <span class="n">rvfi_insn_new_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-865"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-866"></a>        <span class="n">rvfi_insn_new_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_insn_new_d</span><span class="p">;</span>
-<a name="l-867"></a>      <span class="k">end</span>
-<a name="l-868"></a>    <span class="k">end</span>
-<a name="l-869"></a>  <span class="k">end</span>
-<a name="l-870"></a>
-<a name="l-871"></a>  <span class="c1">// generate rvfi_intr_d</span>
-<a name="l-872"></a>  <span class="k">assign</span> <span class="n">rvfi_intr_d</span> <span class="o">=</span> <span class="n">rvfi_set_trap_pc_q</span> <span class="o">&amp;</span> <span class="n">rvfi_insn_new_d</span><span class="p">;</span>
+<a name="l-647"></a>      <span class="p">.</span><span class="n">pc_if_i</span>                 <span class="p">(</span> <span class="n">pc_if</span>                  <span class="p">),</span>
+<a name="l-648"></a>      <span class="p">.</span><span class="n">pc_id_i</span>                 <span class="p">(</span> <span class="n">pc_id</span>                  <span class="p">),</span>
+<a name="l-649"></a>
+<a name="l-650"></a>      <span class="p">.</span><span class="n">csr_save_if_i</span>           <span class="p">(</span> <span class="n">csr_save_if</span>            <span class="p">),</span>
+<a name="l-651"></a>      <span class="p">.</span><span class="n">csr_save_id_i</span>           <span class="p">(</span> <span class="n">csr_save_id</span>            <span class="p">),</span>
+<a name="l-652"></a>      <span class="p">.</span><span class="n">csr_restore_mret_i</span>      <span class="p">(</span> <span class="n">csr_restore_mret_id</span>    <span class="p">),</span>
+<a name="l-653"></a>      <span class="p">.</span><span class="n">csr_restore_dret_i</span>      <span class="p">(</span> <span class="n">csr_restore_dret_id</span>    <span class="p">),</span>
+<a name="l-654"></a>      <span class="p">.</span><span class="n">csr_save_cause_i</span>        <span class="p">(</span> <span class="n">csr_save_cause</span>         <span class="p">),</span>
+<a name="l-655"></a>      <span class="p">.</span><span class="n">csr_mcause_i</span>            <span class="p">(</span> <span class="n">exc_cause</span>              <span class="p">),</span>
+<a name="l-656"></a>      <span class="p">.</span><span class="n">csr_mtval_i</span>             <span class="p">(</span> <span class="n">csr_mtval</span>              <span class="p">),</span>
+<a name="l-657"></a>      <span class="p">.</span><span class="n">illegal_csr_insn_o</span>      <span class="p">(</span> <span class="n">illegal_csr_insn_id</span>    <span class="p">),</span>
+<a name="l-658"></a>
+<a name="l-659"></a>      <span class="p">.</span><span class="n">instr_new_id_i</span>          <span class="p">(</span> <span class="n">valid_csr_id</span>           <span class="p">),</span>
+<a name="l-660"></a>
+<a name="l-661"></a>      <span class="c1">// performance counter related signals</span>
+<a name="l-662"></a>      <span class="p">.</span><span class="n">instr_ret_i</span>             <span class="p">(</span> <span class="n">instr_ret</span>              <span class="p">),</span>
+<a name="l-663"></a>      <span class="p">.</span><span class="n">instr_ret_compressed_i</span>  <span class="p">(</span> <span class="n">instr_ret_compressed</span>   <span class="p">),</span>
+<a name="l-664"></a>      <span class="p">.</span><span class="n">imiss_i</span>                 <span class="p">(</span> <span class="n">perf_imiss</span>             <span class="p">),</span>
+<a name="l-665"></a>      <span class="p">.</span><span class="n">pc_set_i</span>                <span class="p">(</span> <span class="n">pc_set</span>                 <span class="p">),</span>
+<a name="l-666"></a>      <span class="p">.</span><span class="n">jump_i</span>                  <span class="p">(</span> <span class="n">perf_jump</span>              <span class="p">),</span>
+<a name="l-667"></a>      <span class="p">.</span><span class="n">branch_i</span>                <span class="p">(</span> <span class="n">perf_branch</span>            <span class="p">),</span>
+<a name="l-668"></a>      <span class="p">.</span><span class="n">branch_taken_i</span>          <span class="p">(</span> <span class="n">perf_tbranch</span>           <span class="p">),</span>
+<a name="l-669"></a>      <span class="p">.</span><span class="n">mem_load_i</span>              <span class="p">(</span> <span class="n">perf_load</span>              <span class="p">),</span>
+<a name="l-670"></a>      <span class="p">.</span><span class="n">mem_store_i</span>             <span class="p">(</span> <span class="n">perf_store</span>             <span class="p">),</span>
+<a name="l-671"></a>      <span class="p">.</span><span class="n">lsu_busy_i</span>              <span class="p">(</span> <span class="n">lsu_busy</span>               <span class="p">)</span>
+<a name="l-672"></a>  <span class="p">);</span>
+<a name="l-673"></a>
+<a name="l-674"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">PMPEnable</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_pmp</span>
+<a name="l-675"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">33</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">pmp_req_addr</span> <span class="p">[</span><span class="n">PMP_NUM_CHAN</span><span class="p">];</span>
+<a name="l-676"></a>    <span class="n">pmp_req_e</span>    <span class="n">pmp_req_type</span> <span class="p">[</span><span class="n">PMP_NUM_CHAN</span><span class="p">];</span>
+<a name="l-677"></a>    <span class="n">priv_lvl_e</span>   <span class="n">pmp_priv_lvl</span> <span class="p">[</span><span class="n">PMP_NUM_CHAN</span><span class="p">];</span>
+<a name="l-678"></a>
+<a name="l-679"></a>    <span class="k">assign</span> <span class="n">pmp_req_addr</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">,</span><span class="n">instr_addr_o</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-680"></a>    <span class="k">assign</span> <span class="n">pmp_req_type</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="n">PMP_ACC_EXEC</span><span class="p">;</span>
+<a name="l-681"></a>    <span class="k">assign</span> <span class="n">pmp_priv_lvl</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="n">priv_mode_if</span><span class="p">;</span>
+<a name="l-682"></a>    <span class="k">assign</span> <span class="n">pmp_req_addr</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">,</span><span class="n">data_addr_o</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-683"></a>    <span class="k">assign</span> <span class="n">pmp_req_type</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_we_o</span> <span class="o">?</span> <span class="n">PMP_ACC_WRITE</span> <span class="o">:</span> <span class="n">PMP_ACC_READ</span><span class="p">;</span>
+<a name="l-684"></a>    <span class="k">assign</span> <span class="n">pmp_priv_lvl</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="n">priv_mode_lsu</span><span class="p">;</span>
+<a name="l-685"></a>
+<a name="l-686"></a>    <span class="n">ibex_pmp</span> <span class="p">#(</span>
+<a name="l-687"></a>        <span class="p">.</span><span class="n">PMPGranularity</span>        <span class="p">(</span> <span class="n">PMPGranularity</span> <span class="p">),</span>
+<a name="l-688"></a>        <span class="p">.</span><span class="n">PMPNumChan</span>            <span class="p">(</span> <span class="n">PMP_NUM_CHAN</span>   <span class="p">),</span>
+<a name="l-689"></a>        <span class="p">.</span><span class="n">PMPNumRegions</span>         <span class="p">(</span> <span class="n">PMPNumRegions</span>  <span class="p">)</span>
+<a name="l-690"></a>    <span class="p">)</span> <span class="n">pmp_i</span> <span class="p">(</span>
+<a name="l-691"></a>        <span class="p">.</span><span class="n">clk_i</span>                 <span class="p">(</span> <span class="n">clk</span>            <span class="p">),</span>
+<a name="l-692"></a>        <span class="p">.</span><span class="n">rst_ni</span>                <span class="p">(</span> <span class="n">rst_ni</span>         <span class="p">),</span>
+<a name="l-693"></a>        <span class="c1">// Interface to CSRs</span>
+<a name="l-694"></a>        <span class="p">.</span><span class="n">csr_pmp_cfg_i</span>         <span class="p">(</span> <span class="n">csr_pmp_cfg</span>    <span class="p">),</span>
+<a name="l-695"></a>        <span class="p">.</span><span class="n">csr_pmp_addr_i</span>        <span class="p">(</span> <span class="n">csr_pmp_addr</span>   <span class="p">),</span>
+<a name="l-696"></a>        <span class="p">.</span><span class="n">priv_mode_i</span>           <span class="p">(</span> <span class="n">pmp_priv_lvl</span>   <span class="p">),</span>
+<a name="l-697"></a>        <span class="c1">// Access checking channels</span>
+<a name="l-698"></a>        <span class="p">.</span><span class="n">pmp_req_addr_i</span>        <span class="p">(</span> <span class="n">pmp_req_addr</span>   <span class="p">),</span>
+<a name="l-699"></a>        <span class="p">.</span><span class="n">pmp_req_type_i</span>        <span class="p">(</span> <span class="n">pmp_req_type</span>   <span class="p">),</span>
+<a name="l-700"></a>        <span class="p">.</span><span class="n">pmp_req_err_o</span>         <span class="p">(</span> <span class="n">pmp_req_err</span>    <span class="p">)</span>
+<a name="l-701"></a>    <span class="p">);</span>
+<a name="l-702"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_pmp</span>
+<a name="l-703"></a>    <span class="c1">// Unused signal tieoff</span>
+<a name="l-704"></a>    <span class="n">priv_lvl_e</span> <span class="n">unused_priv_lvl_if</span><span class="p">,</span> <span class="n">unused_priv_lvl_ls</span><span class="p">;</span>
+<a name="l-705"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">33</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">unused_csr_pmp_addr</span> <span class="p">[</span><span class="n">PMPNumRegions</span><span class="p">];</span>
+<a name="l-706"></a>    <span class="n">pmp_cfg_t</span>    <span class="n">unused_csr_pmp_cfg</span>  <span class="p">[</span><span class="n">PMPNumRegions</span><span class="p">];</span>
+<a name="l-707"></a>    <span class="k">assign</span> <span class="n">unused_priv_lvl_if</span> <span class="o">=</span> <span class="n">priv_mode_if</span><span class="p">;</span>
+<a name="l-708"></a>    <span class="k">assign</span> <span class="n">unused_priv_lvl_ls</span> <span class="o">=</span> <span class="n">priv_mode_lsu</span><span class="p">;</span>
+<a name="l-709"></a>    <span class="k">assign</span> <span class="n">unused_csr_pmp_addr</span> <span class="o">=</span> <span class="n">csr_pmp_addr</span><span class="p">;</span>
+<a name="l-710"></a>    <span class="k">assign</span> <span class="n">unused_csr_pmp_cfg</span> <span class="o">=</span> <span class="n">csr_pmp_cfg</span><span class="p">;</span>
+<a name="l-711"></a>
+<a name="l-712"></a>    <span class="c1">// Output tieoff</span>
+<a name="l-713"></a>    <span class="k">assign</span> <span class="n">pmp_req_err</span><span class="p">[</span><span class="n">PMP_I</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-714"></a>    <span class="k">assign</span> <span class="n">pmp_req_err</span><span class="p">[</span><span class="n">PMP_D</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-715"></a>  <span class="k">end</span>
+<a name="l-716"></a>
+<a name="l-717"></a><span class="no">`ifdef</span> <span class="n">RVFI</span>
+<a name="l-718"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-719"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-720"></a>      <span class="n">rvfi_halt</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-721"></a>      <span class="n">rvfi_trap</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-722"></a>      <span class="n">rvfi_intr</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-723"></a>      <span class="n">rvfi_order</span>             <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-724"></a>      <span class="n">rvfi_insn</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-725"></a>      <span class="n">rvfi_mode</span>              <span class="o">&lt;=</span> <span class="p">{</span><span class="n">PRIV_LVL_M</span><span class="p">};</span>
+<a name="l-726"></a>      <span class="n">rvfi_rs1_addr</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-727"></a>      <span class="n">rvfi_rs2_addr</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-728"></a>      <span class="n">rvfi_pc_rdata</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-729"></a>      <span class="n">rvfi_pc_wdata</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-730"></a>      <span class="n">rvfi_mem_rmask</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-731"></a>      <span class="n">rvfi_mem_wmask</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-732"></a>      <span class="n">rvfi_valid</span>             <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-733"></a>      <span class="n">rvfi_rs1_rdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-734"></a>      <span class="n">rvfi_rs2_rdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-735"></a>      <span class="n">rvfi_rd_wdata</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-736"></a>      <span class="n">rvfi_rd_addr</span>           <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-737"></a>      <span class="n">rvfi_mem_rdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-738"></a>      <span class="n">rvfi_mem_wdata</span>         <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-739"></a>      <span class="n">rvfi_mem_addr</span>          <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-740"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-741"></a>      <span class="n">rvfi_halt</span>              <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-742"></a>      <span class="n">rvfi_trap</span>              <span class="o">&lt;=</span> <span class="n">illegal_insn_id</span><span class="p">;</span>
+<a name="l-743"></a>      <span class="n">rvfi_intr</span>              <span class="o">&lt;=</span> <span class="n">rvfi_intr_d</span><span class="p">;</span>
+<a name="l-744"></a>      <span class="n">rvfi_order</span>             <span class="o">&lt;=</span> <span class="n">rvfi_order</span> <span class="o">+</span> <span class="mh">64</span><span class="p">&#39;(</span><span class="n">rvfi_valid</span><span class="p">);</span>
+<a name="l-745"></a>      <span class="n">rvfi_insn</span>              <span class="o">&lt;=</span> <span class="n">rvfi_insn_id</span><span class="p">;</span>
+<a name="l-746"></a>      <span class="n">rvfi_mode</span>              <span class="o">&lt;=</span> <span class="p">{</span><span class="n">priv_mode_id</span><span class="p">};</span>
+<a name="l-747"></a>      <span class="n">rvfi_rs1_addr</span>          <span class="o">&lt;=</span> <span class="n">rvfi_rs1_addr_id</span><span class="p">;</span>
+<a name="l-748"></a>      <span class="n">rvfi_rs2_addr</span>          <span class="o">&lt;=</span> <span class="n">rvfi_rs2_addr_id</span><span class="p">;</span>
+<a name="l-749"></a>      <span class="n">rvfi_pc_rdata</span>          <span class="o">&lt;=</span> <span class="n">pc_id</span><span class="p">;</span>
+<a name="l-750"></a>      <span class="n">rvfi_pc_wdata</span>          <span class="o">&lt;=</span> <span class="n">pc_if</span><span class="p">;</span>
+<a name="l-751"></a>      <span class="n">rvfi_mem_rmask</span>         <span class="o">&lt;=</span> <span class="n">rvfi_mem_mask_int</span><span class="p">;</span>
+<a name="l-752"></a>      <span class="n">rvfi_mem_wmask</span>         <span class="o">&lt;=</span> <span class="n">data_we_o</span> <span class="o">?</span> <span class="n">rvfi_mem_mask_int</span> <span class="o">:</span> <span class="mh">4</span><span class="mb">&#39;b0000</span><span class="p">;</span>
+<a name="l-753"></a>      <span class="n">rvfi_valid</span>             <span class="o">&lt;=</span> <span class="n">instr_ret</span><span class="p">;</span>
+<a name="l-754"></a>      <span class="n">rvfi_rs1_rdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_rs1_data_d</span><span class="p">;</span>
+<a name="l-755"></a>      <span class="n">rvfi_rs2_rdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_rs2_data_d</span><span class="p">;</span>
+<a name="l-756"></a>      <span class="n">rvfi_rd_wdata</span>          <span class="o">&lt;=</span> <span class="n">rvfi_rd_wdata_d</span><span class="p">;</span>
+<a name="l-757"></a>      <span class="n">rvfi_rd_addr</span>           <span class="o">&lt;=</span> <span class="n">rvfi_rd_addr_d</span><span class="p">;</span>
+<a name="l-758"></a>      <span class="n">rvfi_mem_rdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_mem_rdata_d</span><span class="p">;</span>
+<a name="l-759"></a>      <span class="n">rvfi_mem_wdata</span>         <span class="o">&lt;=</span> <span class="n">rvfi_mem_wdata_d</span><span class="p">;</span>
+<a name="l-760"></a>      <span class="n">rvfi_mem_addr</span>          <span class="o">&lt;=</span> <span class="n">rvfi_mem_addr_d</span><span class="p">;</span>
+<a name="l-761"></a>    <span class="k">end</span>
+<a name="l-762"></a>  <span class="k">end</span>
+<a name="l-763"></a>
+<a name="l-764"></a>  <span class="c1">// Keep the mem data stable for each instruction cycle</span>
+<a name="l-765"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-766"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_insn_new_d</span> <span class="o">&amp;&amp;</span> <span class="n">lsu_data_valid</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-767"></a>      <span class="n">rvfi_mem_addr_d</span>  <span class="o">=</span> <span class="n">alu_adder_result_ex</span><span class="p">;</span>
+<a name="l-768"></a>      <span class="n">rvfi_mem_rdata_d</span> <span class="o">=</span> <span class="n">regfile_wdata_lsu</span><span class="p">;</span>
+<a name="l-769"></a>      <span class="n">rvfi_mem_wdata_d</span> <span class="o">=</span> <span class="n">data_wdata_ex</span><span class="p">;</span>
+<a name="l-770"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-771"></a>      <span class="n">rvfi_mem_addr_d</span>  <span class="o">=</span> <span class="n">rvfi_mem_addr_q</span><span class="p">;</span>
+<a name="l-772"></a>      <span class="n">rvfi_mem_rdata_d</span> <span class="o">=</span> <span class="n">rvfi_mem_rdata_q</span><span class="p">;</span>
+<a name="l-773"></a>      <span class="n">rvfi_mem_wdata_d</span> <span class="o">=</span> <span class="n">rvfi_mem_wdata_q</span><span class="p">;</span>
+<a name="l-774"></a>    <span class="k">end</span>
+<a name="l-775"></a>  <span class="k">end</span>
+<a name="l-776"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-777"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-778"></a>      <span class="n">rvfi_mem_addr_q</span>  <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-779"></a>      <span class="n">rvfi_mem_rdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-780"></a>      <span class="n">rvfi_mem_wdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-781"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-782"></a>      <span class="n">rvfi_mem_addr_q</span>  <span class="o">&lt;=</span> <span class="n">rvfi_mem_addr_d</span><span class="p">;</span>
+<a name="l-783"></a>      <span class="n">rvfi_mem_rdata_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_mem_rdata_d</span><span class="p">;</span>
+<a name="l-784"></a>      <span class="n">rvfi_mem_wdata_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_mem_wdata_d</span><span class="p">;</span>
+<a name="l-785"></a>    <span class="k">end</span>
+<a name="l-786"></a>  <span class="k">end</span>
+<a name="l-787"></a>  <span class="c1">// Byte enable based on data type</span>
+<a name="l-788"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-789"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">data_type_ex</span><span class="p">)</span>
+<a name="l-790"></a>      <span class="mh">2</span><span class="mb">&#39;b00</span><span class="o">:</span>   <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b1111</span><span class="p">;</span>
+<a name="l-791"></a>      <span class="mh">2</span><span class="mb">&#39;b01</span><span class="o">:</span>   <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0011</span><span class="p">;</span>
+<a name="l-792"></a>      <span class="mh">2</span><span class="mb">&#39;b10</span><span class="o">:</span>   <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0001</span><span class="p">;</span>
+<a name="l-793"></a>      <span class="k">default</span><span class="o">:</span> <span class="n">rvfi_mem_mask_int</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0000</span><span class="p">;</span>
+<a name="l-794"></a>    <span class="k">endcase</span>
+<a name="l-795"></a>  <span class="k">end</span>
+<a name="l-796"></a>
+<a name="l-797"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-798"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">instr_is_compressed_id</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-799"></a>      <span class="n">rvfi_insn_id</span> <span class="o">=</span> <span class="p">{</span><span class="mh">16</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">instr_rdata_c_id</span><span class="p">};</span>
+<a name="l-800"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-801"></a>      <span class="n">rvfi_insn_id</span> <span class="o">=</span> <span class="n">instr_rdata_id</span><span class="p">;</span>
+<a name="l-802"></a>    <span class="k">end</span>
+<a name="l-803"></a>  <span class="k">end</span>
+<a name="l-804"></a>
+<a name="l-805"></a>  <span class="c1">// Source register data are kept stable for each instruction cycle</span>
+<a name="l-806"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-807"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">instr_new_id</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-808"></a>      <span class="n">rvfi_rs1_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs1_data_id</span><span class="p">;</span>
+<a name="l-809"></a>      <span class="n">rvfi_rs2_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs2_data_id</span><span class="p">;</span>
+<a name="l-810"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-811"></a>      <span class="n">rvfi_rs1_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs1_data_q</span><span class="p">;</span>
+<a name="l-812"></a>      <span class="n">rvfi_rs2_data_d</span> <span class="o">=</span> <span class="n">rvfi_rs2_data_q</span><span class="p">;</span>
+<a name="l-813"></a>    <span class="k">end</span>
+<a name="l-814"></a>  <span class="k">end</span>
+<a name="l-815"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-816"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-817"></a>      <span class="n">rvfi_rs1_data_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-818"></a>      <span class="n">rvfi_rs2_data_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-819"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-820"></a>      <span class="n">rvfi_rs1_data_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_rs1_data_d</span><span class="p">;</span>
+<a name="l-821"></a>      <span class="n">rvfi_rs2_data_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_rs2_data_d</span><span class="p">;</span>
+<a name="l-822"></a>    <span class="k">end</span>
+<a name="l-823"></a>  <span class="k">end</span>
+<a name="l-824"></a>
+<a name="l-825"></a>  <span class="c1">// RD write register is refreshed only once per cycle and</span>
+<a name="l-826"></a>  <span class="c1">// then it is kept stable for the cycle.</span>
+<a name="l-827"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-828"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_insn_new_d</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-829"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rvfi_rd_we_id</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-830"></a>        <span class="n">rvfi_rd_addr_d</span>    <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-831"></a>        <span class="n">rvfi_rd_wdata_d</span>   <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-832"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-833"></a>        <span class="n">rvfi_rd_addr_d</span> <span class="o">=</span> <span class="n">rvfi_rd_addr_id</span><span class="p">;</span>
+<a name="l-834"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_rd_addr_id</span> <span class="o">==</span> <span class="mh">5&#39;h0</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-835"></a>          <span class="n">rvfi_rd_wdata_d</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-836"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-837"></a>          <span class="n">rvfi_rd_wdata_d</span> <span class="o">=</span> <span class="n">rvfi_rd_wdata_id</span><span class="p">;</span>
+<a name="l-838"></a>        <span class="k">end</span>
+<a name="l-839"></a>      <span class="k">end</span>
+<a name="l-840"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-841"></a>      <span class="n">rvfi_rd_addr_d</span>    <span class="o">=</span> <span class="n">rvfi_rd_addr_q</span><span class="p">;</span>
+<a name="l-842"></a>      <span class="n">rvfi_rd_wdata_d</span>   <span class="o">=</span> <span class="n">rvfi_rd_wdata_q</span><span class="p">;</span>
+<a name="l-843"></a>    <span class="k">end</span>
+<a name="l-844"></a>  <span class="k">end</span>
+<a name="l-845"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-846"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-847"></a>      <span class="n">rvfi_rd_addr_q</span>    <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-848"></a>      <span class="n">rvfi_rd_wdata_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-849"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-850"></a>      <span class="n">rvfi_rd_addr_q</span>    <span class="o">&lt;=</span> <span class="n">rvfi_rd_addr_d</span><span class="p">;</span>
+<a name="l-851"></a>      <span class="n">rvfi_rd_wdata_q</span>   <span class="o">&lt;=</span> <span class="n">rvfi_rd_wdata_d</span><span class="p">;</span>
+<a name="l-852"></a>    <span class="k">end</span>
+<a name="l-853"></a>  <span class="k">end</span>
+<a name="l-854"></a>
+<a name="l-855"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-856"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">instr_new_id</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-857"></a>      <span class="n">rvfi_insn_new_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-858"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-859"></a>      <span class="n">rvfi_insn_new_d</span> <span class="o">=</span> <span class="n">rvfi_insn_new_q</span><span class="p">;</span>
+<a name="l-860"></a>    <span class="k">end</span>
+<a name="l-861"></a>  <span class="k">end</span>
+<a name="l-862"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-863"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-864"></a>      <span class="n">rvfi_insn_new_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-865"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-866"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">instr_ret</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-867"></a>        <span class="n">rvfi_insn_new_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-868"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-869"></a>        <span class="n">rvfi_insn_new_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_insn_new_d</span><span class="p">;</span>
+<a name="l-870"></a>      <span class="k">end</span>
+<a name="l-871"></a>    <span class="k">end</span>
+<a name="l-872"></a>  <span class="k">end</span>
 <a name="l-873"></a>
-<a name="l-874"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-875"></a>    <span class="n">rvfi_set_trap_pc_d</span> <span class="o">=</span> <span class="n">rvfi_set_trap_pc_q</span><span class="p">;</span>
+<a name="l-874"></a>  <span class="c1">// generate rvfi_intr_d</span>
+<a name="l-875"></a>  <span class="k">assign</span> <span class="n">rvfi_intr_d</span> <span class="o">=</span> <span class="n">rvfi_set_trap_pc_q</span> <span class="o">&amp;</span> <span class="n">rvfi_insn_new_d</span><span class="p">;</span>
 <a name="l-876"></a>
-<a name="l-877"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">pc_set</span> <span class="o">&amp;&amp;</span> <span class="n">pc_mux_id</span> <span class="o">==</span> <span class="n">PC_EXC</span> <span class="o">&amp;&amp;</span>
-<a name="l-878"></a>        <span class="p">(</span><span class="n">exc_pc_mux_id</span> <span class="o">==</span> <span class="n">EXC_PC_EXC</span> <span class="o">||</span> <span class="n">exc_pc_mux_id</span> <span class="o">==</span> <span class="n">EXC_PC_IRQ</span><span class="p">))</span> <span class="k">begin</span>
-<a name="l-879"></a>      <span class="c1">// PC is set to enter a trap handler</span>
-<a name="l-880"></a>      <span class="n">rvfi_set_trap_pc_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-881"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_set_trap_pc_q</span> <span class="o">&amp;&amp;</span> <span class="n">instr_ret</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-882"></a>      <span class="c1">// first instruction has been executed after PC is set to trap handler</span>
-<a name="l-883"></a>      <span class="n">rvfi_set_trap_pc_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-884"></a>    <span class="k">end</span>
-<a name="l-885"></a>  <span class="k">end</span>
-<a name="l-886"></a>
-<a name="l-887"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-888"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-889"></a>      <span class="n">rvfi_set_trap_pc_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-890"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-891"></a>      <span class="n">rvfi_set_trap_pc_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_set_trap_pc_d</span><span class="p">;</span>
-<a name="l-892"></a>    <span class="k">end</span>
-<a name="l-893"></a>  <span class="k">end</span>
-<a name="l-894"></a>
-<a name="l-895"></a><span class="no">`endif</span>
-<a name="l-896"></a>
-<a name="l-897"></a><span class="k">endmodule</span>
+<a name="l-877"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-878"></a>    <span class="n">rvfi_set_trap_pc_d</span> <span class="o">=</span> <span class="n">rvfi_set_trap_pc_q</span><span class="p">;</span>
+<a name="l-879"></a>
+<a name="l-880"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">pc_set</span> <span class="o">&amp;&amp;</span> <span class="n">pc_mux_id</span> <span class="o">==</span> <span class="n">PC_EXC</span> <span class="o">&amp;&amp;</span>
+<a name="l-881"></a>        <span class="p">(</span><span class="n">exc_pc_mux_id</span> <span class="o">==</span> <span class="n">EXC_PC_EXC</span> <span class="o">||</span> <span class="n">exc_pc_mux_id</span> <span class="o">==</span> <span class="n">EXC_PC_IRQ</span><span class="p">))</span> <span class="k">begin</span>
+<a name="l-882"></a>      <span class="c1">// PC is set to enter a trap handler</span>
+<a name="l-883"></a>      <span class="n">rvfi_set_trap_pc_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-884"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">rvfi_set_trap_pc_q</span> <span class="o">&amp;&amp;</span> <span class="n">instr_ret</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-885"></a>      <span class="c1">// first instruction has been executed after PC is set to trap handler</span>
+<a name="l-886"></a>      <span class="n">rvfi_set_trap_pc_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-887"></a>    <span class="k">end</span>
+<a name="l-888"></a>  <span class="k">end</span>
+<a name="l-889"></a>
+<a name="l-890"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-891"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-892"></a>      <span class="n">rvfi_set_trap_pc_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-893"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-894"></a>      <span class="n">rvfi_set_trap_pc_q</span> <span class="o">&lt;=</span> <span class="n">rvfi_set_trap_pc_d</span><span class="p">;</span>
+<a name="l-895"></a>    <span class="k">end</span>
+<a name="l-896"></a>  <span class="k">end</span>
+<a name="l-897"></a>
+<a name="l-898"></a><span class="no">`endif</span>
+<a name="l-899"></a>
+<a name="l-900"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

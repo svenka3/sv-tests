@@ -299,7 +299,8 @@
 <a href="#l-291">291</a>
 <a href="#l-292">292</a>
 <a href="#l-293">293</a>
-<a href="#l-294">294</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-294">294</a>
+<a href="#l-295">295</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna, see also CREDITS.md.</span>
 <a name="l-3"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-4"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
@@ -474,7 +475,7 @@
 <a name="l-173"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">{</span>       <span class="o">~</span><span class="p">(</span><span class="n">op_a_ext</span><span class="p">[</span><span class="mh">32</span><span class="p">]</span>   <span class="o">&amp;</span>     <span class="n">op_b_i</span><span class="p">[</span><span class="mh">0</span><span class="p">]),</span>
 <a name="l-174"></a>                                         <span class="n">op_a_ext</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">{</span><span class="mh">32</span><span class="p">{</span><span class="n">op_b_i</span><span class="p">[</span><span class="mh">0</span><span class="p">]}}</span>  <span class="p">};</span>
 <a name="l-175"></a>              <span class="n">op_b_shift_d</span>   <span class="o">=</span> <span class="n">op_b_ext</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-176"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_COMP</span><span class="p">;</span>
+<a name="l-176"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="n">op_b_ext</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">)</span> <span class="o">?</span> <span class="n">MD_LAST</span> <span class="o">:</span> <span class="n">MD_COMP</span><span class="p">;</span>
 <a name="l-177"></a>            <span class="k">end</span>
 <a name="l-178"></a>            <span class="nl">MD_OP_MULH:</span> <span class="k">begin</span>
 <a name="l-179"></a>              <span class="n">op_a_shift_d</span>   <span class="o">=</span> <span class="n">op_a_ext</span><span class="p">;</span>
@@ -522,77 +523,78 @@
 <a name="l-221"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">res_adder_l</span><span class="p">;</span>
 <a name="l-222"></a>              <span class="n">op_a_shift_d</span>   <span class="o">=</span> <span class="n">op_a_shift_q</span> <span class="o">&lt;&lt;</span> <span class="mh">1</span><span class="p">;</span>
 <a name="l-223"></a>              <span class="n">op_b_shift_d</span>   <span class="o">=</span> <span class="n">op_b_shift_q</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-224"></a>            <span class="k">end</span>
-<a name="l-225"></a>            <span class="nl">MD_OP_MULH:</span> <span class="k">begin</span>
-<a name="l-226"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">res_adder_h</span><span class="p">;</span>
-<a name="l-227"></a>              <span class="n">op_a_shift_d</span>   <span class="o">=</span> <span class="n">op_a_shift_q</span><span class="p">;</span>
-<a name="l-228"></a>              <span class="n">op_b_shift_d</span>   <span class="o">=</span> <span class="n">op_b_shift_q</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-229"></a>            <span class="k">end</span>
-<a name="l-230"></a>            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-231"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">{</span><span class="n">next_reminder</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">op_numerator_q</span><span class="p">[</span><span class="n">multdiv_state_m1</span><span class="p">]};</span>
-<a name="l-232"></a>              <span class="n">op_a_shift_d</span>   <span class="o">=</span> <span class="n">next_quotient</span><span class="p">;</span>
-<a name="l-233"></a>            <span class="k">end</span>
-<a name="l-234"></a>          <span class="k">endcase</span>
-<a name="l-235"></a>
-<a name="l-236"></a>          <span class="n">md_state_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">multdiv_state_q</span> <span class="o">==</span> <span class="mh">5</span><span class="mi">&#39;d1</span><span class="p">)</span> <span class="o">?</span> <span class="n">MD_LAST</span> <span class="o">:</span> <span class="n">MD_COMP</span><span class="p">;</span>
-<a name="l-237"></a>        <span class="k">end</span>
-<a name="l-238"></a>
-<a name="l-239"></a>        <span class="nl">MD_LAST:</span> <span class="k">begin</span>
-<a name="l-240"></a>          <span class="k">unique</span> <span class="k">case</span><span class="p">(</span><span class="n">operator_i</span><span class="p">)</span>
-<a name="l-241"></a>            <span class="nl">MD_OP_MULL:</span> <span class="k">begin</span>
-<a name="l-242"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">res_adder_l</span><span class="p">;</span>
-<a name="l-243"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
-<a name="l-244"></a>            <span class="k">end</span>
-<a name="l-245"></a>            <span class="nl">MD_OP_MULH:</span> <span class="k">begin</span>
-<a name="l-246"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">res_adder_l</span><span class="p">;</span>
-<a name="l-247"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
-<a name="l-248"></a>            <span class="k">end</span>
-<a name="l-249"></a>            <span class="nl">MD_OP_DIV:</span> <span class="k">begin</span>
-<a name="l-250"></a>              <span class="c1">// this time we save the quotient in accum_window_q since we do not need anymore the</span>
-<a name="l-251"></a>              <span class="c1">// reminder</span>
-<a name="l-252"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">next_quotient</span><span class="p">;</span>
-<a name="l-253"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_CHANGE_SIGN</span><span class="p">;</span>
-<a name="l-254"></a>            <span class="k">end</span>
-<a name="l-255"></a>            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-256"></a>              <span class="c1">// this time we do not save the quotient anymore since we need only the reminder</span>
-<a name="l-257"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">next_reminder</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-258"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_CHANGE_SIGN</span><span class="p">;</span>
-<a name="l-259"></a>            <span class="k">end</span>
-<a name="l-260"></a>          <span class="k">endcase</span>
-<a name="l-261"></a>        <span class="k">end</span>
-<a name="l-262"></a>
-<a name="l-263"></a>        <span class="nl">MD_CHANGE_SIGN:</span> <span class="k">begin</span>
-<a name="l-264"></a>          <span class="n">md_state_d</span> <span class="o">=</span> <span class="n">MD_FINISH</span><span class="p">;</span>
-<a name="l-265"></a>          <span class="k">unique</span> <span class="k">case</span><span class="p">(</span><span class="n">operator_i</span><span class="p">)</span>
-<a name="l-266"></a>            <span class="nl">MD_OP_DIV:</span>
-<a name="l-267"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">div_change_sign</span><span class="p">)</span> <span class="o">?</span> <span class="n">alu_adder_i</span> <span class="o">:</span> <span class="n">accum_window_q</span><span class="p">;</span>
-<a name="l-268"></a>            <span class="k">default</span><span class="o">:</span>
-<a name="l-269"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">rem_change_sign</span><span class="p">)</span> <span class="o">?</span> <span class="n">alu_adder_i</span> <span class="o">:</span> <span class="n">accum_window_q</span><span class="p">;</span>
-<a name="l-270"></a>          <span class="k">endcase</span>
-<a name="l-271"></a>        <span class="k">end</span>
-<a name="l-272"></a>
-<a name="l-273"></a>        <span class="nl">MD_FINISH:</span> <span class="k">begin</span>
-<a name="l-274"></a>          <span class="n">md_state_d</span> <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
-<a name="l-275"></a>        <span class="k">end</span>
-<a name="l-276"></a>
-<a name="l-277"></a>        <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-278"></a>          <span class="n">md_state_d</span> <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
-<a name="l-279"></a>        <span class="k">end</span>
-<a name="l-280"></a>        <span class="k">endcase</span> <span class="c1">// md_state_q</span>
-<a name="l-281"></a>      <span class="k">end</span>
-<a name="l-282"></a>  <span class="k">end</span>
-<a name="l-283"></a>
-<a name="l-284"></a>  <span class="k">assign</span> <span class="n">valid_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">md_state_q</span> <span class="o">==</span> <span class="n">MD_FINISH</span><span class="p">)</span> <span class="o">|</span>
-<a name="l-285"></a>                   <span class="p">(</span><span class="n">md_state_q</span> <span class="o">==</span> <span class="n">MD_LAST</span> <span class="o">&amp;</span>
-<a name="l-286"></a>                   <span class="p">(</span><span class="n">operator_i</span> <span class="o">==</span> <span class="n">MD_OP_MULL</span> <span class="o">|</span>
-<a name="l-287"></a>                    <span class="n">operator_i</span> <span class="o">==</span> <span class="n">MD_OP_MULH</span><span class="p">));</span>
-<a name="l-288"></a>
-<a name="l-289"></a>  <span class="c1">// State must be valid.</span>
-<a name="l-290"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexMultDivStateValid</span><span class="p">,</span> <span class="n">md_state_q</span> <span class="k">inside</span> <span class="p">{</span>
-<a name="l-291"></a>      <span class="n">MD_IDLE</span><span class="p">,</span> <span class="n">MD_ABS_A</span><span class="p">,</span> <span class="n">MD_ABS_B</span><span class="p">,</span> <span class="n">MD_COMP</span><span class="p">,</span> <span class="n">MD_LAST</span><span class="p">,</span> <span class="n">MD_CHANGE_SIGN</span><span class="p">,</span> <span class="n">MD_FINISH</span>
-<a name="l-292"></a>      <span class="p">},</span> <span class="n">clk_i</span><span class="p">,</span> <span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span>
-<a name="l-293"></a>
-<a name="l-294"></a><span class="k">endmodule</span> <span class="c1">// ibex_mult</span>
+<a name="l-224"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="n">op_b_shift_q</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">)</span> <span class="o">?</span> <span class="n">MD_LAST</span> <span class="o">:</span> <span class="n">MD_COMP</span><span class="p">;</span>
+<a name="l-225"></a>            <span class="k">end</span>
+<a name="l-226"></a>            <span class="nl">MD_OP_MULH:</span> <span class="k">begin</span>
+<a name="l-227"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">res_adder_h</span><span class="p">;</span>
+<a name="l-228"></a>              <span class="n">op_a_shift_d</span>   <span class="o">=</span> <span class="n">op_a_shift_q</span><span class="p">;</span>
+<a name="l-229"></a>              <span class="n">op_b_shift_d</span>   <span class="o">=</span> <span class="n">op_b_shift_q</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-230"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="p">(</span><span class="n">multdiv_state_q</span> <span class="o">==</span> <span class="mh">5</span><span class="mi">&#39;d1</span><span class="p">)</span> <span class="o">?</span> <span class="n">MD_LAST</span> <span class="o">:</span> <span class="n">MD_COMP</span><span class="p">;</span>
+<a name="l-231"></a>            <span class="k">end</span>
+<a name="l-232"></a>            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-233"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">{</span><span class="n">next_reminder</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">op_numerator_q</span><span class="p">[</span><span class="n">multdiv_state_m1</span><span class="p">]};</span>
+<a name="l-234"></a>              <span class="n">op_a_shift_d</span>   <span class="o">=</span> <span class="n">next_quotient</span><span class="p">;</span>
+<a name="l-235"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="p">(</span><span class="n">multdiv_state_q</span> <span class="o">==</span> <span class="mh">5</span><span class="mi">&#39;d1</span><span class="p">)</span> <span class="o">?</span> <span class="n">MD_LAST</span> <span class="o">:</span> <span class="n">MD_COMP</span><span class="p">;</span>
+<a name="l-236"></a>            <span class="k">end</span>
+<a name="l-237"></a>          <span class="k">endcase</span>
+<a name="l-238"></a>        <span class="k">end</span>
+<a name="l-239"></a>
+<a name="l-240"></a>        <span class="nl">MD_LAST:</span> <span class="k">begin</span>
+<a name="l-241"></a>          <span class="k">unique</span> <span class="k">case</span><span class="p">(</span><span class="n">operator_i</span><span class="p">)</span>
+<a name="l-242"></a>            <span class="nl">MD_OP_MULL:</span> <span class="k">begin</span>
+<a name="l-243"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">res_adder_l</span><span class="p">;</span>
+<a name="l-244"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
+<a name="l-245"></a>            <span class="k">end</span>
+<a name="l-246"></a>            <span class="nl">MD_OP_MULH:</span> <span class="k">begin</span>
+<a name="l-247"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">res_adder_l</span><span class="p">;</span>
+<a name="l-248"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
+<a name="l-249"></a>            <span class="k">end</span>
+<a name="l-250"></a>            <span class="nl">MD_OP_DIV:</span> <span class="k">begin</span>
+<a name="l-251"></a>              <span class="c1">// this time we save the quotient in accum_window_q since we do not need anymore the</span>
+<a name="l-252"></a>              <span class="c1">// reminder</span>
+<a name="l-253"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="n">next_quotient</span><span class="p">;</span>
+<a name="l-254"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_CHANGE_SIGN</span><span class="p">;</span>
+<a name="l-255"></a>            <span class="k">end</span>
+<a name="l-256"></a>            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-257"></a>              <span class="c1">// this time we do not save the quotient anymore since we need only the reminder</span>
+<a name="l-258"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">next_reminder</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-259"></a>              <span class="n">md_state_d</span>     <span class="o">=</span> <span class="n">MD_CHANGE_SIGN</span><span class="p">;</span>
+<a name="l-260"></a>            <span class="k">end</span>
+<a name="l-261"></a>          <span class="k">endcase</span>
+<a name="l-262"></a>        <span class="k">end</span>
+<a name="l-263"></a>
+<a name="l-264"></a>        <span class="nl">MD_CHANGE_SIGN:</span> <span class="k">begin</span>
+<a name="l-265"></a>          <span class="n">md_state_d</span> <span class="o">=</span> <span class="n">MD_FINISH</span><span class="p">;</span>
+<a name="l-266"></a>          <span class="k">unique</span> <span class="k">case</span><span class="p">(</span><span class="n">operator_i</span><span class="p">)</span>
+<a name="l-267"></a>            <span class="nl">MD_OP_DIV:</span>
+<a name="l-268"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">div_change_sign</span><span class="p">)</span> <span class="o">?</span> <span class="n">alu_adder_i</span> <span class="o">:</span> <span class="n">accum_window_q</span><span class="p">;</span>
+<a name="l-269"></a>            <span class="k">default</span><span class="o">:</span>
+<a name="l-270"></a>              <span class="n">accum_window_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">rem_change_sign</span><span class="p">)</span> <span class="o">?</span> <span class="n">alu_adder_i</span> <span class="o">:</span> <span class="n">accum_window_q</span><span class="p">;</span>
+<a name="l-271"></a>          <span class="k">endcase</span>
+<a name="l-272"></a>        <span class="k">end</span>
+<a name="l-273"></a>
+<a name="l-274"></a>        <span class="nl">MD_FINISH:</span> <span class="k">begin</span>
+<a name="l-275"></a>          <span class="n">md_state_d</span> <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
+<a name="l-276"></a>        <span class="k">end</span>
+<a name="l-277"></a>
+<a name="l-278"></a>        <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-279"></a>          <span class="n">md_state_d</span> <span class="o">=</span> <span class="n">MD_IDLE</span><span class="p">;</span>
+<a name="l-280"></a>        <span class="k">end</span>
+<a name="l-281"></a>        <span class="k">endcase</span> <span class="c1">// md_state_q</span>
+<a name="l-282"></a>      <span class="k">end</span>
+<a name="l-283"></a>  <span class="k">end</span>
+<a name="l-284"></a>
+<a name="l-285"></a>  <span class="k">assign</span> <span class="n">valid_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">md_state_q</span> <span class="o">==</span> <span class="n">MD_FINISH</span><span class="p">)</span> <span class="o">|</span>
+<a name="l-286"></a>                   <span class="p">(</span><span class="n">md_state_q</span> <span class="o">==</span> <span class="n">MD_LAST</span> <span class="o">&amp;</span>
+<a name="l-287"></a>                   <span class="p">(</span><span class="n">operator_i</span> <span class="o">==</span> <span class="n">MD_OP_MULL</span> <span class="o">|</span>
+<a name="l-288"></a>                    <span class="n">operator_i</span> <span class="o">==</span> <span class="n">MD_OP_MULH</span><span class="p">));</span>
+<a name="l-289"></a>
+<a name="l-290"></a>  <span class="c1">// State must be valid.</span>
+<a name="l-291"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexMultDivStateValid</span><span class="p">,</span> <span class="n">md_state_q</span> <span class="k">inside</span> <span class="p">{</span>
+<a name="l-292"></a>      <span class="n">MD_IDLE</span><span class="p">,</span> <span class="n">MD_ABS_A</span><span class="p">,</span> <span class="n">MD_ABS_B</span><span class="p">,</span> <span class="n">MD_COMP</span><span class="p">,</span> <span class="n">MD_LAST</span><span class="p">,</span> <span class="n">MD_CHANGE_SIGN</span><span class="p">,</span> <span class="n">MD_FINISH</span>
+<a name="l-293"></a>      <span class="p">},</span> <span class="n">clk_i</span><span class="p">,</span> <span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span>
+<a name="l-294"></a>
+<a name="l-295"></a><span class="k">endmodule</span> <span class="c1">// ibex_mult</span>
 </pre></div>
 </td></tr></table>
   </body>
