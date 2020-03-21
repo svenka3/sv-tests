@@ -17,8 +17,8 @@ top_module: ibex_core
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/ibex/shared/rtl/prim_clock_gating.sv.html" target="file-frame">third_party/cores/ibex/shared/rtl/prim_clock_gating.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pkg.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pkg.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_alu.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_alu.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_compressed_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_compressed_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_controller.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_controller.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_cs_registers.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_cs_registers.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_ex_block.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_ex_block.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_id_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_id_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_if_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_if_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_load_store_unit.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_load_store_unit.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_slow.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_slow.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_fast.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_fast.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_fetch_fifo.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_fetch_fifo.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pmp.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pmp.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_core.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_core.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_register_file_ff.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_register_file_ff.sv</a>
-time_elapsed: 23.188s
-ram usage: 151836 KB
+time_elapsed: 25.348s
+ram usage: 151980 KB
 </pre>
 <pre class="log">
 
@@ -775,6 +775,7 @@ module ibex_controller (
 	instr_compressed_i,
 	instr_is_compressed_i,
 	instr_fetch_err_i,
+	instr_fetch_err_plus2_i,
 	pc_id_i,
 	instr_valid_clear_o,
 	id_in_ready_o,
@@ -845,6 +846,7 @@ module ibex_controller (
 	input wire [15:0] instr_compressed_i;
 	input wire instr_is_compressed_i;
 	input wire instr_fetch_err_i;
+	input wire instr_fetch_err_plus2_i;
 	input wire [31:0] pc_id_i;
 	output wire instr_valid_clear_o;
 	output wire id_in_ready_o;
@@ -1393,7 +1395,7 @@ module ibex_controller (
 					csr_save_cause_o = 1&#39;b1;
 					if (instr_fetch_err) begin
 						exc_cause_o = EXC_CAUSE_INSTR_ACCESS_FAULT;
-						csr_mtval_o = pc_id_i;
+						csr_mtval_o = (instr_fetch_err_plus2_i ? pc_id_i + 32&#39;d2 : pc_id_i);
 					end
 					else if (illegal_insn_q) begin
 						exc_cause_o = EXC_CAUSE_ILLEGAL_INSN;
@@ -3654,6 +3656,7 @@ module ibex_id_stage (
 	exc_cause_o,
 	illegal_c_insn_i,
 	instr_fetch_err_i,
+	instr_fetch_err_plus2_i,
 	pc_id_i,
 	ex_valid_i,
 	lsu_valid_i,
@@ -3761,6 +3764,7 @@ module ibex_id_stage (
 	output wire [5:0] exc_cause_o;
 	input wire illegal_c_insn_i;
 	input wire instr_fetch_err_i;
+	input wire instr_fetch_err_plus2_i;
 	input wire [31:0] pc_id_i;
 	input wire ex_valid_i;
 	input wire lsu_valid_i;
@@ -4264,6 +4268,7 @@ module ibex_id_stage (
 		.instr_compressed_i(instr_rdata_c_i),
 		.instr_is_compressed_i(instr_is_compressed_i),
 		.instr_fetch_err_i(instr_fetch_err_i),
+		.instr_fetch_err_plus2_i(instr_fetch_err_plus2_i),
 		.pc_id_i(pc_id_i),
 		.instr_valid_clear_o(instr_valid_clear_o),
 		.id_in_ready_o(id_in_ready_o),
@@ -4510,6 +4515,7 @@ module ibex_if_stage (
 	instr_rdata_c_id_o,
 	instr_is_compressed_id_o,
 	instr_fetch_err_o,
+	instr_fetch_err_plus2_o,
 	illegal_c_insn_id_o,
 	pc_if_o,
 	pc_id_o,
@@ -4546,6 +4552,7 @@ module ibex_if_stage (
 	output reg [15:0] instr_rdata_c_id_o;
 	output reg instr_is_compressed_id_o;
 	output reg instr_fetch_err_o;
+	output reg instr_fetch_err_plus2_o;
 	output reg illegal_c_insn_id_o;
 	output wire [31:0] pc_if_o;
 	output reg [31:0] pc_id_o;
@@ -4819,6 +4826,7 @@ module ibex_if_stage (
 	wire [31:0] fetch_rdata;
 	wire [31:0] fetch_addr;
 	wire fetch_err;
+	wire fetch_err_plus2;
 	reg [31:0] exc_pc;
 	wire [5:0] irq_id;
 	wire unused_irq_bit;
@@ -4860,6 +4868,7 @@ module ibex_if_stage (
 		.rdata_o(fetch_rdata),
 		.addr_o(fetch_addr),
 		.err_o(fetch_err),
+		.err_plus2_o(fetch_err_plus2),
 		.instr_req_o(instr_req_o),
 		.instr_addr_o(instr_addr_o),
 		.instr_gnt_i(instr_gnt_i),
@@ -4904,6 +4913,7 @@ module ibex_if_stage (
 			instr_rdata_id_o &lt;= instr_decompressed;
 			instr_rdata_alu_id_o &lt;= instr_decompressed;
 			instr_fetch_err_o &lt;= fetch_err;
+			instr_fetch_err_plus2_o &lt;= fetch_err_plus2;
 			instr_rdata_c_id_o &lt;= fetch_rdata[15:0];
 			instr_is_compressed_id_o &lt;= instr_is_compressed_int;
 			illegal_c_insn_id_o &lt;= illegal_c_insn;
@@ -6364,6 +6374,7 @@ module ibex_prefetch_buffer (
 	rdata_o,
 	addr_o,
 	err_o,
+	err_plus2_o,
 	instr_req_o,
 	instr_gnt_i,
 	instr_addr_o,
@@ -6383,6 +6394,7 @@ module ibex_prefetch_buffer (
 	output wire [31:0] rdata_o;
 	output wire [31:0] addr_o;
 	output wire err_o;
+	output wire err_plus2_o;
 	output wire instr_req_o;
 	input wire instr_gnt_i;
 	output wire [31:0] instr_addr_o;
@@ -6437,7 +6449,8 @@ module ibex_prefetch_buffer (
 		.out_ready_i(ready_i),
 		.out_rdata_o(rdata_o),
 		.out_addr_o(addr_o),
-		.out_err_o(err_o)
+		.out_err_o(err_o),
+		.out_err_plus2_o(err_plus2_o)
 	);
 	assign valid_new_req = (req_i &amp; (fifo_ready | branch_i)) &amp; ~rdata_outstanding_q[NUM_REQS - 1];
 	assign valid_req = valid_req_q | valid_new_req;
@@ -6507,7 +6520,8 @@ module ibex_fetch_fifo (
 	out_ready_i,
 	out_addr_o,
 	out_rdata_o,
-	out_err_o
+	out_err_o,
+	out_err_plus2_o
 );
 	parameter [31:0] NUM_REQS = 2;
 	input wire clk_i;
@@ -6523,6 +6537,7 @@ module ibex_fetch_fifo (
 	output wire [31:0] out_addr_o;
 	output reg [31:0] out_rdata_o;
 	output reg out_err_o;
+	output reg out_err_plus2_o;
 	localparam [31:0] DEPTH = NUM_REQS + 1;
 	wire [((DEPTH - 1) &gt;= 0 ? (DEPTH * 32) + -1 : ((2 - DEPTH) * 32) + (((DEPTH - 1) * 32) - 1)):((DEPTH - 1) &gt;= 0 ? 0 : (DEPTH - 1) * 32)] rdata_d;
 	reg [((DEPTH - 1) &gt;= 0 ? (DEPTH * 32) + -1 : ((2 - DEPTH) * 32) + (((DEPTH - 1) * 32) - 1)):((DEPTH - 1) &gt;= 0 ? 0 : (DEPTH - 1) * 32)] rdata_q;
@@ -6539,6 +6554,7 @@ module ibex_fetch_fifo (
 	wire [31:0] rdata_unaligned;
 	wire err;
 	wire err_unaligned;
+	wire err_plus2;
 	wire valid;
 	wire valid_unaligned;
 	wire aligned_is_compressed;
@@ -6553,6 +6569,7 @@ module ibex_fetch_fifo (
 	assign valid = valid_q[0] | in_valid_i;
 	assign rdata_unaligned = (valid_q[1] ? {rdata_q[(((DEPTH - 1) &gt;= 0 ? 1 : -1 + (DEPTH - 1)) * 32) + 15-:16], rdata[31:16]} : {in_rdata_i[15:0], rdata[31:16]});
 	assign err_unaligned = (valid_q[1] ? (err_q[1] &amp; ~unaligned_is_compressed) | err_q[0] : (valid_q[0] &amp; err_q[0]) | (in_err_i &amp; (~valid_q[0] | ~unaligned_is_compressed)));
+	assign err_plus2 = (valid_q[1] ? err_q[1] &amp; ~err_q[0] : (in_err_i &amp; valid_q[0]) &amp; ~err_q[0]);
 	assign valid_unaligned = (valid_q[1] ? 1&#39;b1 : valid_q[0] &amp; in_valid_i);
 	assign unaligned_is_compressed = rdata[17:16] != 2&#39;b11;
 	assign aligned_is_compressed = rdata[1:0] != 2&#39;b11;
@@ -6560,6 +6577,7 @@ module ibex_fetch_fifo (
 		if (out_addr_o[1]) begin
 			out_rdata_o = rdata_unaligned;
 			out_err_o = err_unaligned;
+			out_err_plus2_o = err_plus2;
 			if (unaligned_is_compressed)
 				out_valid_o = valid;
 			else
@@ -6568,6 +6586,7 @@ module ibex_fetch_fifo (
 		else begin
 			out_rdata_o = rdata;
 			out_err_o = err;
+			out_err_plus2_o = 1&#39;b0;
 			out_valid_o = valid;
 		end
 	assign instr_addr_en = clear_i | (out_ready_i &amp; out_valid_o);
@@ -7257,6 +7276,7 @@ module ibex_core (
 	wire [15:0] instr_rdata_c_id;
 	wire instr_is_compressed_id;
 	wire instr_fetch_err;
+	wire instr_fetch_err_plus2;
 	wire illegal_c_insn_id;
 	wire [31:0] pc_if;
 	wire [31:0] pc_id;
@@ -7413,6 +7433,7 @@ module ibex_core (
 		.instr_rdata_c_id_o(instr_rdata_c_id),
 		.instr_is_compressed_id_o(instr_is_compressed_id),
 		.instr_fetch_err_o(instr_fetch_err),
+		.instr_fetch_err_plus2_o(instr_fetch_err_plus2),
 		.illegal_c_insn_id_o(illegal_c_insn_id),
 		.pc_if_o(pc_if),
 		.pc_id_o(pc_id),
@@ -7457,6 +7478,7 @@ module ibex_core (
 		.exc_pc_mux_o(exc_pc_mux_id),
 		.exc_cause_o(exc_cause),
 		.instr_fetch_err_i(instr_fetch_err),
+		.instr_fetch_err_plus2_i(instr_fetch_err_plus2),
 		.illegal_c_insn_i(illegal_c_insn_id),
 		.pc_id_i(pc_id),
 		.ex_valid_i(ex_valid),
