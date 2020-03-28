@@ -1,0 +1,95 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+rc: 0 (means success: 1)
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_id_pool.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_id_pool.v</a>
+time_elapsed: 0.332s
+ram usage: 14084 KB
+</pre>
+<pre class="log">
+
+zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_id_pool.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_id_pool.v</a>
+module bsg_id_pool (
+	clk_i,
+	reset_i,
+	alloc_id_o,
+	alloc_v_o,
+	alloc_yumi_i,
+	dealloc_v_i,
+	dealloc_id_i
+);
+	parameter els_p = &#34;inv&#34;;
+	parameter id_width_lp = (els_p == 1 ? 1 : $clog2(els_p));
+	input clk_i;
+	input reset_i;
+	output wire [id_width_lp - 1:0] alloc_id_o;
+	output wire alloc_v_o;
+	input alloc_yumi_i;
+	input dealloc_v_i;
+	input [id_width_lp - 1:0] dealloc_id_i;
+	reg [els_p - 1:0] allocated_r;
+	wire [els_p - 1:0] dealloc_decode;
+	bsg_decode_with_v #(.num_out_p(els_p)) d1(
+		.i(dealloc_id_i),
+		.v_i(dealloc_v_i),
+		.o(dealloc_decode)
+	);
+	wire [id_width_lp - 1:0] alloc_id_lo;
+	wire alloc_v_lo;
+	wire [els_p - 1:0] one_hot_out;
+	bsg_priority_encode_one_hot_out #(
+		.width_p(els_p),
+		.lo_to_hi_p(1)
+	) pe0(
+		.i(~allocated_r | dealloc_decode),
+		.o(one_hot_out)
+	);
+	bsg_encode_one_hot #(
+		.width_p(els_p),
+		.lo_to_hi_p(1)
+	) enc0(
+		.i(one_hot_out),
+		.addr_o(alloc_id_lo),
+		.v_o(alloc_v_lo)
+	);
+	assign alloc_id_o = alloc_id_lo;
+	assign alloc_v_o = alloc_v_lo;
+	wire [els_p - 1:0] alloc_decode = one_hot_out &amp; {els_p {alloc_yumi_i}};
+	always @(posedge clk_i)
+		if (reset_i)
+			allocated_r &lt;= 1&#39;sb0;
+		else begin : sv2v_autoblock_1
+			integer i;
+			for (i = 0; i &lt; els_p; i = i + 1)
+				if (alloc_decode[i])
+					allocated_r[i] &lt;= 1&#39;b1;
+				else if (dealloc_decode[i])
+					allocated_r[i] &lt;= 1&#39;b0;
+		end
+	always @(negedge clk_i)
+		if (~reset_i) begin
+			if (dealloc_v_i)
+				;
+			if (alloc_yumi_i)
+				;
+			if ((alloc_yumi_i &amp; dealloc_v_i) &amp; (alloc_id_o == dealloc_id_i))
+				;
+		end
+endmodule
+
+</pre>
+</body>

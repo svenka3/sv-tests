@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v</a>
-time_elapsed: 0.428s
-ram usage: 14280 KB
+time_elapsed: 0.476s
+ram usage: 16460 KB
 </pre>
 <pre class="log">
 
@@ -48,6 +48,7 @@ module bsg_trace_replay (
 	parameter payload_width_p = 80;
 	parameter rom_addr_width_p = 6;
 	parameter counter_width_p = (payload_width_p &lt; 16 ? payload_width_p : 16);
+	parameter debug_p = 1;
 	parameter opcode_width_lp = 4;
 	input clk_i;
 	input reset_i;
@@ -135,10 +136,11 @@ module bsg_trace_replay (
 			endcase
 	end
 	always @(negedge clk_i)
-		if ((instr_completed &amp; ~reset_i) &amp; ~done_r) begin
+		if ((instr_completed &amp; ~reset_i) &amp; ~done_r)
 			case (op)
 				eSend:
-					$display(&#34;### bsg_trace_replay SEND %d&#39;b%b (%m)&#34;, payload_width_p, data_o);
+					if (debug_p &gt;= 2)
+						$display(&#34;### bsg_trace_replay SEND %d&#39;b%b (%m)&#34;, payload_width_p, data_o);
 				eReceive:
 					if (data_i !== data_o) begin
 						$display(&#34;############################################################################&#34;);
@@ -149,33 +151,31 @@ module bsg_trace_replay (
 						$display(&#34;############################################################################&#34;);
 						$finish;
 					end
-					else
+					else if (debug_p &gt;= 2)
 						$display(&#34;### bsg_trace_replay RECEIVE matched %h (%m)&#34;, data_o);
-				eDone: begin
-					$display(&#34;############################################################################&#34;);
-					$display(&#34;###### bsg_trace_replay DONE done_o=1 (trace finished addr=%x) (%m)&#34;, rom_addr_o);
-					$display(&#34;############################################################################&#34;);
-				end
+				eDone:
+					if (debug_p &gt;= 1) begin
+						$display(&#34;############################################################################&#34;);
+						$display(&#34;###### bsg_trace_replay DONE done_o=1 (trace finished addr=%x) (%m)&#34;, rom_addr_o);
+						$display(&#34;############################################################################&#34;);
+					end
 				eFinish: begin
-					$display(&#34;############################################################################&#34;);
-					$display(&#34;###### bsg_trace_replay FINISH (trace finished; CALLING $finish) (%m)&#34;);
-					$display(&#34;############################################################################&#34;);
+					if (debug_p &gt;= 1) begin
+						$display(&#34;############################################################################&#34;);
+						$display(&#34;###### bsg_trace_replay FINISH (trace finished; CALLING $finish) (%m)&#34;);
+						$display(&#34;############################################################################&#34;);
+					end
 					$finish;
 				end
 				eCycleDec:
-					$display(&#34;### bsg_trace_replay CYCLE DEC cycle_ctr_r = %x (%m)&#34;, cycle_ctr_r);
+					if (debug_p &gt;= 2)
+						$display(&#34;### bsg_trace_replay CYCLE DEC cycle_ctr_r = %x (%m)&#34;, cycle_ctr_r);
 				eCycleInit:
-					$display(&#34;### bsg_trace_replay CYCLE INIT = %x (%m)&#34;, cycle_ctr_n);
-				default:
-					;
-			endcase
-			case (op)
-				eNop, eSend, eReceive, eDone, eFinish, eCycleDec, eCycleInit:
-					;
+					if (debug_p &gt;= 2)
+						$display(&#34;### bsg_trace_replay CYCLE INIT = %x (%m)&#34;, cycle_ctr_n);
 				default:
 					$display(&#34;### bsg_trace_replay UNKNOWN op %x (%m)\n&#34;, op);
 			endcase
-		end
 endmodule
 
 </pre>
