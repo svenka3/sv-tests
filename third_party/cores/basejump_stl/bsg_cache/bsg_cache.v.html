@@ -981,7 +981,16 @@
 <a href="#l-973">973</a>
 <a href="#l-974">974</a>
 <a href="#l-975">975</a>
-<a href="#l-976">976</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/**</span>
+<a href="#l-976">976</a>
+<a href="#l-977">977</a>
+<a href="#l-978">978</a>
+<a href="#l-979">979</a>
+<a href="#l-980">980</a>
+<a href="#l-981">981</a>
+<a href="#l-982">982</a>
+<a href="#l-983">983</a>
+<a href="#l-984">984</a>
+<a href="#l-985">985</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/**</span>
 <a name="l-2"></a><span class="cm"> *  bsg_cache.v</span>
 <a name="l-3"></a><span class="cm"> *</span>
 <a name="l-4"></a><span class="cm"> *  - two-stage pipelined.</span>
@@ -1905,58 +1914,67 @@
 <a name="l-922"></a>  <span class="k">assign</span> <span class="n">sbuf_v_li</span> <span class="o">=</span> <span class="p">(</span><span class="n">decode_v_r</span><span class="p">.</span><span class="n">st_op</span> <span class="o">|</span> <span class="n">decode_v_r</span><span class="p">.</span><span class="n">atomic_op</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">v_o</span> <span class="o">&amp;</span> <span class="n">yumi_i</span><span class="p">;</span>
 <a name="l-923"></a>  <span class="k">assign</span> <span class="n">sbuf_entry_li</span><span class="p">.</span><span class="n">way_id</span> <span class="o">=</span> <span class="n">miss_v</span> <span class="o">?</span> <span class="n">chosen_way_lo</span> <span class="o">:</span> <span class="n">tag_hit_way_id</span><span class="p">;</span>
 <a name="l-924"></a>  <span class="k">assign</span> <span class="n">sbuf_entry_li</span><span class="p">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">addr_v_r</span><span class="p">;</span>
-<a name="l-925"></a>  <span class="k">assign</span> <span class="n">sbuf_yumi_li</span> <span class="o">=</span> <span class="n">sbuf_v_lo</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">((</span><span class="n">decode</span><span class="p">.</span><span class="n">ld_op</span> <span class="o">|</span> <span class="n">decode</span><span class="p">.</span><span class="n">atomic_op</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">v_i</span> <span class="o">&amp;</span> <span class="n">ready_o</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">dma_data_mem_v_lo</span><span class="p">);</span> 
-<a name="l-926"></a>
-<a name="l-927"></a>  <span class="k">assign</span> <span class="n">bypass_addr_li</span> <span class="o">=</span> <span class="n">addr_tl_r</span><span class="p">;</span>
-<a name="l-928"></a>  <span class="k">assign</span> <span class="n">bypass_v_li</span> <span class="o">=</span> <span class="p">(</span><span class="n">decode_tl_r</span><span class="p">.</span><span class="n">ld_op</span> <span class="o">|</span> <span class="n">decode_tl_r</span><span class="p">.</span><span class="n">atomic_op</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">v_tl_r</span> <span class="o">&amp;</span> <span class="n">v_we</span><span class="p">;</span>
-<a name="l-929"></a>
-<a name="l-930"></a>
-<a name="l-931"></a>  <span class="c1">// synopsys translate_off</span>
-<a name="l-932"></a>
-<a name="l-933"></a>  <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-934"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">reset_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-935"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">v_v_r</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-936"></a>        <span class="c1">// check that there is no multiple hit.</span>
-<a name="l-937"></a>        <span class="k">assert</span><span class="p">(</span><span class="n">$countones</span><span class="p">(</span><span class="n">tag_hit_v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">)</span>
-<a name="l-938"></a>          <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;[BSG_ERROR][BSG_CACHE] Multiple cache hit detected. %m, T=%t&quot;</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
+<a name="l-925"></a>  <span class="c1">// store buffer can write to dmem when</span>
+<a name="l-926"></a>  <span class="c1">// 1) there is valid entry in store buffer.</span>
+<a name="l-927"></a>  <span class="c1">// 2) incoming request does not read DMEM.</span>
+<a name="l-928"></a>  <span class="c1">// 3) DMA engine is not accessing DMEM.</span>
+<a name="l-929"></a>  <span class="c1">// 4) TL read DMEM (and bypass from sbuf), and TV is not stalled (v_we).</span>
+<a name="l-930"></a>  <span class="c1">//    During miss, the store buffer can be drained.</span>
+<a name="l-931"></a>  <span class="k">assign</span> <span class="n">sbuf_yumi_li</span> <span class="o">=</span> <span class="n">sbuf_v_lo</span>
+<a name="l-932"></a>    <span class="o">&amp;</span> <span class="o">~</span><span class="p">((</span><span class="n">decode</span><span class="p">.</span><span class="n">ld_op</span> <span class="o">|</span> <span class="n">decode</span><span class="p">.</span><span class="n">atomic_op</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">v_i</span> <span class="o">&amp;</span> <span class="n">ready_o</span><span class="p">)</span>
+<a name="l-933"></a>    <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">dma_data_mem_v_lo</span><span class="p">)</span>
+<a name="l-934"></a>    <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">v_tl_r</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">decode_tl_r</span><span class="p">.</span><span class="n">ld_op</span> <span class="o">|</span> <span class="n">decode_tl_r</span><span class="p">.</span><span class="n">atomic_op</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">v_we</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">miss_v</span><span class="p">));</span> 
+<a name="l-935"></a>
+<a name="l-936"></a>  <span class="k">assign</span> <span class="n">bypass_addr_li</span> <span class="o">=</span> <span class="n">addr_tl_r</span><span class="p">;</span>
+<a name="l-937"></a>  <span class="k">assign</span> <span class="n">bypass_v_li</span> <span class="o">=</span> <span class="p">(</span><span class="n">decode_tl_r</span><span class="p">.</span><span class="n">ld_op</span> <span class="o">|</span> <span class="n">decode_tl_r</span><span class="p">.</span><span class="n">atomic_op</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">v_tl_r</span> <span class="o">&amp;</span> <span class="n">v_we</span><span class="p">;</span>
+<a name="l-938"></a>
 <a name="l-939"></a>
-<a name="l-940"></a>        <span class="c1">// check that there is at least one unlocked way in a set.</span>
-<a name="l-941"></a>        <span class="k">assert</span><span class="p">(</span><span class="n">$countones</span><span class="p">(</span><span class="n">lock_v_r</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ways_p</span><span class="p">)</span>
-<a name="l-942"></a>          <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;[BSG_ERROR][BSG_CACHE] There should be at least one unlocked way in a set. %m, T=%t&quot;</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
-<a name="l-943"></a>      <span class="k">end</span>
-<a name="l-944"></a>    <span class="k">end</span>
-<a name="l-945"></a>  <span class="k">end</span>
-<a name="l-946"></a>
-<a name="l-947"></a>
-<a name="l-948"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-949"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-950"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">v_o</span> <span class="o">&amp;</span> <span class="n">yumi_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-951"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">decode_v_r</span><span class="p">.</span><span class="n">ld_op</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-952"></a>          <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;&lt;VCACHE&gt; M[%4h] == %8h // %8t&quot;</span><span class="p">,</span> <span class="n">addr_v_r</span><span class="p">,</span> <span class="n">data_o</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
-<a name="l-953"></a>        <span class="k">end</span>
-<a name="l-954"></a>        
-<a name="l-955"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">decode_v_r</span><span class="p">.</span><span class="n">st_op</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-956"></a>          <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;&lt;VCACHE&gt; M[%4h] := %8h // %8t&quot;</span><span class="p">,</span> <span class="n">addr_v_r</span><span class="p">,</span> <span class="n">sbuf_entry_li</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
-<a name="l-957"></a>        <span class="k">end</span>
-<a name="l-958"></a>
-<a name="l-959"></a>      <span class="k">end</span>
-<a name="l-960"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">tag_mem_v_li</span> <span class="o">&amp;</span> <span class="n">tag_mem_w_li</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-961"></a>        <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;&lt;VCACHE&gt; tag_mem_write. addr=%8h data_1=%8h data_0=%8h mask_1=%8h mask_0=%8h // %8t&quot;</span><span class="p">,</span>
-<a name="l-962"></a>          <span class="n">tag_mem_addr_li</span><span class="p">,</span>
-<a name="l-963"></a>          <span class="n">tag_mem_data_li</span><span class="p">[</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
-<a name="l-964"></a>          <span class="n">tag_mem_data_li</span><span class="p">[</span><span class="mh">0</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
-<a name="l-965"></a>          <span class="n">tag_mem_w_mask_li</span><span class="p">[</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
-<a name="l-966"></a>          <span class="n">tag_mem_w_mask_li</span><span class="p">[</span><span class="mh">0</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
-<a name="l-967"></a>          <span class="n">$time</span>
-<a name="l-968"></a>        <span class="p">);</span>
-<a name="l-969"></a>      <span class="k">end</span>
-<a name="l-970"></a>    <span class="k">end</span>
-<a name="l-971"></a>  <span class="k">end</span>
-<a name="l-972"></a>
-<a name="l-973"></a>  <span class="c1">// synopsys translate_on</span>
-<a name="l-974"></a>
-<a name="l-975"></a>
-<a name="l-976"></a><span class="k">endmodule</span>
+<a name="l-940"></a>  <span class="c1">// synopsys translate_off</span>
+<a name="l-941"></a>
+<a name="l-942"></a>  <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-943"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">reset_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-944"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">v_v_r</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-945"></a>        <span class="c1">// check that there is no multiple hit.</span>
+<a name="l-946"></a>        <span class="k">assert</span><span class="p">(</span><span class="n">$countones</span><span class="p">(</span><span class="n">tag_hit_v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">)</span>
+<a name="l-947"></a>          <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;[BSG_ERROR][BSG_CACHE] Multiple cache hit detected. %m, T=%t&quot;</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
+<a name="l-948"></a>
+<a name="l-949"></a>        <span class="c1">// check that there is at least one unlocked way in a set.</span>
+<a name="l-950"></a>        <span class="k">assert</span><span class="p">(</span><span class="n">$countones</span><span class="p">(</span><span class="n">lock_v_r</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ways_p</span><span class="p">)</span>
+<a name="l-951"></a>          <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;[BSG_ERROR][BSG_CACHE] There should be at least one unlocked way in a set. %m, T=%t&quot;</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
+<a name="l-952"></a>      <span class="k">end</span>
+<a name="l-953"></a>    <span class="k">end</span>
+<a name="l-954"></a>  <span class="k">end</span>
+<a name="l-955"></a>
+<a name="l-956"></a>
+<a name="l-957"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-958"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-959"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">v_o</span> <span class="o">&amp;</span> <span class="n">yumi_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-960"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">decode_v_r</span><span class="p">.</span><span class="n">ld_op</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-961"></a>          <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;&lt;VCACHE&gt; M[%4h] == %8h // %8t&quot;</span><span class="p">,</span> <span class="n">addr_v_r</span><span class="p">,</span> <span class="n">data_o</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
+<a name="l-962"></a>        <span class="k">end</span>
+<a name="l-963"></a>        
+<a name="l-964"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">decode_v_r</span><span class="p">.</span><span class="n">st_op</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-965"></a>          <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;&lt;VCACHE&gt; M[%4h] := %8h // %8t&quot;</span><span class="p">,</span> <span class="n">addr_v_r</span><span class="p">,</span> <span class="n">sbuf_entry_li</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">$time</span><span class="p">);</span>
+<a name="l-966"></a>        <span class="k">end</span>
+<a name="l-967"></a>
+<a name="l-968"></a>      <span class="k">end</span>
+<a name="l-969"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">tag_mem_v_li</span> <span class="o">&amp;</span> <span class="n">tag_mem_w_li</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-970"></a>        <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;&lt;VCACHE&gt; tag_mem_write. addr=%8h data_1=%8h data_0=%8h mask_1=%8h mask_0=%8h // %8t&quot;</span><span class="p">,</span>
+<a name="l-971"></a>          <span class="n">tag_mem_addr_li</span><span class="p">,</span>
+<a name="l-972"></a>          <span class="n">tag_mem_data_li</span><span class="p">[</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
+<a name="l-973"></a>          <span class="n">tag_mem_data_li</span><span class="p">[</span><span class="mh">0</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
+<a name="l-974"></a>          <span class="n">tag_mem_w_mask_li</span><span class="p">[</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
+<a name="l-975"></a>          <span class="n">tag_mem_w_mask_li</span><span class="p">[</span><span class="mh">0</span><span class="o">+:</span><span class="mh">1</span><span class="o">+</span><span class="n">tag_width_lp</span><span class="p">],</span>
+<a name="l-976"></a>          <span class="n">$time</span>
+<a name="l-977"></a>        <span class="p">);</span>
+<a name="l-978"></a>      <span class="k">end</span>
+<a name="l-979"></a>    <span class="k">end</span>
+<a name="l-980"></a>  <span class="k">end</span>
+<a name="l-981"></a>
+<a name="l-982"></a>  <span class="c1">// synopsys translate_on</span>
+<a name="l-983"></a>
+<a name="l-984"></a>
+<a name="l-985"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
