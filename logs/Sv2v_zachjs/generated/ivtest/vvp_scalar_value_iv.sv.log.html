@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,13 +17,58 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/vvp_scalar_value.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vvp_scalar_value.v</a>
-time_elapsed: 0.024s
-ram usage: 9656 KB
+time_elapsed: 0.060s
+ram usage: 11400 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests <a href="../../../../third_party/tests/ivtest/ivltests/vvp_scalar_value.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vvp_scalar_value.v</a>
-<a href="../../../../third_party/tests/ivtest/ivltests/vvp_scalar_value.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/vvp_scalar_value.v:10</a>:8: Parse error: unexpected token &#39;(&#39; (Sym_paren_l).
+module vvp_scalar_value;
+	reg [2:0] v1;
+	reg [2:0] v2;
+	wire [2:0] w1;
+	wire [2:0] w2;
+	wire [2:0] w3;
+	assign (strong0, highz1) w1 = v1;
+	assign (highz0, strong1) w2 = v1;
+	assign (strong0, highz1) w3 = v1;
+	assign (highz0, strong1) w3 = v2;
+	reg failed;
+	initial begin
+		failed = 0;
+		v1 = 3&#39;bz10;
+		#(1)
+			;
+		$display(&#34;%b %v %v %v&#34;, w1, w1[2], w1[1], w1[0]);
+		if (w1 !== 3&#39;bzz0)
+			failed = 1;
+		$display(&#34;%b %v %v %v&#34;, w2, w2[2], w2[1], w2[0]);
+		if (w2 !== 3&#39;bz1z)
+			failed = 1;
+		v2 = 3&#39;b000;
+		#(1)
+			;
+		$display(&#34;%b %v %v %v&#34;, w3, w3[2], w3[1], w3[0]);
+		if (w3 !== 3&#39;bzz0)
+			failed = 1;
+		v2 = 3&#39;b111;
+		#(1)
+			;
+		$display(&#34;%b %v %v %v&#34;, w3, w3[2], w3[1], w3[0]);
+		if (w3 !== 3&#39;b11x)
+			failed = 1;
+		v2 = 3&#39;bzzz;
+		#(1)
+			;
+		$display(&#34;%b %v %v %v&#34;, w3, w3[2], w3[1], w3[0]);
+		if (w3 !== 3&#39;bzz0)
+			failed = 1;
+		if (failed)
+			$display(&#34;FAILED&#34;);
+		else
+			$display(&#34;PASSED&#34;);
+	end
+endmodule
 
 </pre>
 </body>

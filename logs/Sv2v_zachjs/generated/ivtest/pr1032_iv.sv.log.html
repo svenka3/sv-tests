@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,13 +17,52 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1032.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1032.v</a>
-time_elapsed: 0.020s
-ram usage: 10200 KB
+time_elapsed: 0.068s
+ram usage: 9740 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests <a href="../../../../third_party/tests/ivtest/ivltests/pr1032.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1032.v</a>
-<a href="../../../../third_party/tests/ivtest/ivltests/pr1032.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1032.v:7</a>:11: Parse error: unexpected token &#39;(&#39; (Sym_paren_l).
+module test;
+	reg d;
+	wire bar;
+	assign (weak0, weak1) bar = d;
+	tri0 foo = bar;
+	initial begin
+		d = 0;
+		#(1)
+			if (d !== bar) begin
+				$display(&#34;FAILED -- d=%b, bar=%b&#34;, d, bar);
+				$finish;
+			end
+		if (d !== foo) begin
+			$display(&#34;FAILED -- d=%b, foo=%b&#34;, d, foo);
+			$finish;
+		end
+		d = 1;
+		#(1)
+			if (d !== bar) begin
+				$display(&#34;FAILED -- d=%b, bar=%b&#34;, d, bar);
+				$finish;
+			end
+		if (d !== foo) begin
+			$display(&#34;FAILED -- d=%b, foo=%b&#34;, d, foo);
+			$finish;
+		end
+		d = &#39;bz;
+		#(1)
+			if (d !== bar) begin
+				$display(&#34;FAILED -- d=%b, bar=%b&#34;, d, bar);
+				$finish;
+			end
+		if (&#39;b0 !== foo) begin
+			$display(&#34;FAILED -- d=%b, foo=%b&#34;, d, foo);
+			$finish;
+		end
+		$display(&#34;PASSED&#34;);
+		$finish;
+	end
+endmodule
 
 </pre>
 </body>

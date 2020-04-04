@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,13 +17,27 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/multi_bit_strength.v.html" target="file-frame">third_party/tests/ivtest/ivltests/multi_bit_strength.v</a>
-time_elapsed: 0.048s
-ram usage: 9628 KB
+time_elapsed: 0.028s
+ram usage: 9716 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests <a href="../../../../third_party/tests/ivtest/ivltests/multi_bit_strength.v.html" target="file-frame">third_party/tests/ivtest/ivltests/multi_bit_strength.v</a>
-<a href="../../../../third_party/tests/ivtest/ivltests/multi_bit_strength.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/multi_bit_strength.v:8</a>:10: Parse error: unexpected token &#39;(&#39; (Sym_paren_l).
+module top;
+	parameter length = 17;
+	wire [(length * 8) - 1:0] result;
+	wire [3:0] net;
+	assign (strong0, pull1) net = 4&#39;b0110;
+	initial begin
+		#(1)
+			;
+		$swrite(result, &#34;%v&#34;, net);
+		$display(&#34;All three lines should match:&#34;);
+		$display(&#34;-----------------------------&#34;);
+		$display(&#34;St0_Pu1_Pu1_St0 (reference)&#34;);
+		$display(&#34;%v (display)\n%0s (swrite)&#34;, net, result);
+	end
+endmodule
 
 </pre>
 </body>
