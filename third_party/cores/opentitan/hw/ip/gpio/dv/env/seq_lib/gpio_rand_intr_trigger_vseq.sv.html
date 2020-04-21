@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../code.css">
+  </head>
+  <body>
+    third_party/cores/opentitan/hw/ip/gpio/dv/env/seq_lib/gpio_rand_intr_trigger_vseq.sv
+    <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><a href="#l-1"> 1</a>
+<a href="#l-2"> 2</a>
+<a href="#l-3"> 3</a>
+<a href="#l-4"> 4</a>
+<a href="#l-5"> 5</a>
+<a href="#l-6"> 6</a>
+<a href="#l-7"> 7</a>
+<a href="#l-8"> 8</a>
+<a href="#l-9"> 9</a>
+<a href="#l-10">10</a>
+<a href="#l-11">11</a>
+<a href="#l-12">12</a>
+<a href="#l-13">13</a>
+<a href="#l-14">14</a>
+<a href="#l-15">15</a>
+<a href="#l-16">16</a>
+<a href="#l-17">17</a>
+<a href="#l-18">18</a>
+<a href="#l-19">19</a>
+<a href="#l-20">20</a>
+<a href="#l-21">21</a>
+<a href="#l-22">22</a>
+<a href="#l-23">23</a>
+<a href="#l-24">24</a>
+<a href="#l-25">25</a>
+<a href="#l-26">26</a>
+<a href="#l-27">27</a>
+<a href="#l-28">28</a>
+<a href="#l-29">29</a>
+<a href="#l-30">30</a>
+<a href="#l-31">31</a>
+<a href="#l-32">32</a>
+<a href="#l-33">33</a>
+<a href="#l-34">34</a>
+<a href="#l-35">35</a>
+<a href="#l-36">36</a>
+<a href="#l-37">37</a>
+<a href="#l-38">38</a>
+<a href="#l-39">39</a>
+<a href="#l-40">40</a>
+<a href="#l-41">41</a>
+<a href="#l-42">42</a>
+<a href="#l-43">43</a>
+<a href="#l-44">44</a>
+<a href="#l-45">45</a>
+<a href="#l-46">46</a>
+<a href="#l-47">47</a>
+<a href="#l-48">48</a>
+<a href="#l-49">49</a>
+<a href="#l-50">50</a>
+<a href="#l-51">51</a>
+<a href="#l-52">52</a>
+<a href="#l-53">53</a>
+<a href="#l-54">54</a>
+<a href="#l-55">55</a>
+<a href="#l-56">56</a>
+<a href="#l-57">57</a>
+<a href="#l-58">58</a>
+<a href="#l-59">59</a>
+<a href="#l-60">60</a>
+<a href="#l-61">61</a>
+<a href="#l-62">62</a>
+<a href="#l-63">63</a>
+<a href="#l-64">64</a>
+<a href="#l-65">65</a>
+<a href="#l-66">66</a>
+<a href="#l-67">67</a>
+<a href="#l-68">68</a>
+<a href="#l-69">69</a>
+<a href="#l-70">70</a>
+<a href="#l-71">71</a>
+<a href="#l-72">72</a>
+<a href="#l-73">73</a>
+<a href="#l-74">74</a>
+<a href="#l-75">75</a>
+<a href="#l-76">76</a>
+<a href="#l-77">77</a>
+<a href="#l-78">78</a>
+<a href="#l-79">79</a>
+<a href="#l-80">80</a>
+<a href="#l-81">81</a>
+<a href="#l-82">82</a>
+<a href="#l-83">83</a>
+<a href="#l-84">84</a>
+<a href="#l-85">85</a>
+<a href="#l-86">86</a>
+<a href="#l-87">87</a>
+<a href="#l-88">88</a>
+<a href="#l-89">89</a>
+<a href="#l-90">90</a>
+<a href="#l-91">91</a>
+<a href="#l-92">92</a>
+<a href="#l-93">93</a>
+<a href="#l-94">94</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
+<a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
+<a name="l-4"></a>
+<a name="l-5"></a><span class="c1">// class : gpio_rand_intr_trigger_vseq</span>
+<a name="l-6"></a><span class="c1">// This gpio random test sequence performs following in each of multiple iterations:</span>
+<a name="l-7"></a><span class="c1">//  (i) programs random values to a set of selected registers out of following:</span>
+<a name="l-8"></a><span class="c1">//      INTR_ENABLE</span>
+<a name="l-9"></a><span class="c1">//      INTR_CTRL_EN_LVL_LOW</span>
+<a name="l-10"></a><span class="c1">//      INTR_CTRL_EN_LVL_HIGH</span>
+<a name="l-11"></a><span class="c1">//      INTR_CTRL_EN_FALLING</span>
+<a name="l-12"></a><span class="c1">//      INTR_CTRL_EN_RISING</span>
+<a name="l-13"></a><span class="c1">// (ii) performs following two in operations in parallel:</span>
+<a name="l-14"></a><span class="c1">//     - drive random value on gpio_i input</span>
+<a name="l-15"></a><span class="c1">//     - perform periodic read and random clearing of INTR_STATE register</span>
+<a name="l-16"></a><span class="k">class</span> <span class="n">gpio_rand_intr_trigger_vseq</span> <span class="k">extends</span> <span class="n">gpio_base_vseq</span><span class="p">;</span>
+<a name="l-17"></a>
+<a name="l-18"></a>  <span class="k">constraint</span> <span class="n">num_trans_c</span> <span class="p">{</span>
+<a name="l-19"></a>    <span class="n">num_trans</span> <span class="k">inside</span> <span class="p">{[</span><span class="mh">20</span><span class="o">:</span><span class="mh">200</span><span class="p">]};</span>
+<a name="l-20"></a>  <span class="p">}</span>
+<a name="l-21"></a>
+<a name="l-22"></a>  <span class="no">`uvm_object_utils</span><span class="p">(</span><span class="n">gpio_rand_intr_trigger_vseq</span><span class="p">)</span>
+<a name="l-23"></a>  <span class="no">`uvm_object_new</span>
+<a name="l-24"></a>
+<a name="l-25"></a>  <span class="k">task</span> <span class="n">body</span><span class="p">();</span>
+<a name="l-26"></a>    <span class="no">`uvm_info</span><span class="p">(</span><span class="no">`gfn</span><span class="p">,</span> <span class="nb">$sformatf</span><span class="p">(</span><span class="s">&quot;num_trans = %0d&quot;</span><span class="p">,</span> <span class="n">num_trans</span><span class="p">),</span> <span class="n">UVM_HIGH</span><span class="p">)</span>
+<a name="l-27"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">uint</span> <span class="n">tr_num</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">tr_num</span> <span class="o">&lt;</span> <span class="n">num_trans</span><span class="p">;</span> <span class="n">tr_num</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-28"></a>      <span class="k">string</span> <span class="n">msg_id</span> <span class="o">=</span> <span class="p">{</span><span class="no">`gfn</span><span class="p">,</span> <span class="nb">$sformatf</span><span class="p">(</span><span class="s">&quot; Transaction-%0d&quot;</span><span class="p">,</span> <span class="n">tr_num</span><span class="p">)};</span>
+<a name="l-29"></a>
+<a name="l-30"></a>      <span class="no">`DV_CHECK_MEMBER_RANDOMIZE_FATAL</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+<a name="l-31"></a>      <span class="n">cfg</span><span class="p">.</span><span class="n">clk_rst_vif</span><span class="p">.</span><span class="n">wait_clks</span><span class="p">(</span><span class="n">delay</span><span class="p">);</span>
+<a name="l-32"></a>      <span class="no">`uvm_info</span><span class="p">(</span><span class="n">msg_id</span><span class="p">,</span> <span class="nb">$sformatf</span><span class="p">(</span><span class="s">&quot;delay = %0d&quot;</span><span class="p">,</span> <span class="n">delay</span><span class="p">),</span> <span class="n">UVM_HIGH</span><span class="p">)</span>
+<a name="l-33"></a>
+<a name="l-34"></a>      <span class="c1">// Step-1 Program interrupt registers</span>
+<a name="l-35"></a>      <span class="n">pgm_intr_regs</span><span class="p">();</span>
+<a name="l-36"></a>
+<a name="l-37"></a>      <span class="c1">// Step-2 Do the following operations in parallel:</span>
+<a name="l-38"></a>      <span class="c1">//   (i) toggle gpio_i input at random intervals</span>
+<a name="l-39"></a>      <span class="c1">//  (ii) inject random read on gpio &quot;intr_state&quot; register</span>
+<a name="l-40"></a>      <span class="k">begin</span>
+<a name="l-41"></a>        <span class="n">uint</span> <span class="n">cnt_gpio_tgl</span><span class="p">;</span>
+<a name="l-42"></a>        <span class="k">bit</span> <span class="n">gpio_tgl_cycle_done</span><span class="p">;</span>
+<a name="l-43"></a>        <span class="no">`DV_CHECK_STD_RANDOMIZE_WITH_FATAL</span><span class="p">(</span><span class="n">cnt_gpio_tgl</span><span class="p">,</span> <span class="n">cnt_gpio_tgl</span> <span class="k">inside</span> <span class="p">{[</span><span class="mh">5</span><span class="o">:</span><span class="mh">20</span><span class="p">]};)</span>
+<a name="l-44"></a>        <span class="k">fork</span>
+<a name="l-45"></a>          <span class="k">begin</span> <span class="o">:</span> <span class="n">gpio_in_data_drive</span>
+<a name="l-46"></a>            <span class="k">for</span> <span class="p">(</span><span class="n">uint</span> <span class="n">iter</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">iter</span> <span class="o">&lt;</span> <span class="n">cnt_gpio_tgl</span><span class="p">;</span> <span class="n">iter</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-47"></a>              <span class="k">bit</span> <span class="p">[</span><span class="n">TL_DW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">gpio_i</span><span class="p">;</span>
+<a name="l-48"></a>              <span class="k">bit</span> <span class="p">[</span><span class="n">TL_DW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_in</span><span class="p">;</span>
+<a name="l-49"></a>              <span class="k">int</span> <span class="n">delay_before_gpio_change</span><span class="p">;</span>
+<a name="l-50"></a>              <span class="no">`DV_CHECK_STD_RANDOMIZE_FATAL</span><span class="p">(</span><span class="n">gpio_i</span><span class="p">)</span>
+<a name="l-51"></a>              <span class="no">`uvm_info</span><span class="p">(</span><span class="n">msg_id</span><span class="p">,</span> <span class="nb">$sformatf</span><span class="p">(</span><span class="s">&quot;Driving new gpio value 0x%0h&quot;</span><span class="p">,</span> <span class="n">gpio_i</span><span class="p">),</span> <span class="n">UVM_HIGH</span><span class="p">)</span>
+<a name="l-52"></a>              <span class="n">cfg</span><span class="p">.</span><span class="n">gpio_vif</span><span class="p">.</span><span class="n">drive</span><span class="p">(</span><span class="n">gpio_i</span><span class="p">);</span>
+<a name="l-53"></a>              <span class="no">`DV_CHECK_STD_RANDOMIZE_WITH_FATAL</span><span class="p">(</span><span class="n">delay_before_gpio_change</span><span class="p">,</span>
+<a name="l-54"></a>                                                 <span class="n">delay_before_gpio_change</span> <span class="k">inside</span> <span class="p">{[</span><span class="mh">1</span><span class="o">:</span><span class="mh">5</span><span class="p">]};)</span>
+<a name="l-55"></a>              <span class="n">cfg</span><span class="p">.</span><span class="n">clk_rst_vif</span><span class="p">.</span><span class="n">wait_clks</span><span class="p">(</span><span class="n">delay_before_gpio_change</span><span class="p">);</span>
+<a name="l-56"></a>            <span class="k">end</span>
+<a name="l-57"></a>            <span class="n">gpio_tgl_cycle_done</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-58"></a>          <span class="k">end</span>
+<a name="l-59"></a>          <span class="k">begin</span> <span class="o">:</span> <span class="n">periodic_intr_state_rd_check</span>
+<a name="l-60"></a>            <span class="k">do</span> <span class="k">begin</span>
+<a name="l-61"></a>              <span class="n">uint</span> <span class="n">rd_period</span><span class="p">;</span>
+<a name="l-62"></a>              <span class="k">bit</span> <span class="p">[</span><span class="n">TL_DW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">reg_rd_data</span><span class="p">;</span>
+<a name="l-63"></a>              <span class="no">`DV_CHECK_STD_RANDOMIZE_WITH_FATAL</span><span class="p">(</span><span class="n">rd_period</span><span class="p">,</span> <span class="n">rd_period</span> <span class="k">inside</span> <span class="p">{[</span><span class="mh">2</span><span class="o">:</span><span class="mh">20</span><span class="p">]};)</span>
+<a name="l-64"></a>              <span class="n">cfg</span><span class="p">.</span><span class="n">clk_rst_vif</span><span class="p">.</span><span class="n">wait_clks</span><span class="p">(</span><span class="n">rd_period</span><span class="p">);</span>
+<a name="l-65"></a>              <span class="no">`uvm_info</span><span class="p">(</span><span class="n">msg_id</span><span class="p">,</span> <span class="nb">$sformatf</span><span class="p">(</span><span class="s">&quot;Reading intr_state after %0d more clock cycles&quot;</span><span class="p">,</span>
+<a name="l-66"></a>                                          <span class="n">rd_period</span><span class="p">),</span> <span class="n">UVM_HIGH</span><span class="p">)</span>
+<a name="l-67"></a>              <span class="k">randcase</span>
+<a name="l-68"></a>                <span class="mh">1</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-69"></a>                  <span class="n">csr_rd</span><span class="p">(.</span><span class="n">ptr</span><span class="p">(</span><span class="n">ral</span><span class="p">.</span><span class="n">data_in</span><span class="p">),</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="n">reg_rd_data</span><span class="p">));</span>
+<a name="l-70"></a>                <span class="k">end</span>
+<a name="l-71"></a>                <span class="mh">9</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-72"></a>                  <span class="n">csr_rd</span><span class="p">(.</span><span class="n">ptr</span><span class="p">(</span><span class="n">ral</span><span class="p">.</span><span class="n">intr_state</span><span class="p">),</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="n">reg_rd_data</span><span class="p">));</span>
+<a name="l-73"></a>                <span class="k">end</span>
+<a name="l-74"></a>              <span class="k">endcase</span>
+<a name="l-75"></a>              <span class="c1">// Randomly clear random set of interrupt state register bits</span>
+<a name="l-76"></a>              <span class="k">if</span> <span class="p">(</span><span class="n">$urandom_range</span><span class="p">(</span><span class="mh">0</span><span class="p">,</span> <span class="mh">1</span><span class="p">))</span> <span class="k">begin</span>
+<a name="l-77"></a>                <span class="no">`DV_CHECK_RANDOMIZE_FATAL</span><span class="p">(</span><span class="n">ral</span><span class="p">.</span><span class="n">intr_state</span><span class="p">)</span>
+<a name="l-78"></a>                <span class="no">`uvm_info</span><span class="p">(</span><span class="n">msg_id</span><span class="p">,</span> <span class="nb">$sformatf</span><span class="p">(</span><span class="s">&quot;Writing value 0x%0h to intr_state&quot;</span><span class="p">,</span>
+<a name="l-79"></a>                          <span class="n">ral</span><span class="p">.</span><span class="n">intr_state</span><span class="p">.</span><span class="n">get</span><span class="p">()),</span> <span class="n">UVM_HIGH</span><span class="p">)</span>
+<a name="l-80"></a>                <span class="n">csr_update</span><span class="p">(</span><span class="n">ral</span><span class="p">.</span><span class="n">intr_state</span><span class="p">);</span>
+<a name="l-81"></a>              <span class="k">end</span>
+<a name="l-82"></a>            <span class="k">end</span>
+<a name="l-83"></a>            <span class="k">while</span> <span class="p">(</span><span class="n">gpio_tgl_cycle_done</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">);</span>
+<a name="l-84"></a>          <span class="k">end</span>
+<a name="l-85"></a>        <span class="k">join</span>
+<a name="l-86"></a>      <span class="k">end</span>
+<a name="l-87"></a>
+<a name="l-88"></a>      <span class="no">`uvm_info</span><span class="p">(</span><span class="n">msg_id</span><span class="p">,</span> <span class="s">&quot;End of Transaction&quot;</span><span class="p">,</span> <span class="n">UVM_HIGH</span><span class="p">)</span>
+<a name="l-89"></a>
+<a name="l-90"></a>    <span class="k">end</span> <span class="c1">// end for</span>
+<a name="l-91"></a>
+<a name="l-92"></a>  <span class="k">endtask</span> <span class="o">:</span> <span class="n">body</span>
+<a name="l-93"></a>
+<a name="l-94"></a><span class="k">endclass</span> <span class="o">:</span> <span class="n">gpio_rand_intr_trigger_vseq</span>
+</pre></div>
+</td></tr></table>
+  </body>
+</html>

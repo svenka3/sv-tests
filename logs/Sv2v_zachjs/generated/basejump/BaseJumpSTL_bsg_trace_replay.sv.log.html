@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v</a>
-time_elapsed: 0.528s
-ram usage: 16352 KB
+time_elapsed: 0.468s
+ram usage: 17308 KB
 </pre>
 <pre class="log">
 
@@ -49,6 +49,7 @@ module bsg_trace_replay (
 	parameter rom_addr_width_p = 6;
 	parameter counter_width_p = (payload_width_p &lt; 16 ? payload_width_p : 16);
 	parameter debug_p = 1;
+	parameter finish_on_error_p = 1;
 	parameter opcode_width_lp = 4;
 	input clk_i;
 	input reset_i;
@@ -129,10 +130,12 @@ module bsg_trace_replay (
 				end
 				eCycleInit: begin
 					cycle_ctr_n = rom_data_i[counter_width_p - 1:0];
-					instr_completed = 1;
+					instr_completed = 1&#39;b1;
 				end
-				default:
-					;
+				default: begin
+					error_n = 1&#39;b1;
+					instr_completed = 1&#39;b1;
+				end
 			endcase
 	end
 	always @(negedge clk_i)
@@ -149,7 +152,8 @@ module bsg_trace_replay (
 						$display(&#34;### FAIL (trace mismatch) = %h&#34;, data_i);
 						$display(&#34;###              expected = %h\n&#34;, data_o);
 						$display(&#34;############################################################################&#34;);
-						$finish;
+						if (finish_on_error_p == 1)
+							$finish;
 					end
 					else if (debug_p &gt;= 2)
 						$display(&#34;### bsg_trace_replay RECEIVE matched %h (%m)&#34;, data_o);
@@ -173,8 +177,11 @@ module bsg_trace_replay (
 				eCycleInit:
 					if (debug_p &gt;= 2)
 						$display(&#34;### bsg_trace_replay CYCLE INIT = %x (%m)&#34;, cycle_ctr_n);
-				default:
-					$display(&#34;### bsg_trace_replay UNKNOWN op %x (%m)\n&#34;, op);
+				default: begin
+					$error(&#34;### bsg_trace_replay UNKNOWN op %x (%m)\n&#34;, op);
+					if (finish_on_error_p == 1)
+						$finish;
+				end
 			endcase
 endmodule
 
