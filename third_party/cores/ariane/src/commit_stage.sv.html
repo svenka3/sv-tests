@@ -292,7 +292,9 @@
 <a href="#l-284">284</a>
 <a href="#l-285">285</a>
 <a href="#l-286">286</a>
-<a href="#l-287">287</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna.</span>
+<a href="#l-287">287</a>
+<a href="#l-288">288</a>
+<a href="#l-289">289</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna.</span>
 <a name="l-2"></a><span class="c1">// Copyright and related rights are licensed under the Solderpad Hardware</span>
 <a name="l-3"></a><span class="c1">// License, Version 0.51 (the &quot;License&quot;); you may not use this file except in</span>
 <a name="l-4"></a><span class="c1">// compliance with the License.  You may obtain a copy of the License at</span>
@@ -363,9 +365,9 @@
 <a name="l-69"></a><span class="c1">//     .probe9(1&#39;b0) // input wire [0:0]  probe9</span>
 <a name="l-70"></a><span class="c1">// );</span>
 <a name="l-71"></a>
-<a name="l-72"></a>    <span class="c1">// TODO make these parametric with NR_COMMIT_PORTS</span>
-<a name="l-73"></a>    <span class="k">assign</span> <span class="n">waddr_o</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">rd</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-74"></a>    <span class="k">assign</span> <span class="n">waddr_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">rd</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-72"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NR_COMMIT_PORTS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_waddr</span>
+<a name="l-73"></a>      <span class="k">assign</span> <span class="n">waddr_o</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">rd</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-74"></a>    <span class="k">end</span>
 <a name="l-75"></a>
 <a name="l-76"></a>    <span class="k">assign</span> <span class="n">pc_o</span>       <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">pc</span><span class="p">;</span>
 <a name="l-77"></a>    <span class="c1">// Dirty the FP state if we are committing anything related to the FPU</span>
@@ -503,82 +505,84 @@
 <a name="l-209"></a>            <span class="k">end</span>
 <a name="l-210"></a>        <span class="k">end</span>
 <a name="l-211"></a>
-<a name="l-212"></a>        <span class="c1">// -----------------</span>
-<a name="l-213"></a>        <span class="c1">// Commit Port 2</span>
-<a name="l-214"></a>        <span class="c1">// -----------------</span>
-<a name="l-215"></a>        <span class="c1">// check if the second instruction can be committed as well and the first wasn&#39;t a CSR instruction</span>
-<a name="l-216"></a>        <span class="c1">// also if we are in single step mode don&#39;t retire the second instruction</span>
-<a name="l-217"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">commit_ack_o</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">valid</span>
-<a name="l-218"></a>                            <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">halt_i</span>
-<a name="l-219"></a>                            <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">fu</span> <span class="k">inside</span> <span class="p">{</span><span class="n">CSR</span><span class="p">})</span>
-<a name="l-220"></a>                            <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">flush_dcache_i</span>
-<a name="l-221"></a>                            <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">instr_0_is_amo</span>
-<a name="l-222"></a>                            <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">single_step_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-223"></a>            <span class="c1">// only if the first instruction didn&#39;t throw an exception and this instruction won&#39;t throw an exception</span>
-<a name="l-224"></a>            <span class="c1">// and the functional unit is of type ALU, LOAD, CTRL_FLOW, MULT, FPU or FPU_VEC</span>
-<a name="l-225"></a>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">exception_o</span><span class="p">.</span><span class="n">valid</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">valid</span>
-<a name="l-226"></a>                                   <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">fu</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ALU</span><span class="p">,</span> <span class="n">LOAD</span><span class="p">,</span> <span class="n">CTRL_FLOW</span><span class="p">,</span> <span class="n">MULT</span><span class="p">,</span> <span class="n">FPU</span><span class="p">,</span> <span class="n">FPU_VEC</span><span class="p">}))</span> <span class="k">begin</span>
-<a name="l-227"></a>
-<a name="l-228"></a>                <span class="k">if</span> <span class="p">(</span><span class="n">is_rd_fpr</span><span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">op</span><span class="p">))</span>
-<a name="l-229"></a>                    <span class="n">we_fpr_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-230"></a>                <span class="k">else</span>
-<a name="l-231"></a>                    <span class="n">we_gpr_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-232"></a>
-<a name="l-233"></a>                <span class="n">commit_ack_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-234"></a>
-<a name="l-235"></a>                <span class="c1">// additionally check if we are retiring an FPU instruction because we need to make sure that we write all</span>
-<a name="l-236"></a>                <span class="c1">// exception flags</span>
-<a name="l-237"></a>                <span class="k">if</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">fu</span> <span class="k">inside</span> <span class="p">{</span><span class="n">FPU</span><span class="p">,</span> <span class="n">FPU_VEC</span><span class="p">})</span> <span class="k">begin</span>
-<a name="l-238"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">csr_write_fflags_o</span><span class="p">)</span>
-<a name="l-239"></a>                        <span class="n">csr_wdata_o</span> <span class="o">=</span> <span class="p">{</span><span class="mh">59</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">cause</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">|</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">cause</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">])};</span>
-<a name="l-240"></a>                    <span class="k">else</span>
-<a name="l-241"></a>                        <span class="n">csr_wdata_o</span> <span class="o">=</span> <span class="p">{</span><span class="mh">59</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">cause</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-242"></a>
-<a name="l-243"></a>                    <span class="n">csr_write_fflags_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-244"></a>                <span class="k">end</span>
-<a name="l-245"></a>            <span class="k">end</span>
-<a name="l-246"></a>        <span class="k">end</span>
-<a name="l-247"></a>    <span class="k">end</span>
-<a name="l-248"></a>
-<a name="l-249"></a>    <span class="c1">// -----------------------------</span>
-<a name="l-250"></a>    <span class="c1">// Exception &amp; Interrupt Logic</span>
+<a name="l-212"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">NR_COMMIT_PORTS</span> <span class="o">&gt;</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-213"></a>            <span class="c1">// -----------------</span>
+<a name="l-214"></a>            <span class="c1">// Commit Port 2</span>
+<a name="l-215"></a>            <span class="c1">// -----------------</span>
+<a name="l-216"></a>            <span class="c1">// check if the second instruction can be committed as well and the first wasn&#39;t a CSR instruction</span>
+<a name="l-217"></a>            <span class="c1">// also if we are in single step mode don&#39;t retire the second instruction</span>
+<a name="l-218"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">commit_ack_o</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">valid</span>
+<a name="l-219"></a>                                <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">halt_i</span>
+<a name="l-220"></a>                                <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">fu</span> <span class="k">inside</span> <span class="p">{</span><span class="n">CSR</span><span class="p">})</span>
+<a name="l-221"></a>                                <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">flush_dcache_i</span>
+<a name="l-222"></a>                                <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">instr_0_is_amo</span>
+<a name="l-223"></a>                                <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">single_step_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-224"></a>                <span class="c1">// only if the first instruction didn&#39;t throw an exception and this instruction won&#39;t throw an exception</span>
+<a name="l-225"></a>                <span class="c1">// and the functional unit is of type ALU, LOAD, CTRL_FLOW, MULT, FPU or FPU_VEC</span>
+<a name="l-226"></a>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">exception_o</span><span class="p">.</span><span class="n">valid</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">valid</span>
+<a name="l-227"></a>                                       <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">fu</span> <span class="k">inside</span> <span class="p">{</span><span class="n">ALU</span><span class="p">,</span> <span class="n">LOAD</span><span class="p">,</span> <span class="n">CTRL_FLOW</span><span class="p">,</span> <span class="n">MULT</span><span class="p">,</span> <span class="n">FPU</span><span class="p">,</span> <span class="n">FPU_VEC</span><span class="p">}))</span> <span class="k">begin</span>
+<a name="l-228"></a>
+<a name="l-229"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">is_rd_fpr</span><span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">op</span><span class="p">))</span>
+<a name="l-230"></a>                        <span class="n">we_fpr_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-231"></a>                    <span class="k">else</span>
+<a name="l-232"></a>                        <span class="n">we_gpr_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-233"></a>
+<a name="l-234"></a>                    <span class="n">commit_ack_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-235"></a>
+<a name="l-236"></a>                    <span class="c1">// additionally check if we are retiring an FPU instruction because we need to make sure that we write all</span>
+<a name="l-237"></a>                    <span class="c1">// exception flags</span>
+<a name="l-238"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">fu</span> <span class="k">inside</span> <span class="p">{</span><span class="n">FPU</span><span class="p">,</span> <span class="n">FPU_VEC</span><span class="p">})</span> <span class="k">begin</span>
+<a name="l-239"></a>                        <span class="k">if</span> <span class="p">(</span><span class="n">csr_write_fflags_o</span><span class="p">)</span>
+<a name="l-240"></a>                            <span class="n">csr_wdata_o</span> <span class="o">=</span> <span class="p">{</span><span class="mh">59</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">cause</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">|</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">cause</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">])};</span>
+<a name="l-241"></a>                        <span class="k">else</span>
+<a name="l-242"></a>                            <span class="n">csr_wdata_o</span> <span class="o">=</span> <span class="p">{</span><span class="mh">59</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">1</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">cause</span><span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-243"></a>
+<a name="l-244"></a>                        <span class="n">csr_write_fflags_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-245"></a>                    <span class="k">end</span>
+<a name="l-246"></a>                <span class="k">end</span>
+<a name="l-247"></a>            <span class="k">end</span>
+<a name="l-248"></a>        <span class="k">end</span>
+<a name="l-249"></a>    <span class="k">end</span>
+<a name="l-250"></a>
 <a name="l-251"></a>    <span class="c1">// -----------------------------</span>
-<a name="l-252"></a>    <span class="c1">// here we know for sure that we are taking the exception</span>
-<a name="l-253"></a>    <span class="k">always_comb</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">exception_handling</span>
-<a name="l-254"></a>        <span class="c1">// Multiple simultaneous interrupts and traps at the same privilege level are handled in the following decreasing</span>
-<a name="l-255"></a>        <span class="c1">// priority order: external interrupts, software interrupts, timer interrupts, then finally any synchronous traps. (1.10 p.30)</span>
-<a name="l-256"></a>        <span class="c1">// interrupts are correctly prioritized in the CSR reg file, exceptions are prioritized here</span>
-<a name="l-257"></a>        <span class="n">exception_o</span><span class="p">.</span><span class="n">valid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-258"></a>        <span class="n">exception_o</span><span class="p">.</span><span class="n">cause</span> <span class="o">=</span> <span class="mh">64</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-259"></a>        <span class="n">exception_o</span><span class="p">.</span><span class="n">tval</span>  <span class="o">=</span> <span class="mh">64</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-260"></a>        <span class="c1">// we need a valid instruction in the commit stage</span>
-<a name="l-261"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">valid</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-262"></a>            <span class="c1">// ------------------------</span>
-<a name="l-263"></a>            <span class="c1">// check for CSR exception</span>
+<a name="l-252"></a>    <span class="c1">// Exception &amp; Interrupt Logic</span>
+<a name="l-253"></a>    <span class="c1">// -----------------------------</span>
+<a name="l-254"></a>    <span class="c1">// here we know for sure that we are taking the exception</span>
+<a name="l-255"></a>    <span class="k">always_comb</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">exception_handling</span>
+<a name="l-256"></a>        <span class="c1">// Multiple simultaneous interrupts and traps at the same privilege level are handled in the following decreasing</span>
+<a name="l-257"></a>        <span class="c1">// priority order: external interrupts, software interrupts, timer interrupts, then finally any synchronous traps. (1.10 p.30)</span>
+<a name="l-258"></a>        <span class="c1">// interrupts are correctly prioritized in the CSR reg file, exceptions are prioritized here</span>
+<a name="l-259"></a>        <span class="n">exception_o</span><span class="p">.</span><span class="n">valid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-260"></a>        <span class="n">exception_o</span><span class="p">.</span><span class="n">cause</span> <span class="o">=</span> <span class="mh">64</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-261"></a>        <span class="n">exception_o</span><span class="p">.</span><span class="n">tval</span>  <span class="o">=</span> <span class="mh">64</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-262"></a>        <span class="c1">// we need a valid instruction in the commit stage</span>
+<a name="l-263"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">valid</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-264"></a>            <span class="c1">// ------------------------</span>
-<a name="l-265"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">csr_exception_i</span><span class="p">.</span><span class="n">valid</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-266"></a>                <span class="n">exception_o</span>      <span class="o">=</span> <span class="n">csr_exception_i</span><span class="p">;</span>
-<a name="l-267"></a>                <span class="c1">// if no earlier exception happened the commit instruction will still contain</span>
-<a name="l-268"></a>                <span class="c1">// the instruction bits from the ID stage. If a earlier exception happened we don&#39;t care</span>
-<a name="l-269"></a>                <span class="c1">// as we will overwrite it anyway in the next IF bl</span>
-<a name="l-270"></a>                <span class="n">exception_o</span><span class="p">.</span><span class="n">tval</span> <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">tval</span><span class="p">;</span>
-<a name="l-271"></a>            <span class="k">end</span>
-<a name="l-272"></a>            <span class="c1">// ------------------------</span>
-<a name="l-273"></a>            <span class="c1">// Earlier Exceptions</span>
+<a name="l-265"></a>            <span class="c1">// check for CSR exception</span>
+<a name="l-266"></a>            <span class="c1">// ------------------------</span>
+<a name="l-267"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">csr_exception_i</span><span class="p">.</span><span class="n">valid</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-268"></a>                <span class="n">exception_o</span>      <span class="o">=</span> <span class="n">csr_exception_i</span><span class="p">;</span>
+<a name="l-269"></a>                <span class="c1">// if no earlier exception happened the commit instruction will still contain</span>
+<a name="l-270"></a>                <span class="c1">// the instruction bits from the ID stage. If a earlier exception happened we don&#39;t care</span>
+<a name="l-271"></a>                <span class="c1">// as we will overwrite it anyway in the next IF bl</span>
+<a name="l-272"></a>                <span class="n">exception_o</span><span class="p">.</span><span class="n">tval</span> <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">tval</span><span class="p">;</span>
+<a name="l-273"></a>            <span class="k">end</span>
 <a name="l-274"></a>            <span class="c1">// ------------------------</span>
-<a name="l-275"></a>            <span class="c1">// but we give precedence to exceptions which happened earlier e.g.: instruction page</span>
-<a name="l-276"></a>            <span class="c1">// faults for example</span>
-<a name="l-277"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">valid</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-278"></a>                <span class="n">exception_o</span> <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">;</span>
-<a name="l-279"></a>            <span class="k">end</span>
-<a name="l-280"></a>        <span class="k">end</span>
-<a name="l-281"></a>        <span class="c1">// Don&#39;t take any exceptions iff:</span>
-<a name="l-282"></a>        <span class="c1">// - If we halted the processor</span>
-<a name="l-283"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">halt_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-284"></a>            <span class="n">exception_o</span><span class="p">.</span><span class="n">valid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-285"></a>        <span class="k">end</span>
-<a name="l-286"></a>    <span class="k">end</span>
-<a name="l-287"></a><span class="k">endmodule</span>
+<a name="l-275"></a>            <span class="c1">// Earlier Exceptions</span>
+<a name="l-276"></a>            <span class="c1">// ------------------------</span>
+<a name="l-277"></a>            <span class="c1">// but we give precedence to exceptions which happened earlier e.g.: instruction page</span>
+<a name="l-278"></a>            <span class="c1">// faults for example</span>
+<a name="l-279"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">.</span><span class="n">valid</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-280"></a>                <span class="n">exception_o</span> <span class="o">=</span> <span class="n">commit_instr_i</span><span class="p">[</span><span class="mh">0</span><span class="p">].</span><span class="n">ex</span><span class="p">;</span>
+<a name="l-281"></a>            <span class="k">end</span>
+<a name="l-282"></a>        <span class="k">end</span>
+<a name="l-283"></a>        <span class="c1">// Don&#39;t take any exceptions iff:</span>
+<a name="l-284"></a>        <span class="c1">// - If we halted the processor</span>
+<a name="l-285"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">halt_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-286"></a>            <span class="n">exception_o</span><span class="p">.</span><span class="n">valid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-287"></a>        <span class="k">end</span>
+<a name="l-288"></a>    <span class="k">end</span>
+<a name="l-289"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

@@ -1,0 +1,64 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+rc: 0 (means success: 1)
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_bypass.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_bypass.v</a>
+time_elapsed: 0.292s
+ram usage: 15564 KB
+</pre>
+<pre class="log">
+
+zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dataflow <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_bypass.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_bypass.v</a>
+module bsg_fifo_bypass (
+	data_i,
+	v_i,
+	ready_o,
+	data_o,
+	v_o,
+	yumi_i,
+	fifo_data_o,
+	fifo_v_o,
+	fifo_ready_i,
+	fifo_data_i,
+	fifo_v_i,
+	fifo_yumi_o
+);
+	parameter width_p = &#34;inv&#34;;
+	parameter ready_THEN_valid_p = 0;
+	input [width_p - 1:0] data_i;
+	input v_i;
+	output wire ready_o;
+	output wire [width_p - 1:0] data_o;
+	output wire v_o;
+	input yumi_i;
+	output wire [width_p - 1:0] fifo_data_o;
+	output wire fifo_v_o;
+	input fifo_ready_i;
+	input [width_p - 1:0] fifo_data_i;
+	input fifo_v_i;
+	output fifo_yumi_o;
+	wire enq = (ready_THEN_valid_p ? v_i : ready_o &amp; v_i);
+	assign ready_o = fifo_ready_i;
+	assign fifo_data_o = data_i;
+	assign fifo_v_o = enq &amp; (fifo_v_i | ~yumi_i);
+	assign data_o = (fifo_v_i ? fifo_data_i : data_i);
+	assign v_o = fifo_v_i | enq;
+	assign fifo_yumi_o = fifo_v_i &amp; yumi_i;
+endmodule
+
+</pre>
+</body>
