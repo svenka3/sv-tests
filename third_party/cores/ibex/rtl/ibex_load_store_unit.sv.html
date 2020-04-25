@@ -536,7 +536,8 @@
 <a href="#l-528">528</a>
 <a href="#l-529">529</a>
 <a href="#l-530">530</a>
-<a href="#l-531">531</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-531">531</a>
+<a href="#l-532">532</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna, see also CREDITS.md.</span>
 <a name="l-3"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-4"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
@@ -890,183 +891,184 @@
 <a name="l-352"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">ls_fsm_cs</span><span class="p">)</span>
 <a name="l-353"></a>
 <a name="l-354"></a>      <span class="nl">IDLE:</span> <span class="k">begin</span>
-<a name="l-355"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">lsu_req_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-356"></a>          <span class="n">data_req_o</span>   <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-357"></a>          <span class="n">pmp_err_d</span>    <span class="o">=</span> <span class="n">data_pmp_err_i</span><span class="p">;</span>
-<a name="l-358"></a>          <span class="n">lsu_err_d</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-359"></a>          <span class="n">perf_load_o</span>  <span class="o">=</span> <span class="o">~</span><span class="n">lsu_we_i</span><span class="p">;</span>
-<a name="l-360"></a>          <span class="n">perf_store_o</span> <span class="o">=</span> <span class="n">lsu_we_i</span><span class="p">;</span>
-<a name="l-361"></a>
-<a name="l-362"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-363"></a>            <span class="n">ctrl_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-364"></a>            <span class="n">addr_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-365"></a>            <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="n">split_misaligned_access</span><span class="p">;</span>
-<a name="l-366"></a>            <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">split_misaligned_access</span> <span class="o">?</span> <span class="n">WAIT_RVALID_MIS</span> <span class="o">:</span> <span class="n">IDLE</span><span class="p">;</span>
-<a name="l-367"></a>          <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-368"></a>            <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">split_misaligned_access</span> <span class="o">?</span> <span class="n">WAIT_GNT_MIS</span>    <span class="o">:</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
-<a name="l-369"></a>          <span class="k">end</span>
-<a name="l-370"></a>        <span class="k">end</span>
-<a name="l-371"></a>      <span class="k">end</span>
-<a name="l-372"></a>
-<a name="l-373"></a>      <span class="nl">WAIT_GNT_MIS:</span> <span class="k">begin</span>
-<a name="l-374"></a>        <span class="n">data_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-375"></a>        <span class="c1">// data_pmp_err_i is valid during the address phase of a request. An error will block the</span>
-<a name="l-376"></a>        <span class="c1">// external request and so a data_gnt_i might never be signalled. The registered version</span>
-<a name="l-377"></a>        <span class="c1">// pmp_err_q is only updated for new address phases and so can be used in WAIT_GNT* and</span>
-<a name="l-378"></a>        <span class="c1">// WAIT_RVALID* states</span>
-<a name="l-379"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span> <span class="o">||</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-380"></a>          <span class="n">addr_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-381"></a>          <span class="n">ctrl_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-382"></a>          <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-383"></a>          <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">WAIT_RVALID_MIS</span><span class="p">;</span>
-<a name="l-384"></a>        <span class="k">end</span>
-<a name="l-385"></a>      <span class="k">end</span>
-<a name="l-386"></a>
-<a name="l-387"></a>      <span class="nl">WAIT_RVALID_MIS:</span> <span class="k">begin</span>
-<a name="l-388"></a>        <span class="c1">// push out second request</span>
-<a name="l-389"></a>        <span class="n">data_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-390"></a>        <span class="c1">// tell ID/EX stage to update the address</span>
-<a name="l-391"></a>        <span class="n">addr_incr_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-392"></a>
-<a name="l-393"></a>        <span class="c1">// first part rvalid is received, or gets a PMP error</span>
-<a name="l-394"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_rvalid_i</span> <span class="o">||</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-395"></a>          <span class="c1">// Update the PMP error for the second part</span>
-<a name="l-396"></a>          <span class="n">pmp_err_d</span> <span class="o">=</span> <span class="n">data_pmp_err_i</span><span class="p">;</span>
-<a name="l-397"></a>          <span class="c1">// Record the error status of the first part</span>
-<a name="l-398"></a>          <span class="n">lsu_err_d</span> <span class="o">=</span> <span class="n">data_err_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">;</span>
-<a name="l-399"></a>          <span class="c1">// Capture the first rdata for loads</span>
-<a name="l-400"></a>          <span class="n">rdata_update</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
-<a name="l-401"></a>          <span class="c1">// If already granted, wait for second rvalid</span>
-<a name="l-402"></a>          <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">data_gnt_i</span> <span class="o">?</span> <span class="n">IDLE</span> <span class="o">:</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
-<a name="l-403"></a>          <span class="c1">// Update the address for the second part, if no error</span>
-<a name="l-404"></a>          <span class="n">addr_update</span> <span class="o">=</span> <span class="n">data_gnt_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">data_err_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">);</span>
-<a name="l-405"></a>          <span class="c1">// clear handle_misaligned if second request is granted</span>
-<a name="l-406"></a>          <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_gnt_i</span><span class="p">;</span>
-<a name="l-407"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-408"></a>          <span class="c1">// first part rvalid is NOT received</span>
-<a name="l-409"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-410"></a>            <span class="c1">// second grant is received</span>
-<a name="l-411"></a>            <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">WAIT_RVALID_MIS_GNTS_DONE</span><span class="p">;</span>
-<a name="l-412"></a>            <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-413"></a>          <span class="k">end</span>
-<a name="l-414"></a>        <span class="k">end</span>
-<a name="l-415"></a>      <span class="k">end</span>
-<a name="l-416"></a>
-<a name="l-417"></a>      <span class="nl">WAIT_GNT:</span> <span class="k">begin</span>
-<a name="l-418"></a>        <span class="c1">// tell ID/EX stage to update the address</span>
-<a name="l-419"></a>        <span class="n">addr_incr_req_o</span> <span class="o">=</span> <span class="n">handle_misaligned_q</span><span class="p">;</span>
-<a name="l-420"></a>        <span class="n">data_req_o</span>      <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-421"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span> <span class="o">||</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-422"></a>          <span class="n">ctrl_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-423"></a>          <span class="c1">// Update the address, unless there was an error</span>
-<a name="l-424"></a>          <span class="n">addr_update</span>         <span class="o">=</span> <span class="o">~</span><span class="n">lsu_err_q</span><span class="p">;</span>
-<a name="l-425"></a>          <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
-<a name="l-426"></a>          <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-427"></a>        <span class="k">end</span>
-<a name="l-428"></a>      <span class="k">end</span>
-<a name="l-429"></a>
-<a name="l-430"></a>      <span class="nl">WAIT_RVALID_MIS_GNTS_DONE:</span> <span class="k">begin</span>
-<a name="l-431"></a>        <span class="c1">// tell ID/EX stage to update the address (to make sure the</span>
-<a name="l-432"></a>        <span class="c1">// second address can be captured correctly for mtval and PMP checking)</span>
-<a name="l-433"></a>        <span class="n">addr_incr_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-434"></a>        <span class="c1">// Wait for the first rvalid, second request is already granted</span>
-<a name="l-435"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_rvalid_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-436"></a>          <span class="c1">// Update the pmp error for the second part</span>
-<a name="l-437"></a>          <span class="n">pmp_err_d</span> <span class="o">=</span> <span class="n">data_pmp_err_i</span><span class="p">;</span>
-<a name="l-438"></a>          <span class="c1">// The first part cannot see a PMP error in this state</span>
-<a name="l-439"></a>          <span class="n">lsu_err_d</span> <span class="o">=</span> <span class="n">data_err_i</span><span class="p">;</span>
-<a name="l-440"></a>          <span class="c1">// Now we can update the address for the second part if no error</span>
-<a name="l-441"></a>          <span class="n">addr_update</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_err_i</span><span class="p">;</span>
-<a name="l-442"></a>          <span class="c1">// Capture the first rdata for loads</span>
-<a name="l-443"></a>          <span class="n">rdata_update</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
-<a name="l-444"></a>          <span class="c1">// Wait for second rvalid</span>
-<a name="l-445"></a>          <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
-<a name="l-446"></a>        <span class="k">end</span>
-<a name="l-447"></a>      <span class="k">end</span>
-<a name="l-448"></a>
-<a name="l-449"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-450"></a>        <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
-<a name="l-451"></a>      <span class="k">end</span>
-<a name="l-452"></a>    <span class="k">endcase</span>
-<a name="l-453"></a>  <span class="k">end</span>
-<a name="l-454"></a>
-<a name="l-455"></a>  <span class="k">assign</span> <span class="n">lsu_req_done_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">lsu_req_i</span> <span class="o">|</span> <span class="p">(</span><span class="n">ls_fsm_cs</span> <span class="o">!=</span> <span class="n">IDLE</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ls_fsm_ns</span> <span class="o">==</span> <span class="n">IDLE</span><span class="p">);</span>
-<a name="l-456"></a>
-<a name="l-457"></a>  <span class="c1">// registers for FSM</span>
-<a name="l-458"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-459"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-460"></a>      <span class="n">ls_fsm_cs</span>           <span class="o">&lt;=</span> <span class="n">IDLE</span><span class="p">;</span>
-<a name="l-461"></a>      <span class="n">handle_misaligned_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-462"></a>      <span class="n">pmp_err_q</span>           <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-463"></a>      <span class="n">lsu_err_q</span>           <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-464"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-465"></a>      <span class="n">ls_fsm_cs</span>           <span class="o">&lt;=</span> <span class="n">ls_fsm_ns</span><span class="p">;</span>
-<a name="l-466"></a>      <span class="n">handle_misaligned_q</span> <span class="o">&lt;=</span> <span class="n">handle_misaligned_d</span><span class="p">;</span>
-<a name="l-467"></a>      <span class="n">pmp_err_q</span>           <span class="o">&lt;=</span> <span class="n">pmp_err_d</span><span class="p">;</span>
-<a name="l-468"></a>      <span class="n">lsu_err_q</span>           <span class="o">&lt;=</span> <span class="n">lsu_err_d</span><span class="p">;</span>
-<a name="l-469"></a>    <span class="k">end</span>
-<a name="l-470"></a>  <span class="k">end</span>
-<a name="l-471"></a>
-<a name="l-472"></a>  <span class="c1">/////////////</span>
-<a name="l-473"></a>  <span class="c1">// Outputs //</span>
-<a name="l-474"></a>  <span class="c1">/////////////</span>
-<a name="l-475"></a>
-<a name="l-476"></a>  <span class="k">assign</span> <span class="n">data_or_pmp_err</span>    <span class="o">=</span> <span class="n">lsu_err_q</span> <span class="o">|</span> <span class="n">data_err_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">;</span>
-<a name="l-477"></a>  <span class="k">assign</span> <span class="n">lsu_resp_valid_o</span>   <span class="o">=</span> <span class="p">(</span><span class="n">data_rvalid_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ls_fsm_cs</span> <span class="o">==</span> <span class="n">IDLE</span><span class="p">);</span>
-<a name="l-478"></a>  <span class="k">assign</span> <span class="n">lsu_rdata_valid_o</span>  <span class="o">=</span> <span class="n">lsu_resp_valid_o</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
-<a name="l-479"></a>
-<a name="l-480"></a>  <span class="c1">// output to register file</span>
-<a name="l-481"></a>  <span class="k">assign</span> <span class="n">lsu_rdata_o</span> <span class="o">=</span> <span class="n">data_rdata_ext</span><span class="p">;</span>
-<a name="l-482"></a>
-<a name="l-483"></a>  <span class="c1">// output data address must be word aligned</span>
-<a name="l-484"></a>  <span class="k">assign</span> <span class="n">data_addr_w_aligned</span> <span class="o">=</span> <span class="p">{</span><span class="n">data_addr</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">2</span><span class="p">],</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">};</span>
-<a name="l-485"></a>
-<a name="l-486"></a>  <span class="c1">// output to data interface</span>
-<a name="l-487"></a>  <span class="k">assign</span> <span class="n">data_addr_o</span>   <span class="o">=</span> <span class="n">data_addr_w_aligned</span><span class="p">;</span>
-<a name="l-488"></a>  <span class="k">assign</span> <span class="n">data_wdata_o</span>  <span class="o">=</span> <span class="n">data_wdata</span><span class="p">;</span>
-<a name="l-489"></a>  <span class="k">assign</span> <span class="n">data_we_o</span>     <span class="o">=</span> <span class="n">lsu_we_i</span><span class="p">;</span>
-<a name="l-490"></a>  <span class="k">assign</span> <span class="n">data_be_o</span>     <span class="o">=</span> <span class="n">data_be</span><span class="p">;</span>
-<a name="l-491"></a>
-<a name="l-492"></a>  <span class="c1">// output to ID stage: mtval + AGU for misaligned transactions</span>
-<a name="l-493"></a>  <span class="k">assign</span> <span class="n">addr_last_o</span>   <span class="o">=</span> <span class="n">addr_last_q</span><span class="p">;</span>
-<a name="l-494"></a>
-<a name="l-495"></a>  <span class="c1">// Signal a load or store error depending on the transaction type outstanding</span>
-<a name="l-496"></a>  <span class="k">assign</span> <span class="n">load_err_o</span>    <span class="o">=</span> <span class="n">data_or_pmp_err</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">data_we_q</span> <span class="o">&amp;</span> <span class="n">lsu_resp_valid_o</span><span class="p">;</span>
-<a name="l-497"></a>  <span class="k">assign</span> <span class="n">store_err_o</span>   <span class="o">=</span> <span class="n">data_or_pmp_err</span> <span class="o">&amp;</span>  <span class="n">data_we_q</span> <span class="o">&amp;</span> <span class="n">lsu_resp_valid_o</span><span class="p">;</span>
-<a name="l-498"></a>
-<a name="l-499"></a>  <span class="k">assign</span> <span class="n">busy_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">ls_fsm_cs</span> <span class="o">!=</span> <span class="n">IDLE</span><span class="p">);</span>
-<a name="l-500"></a>  <span class="k">assign</span> <span class="n">load_o</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
-<a name="l-501"></a>
-<a name="l-502"></a>  <span class="c1">////////////////</span>
-<a name="l-503"></a>  <span class="c1">// Assertions //</span>
-<a name="l-504"></a>  <span class="c1">////////////////</span>
-<a name="l-505"></a>
-<a name="l-506"></a>  <span class="k">logic</span> <span class="n">unused_instr_valid_id</span><span class="p">;</span>
-<a name="l-507"></a>  <span class="k">logic</span> <span class="n">unused_illegal_insn_id</span><span class="p">;</span>
-<a name="l-508"></a>
-<a name="l-509"></a>  <span class="c1">// Inputs only used for assertions</span>
-<a name="l-510"></a>  <span class="k">assign</span> <span class="n">unused_instr_valid_id</span>  <span class="o">=</span> <span class="n">instr_valid_id_i</span><span class="p">;</span>
-<a name="l-511"></a>  <span class="k">assign</span> <span class="n">unused_illegal_insn_id</span> <span class="o">=</span> <span class="n">illegal_insn_id_i</span><span class="p">;</span>
-<a name="l-512"></a>
-<a name="l-513"></a>  <span class="c1">// Selectors must be known/valid.</span>
-<a name="l-514"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataTypeKnown</span><span class="p">,</span> <span class="p">(</span><span class="n">instr_valid_id_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">illegal_insn_id_i</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">lsu_type_i</span><span class="p">))</span>
-<a name="l-515"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataOffsetKnown</span><span class="p">,</span> <span class="p">(</span><span class="n">instr_valid_id_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">illegal_insn_id_i</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">data_offset</span><span class="p">))</span>
-<a name="l-516"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IbexRDataOffsetQKnown</span><span class="p">,</span> <span class="n">rdata_offset_q</span><span class="p">)</span>
-<a name="l-517"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IbexDataTypeQKnown</span><span class="p">,</span> <span class="n">data_type_q</span><span class="p">)</span>
-<a name="l-518"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexLsuStateValid</span><span class="p">,</span> <span class="n">ls_fsm_cs</span> <span class="k">inside</span> <span class="p">{</span>
-<a name="l-519"></a>      <span class="n">IDLE</span><span class="p">,</span> <span class="n">WAIT_GNT_MIS</span><span class="p">,</span> <span class="n">WAIT_RVALID_MIS</span><span class="p">,</span> <span class="n">WAIT_GNT</span><span class="p">,</span>
-<a name="l-520"></a>      <span class="n">WAIT_RVALID_MIS_GNTS_DONE</span><span class="p">})</span>
-<a name="l-521"></a>
-<a name="l-522"></a>  <span class="c1">// Errors must only be sent together with rvalid.</span>
-<a name="l-523"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataErrWithoutRvalid</span><span class="p">,</span> <span class="n">data_err_i</span> <span class="o">|-&gt;</span> <span class="n">data_rvalid_i</span><span class="p">)</span>
-<a name="l-524"></a>
-<a name="l-525"></a>  <span class="c1">// Address must not contain X when request is sent.</span>
-<a name="l-526"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataAddrUnknown</span><span class="p">,</span> <span class="n">data_req_o</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">data_addr_o</span><span class="p">))</span>
-<a name="l-527"></a>
-<a name="l-528"></a>  <span class="c1">// Address must be word aligned when request is sent.</span>
-<a name="l-529"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataAddrUnaligned</span><span class="p">,</span> <span class="n">data_req_o</span> <span class="o">|-&gt;</span> <span class="p">(</span><span class="n">data_addr_o</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">))</span>
-<a name="l-530"></a>
-<a name="l-531"></a><span class="k">endmodule</span>
+<a name="l-355"></a>        <span class="n">pmp_err_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-356"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">lsu_req_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-357"></a>          <span class="n">data_req_o</span>   <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-358"></a>          <span class="n">pmp_err_d</span>    <span class="o">=</span> <span class="n">data_pmp_err_i</span><span class="p">;</span>
+<a name="l-359"></a>          <span class="n">lsu_err_d</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-360"></a>          <span class="n">perf_load_o</span>  <span class="o">=</span> <span class="o">~</span><span class="n">lsu_we_i</span><span class="p">;</span>
+<a name="l-361"></a>          <span class="n">perf_store_o</span> <span class="o">=</span> <span class="n">lsu_we_i</span><span class="p">;</span>
+<a name="l-362"></a>
+<a name="l-363"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-364"></a>            <span class="n">ctrl_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-365"></a>            <span class="n">addr_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-366"></a>            <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="n">split_misaligned_access</span><span class="p">;</span>
+<a name="l-367"></a>            <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">split_misaligned_access</span> <span class="o">?</span> <span class="n">WAIT_RVALID_MIS</span> <span class="o">:</span> <span class="n">IDLE</span><span class="p">;</span>
+<a name="l-368"></a>          <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-369"></a>            <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">split_misaligned_access</span> <span class="o">?</span> <span class="n">WAIT_GNT_MIS</span>    <span class="o">:</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
+<a name="l-370"></a>          <span class="k">end</span>
+<a name="l-371"></a>        <span class="k">end</span>
+<a name="l-372"></a>      <span class="k">end</span>
+<a name="l-373"></a>
+<a name="l-374"></a>      <span class="nl">WAIT_GNT_MIS:</span> <span class="k">begin</span>
+<a name="l-375"></a>        <span class="n">data_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-376"></a>        <span class="c1">// data_pmp_err_i is valid during the address phase of a request. An error will block the</span>
+<a name="l-377"></a>        <span class="c1">// external request and so a data_gnt_i might never be signalled. The registered version</span>
+<a name="l-378"></a>        <span class="c1">// pmp_err_q is only updated for new address phases and so can be used in WAIT_GNT* and</span>
+<a name="l-379"></a>        <span class="c1">// WAIT_RVALID* states</span>
+<a name="l-380"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span> <span class="o">||</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-381"></a>          <span class="n">addr_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-382"></a>          <span class="n">ctrl_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-383"></a>          <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-384"></a>          <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">WAIT_RVALID_MIS</span><span class="p">;</span>
+<a name="l-385"></a>        <span class="k">end</span>
+<a name="l-386"></a>      <span class="k">end</span>
+<a name="l-387"></a>
+<a name="l-388"></a>      <span class="nl">WAIT_RVALID_MIS:</span> <span class="k">begin</span>
+<a name="l-389"></a>        <span class="c1">// push out second request</span>
+<a name="l-390"></a>        <span class="n">data_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-391"></a>        <span class="c1">// tell ID/EX stage to update the address</span>
+<a name="l-392"></a>        <span class="n">addr_incr_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-393"></a>
+<a name="l-394"></a>        <span class="c1">// first part rvalid is received, or gets a PMP error</span>
+<a name="l-395"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_rvalid_i</span> <span class="o">||</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-396"></a>          <span class="c1">// Update the PMP error for the second part</span>
+<a name="l-397"></a>          <span class="n">pmp_err_d</span> <span class="o">=</span> <span class="n">data_pmp_err_i</span><span class="p">;</span>
+<a name="l-398"></a>          <span class="c1">// Record the error status of the first part</span>
+<a name="l-399"></a>          <span class="n">lsu_err_d</span> <span class="o">=</span> <span class="n">data_err_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">;</span>
+<a name="l-400"></a>          <span class="c1">// Capture the first rdata for loads</span>
+<a name="l-401"></a>          <span class="n">rdata_update</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
+<a name="l-402"></a>          <span class="c1">// If already granted, wait for second rvalid</span>
+<a name="l-403"></a>          <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">data_gnt_i</span> <span class="o">?</span> <span class="n">IDLE</span> <span class="o">:</span> <span class="n">WAIT_GNT</span><span class="p">;</span>
+<a name="l-404"></a>          <span class="c1">// Update the address for the second part, if no error</span>
+<a name="l-405"></a>          <span class="n">addr_update</span> <span class="o">=</span> <span class="n">data_gnt_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">data_err_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">);</span>
+<a name="l-406"></a>          <span class="c1">// clear handle_misaligned if second request is granted</span>
+<a name="l-407"></a>          <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_gnt_i</span><span class="p">;</span>
+<a name="l-408"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-409"></a>          <span class="c1">// first part rvalid is NOT received</span>
+<a name="l-410"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-411"></a>            <span class="c1">// second grant is received</span>
+<a name="l-412"></a>            <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">WAIT_RVALID_MIS_GNTS_DONE</span><span class="p">;</span>
+<a name="l-413"></a>            <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-414"></a>          <span class="k">end</span>
+<a name="l-415"></a>        <span class="k">end</span>
+<a name="l-416"></a>      <span class="k">end</span>
+<a name="l-417"></a>
+<a name="l-418"></a>      <span class="nl">WAIT_GNT:</span> <span class="k">begin</span>
+<a name="l-419"></a>        <span class="c1">// tell ID/EX stage to update the address</span>
+<a name="l-420"></a>        <span class="n">addr_incr_req_o</span> <span class="o">=</span> <span class="n">handle_misaligned_q</span><span class="p">;</span>
+<a name="l-421"></a>        <span class="n">data_req_o</span>      <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-422"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_gnt_i</span> <span class="o">||</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-423"></a>          <span class="n">ctrl_update</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-424"></a>          <span class="c1">// Update the address, unless there was an error</span>
+<a name="l-425"></a>          <span class="n">addr_update</span>         <span class="o">=</span> <span class="o">~</span><span class="n">lsu_err_q</span><span class="p">;</span>
+<a name="l-426"></a>          <span class="n">ls_fsm_ns</span>           <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+<a name="l-427"></a>          <span class="n">handle_misaligned_d</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-428"></a>        <span class="k">end</span>
+<a name="l-429"></a>      <span class="k">end</span>
+<a name="l-430"></a>
+<a name="l-431"></a>      <span class="nl">WAIT_RVALID_MIS_GNTS_DONE:</span> <span class="k">begin</span>
+<a name="l-432"></a>        <span class="c1">// tell ID/EX stage to update the address (to make sure the</span>
+<a name="l-433"></a>        <span class="c1">// second address can be captured correctly for mtval and PMP checking)</span>
+<a name="l-434"></a>        <span class="n">addr_incr_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-435"></a>        <span class="c1">// Wait for the first rvalid, second request is already granted</span>
+<a name="l-436"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">data_rvalid_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-437"></a>          <span class="c1">// Update the pmp error for the second part</span>
+<a name="l-438"></a>          <span class="n">pmp_err_d</span> <span class="o">=</span> <span class="n">data_pmp_err_i</span><span class="p">;</span>
+<a name="l-439"></a>          <span class="c1">// The first part cannot see a PMP error in this state</span>
+<a name="l-440"></a>          <span class="n">lsu_err_d</span> <span class="o">=</span> <span class="n">data_err_i</span><span class="p">;</span>
+<a name="l-441"></a>          <span class="c1">// Now we can update the address for the second part if no error</span>
+<a name="l-442"></a>          <span class="n">addr_update</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_err_i</span><span class="p">;</span>
+<a name="l-443"></a>          <span class="c1">// Capture the first rdata for loads</span>
+<a name="l-444"></a>          <span class="n">rdata_update</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
+<a name="l-445"></a>          <span class="c1">// Wait for second rvalid</span>
+<a name="l-446"></a>          <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+<a name="l-447"></a>        <span class="k">end</span>
+<a name="l-448"></a>      <span class="k">end</span>
+<a name="l-449"></a>
+<a name="l-450"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-451"></a>        <span class="n">ls_fsm_ns</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+<a name="l-452"></a>      <span class="k">end</span>
+<a name="l-453"></a>    <span class="k">endcase</span>
+<a name="l-454"></a>  <span class="k">end</span>
+<a name="l-455"></a>
+<a name="l-456"></a>  <span class="k">assign</span> <span class="n">lsu_req_done_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">lsu_req_i</span> <span class="o">|</span> <span class="p">(</span><span class="n">ls_fsm_cs</span> <span class="o">!=</span> <span class="n">IDLE</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ls_fsm_ns</span> <span class="o">==</span> <span class="n">IDLE</span><span class="p">);</span>
+<a name="l-457"></a>
+<a name="l-458"></a>  <span class="c1">// registers for FSM</span>
+<a name="l-459"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-460"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-461"></a>      <span class="n">ls_fsm_cs</span>           <span class="o">&lt;=</span> <span class="n">IDLE</span><span class="p">;</span>
+<a name="l-462"></a>      <span class="n">handle_misaligned_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-463"></a>      <span class="n">pmp_err_q</span>           <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-464"></a>      <span class="n">lsu_err_q</span>           <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-465"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-466"></a>      <span class="n">ls_fsm_cs</span>           <span class="o">&lt;=</span> <span class="n">ls_fsm_ns</span><span class="p">;</span>
+<a name="l-467"></a>      <span class="n">handle_misaligned_q</span> <span class="o">&lt;=</span> <span class="n">handle_misaligned_d</span><span class="p">;</span>
+<a name="l-468"></a>      <span class="n">pmp_err_q</span>           <span class="o">&lt;=</span> <span class="n">pmp_err_d</span><span class="p">;</span>
+<a name="l-469"></a>      <span class="n">lsu_err_q</span>           <span class="o">&lt;=</span> <span class="n">lsu_err_d</span><span class="p">;</span>
+<a name="l-470"></a>    <span class="k">end</span>
+<a name="l-471"></a>  <span class="k">end</span>
+<a name="l-472"></a>
+<a name="l-473"></a>  <span class="c1">/////////////</span>
+<a name="l-474"></a>  <span class="c1">// Outputs //</span>
+<a name="l-475"></a>  <span class="c1">/////////////</span>
+<a name="l-476"></a>
+<a name="l-477"></a>  <span class="k">assign</span> <span class="n">data_or_pmp_err</span>    <span class="o">=</span> <span class="n">lsu_err_q</span> <span class="o">|</span> <span class="n">data_err_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">;</span>
+<a name="l-478"></a>  <span class="k">assign</span> <span class="n">lsu_resp_valid_o</span>   <span class="o">=</span> <span class="p">(</span><span class="n">data_rvalid_i</span> <span class="o">|</span> <span class="n">pmp_err_q</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ls_fsm_cs</span> <span class="o">==</span> <span class="n">IDLE</span><span class="p">);</span>
+<a name="l-479"></a>  <span class="k">assign</span> <span class="n">lsu_rdata_valid_o</span>  <span class="o">=</span> <span class="n">lsu_resp_valid_o</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
+<a name="l-480"></a>
+<a name="l-481"></a>  <span class="c1">// output to register file</span>
+<a name="l-482"></a>  <span class="k">assign</span> <span class="n">lsu_rdata_o</span> <span class="o">=</span> <span class="n">data_rdata_ext</span><span class="p">;</span>
+<a name="l-483"></a>
+<a name="l-484"></a>  <span class="c1">// output data address must be word aligned</span>
+<a name="l-485"></a>  <span class="k">assign</span> <span class="n">data_addr_w_aligned</span> <span class="o">=</span> <span class="p">{</span><span class="n">data_addr</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">2</span><span class="p">],</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">};</span>
+<a name="l-486"></a>
+<a name="l-487"></a>  <span class="c1">// output to data interface</span>
+<a name="l-488"></a>  <span class="k">assign</span> <span class="n">data_addr_o</span>   <span class="o">=</span> <span class="n">data_addr_w_aligned</span><span class="p">;</span>
+<a name="l-489"></a>  <span class="k">assign</span> <span class="n">data_wdata_o</span>  <span class="o">=</span> <span class="n">data_wdata</span><span class="p">;</span>
+<a name="l-490"></a>  <span class="k">assign</span> <span class="n">data_we_o</span>     <span class="o">=</span> <span class="n">lsu_we_i</span><span class="p">;</span>
+<a name="l-491"></a>  <span class="k">assign</span> <span class="n">data_be_o</span>     <span class="o">=</span> <span class="n">data_be</span><span class="p">;</span>
+<a name="l-492"></a>
+<a name="l-493"></a>  <span class="c1">// output to ID stage: mtval + AGU for misaligned transactions</span>
+<a name="l-494"></a>  <span class="k">assign</span> <span class="n">addr_last_o</span>   <span class="o">=</span> <span class="n">addr_last_q</span><span class="p">;</span>
+<a name="l-495"></a>
+<a name="l-496"></a>  <span class="c1">// Signal a load or store error depending on the transaction type outstanding</span>
+<a name="l-497"></a>  <span class="k">assign</span> <span class="n">load_err_o</span>    <span class="o">=</span> <span class="n">data_or_pmp_err</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">data_we_q</span> <span class="o">&amp;</span> <span class="n">lsu_resp_valid_o</span><span class="p">;</span>
+<a name="l-498"></a>  <span class="k">assign</span> <span class="n">store_err_o</span>   <span class="o">=</span> <span class="n">data_or_pmp_err</span> <span class="o">&amp;</span>  <span class="n">data_we_q</span> <span class="o">&amp;</span> <span class="n">lsu_resp_valid_o</span><span class="p">;</span>
+<a name="l-499"></a>
+<a name="l-500"></a>  <span class="k">assign</span> <span class="n">busy_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">ls_fsm_cs</span> <span class="o">!=</span> <span class="n">IDLE</span><span class="p">);</span>
+<a name="l-501"></a>  <span class="k">assign</span> <span class="n">load_o</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_we_q</span><span class="p">;</span>
+<a name="l-502"></a>
+<a name="l-503"></a>  <span class="c1">////////////////</span>
+<a name="l-504"></a>  <span class="c1">// Assertions //</span>
+<a name="l-505"></a>  <span class="c1">////////////////</span>
+<a name="l-506"></a>
+<a name="l-507"></a>  <span class="k">logic</span> <span class="n">unused_instr_valid_id</span><span class="p">;</span>
+<a name="l-508"></a>  <span class="k">logic</span> <span class="n">unused_illegal_insn_id</span><span class="p">;</span>
+<a name="l-509"></a>
+<a name="l-510"></a>  <span class="c1">// Inputs only used for assertions</span>
+<a name="l-511"></a>  <span class="k">assign</span> <span class="n">unused_instr_valid_id</span>  <span class="o">=</span> <span class="n">instr_valid_id_i</span><span class="p">;</span>
+<a name="l-512"></a>  <span class="k">assign</span> <span class="n">unused_illegal_insn_id</span> <span class="o">=</span> <span class="n">illegal_insn_id_i</span><span class="p">;</span>
+<a name="l-513"></a>
+<a name="l-514"></a>  <span class="c1">// Selectors must be known/valid.</span>
+<a name="l-515"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataTypeKnown</span><span class="p">,</span> <span class="p">(</span><span class="n">instr_valid_id_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">illegal_insn_id_i</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">lsu_type_i</span><span class="p">))</span>
+<a name="l-516"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataOffsetKnown</span><span class="p">,</span> <span class="p">(</span><span class="n">instr_valid_id_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">illegal_insn_id_i</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">data_offset</span><span class="p">))</span>
+<a name="l-517"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IbexRDataOffsetQKnown</span><span class="p">,</span> <span class="n">rdata_offset_q</span><span class="p">)</span>
+<a name="l-518"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IbexDataTypeQKnown</span><span class="p">,</span> <span class="n">data_type_q</span><span class="p">)</span>
+<a name="l-519"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexLsuStateValid</span><span class="p">,</span> <span class="n">ls_fsm_cs</span> <span class="k">inside</span> <span class="p">{</span>
+<a name="l-520"></a>      <span class="n">IDLE</span><span class="p">,</span> <span class="n">WAIT_GNT_MIS</span><span class="p">,</span> <span class="n">WAIT_RVALID_MIS</span><span class="p">,</span> <span class="n">WAIT_GNT</span><span class="p">,</span>
+<a name="l-521"></a>      <span class="n">WAIT_RVALID_MIS_GNTS_DONE</span><span class="p">})</span>
+<a name="l-522"></a>
+<a name="l-523"></a>  <span class="c1">// Errors must only be sent together with rvalid.</span>
+<a name="l-524"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataErrWithoutRvalid</span><span class="p">,</span> <span class="n">data_err_i</span> <span class="o">|-&gt;</span> <span class="n">data_rvalid_i</span><span class="p">)</span>
+<a name="l-525"></a>
+<a name="l-526"></a>  <span class="c1">// Address must not contain X when request is sent.</span>
+<a name="l-527"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataAddrUnknown</span><span class="p">,</span> <span class="n">data_req_o</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">data_addr_o</span><span class="p">))</span>
+<a name="l-528"></a>
+<a name="l-529"></a>  <span class="c1">// Address must be word aligned when request is sent.</span>
+<a name="l-530"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexDataAddrUnaligned</span><span class="p">,</span> <span class="n">data_req_o</span> <span class="o">|-&gt;</span> <span class="p">(</span><span class="n">data_addr_o</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">))</span>
+<a name="l-531"></a>
+<a name="l-532"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
