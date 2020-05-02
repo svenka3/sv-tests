@@ -237,7 +237,8 @@
 <a href="#l-229">229</a>
 <a href="#l-230">230</a>
 <a href="#l-231">231</a>
-<a href="#l-232">232</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/**</span>
+<a href="#l-232">232</a>
+<a href="#l-233">233</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/**</span>
 <a name="l-2"></a><span class="cm"> *  bsg_cache_to_dram_ctrl.v</span>
 <a name="l-3"></a><span class="cm"> *</span>
 <a name="l-4"></a><span class="cm"> *  @author tommy</span>
@@ -399,76 +400,77 @@
 <a name="l-160"></a>    <span class="n">tx_v_li</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-161"></a>    <span class="n">req_state_n</span> <span class="o">=</span> <span class="n">req_state_r</span><span class="p">;</span>
 <a name="l-162"></a>    <span class="n">req_cnt_n</span> <span class="o">=</span> <span class="n">req_cnt_r</span><span class="p">;</span>
-<a name="l-163"></a>    
-<a name="l-164"></a>    <span class="k">case</span> <span class="p">(</span><span class="n">req_state_r</span><span class="p">)</span>
-<a name="l-165"></a>      <span class="nl">WAIT:</span> <span class="k">begin</span>
-<a name="l-166"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rr_v_lo</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-167"></a>          <span class="n">rr_yumi_li</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-168"></a>          <span class="n">tag_n</span> <span class="o">=</span> <span class="n">rr_tag_lo</span><span class="p">;</span>
-<a name="l-169"></a>          <span class="n">addr_n</span> <span class="o">=</span> <span class="n">dma_pkt</span><span class="p">.</span><span class="n">addr</span><span class="p">;</span>
-<a name="l-170"></a>          <span class="n">write_not_read_n</span> <span class="o">=</span> <span class="n">dma_pkt</span><span class="p">.</span><span class="n">write_not_read</span><span class="p">;</span>
-<a name="l-171"></a>          <span class="n">req_cnt_n</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-172"></a>          <span class="n">req_state_n</span> <span class="o">=</span> <span class="n">SEND_REQ</span><span class="p">;</span>
-<a name="l-173"></a>        <span class="k">end</span>
-<a name="l-174"></a>      <span class="k">end</span>
-<a name="l-175"></a>
-<a name="l-176"></a>      <span class="nl">SEND_REQ:</span> <span class="k">begin</span>
-<a name="l-177"></a>        <span class="n">app_en_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">write_not_read_r</span>
-<a name="l-178"></a>          <span class="o">?</span> <span class="n">tx_ready_lo</span>
-<a name="l-179"></a>          <span class="o">:</span> <span class="n">rx_ready_lo</span><span class="p">);</span>
-<a name="l-180"></a>        <span class="n">app_cmd_o</span> <span class="o">=</span> <span class="n">write_not_read_r</span>
-<a name="l-181"></a>          <span class="o">?</span> <span class="mh">3</span><span class="mb">&#39;b000</span>
-<a name="l-182"></a>          <span class="o">:</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">;</span>
-<a name="l-183"></a>
-<a name="l-184"></a>        <span class="n">rx_v_li</span> <span class="o">=</span> <span class="o">~</span><span class="n">write_not_read_r</span> <span class="o">&amp;</span> <span class="n">rx_ready_lo</span> <span class="o">&amp;</span> <span class="n">app_rdy_i</span><span class="p">;</span>
-<a name="l-185"></a>        <span class="n">tx_v_li</span> <span class="o">=</span> <span class="n">write_not_read_r</span> <span class="o">&amp;</span> <span class="n">tx_ready_lo</span> <span class="o">&amp;</span> <span class="n">app_rdy_i</span><span class="p">;</span>
-<a name="l-186"></a>
-<a name="l-187"></a>        <span class="n">addr_n</span> <span class="o">=</span> <span class="p">(</span><span class="n">app_rdy_i</span> <span class="o">&amp;</span> <span class="n">app_en_o</span><span class="p">)</span>
-<a name="l-188"></a>          <span class="o">?</span> <span class="n">addr_r</span> <span class="o">+</span> <span class="p">(</span><span class="mh">1</span> <span class="o">&lt;&lt;</span> <span class="no">`BSG_SAFE_CLOG2</span><span class="p">(</span><span class="n">dram_ctrl_burst_len_p</span><span class="o">*</span><span class="n">data_width_p</span><span class="o">/</span><span class="mh">8</span><span class="p">))</span>
-<a name="l-189"></a>          <span class="o">:</span> <span class="n">addr_r</span><span class="p">;</span>
-<a name="l-190"></a>        <span class="n">req_cnt_n</span> <span class="o">=</span> <span class="p">(</span><span class="n">app_rdy_i</span> <span class="o">&amp;</span> <span class="n">app_en_o</span><span class="p">)</span>
-<a name="l-191"></a>          <span class="o">?</span> <span class="n">req_cnt_r</span> <span class="o">+</span> <span class="mh">1</span>
-<a name="l-192"></a>          <span class="o">:</span> <span class="n">req_cnt_r</span><span class="p">;</span>
-<a name="l-193"></a>        <span class="n">req_state_n</span> <span class="o">=</span> <span class="n">app_rdy_i</span> <span class="o">&amp;</span> <span class="n">app_en_o</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">req_cnt_r</span> <span class="o">==</span> <span class="n">num_req_lp</span><span class="o">-</span><span class="mh">1</span><span class="p">)</span>
-<a name="l-194"></a>          <span class="o">?</span> <span class="n">WAIT</span>
-<a name="l-195"></a>          <span class="o">:</span> <span class="n">SEND_REQ</span><span class="p">;</span>
-<a name="l-196"></a>      <span class="k">end</span>
-<a name="l-197"></a>    <span class="k">endcase</span>
-<a name="l-198"></a>  <span class="k">end</span>
-<a name="l-199"></a>
-<a name="l-200"></a>  <span class="c1">// Append tag_r to top bits of dram address</span>
-<a name="l-201"></a>  <span class="c1">// tag_r not used when only 1 cache exists</span>
-<a name="l-202"></a>  <span class="k">always_comb</span>
-<a name="l-203"></a>    <span class="k">case</span> <span class="p">(</span><span class="n">dram_size_i</span><span class="p">)</span>
-<a name="l-204"></a>      <span class="mh">0</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">25</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
-<a name="l-205"></a>      <span class="mh">1</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">26</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
-<a name="l-206"></a>      <span class="mh">2</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">27</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
-<a name="l-207"></a>      <span class="mh">3</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">28</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
-<a name="l-208"></a>      <span class="mh">4</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">29</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
-<a name="l-209"></a>      <span class="k">default</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">};</span>
-<a name="l-210"></a>    <span class="k">endcase</span>
-<a name="l-211"></a>
-<a name="l-212"></a>  <span class="c1">// sequential</span>
-<a name="l-213"></a>  <span class="c1">//</span>
-<a name="l-214"></a>  <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-215"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">reset_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-216"></a>      <span class="n">req_state_r</span> <span class="o">&lt;=</span> <span class="n">WAIT</span><span class="p">;</span>
-<a name="l-217"></a>      <span class="n">tag_r</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-218"></a>      <span class="n">addr_r</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-219"></a>      <span class="n">req_cnt_r</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-220"></a>      <span class="n">write_not_read_r</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-221"></a>    <span class="k">end</span>
-<a name="l-222"></a>    <span class="k">else</span> <span class="k">begin</span>
-<a name="l-223"></a>      <span class="n">req_state_r</span> <span class="o">&lt;=</span> <span class="n">req_state_n</span><span class="p">;</span>
-<a name="l-224"></a>      <span class="n">tag_r</span> <span class="o">&lt;=</span> <span class="n">tag_n</span><span class="p">;</span>
-<a name="l-225"></a>      <span class="n">addr_r</span> <span class="o">&lt;=</span> <span class="n">addr_n</span><span class="p">;</span>
-<a name="l-226"></a>      <span class="n">req_cnt_r</span> <span class="o">&lt;=</span> <span class="n">req_cnt_n</span><span class="p">;</span>
-<a name="l-227"></a>      <span class="n">write_not_read_r</span> <span class="o">&lt;=</span> <span class="n">write_not_read_n</span><span class="p">;</span>
-<a name="l-228"></a>    <span class="k">end</span>
-<a name="l-229"></a>  <span class="k">end</span>
-<a name="l-230"></a>
+<a name="l-163"></a>    <span class="n">addr_n</span> <span class="o">=</span> <span class="n">addr_r</span><span class="p">;</span>
+<a name="l-164"></a>    
+<a name="l-165"></a>    <span class="k">case</span> <span class="p">(</span><span class="n">req_state_r</span><span class="p">)</span>
+<a name="l-166"></a>      <span class="nl">WAIT:</span> <span class="k">begin</span>
+<a name="l-167"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rr_v_lo</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-168"></a>          <span class="n">rr_yumi_li</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-169"></a>          <span class="n">tag_n</span> <span class="o">=</span> <span class="n">rr_tag_lo</span><span class="p">;</span>
+<a name="l-170"></a>          <span class="n">addr_n</span> <span class="o">=</span> <span class="n">dma_pkt</span><span class="p">.</span><span class="n">addr</span><span class="p">;</span>
+<a name="l-171"></a>          <span class="n">write_not_read_n</span> <span class="o">=</span> <span class="n">dma_pkt</span><span class="p">.</span><span class="n">write_not_read</span><span class="p">;</span>
+<a name="l-172"></a>          <span class="n">req_cnt_n</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-173"></a>          <span class="n">req_state_n</span> <span class="o">=</span> <span class="n">SEND_REQ</span><span class="p">;</span>
+<a name="l-174"></a>        <span class="k">end</span>
+<a name="l-175"></a>      <span class="k">end</span>
+<a name="l-176"></a>
+<a name="l-177"></a>      <span class="nl">SEND_REQ:</span> <span class="k">begin</span>
+<a name="l-178"></a>        <span class="n">app_en_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">write_not_read_r</span>
+<a name="l-179"></a>          <span class="o">?</span> <span class="n">tx_ready_lo</span>
+<a name="l-180"></a>          <span class="o">:</span> <span class="n">rx_ready_lo</span><span class="p">);</span>
+<a name="l-181"></a>        <span class="n">app_cmd_o</span> <span class="o">=</span> <span class="n">write_not_read_r</span>
+<a name="l-182"></a>          <span class="o">?</span> <span class="mh">3</span><span class="mb">&#39;b000</span>
+<a name="l-183"></a>          <span class="o">:</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">;</span>
+<a name="l-184"></a>
+<a name="l-185"></a>        <span class="n">rx_v_li</span> <span class="o">=</span> <span class="o">~</span><span class="n">write_not_read_r</span> <span class="o">&amp;</span> <span class="n">rx_ready_lo</span> <span class="o">&amp;</span> <span class="n">app_rdy_i</span><span class="p">;</span>
+<a name="l-186"></a>        <span class="n">tx_v_li</span> <span class="o">=</span> <span class="n">write_not_read_r</span> <span class="o">&amp;</span> <span class="n">tx_ready_lo</span> <span class="o">&amp;</span> <span class="n">app_rdy_i</span><span class="p">;</span>
+<a name="l-187"></a>
+<a name="l-188"></a>        <span class="n">addr_n</span> <span class="o">=</span> <span class="p">(</span><span class="n">app_rdy_i</span> <span class="o">&amp;</span> <span class="n">app_en_o</span><span class="p">)</span>
+<a name="l-189"></a>          <span class="o">?</span> <span class="n">addr_r</span> <span class="o">+</span> <span class="p">(</span><span class="mh">1</span> <span class="o">&lt;&lt;</span> <span class="no">`BSG_SAFE_CLOG2</span><span class="p">(</span><span class="n">dram_ctrl_burst_len_p</span><span class="o">*</span><span class="n">data_width_p</span><span class="o">/</span><span class="mh">8</span><span class="p">))</span>
+<a name="l-190"></a>          <span class="o">:</span> <span class="n">addr_r</span><span class="p">;</span>
+<a name="l-191"></a>        <span class="n">req_cnt_n</span> <span class="o">=</span> <span class="p">(</span><span class="n">app_rdy_i</span> <span class="o">&amp;</span> <span class="n">app_en_o</span><span class="p">)</span>
+<a name="l-192"></a>          <span class="o">?</span> <span class="n">req_cnt_r</span> <span class="o">+</span> <span class="mh">1</span>
+<a name="l-193"></a>          <span class="o">:</span> <span class="n">req_cnt_r</span><span class="p">;</span>
+<a name="l-194"></a>        <span class="n">req_state_n</span> <span class="o">=</span> <span class="n">app_rdy_i</span> <span class="o">&amp;</span> <span class="n">app_en_o</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">req_cnt_r</span> <span class="o">==</span> <span class="n">num_req_lp</span><span class="o">-</span><span class="mh">1</span><span class="p">)</span>
+<a name="l-195"></a>          <span class="o">?</span> <span class="n">WAIT</span>
+<a name="l-196"></a>          <span class="o">:</span> <span class="n">SEND_REQ</span><span class="p">;</span>
+<a name="l-197"></a>      <span class="k">end</span>
+<a name="l-198"></a>    <span class="k">endcase</span>
+<a name="l-199"></a>  <span class="k">end</span>
+<a name="l-200"></a>
+<a name="l-201"></a>  <span class="c1">// Append tag_r to top bits of dram address</span>
+<a name="l-202"></a>  <span class="c1">// tag_r not used when only 1 cache exists</span>
+<a name="l-203"></a>  <span class="k">always_comb</span>
+<a name="l-204"></a>    <span class="k">case</span> <span class="p">(</span><span class="n">dram_size_i</span><span class="p">)</span>
+<a name="l-205"></a>      <span class="mh">0</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">25</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
+<a name="l-206"></a>      <span class="mh">1</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">26</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
+<a name="l-207"></a>      <span class="mh">2</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">27</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
+<a name="l-208"></a>      <span class="mh">3</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">28</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
+<a name="l-209"></a>      <span class="mh">4</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="n">dram_ctrl_addr_width_p</span><span class="p">&#39;({</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">[</span><span class="mh">29</span><span class="o">-</span><span class="n">$clog2</span><span class="p">(</span><span class="n">num_cache_p</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]});</span>
+<a name="l-210"></a>      <span class="k">default</span><span class="o">:</span> <span class="n">app_addr_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag_r</span><span class="p">,</span> <span class="n">addr_r</span><span class="p">};</span>
+<a name="l-211"></a>    <span class="k">endcase</span>
+<a name="l-212"></a>
+<a name="l-213"></a>  <span class="c1">// sequential</span>
+<a name="l-214"></a>  <span class="c1">//</span>
+<a name="l-215"></a>  <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-216"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">reset_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-217"></a>      <span class="n">req_state_r</span> <span class="o">&lt;=</span> <span class="n">WAIT</span><span class="p">;</span>
+<a name="l-218"></a>      <span class="n">tag_r</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-219"></a>      <span class="n">addr_r</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-220"></a>      <span class="n">req_cnt_r</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-221"></a>      <span class="n">write_not_read_r</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-222"></a>    <span class="k">end</span>
+<a name="l-223"></a>    <span class="k">else</span> <span class="k">begin</span>
+<a name="l-224"></a>      <span class="n">req_state_r</span> <span class="o">&lt;=</span> <span class="n">req_state_n</span><span class="p">;</span>
+<a name="l-225"></a>      <span class="n">tag_r</span> <span class="o">&lt;=</span> <span class="n">tag_n</span><span class="p">;</span>
+<a name="l-226"></a>      <span class="n">addr_r</span> <span class="o">&lt;=</span> <span class="n">addr_n</span><span class="p">;</span>
+<a name="l-227"></a>      <span class="n">req_cnt_r</span> <span class="o">&lt;=</span> <span class="n">req_cnt_n</span><span class="p">;</span>
+<a name="l-228"></a>      <span class="n">write_not_read_r</span> <span class="o">&lt;=</span> <span class="n">write_not_read_n</span><span class="p">;</span>
+<a name="l-229"></a>    <span class="k">end</span>
+<a name="l-230"></a>  <span class="k">end</span>
 <a name="l-231"></a>
-<a name="l-232"></a><span class="k">endmodule</span>
+<a name="l-232"></a>
+<a name="l-233"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
