@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,17 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v</a>
 time_elapsed: 0.004s
-ram usage: 9636 KB
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bugreport <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v:13</a>:19-64:
-   | 
-   |    initial #1 if (BaudGeneratorInc !== BaudGeneratorIncShouldBe)
-   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v:14</a>:6-90:
    | 
@@ -41,12 +35,32 @@ warning: `$display` not supported; ignored
    |      $display(&#34;PASSED&#34;);
    |      ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;BaudGeneratorInc !== BaudGeneratorIncShouldBe&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v:13</a>:19-64:
-   | 
-   |    initial #1 if (BaudGeneratorInc !== BaudGeneratorIncShouldBe)
-   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+proc %bugreport.initial.228.0 (i17$ %BaudGeneratorInc, i17$ %BaudGeneratorIncShouldBe) -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %BaudGeneratorInc1 = prb i17$ %BaudGeneratorInc
+    %BaudGeneratorIncShouldBe1 = prb i17$ %BaudGeneratorIncShouldBe
+    %3 = neq i17 %BaudGeneratorInc1, %BaudGeneratorIncShouldBe1
+    br %3, %if_false, %if_true
+if_true:
+    %4 = const i32 0
+    br %if_exit
+if_false:
+    %5 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @bugreport () -&gt; () {
+    %0 = const i32 75
+    %BaudGeneratorInc = sig i32 %0
+    %1 = const i17 75
+    %BaudGeneratorIncShouldBe = sig i17 %1
+    inst %bugreport.initial.228.0 (i32$ %BaudGeneratorInc, i17$ %BaudGeneratorIncShouldBe) -&gt; ()
+}
 
 </pre>
 </body>

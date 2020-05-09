@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,21 +18,35 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v</a>
 time_elapsed: 0.004s
-ram usage: 9612 KB
+ram usage: 9576 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:2</a>:33-38:
-   | 
-   | module test(output reg Q, input wire D, input wire OE);
-   |                                 ^^^^^                  
+proc %test.always.231.0 (i1$ %D, i1$ %OE) -&gt; (i1$ %Q) {
+0:
+    wait %trigger, %D, %OE
+trigger:
+    %1 = const i32 0
+    %2 = exts i1, i32 %1, 0, 1
+    %3 = const time 0s 1e
+    drv i1$ %Q, %2, %3
+    %OE1 = prb i1$ %OE
+    br %OE1, %if_false, %if_true
+if_true:
+    %D1 = prb i1$ %D
+    %4 = const time 0s 1e
+    drv i1$ %Q, %D1, %4
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    br %0
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @test (i1$ %D, i1$ %OE) -&gt; (i1$ %Q) {
+    inst %test.always.231.0 (i1$ %D, i1$ %OE) -&gt; (i1$ %Q)
+}
 
 </pre>
 </body>

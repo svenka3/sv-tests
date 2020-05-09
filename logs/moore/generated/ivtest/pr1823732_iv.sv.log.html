@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,29 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1823732.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1823732.v</a>
 time_elapsed: 0.004s
-ram usage: 9692 KB
+ram usage: 9752 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1823732.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1823732.v</a>
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1823732.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr1823732.v:11</a>:7-33:
-   | 
-   |     i = ($signed(3&#39;b111) === 3&#39;b111);
-   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^  
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1823732.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1823732.v:14</a>:8-41:
-   | 
-   |     k = (($signed(3&#39;b110) &gt;&gt;&gt; 1) === 3&#39;b111);
-   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1823732.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr1823732.v:15</a>:9-44:
-   | 
-   |     kr = (($signed(3&#39;b110) &gt;&gt;&gt; one) === 3&#39;b111);
-   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1823732.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr1823732.v:16</a>:2-54:
    | 
@@ -53,6 +35,77 @@ warning: `$display` not supported; ignored
    |     $display(&#34;runtime ; j is &#39;%b&#39;; k is &#39;%b&#39;&#34;, jr, kr);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+proc %test.initial.230.0 (i1$ %one) -&gt; (i1$ %i, i1$ %k, i1$ %kr, i3$ %j, i3$ %jr) {
+0:
+    %1 = const i3 7
+    %2 = const i3 7
+    %3 = eq i3 %1, %2
+    %4 = const time 0s 1e
+    drv i1$ %i, %3, %4
+    %5 = const i3 6
+    %6 = const i32 1
+    %7 = const i3 0
+    %8 = not i3 %7
+    %9 = exts i1, i3 %5, 2, 1
+    %10 = [i3 %7, %8]
+    %11 = mux [2 x i3] %10, i1 %9
+    %12 = shr i3 %5, i3 %11, i32 %6
+    %13 = const time 0s 1e
+    drv i3$ %j, %12, %13
+    %14 = const i3 6
+    %one1 = prb i1$ %one
+    %15 = const i3 0
+    %16 = not i3 %15
+    %17 = exts i1, i3 %14, 2, 1
+    %18 = [i3 %15, %16]
+    %19 = mux [2 x i3] %18, i1 %17
+    %20 = shr i3 %14, i3 %19, i1 %one1
+    %21 = const time 0s 1e
+    drv i3$ %jr, %20, %21
+    %22 = const i3 6
+    %23 = const i32 1
+    %24 = const i3 0
+    %25 = not i3 %24
+    %26 = exts i1, i3 %22, 2, 1
+    %27 = [i3 %24, %25]
+    %28 = mux [2 x i3] %27, i1 %26
+    %29 = shr i3 %22, i3 %28, i32 %23
+    %30 = const i3 7
+    %31 = eq i3 %29, %30
+    %32 = const time 0s 1e
+    drv i1$ %k, %31, %32
+    %33 = const i3 6
+    %one2 = prb i1$ %one
+    %34 = const i3 0
+    %35 = not i3 %34
+    %36 = exts i1, i3 %33, 2, 1
+    %37 = [i3 %34, %35]
+    %38 = mux [2 x i3] %37, i1 %36
+    %39 = shr i3 %33, i3 %38, i1 %one2
+    %40 = const i3 7
+    %41 = eq i3 %39, %40
+    %42 = const time 0s 1e
+    drv i1$ %kr, %41, %42
+    %43 = const i32 0
+    %44 = const i32 0
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i32 1
+    %one = sig i32 %0
+    %1 = const i1 0
+    %i = sig i1 %1
+    %2 = const i1 0
+    %k = sig i1 %2
+    %3 = const i1 0
+    %kr = sig i1 %3
+    %4 = const i3 0
+    %j = sig i3 %4
+    %5 = const i3 0
+    %jr = sig i3 %5
+    inst %test.initial.230.0 (i32$ %one) -&gt; (i1$ %i, i1$ %k, i1$ %kr, i3$ %j, i3$ %jr)
+}
 
 </pre>
 </body>

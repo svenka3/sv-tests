@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -17,14 +17,147 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/usb_phy_tests.v.html" target="file-frame">third_party/tools/yosys/tests/simple/usb_phy_tests.v</a>
-time_elapsed: 0.000s
-ram usage: 9704 KB
+time_elapsed: 0.004s
+ram usage: 9520 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e usb_phy_test01 <a href="../../../../third_party/tools/yosys/tests/simple/usb_phy_tests.v.html" target="file-frame">third_party/tools/yosys/tests/simple/usb_phy_tests.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %usb_phy_test01.always.237.0 (i1$ %clk, i1$ %rst, i2$ %dpll_next_state) -&gt; (i2$ %dpll_state) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = eq i1 %clk1, %1
+    %3 = neq i1 %clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %rst1 = prb i1$ %rst
+    %4 = const i32 0
+    %5 = const i32 0
+    %dpll_next_state1 = prb i2$ %dpll_next_state
+    %6 = inss i32 %5, i2 %dpll_next_state1, 0, 2
+    %7 = [i32 %6, %4]
+    %8 = mux [2 x i32] %7, i1 %rst1
+    %9 = exts i2, i32 %8, 0, 2
+    %10 = const time 0s 1d
+    drv i2$ %dpll_state, %9, %10
+    br %0
+}
+
+proc %usb_phy_test01.always.238.0 (i1$ %rx_en, i2$ %dpll_state) -&gt; (i1$ %fs_ce, i2$ %dpll_next_state) {
+0:
+    wait %trigger, %rx_en, %dpll_state
+trigger:
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %fs_ce, %1, %2
+    %dpll_state1 = prb i2$ %dpll_state
+    %3 = const i1 0
+    %4 = const i2 0
+    %5 = eq i2 %dpll_state1, %4
+    %6 = or i1 %3, %5
+    br %6, %7, %case_body
+case_exit:
+    br %0
+case_body:
+    %rx_en1 = prb i1$ %rx_en
+    br %rx_en1, %if_false, %if_true
+7:
+    %8 = const i1 0
+    %9 = const i2 1
+    %10 = eq i2 %dpll_state1, %9
+    %11 = or i1 %8, %10
+    br %11, %12, %case_body1
+if_true:
+    %13 = const i2 0
+    %14 = const time 0s 1e
+    drv i2$ %dpll_next_state, %13, %14
+    br %if_exit
+if_false:
+    %15 = const i2 1
+    %16 = const time 0s 1e
+    drv i2$ %dpll_next_state, %15, %16
+    br %if_exit
+if_exit:
+    br %case_exit
+case_body1:
+    %17 = const i1 1
+    %18 = const time 0s 1e
+    drv i1$ %fs_ce, %17, %18
+    %rx_en2 = prb i1$ %rx_en
+    br %rx_en2, %if_false1, %if_true1
+12:
+    %19 = const i1 0
+    %20 = const i2 2
+    %21 = eq i2 %dpll_state1, %20
+    %22 = or i1 %19, %21
+    br %22, %23, %case_body2
+if_true1:
+    %24 = const i2 3
+    %25 = const time 0s 1e
+    drv i2$ %dpll_next_state, %24, %25
+    br %if_exit1
+if_false1:
+    %26 = const i2 2
+    %27 = const time 0s 1e
+    drv i2$ %dpll_next_state, %26, %27
+    br %if_exit1
+if_exit1:
+    br %case_exit
+case_body2:
+    %rx_en3 = prb i1$ %rx_en
+    br %rx_en3, %if_false2, %if_true2
+23:
+    %28 = const i1 0
+    %29 = const i2 3
+    %30 = eq i2 %dpll_state1, %29
+    %31 = or i1 %28, %30
+    br %31, %32, %case_body3
+if_true2:
+    %33 = const i2 0
+    %34 = const time 0s 1e
+    drv i2$ %dpll_next_state, %33, %34
+    br %if_exit2
+if_false2:
+    %35 = const i2 3
+    %36 = const time 0s 1e
+    drv i2$ %dpll_next_state, %35, %36
+    br %if_exit2
+if_exit2:
+    br %case_exit
+case_body3:
+    %rx_en4 = prb i1$ %rx_en
+    br %rx_en4, %if_false3, %if_true3
+32:
+    br %case_exit
+if_true3:
+    %37 = const i2 0
+    %38 = const time 0s 1e
+    drv i2$ %dpll_next_state, %37, %38
+    br %if_exit3
+if_false3:
+    %39 = const i2 0
+    %40 = const time 0s 1e
+    drv i2$ %dpll_next_state, %39, %40
+    br %if_exit3
+if_exit3:
+    br %case_exit
+}
+
+entity @usb_phy_test01 (i1$ %clk, i1$ %rst, i1$ %rx_en) -&gt; (i1$ %fs_ce) {
+    %0 = const i2 0
+    %dpll_next_state = sig i2 %0
+    %1 = const i2 0
+    %dpll_state = sig i2 %1
+    inst %usb_phy_test01.always.237.0 (i1$ %clk, i1$ %rst, i2$ %dpll_next_state) -&gt; (i2$ %dpll_state)
+    inst %usb_phy_test01.always.238.0 (i1$ %rx_en, i2$ %dpll_state) -&gt; (i1$ %fs_ce, i2$ %dpll_next_state)
+}
 
 </pre>
 </body>

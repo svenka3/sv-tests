@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,14 +17,76 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/attrib09_case.v.html" target="file-frame">third_party/tests/ivtest/ivltests/attrib09_case.v</a>
-time_elapsed: 0.000s
-ram usage: 9696 KB
+time_elapsed: 0.004s
+ram usage: 9668 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bar <a href="../../../../third_party/tests/ivtest/ivltests/attrib09_case.v.html" target="file-frame">third_party/tests/ivtest/ivltests/attrib09_case.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %bar.always.238.0 (i2$ %inp) -&gt; (i2$ %out) {
+0:
+    br %init
+init:
+    %inp1 = prb i2$ %inp
+    wait %check, %inp
+check:
+    %inp2 = prb i2$ %inp
+    %impledge = neq i2 %inp1, %inp2
+    br %impledge, %init, %event
+event:
+    %inp3 = prb i2$ %inp
+    %1 = const i1 0
+    %2 = const i2 0
+    %3 = eq i2 %inp3, %2
+    %4 = or i1 %1, %3
+    br %4, %5, %case_body
+case_exit:
+    br %0
+case_body:
+    %6 = const i2 3
+    %7 = const time 0s 1d
+    drv i2$ %out, %6, %7
+    br %case_exit
+5:
+    %8 = const i1 0
+    %9 = const i2 1
+    %10 = eq i2 %inp3, %9
+    %11 = or i1 %8, %10
+    br %11, %12, %case_body1
+case_body1:
+    %13 = const i2 2
+    %14 = const time 0s 1d
+    drv i2$ %out, %13, %14
+    br %case_exit
+12:
+    %15 = const i1 0
+    %16 = const i2 2
+    %17 = eq i2 %inp3, %16
+    %18 = or i1 %15, %17
+    br %18, %19, %case_body2
+case_body2:
+    %20 = const i2 1
+    %21 = const time 0s 1d
+    drv i2$ %out, %20, %21
+    br %case_exit
+19:
+    %22 = const i1 0
+    %23 = const i2 3
+    %24 = eq i2 %inp3, %23
+    %25 = or i1 %22, %24
+    br %25, %26, %case_body3
+case_body3:
+    %27 = const i2 0
+    %28 = const time 0s 1d
+    drv i2$ %out, %27, %28
+    br %case_exit
+26:
+    br %case_exit
+}
+
+entity @bar (i1$ %clk, i1$ %rst, i2$ %inp) -&gt; (i2$ %out) {
+    inst %bar.always.238.0 (i2$ %inp) -&gt; (i2$ %out)
+}
 
 </pre>
 </body>

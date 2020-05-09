@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,14 +17,48 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v</a>
-time_elapsed: 0.000s
-ram usage: 9748 KB
+time_elapsed: 0.004s
+ram usage: 9528 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e ex1 <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v:18</a>:9-49:
+   | 
+   |         $display(&#34;out: %b, in: %b&#34;,outsig,insig);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+proc %ex1.always.240.0 (i4$ %insig) -&gt; (i4$ %outsig) {
+0:
+    br %init
+init:
+    %insig1 = prb i4$ %insig
+    wait %check, %insig
+check:
+    %insig2 = prb i4$ %insig
+    %impledge = neq i4 %insig1, %insig2
+    br %impledge, %init, %event
+event:
+    %1 = const i4 15
+    %insig3 = prb i4$ %insig
+    %2 = const i4 0
+    %3 = shl i4 %1, i4 %2, i4 %insig3
+    %4 = not i4 %3
+    %5 = const time 0s 1e
+    drv i4$ %outsig, %4, %5
+    %6 = const i32 0
+    br %0
+}
+
+entity @ex1 (i1$ %clk, i1$ %reset, i4$ %insig) -&gt; (i4$ %outsig) {
+    %0 = const i4 0
+    %outsig1 = sig i4 %0
+    inst %ex1.always.240.0 (i4$ %insig) -&gt; (i4$ %outsig1)
+    %1 = const i4 0
+    %2 = const time 0s
+    drv i4$ %outsig, %1, %2
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,28 +18,16 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v</a>
 time_elapsed: 0.004s
-ram usage: 9588 KB
+ram usage: 9560 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:16</a>:11-21:
-   | 
-   |     #1 if(b !== 1&#39;b0) begin
-   |           ^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:17</a>:7-58:
    | 
    |       $display(&#34;FAILED initial zero for 1&#39;b1, got %b&#34;, b);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-20" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:20</a>:11-21:
-   | 
-   |     #2 if(b !== 1&#39;b1) begin
-   |           ^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:21</a>:7-56:
@@ -47,23 +35,11 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED initial set to 1&#39;b1, got %b&#34;, b);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:27</a>:11-21:
-   | 
-   |     #1 if(b !== 1&#39;b1) begin
-   |           ^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:28</a>:7-67:
    | 
    |       $display(&#34;FAILED block of initial zero for 1&#39;b0, got %b&#34;, b);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:31</a>:11-21:
-   | 
-   |     #2 if(b !== 1&#39;b1) begin
-   |           ^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:32</a>:7-65:
@@ -77,12 +53,133 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;b !== 1\&#39;b0&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2470181a.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2470181a.v:16</a>:11-21:
-   | 
-   |     #1 if(b !== 1&#39;b0) begin
-   |           ^^^^^^^^^^       
+proc %main.always.226.0 (i1$ %b, i1$ %reset) -&gt; (i1$ %a) {
+0:
+    wait %trigger, %b, %reset
+trigger:
+    %b1 = prb i1$ %b
+    %reset1 = prb i1$ %reset
+    %1 = or i1 %b1, %reset1
+    %2 = const time 0s 1e
+    drv i1$ %a, %1, %2
+    br %0
+}
 
+proc %main.always.227.0 (i1$ %a) -&gt; (i1$ %b) {
+0:
+    wait %trigger, %a
+trigger:
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %b, %1, %2
+    %3 = const i32 2
+    wait %4 for %3
+4:
+    %a1 = prb i1$ %a
+    %5 = const time 0s 1e
+    drv i1$ %b, %a1, %5
+    br %0
+}
+
+proc %main.initial.228.0 (i1$ %b) -&gt; (i1$ %reset, i1$ %pass) {
+0:
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %pass, %1, %2
+    %3 = const i1 1
+    %4 = const time 0s 1e
+    drv i1$ %reset, %3, %4
+    %5 = const i32 1
+    wait %6 for %5
+6:
+    %b1 = prb i1$ %b
+    %7 = const i1 0
+    %8 = neq i1 %b1, %7
+    br %8, %if_false, %if_true
+if_true:
+    %9 = const i32 0
+    %10 = const i1 0
+    %11 = const time 0s 1e
+    drv i1$ %pass, %10, %11
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %12 = const i32 2
+    wait %13 for %12
+13:
+    %b2 = prb i1$ %b
+    %14 = const i1 1
+    %15 = neq i1 %b2, %14
+    br %15, %if_false1, %if_true1
+if_true1:
+    %16 = const i32 0
+    %17 = const i1 0
+    %18 = const time 0s 1e
+    drv i1$ %pass, %17, %18
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %19 = const i1 0
+    %20 = const time 0s 1e
+    drv i1$ %reset, %19, %20
+    %21 = const i32 1
+    wait %22 for %21
+22:
+    %b3 = prb i1$ %b
+    %23 = const i1 1
+    %24 = neq i1 %b3, %23
+    br %24, %if_false2, %if_true2
+if_true2:
+    %25 = const i32 0
+    %26 = const i1 0
+    %27 = const time 0s 1e
+    drv i1$ %pass, %26, %27
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    %28 = const i32 2
+    wait %29 for %28
+29:
+    %b4 = prb i1$ %b
+    %30 = const i1 1
+    %31 = neq i1 %b4, %30
+    br %31, %if_false3, %if_true3
+if_true3:
+    %32 = const i32 0
+    %33 = const i1 0
+    %34 = const time 0s 1e
+    drv i1$ %pass, %33, %34
+    br %if_exit3
+if_false3:
+    br %if_exit3
+if_exit3:
+    %pass1 = prb i1$ %pass
+    br %pass1, %if_false4, %if_true4
+if_true4:
+    %35 = const i32 0
+    br %if_exit4
+if_false4:
+    br %if_exit4
+if_exit4:
+    halt
+}
+
+entity @main () -&gt; () {
+    %0 = const i1 0
+    %a = sig i1 %0
+    %1 = const i1 0
+    %b = sig i1 %1
+    %2 = const i1 0
+    %reset = sig i1 %2
+    %3 = const i1 0
+    %pass = sig i1 %3
+    inst %main.always.226.0 (i1$ %b, i1$ %reset) -&gt; (i1$ %a)
+    inst %main.always.227.0 (i1$ %a) -&gt; (i1$ %b)
+    inst %main.initial.228.0 (i1$ %b) -&gt; (i1$ %reset, i1$ %pass)
+}
 
 </pre>
 </body>

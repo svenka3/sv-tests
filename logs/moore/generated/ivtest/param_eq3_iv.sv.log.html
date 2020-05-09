@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,17 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/param_eq3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/param_eq3.v</a>
 time_elapsed: 0.004s
-ram usage: 9592 KB
+ram usage: 9588 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/param_eq3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/param_eq3.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/param_eq3.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/param_eq3.v:29</a>:7-18:
-   | 
-   |    if(A0 !== 1&#39;b1)
-   |       ^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/param_eq3.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/param_eq3.v:30</a>:7-72:
    | 
@@ -41,12 +35,25 @@ warning: `$display` not supported; ignored
    |       $display(&#34;PASSED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;A0 !== 1\&#39;b1&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/param_eq3.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/param_eq3.v:29</a>:7-18:
-   | 
-   |    if(A0 !== 1&#39;b1)
-   |       ^^^^^^^^^^^ 
+proc %test.initial.222.0 () -&gt; () {
+0:
+    %1 = const i1 1
+    %2 = const i1 1
+    %3 = neq i1 %1, %2
+    br %3, %if_false, %if_true
+if_true:
+    %4 = const i32 0
+    br %if_exit
+if_false:
+    %5 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @test () -&gt; () {
+    inst %test.initial.222.0 () -&gt; ()
+}
 
 </pre>
 </body>

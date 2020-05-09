@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,32 +17,17 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh220.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh220.v</a>
-time_elapsed: 0.000s
-ram usage: 9652 KB
+time_elapsed: 0.004s
+ram usage: 9656 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e Main <a href="../../../../third_party/tests/ivtest/ivltests/br_gh220.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh220.v</a>
-compiler bug: lowering of expression not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh220.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/br_gh220.v:5</a>:12-27:
-   | 
-   |       r5 = 5&#39;(3&#39;d7 + 3&#39;d6);
-   |            ^^^^^^^^^^^^^^^ 
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh220.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/br_gh220.v:6</a>:7-38:
    | 
    |       $display(&#34;r5 = %b, %d&#34;, r5, r5);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh220.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/br_gh220.v:8</a>:11-26:
-   | 
-   |       if (r5 === 5&#39;b01101)
-   |           ^^^^^^^^^^^^^^^ 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh220.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/br_gh220.v:9</a>:10-28:
@@ -56,6 +41,35 @@ warning: `$display` not supported; ignored
    |          $display(&#34;FAILED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
+proc %Main.initial.223.0 () -&gt; (i5$ %r5) {
+0:
+    %1 = const i5 0
+    %2 = const i3 7
+    %3 = const i3 6
+    %4 = add i3 %2, %3
+    %5 = inss i5 %1, i3 %4, 0, 3
+    %6 = const time 0s 1e
+    drv i5$ %r5, %5, %6
+    %7 = const i32 0
+    %r51 = prb i5$ %r5
+    %8 = const i5 13
+    %9 = eq i5 %r51, %8
+    br %9, %if_false, %if_true
+if_true:
+    %10 = const i32 0
+    br %if_exit
+if_false:
+    %11 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @Main () -&gt; () {
+    %0 = const i5 0
+    %r5 = sig i5 %0
+    inst %Main.initial.223.0 () -&gt; (i5$ %r5)
+}
 
 </pre>
 </body>

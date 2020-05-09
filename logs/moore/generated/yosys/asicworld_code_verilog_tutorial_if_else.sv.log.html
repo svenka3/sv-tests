@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,19 +18,53 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v</a>
 time_elapsed: 0.000s
-ram usage: 9616 KB
+ram usage: 9520 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e if_else <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v</a>
-error: variable `clk` has implicit type but is not initialized
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v:4</a>:6-9:
-   | 
-   | wire clk,din,reset;
-   |      ^^^           
-   = note: specify a type for the variable; or
-   = note: add an initial value
+proc %if_else.always.227.0 (i1$ %clk, i1$ %din, i1$ %reset) -&gt; (i1$ %dff) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = eq i1 %clk1, %1
+    %3 = neq i1 %clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %reset1 = prb i1$ %reset
+    br %reset1, %if_false, %if_true
+if_true:
+    %4 = const i32 0
+    %5 = exts i1, i32 %4, 0, 1
+    %6 = const time 0s 1d
+    drv i1$ %dff, %5, %6
+    br %if_exit
+if_false:
+    %din1 = prb i1$ %din
+    %7 = const time 0s 1d
+    drv i1$ %dff, %din1, %7
+    br %if_exit
+if_exit:
+    br %0
+}
 
+entity @if_else () -&gt; () {
+    %0 = const i1 0
+    %dff = sig i1 %0
+    %1 = const i1 0
+    %clk = sig i1 %1
+    %2 = const i1 0
+    %din = sig i1 %2
+    %3 = const i1 0
+    %reset = sig i1 %3
+    inst %if_else.always.227.0 (i1$ %clk, i1$ %din, i1$ %reset) -&gt; (i1$ %dff)
+}
 
 </pre>
 </body>

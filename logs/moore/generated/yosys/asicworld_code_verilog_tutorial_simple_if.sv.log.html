@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,19 +18,48 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v</a>
 time_elapsed: 0.000s
-ram usage: 9640 KB
+ram usage: 9708 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e simple_if <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v</a>
-error: variable `enable` has implicit type but is not initialized
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v:4</a>:6-12:
-   | 
-   | wire enable,din;
-   |      ^^^^^^     
-   = note: specify a type for the variable; or
-   = note: add an initial value
+proc %simple_if.always.226.0 (i1$ %enable, i1$ %din) -&gt; (i1$ %latch) {
+0:
+    br %init
+init:
+    %enable1 = prb i1$ %enable
+    %din1 = prb i1$ %din
+    wait %check, %enable, %din
+check:
+    %enable2 = prb i1$ %enable
+    %impledge = neq i1 %enable1, %enable2
+    %din2 = prb i1$ %din
+    %impledge1 = neq i1 %din1, %din2
+    %event_or = or i1 %impledge, %impledge1
+    br %event_or, %init, %event
+event:
+    %enable3 = prb i1$ %enable
+    br %enable3, %if_false, %if_true
+if_true:
+    %din3 = prb i1$ %din
+    %1 = const time 0s 1d
+    drv i1$ %latch, %din3, %1
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    br %0
+}
 
+entity @simple_if () -&gt; () {
+    %0 = const i1 0
+    %latch = sig i1 %0
+    %1 = const i1 0
+    %enable = sig i1 %1
+    %2 = const i1 0
+    %din = sig i1 %2
+    inst %simple_if.always.226.0 (i1$ %enable, i1$ %din) -&gt; (i1$ %latch)
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,33 +17,83 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v</a>
-time_elapsed: 0.000s
-ram usage: 9628 KB
+time_elapsed: 0.004s
+ram usage: 9732 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bug <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v</a>
-
-fatal: Ambiguous code, could be explicit type or implicit type
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:2</a>:14-20:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:13</a>:5-46:
    | 
-   |   localparam signed [31:0] n1 = 32&#39;h8000_0000;
-   |              ^^^^^^                           
+   |     $display(&#34;32 bit quotient = 0x%08h;&#34;, q1);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-
-note: explicit type would be this part
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:2</a>:14-46:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:14</a>:5-46:
    | 
-   |   localparam signed [31:0] n1 = 32&#39;h8000_0000;
-   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   |     $display(&#34;32 bit modulus  = 0x%08h;&#34;, m1);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-
-note: implicit type would be this part
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:2</a>:14-46:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:15</a>:5-47:
    | 
-   |   localparam signed [31:0] n1 = 32&#39;h8000_0000;
-   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   |     $display(&#34;64 bit quotient = 0x%016h;&#34;, q2);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:16</a>:5-47:
+   | 
+   |     $display(&#34;64 bit modulus  = 0x%016h;&#34;, m2);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:19</a>:7-25:
+   | 
+   |       $display(&#34;PASSED&#34;);
+   |       ^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh199b.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/br_gh199b.v:21</a>:7-25:
+   | 
+   |       $display(&#34;FAILED&#34;);
+   |       ^^^^^^^^^^^^^^^^^^ 
+
+proc %bug.initial.229.0 () -&gt; () {
+0:
+    %1 = const i32 0
+    %2 = const i32 0
+    %3 = const i32 0
+    %4 = const i32 0
+    %5 = const i32 0
+    %6 = const i32 2147483648
+    %7 = eq i32 %5, %6
+    %8 = const i64 0
+    %9 = const i64 9223372036854775808
+    %10 = eq i64 %8, %9
+    %11 = and i1 %7, %10
+    %12 = const i32 2147483648
+    %13 = const i32 0
+    %14 = eq i32 %12, %13
+    %15 = and i1 %11, %14
+    %16 = const i64 9223372036854775808
+    %17 = const i64 0
+    %18 = eq i64 %16, %17
+    %19 = and i1 %15, %18
+    br %19, %if_false, %if_true
+if_true:
+    %20 = const i32 0
+    br %if_exit
+if_false:
+    %21 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @bug () -&gt; () {
+    inst %bug.initial.229.0 () -&gt; ()
+}
 
 </pre>
 </body>

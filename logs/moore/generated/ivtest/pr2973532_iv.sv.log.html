@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2973532.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2973532.v</a>
-time_elapsed: 0.000s
-ram usage: 9680 KB
+time_elapsed: 0.004s
+ram usage: 9748 KB
 </pre>
 <pre class="log">
 
@@ -28,12 +28,6 @@ warning: `$display` not supported; ignored
    | 
    |   $display(&#34;%b&#34;, a);
    |   ^^^^^^^^^^^^^^^^^ 
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2973532.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2973532.v:16</a>:7-33:
-   | 
-   |   if (a === 16&#39;bzz1111zz00000000)
-   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2973532.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr2973532.v:17</a>:5-23:
@@ -47,12 +41,53 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;a === 16\&#39;bzz1111zz00000000&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2973532.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2973532.v:16</a>:7-33:
-   | 
-   |   if (a === 16&#39;bzz1111zz00000000)
-   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+proc %pr2973532.initial.230.0 (i16$ %a) -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %3 = const i32 0
+    %a1 = prb i16$ %a
+    %4 = const i16 15360
+    %5 = eq i16 %a1, %4
+    br %5, %if_false, %if_true
+if_true:
+    %6 = const i32 0
+    br %if_exit
+if_false:
+    %7 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @pr2973532 () -&gt; () {
+    %0 = const i16 0
+    %a = sig i16 %0
+    %1 = const i8 0
+    %b = sig i8 %1
+    %2 = const i8 0
+    %c = sig i8 %2
+    %3 = const i2 2
+    %4 = const i8 0
+    %5 = sig i8 %4
+    %6 = shr i8$ %b, i8$ %5, i2 %3
+    %7 = exts i4$, i8$ %6, 0, 4
+    %8 = const i4 15
+    %9 = const time 0s 1e
+    drv i4$ %7, %8, %9
+    %10 = const i8 0
+    %11 = const time 0s 1e
+    drv i8$ %c, %10, %11
+    %12 = const i16 0
+    %c1 = prb i8$ %c
+    %13 = inss i16 %12, i8 %c1, 0, 8
+    %b1 = prb i8$ %b
+    %14 = inss i16 %13, i8 %b1, 8, 8
+    %15 = const time 0s 1e
+    drv i16$ %a, %14, %15
+    inst %pr2973532.initial.230.0 (i16$ %a) -&gt; ()
+}
 
 </pre>
 </body>

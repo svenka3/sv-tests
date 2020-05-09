@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,29 +17,17 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_no_sens.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_no_sens.v</a>
-time_elapsed: 0.004s
-ram usage: 9648 KB
+time_elapsed: 0.000s
+ram usage: 9628 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_no_sens.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_no_sens.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_no_sens.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_no_sens.v:11</a>:9-19:
-   | 
-   |     if (y !== 1&#39;bx) begin
-   |         ^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_no_sens.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_no_sens.v:12</a>:7-51:
    | 
    |       $display(&#34;FAILED: expected 1&#39;bx, got %b&#34;, y);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_no_sens.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_no_sens.v:16</a>:9-19:
-   | 
-   |     if (y !== 1&#39;b0) begin
-   |         ^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_no_sens.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_no_sens.v:17</a>:7-51:
@@ -53,12 +41,71 @@ warning: `$display` not supported; ignored
    |     if (passed) $display(&#34;PASSED&#34;);
    |                 ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;y !== 1\&#39;bx&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_no_sens.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_no_sens.v:11</a>:9-19:
-   | 
-   |     if (y !== 1&#39;bx) begin
-   |         ^^^^^^^^^^       
+proc %test.always_comb.225.0 () -&gt; (i1$ %y) {
+0:
+    br %body
+body:
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %y, %1, %2
+    br %check
+check:
+    wait %body
+}
 
+proc %test.initial.226.0 (i1$ %y) -&gt; (i1$ %passed) {
+0:
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %passed, %1, %2
+    %y1 = prb i1$ %y
+    %3 = const i1 0
+    %4 = neq i1 %y1, %3
+    br %4, %if_false, %if_true
+if_true:
+    %5 = const i32 0
+    %6 = const i1 0
+    %7 = const time 0s 1e
+    drv i1$ %passed, %6, %7
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %8 = const i32 1
+    wait %9 for %8
+9:
+    %y2 = prb i1$ %y
+    %10 = const i1 0
+    %11 = neq i1 %y2, %10
+    br %11, %if_false1, %if_true1
+if_true1:
+    %12 = const i32 0
+    %13 = const i1 0
+    %14 = const time 0s 1e
+    drv i1$ %passed, %13, %14
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %passed1 = prb i1$ %passed
+    br %passed1, %if_false2, %if_true2
+if_true2:
+    %15 = const i32 0
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i1 0
+    %passed = sig i1 %0
+    %1 = const i1 0
+    %y = sig i1 %1
+    inst %test.always_comb.225.0 () -&gt; (i1$ %y)
+    inst %test.initial.226.0 (i1$ %y) -&gt; (i1$ %passed)
+}
 
 </pre>
 </body>

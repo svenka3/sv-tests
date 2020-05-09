@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/tests/generated/yosys_hana
@@ -17,14 +17,54 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_vlib.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
-time_elapsed: 0.012s
-ram usage: 9664 KB
+time_elapsed: 0.016s
+ram usage: 9620 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/generated/yosys_hana -e f1_test <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_vlib.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @BUF (i1$ %in) -&gt; (i1$ %out) {
+    %in1 = prb i1$ %in
+    %0 = const time 0s 1e
+    drv i1$ %out, %in1, %0
+}
+
+entity @DIV1 (i1$ %in1, i1$ %in2) -&gt; (i1$ %out, i1$ %rem) {
+    %in11 = prb i1$ %in1
+    %in21 = prb i1$ %in2
+    %0 = udiv i1 %in11, %in21
+    %1 = const time 0s 1e
+    drv i1$ %out, %0, %1
+    %in12 = prb i1$ %in1
+    %in22 = prb i1$ %in2
+    %2 = umod i1 %in12, %in22
+    %3 = const time 0s 1e
+    drv i1$ %rem, %2, %3
+}
+
+entity @f1_test (i1$ %in1, i1$ %in2) -&gt; (i1$ %out) {
+    %0 = const i1 0
+    %synth_net_0 = sig i1 %0
+    %1 = const i1 0
+    %synth_net_1 = sig i1 %1
+    %synth_net_11 = prb i1$ %synth_net_1
+    %2 = const i1 0
+    %3 = sig i1 %2
+    %4 = const time 0s 1e
+    drv i1$ %3, %synth_net_11, %4
+    inst @BUF (i1$ %3) -&gt; (i1$ %out)
+    %in11 = prb i1$ %in1
+    %5 = const i1 0
+    %6 = sig i1 %5
+    %7 = const time 0s 1e
+    drv i1$ %6, %in11, %7
+    %in21 = prb i1$ %in2
+    %8 = const i1 0
+    %9 = sig i1 %8
+    %10 = const time 0s 1e
+    drv i1$ %9, %in21, %10
+    inst @DIV1 (i1$ %6, i1$ %9) -&gt; (i1$ %synth_net_1, i1$ %synth_net_0)
+}
 
 </pre>
 </body>

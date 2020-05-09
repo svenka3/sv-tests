@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
@@ -18,21 +18,124 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v</a>
 time_elapsed: 0.004s
-ram usage: 9592 KB
+ram usage: 9504 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -e bsg_counter_clear_up_one_hot <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v.html#l-19" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v:19</a>:4-10:
-   | 
-   |   (input clk_i
-   |    ^^^^^^     
+proc %bsg_counter_clear_up_one_hot.always_comb.246.0 (i1$ %reset_i, i1$ %clear_i, i1$ %up_i, i2$ %bits_r) -&gt; (i2$ %bits_n) {
+0:
+    br %body
+body:
+    %bits_r1 = prb i2$ %bits_r
+    %1 = const time 0s 1e
+    drv i2$ %bits_n, %bits_r1, %1
+    %clear_i1 = prb i1$ %clear_i
+    br %clear_i1, %if_false, %if_true
+check:
+    wait %body, %reset_i, %clear_i, %up_i, %bits_r
+if_true:
+    %2 = const i32 1
+    %3 = exts i0, i32 %2, 0, 0
+    %4 = exts i1, i0 %3, 18446744073709551615, 1
+    %5 = const i2 0
+    %6 = not i2 %5
+    %7 = [i2 %5, %6]
+    %8 = mux [2 x i2] %7, i1 %4
+    %9 = inss i2 %8, i0 %3, 0, 0
+    %10 = const time 0s 1e
+    drv i2$ %bits_n, %9, %10
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %up_i1 = prb i1$ %up_i
+    br %up_i1, %if_false1, %if_true1
+if_true1:
+    %11 = const i4 0
+    %bits_n1 = prb i2$ %bits_n
+    %12 = const i32 0
+    %13 = const i32 1
+    %14 = sub i32 %12, %13
+    %15 = const i2 0
+    %16 = shr i2 %bits_n1, i2 %15, i32 %14
+    %17 = exts i1, i2 %16, 0, 1
+    %18 = inss i4 %11, i1 %17, 0, 1
+    %bits_n2 = prb i2$ %bits_n
+    %19 = const i2 -2
+    %20 = const i2 0
+    %21 = shr i2 %bits_n2, i2 %20, i2 %19
+    %22 = exts i3, i2 %21, 0, 3
+    %23 = inss i4 %18, i3 %22, 1, 3
+    %24 = exts i2, i4 %23, 0, 2
+    %25 = const time 0s 1e
+    drv i2$ %bits_n, %24, %25
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %reset_i1 = prb i1$ %reset_i
+    br %reset_i1, %if_false2, %if_true2
+if_true2:
+    %26 = const i32 1
+    %27 = exts i0, i32 %26, 0, 0
+    %28 = exts i1, i0 %27, 18446744073709551615, 1
+    %29 = const i2 0
+    %30 = not i2 %29
+    %31 = [i2 %29, %30]
+    %32 = mux [2 x i2] %31, i1 %28
+    %33 = inss i2 %32, i0 %27, 0, 0
+    %34 = const time 0s 1e
+    drv i2$ %bits_n, %33, %34
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    br %check
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %bsg_counter_clear_up_one_hot.always_ff.247.0 (i1$ %clk_i, i1$ %reset_i, i1$ %clear_i, i1$ %up_i, i2$ %bits_n) -&gt; (i2$ %bits_r) {
+0:
+    br %init
+init:
+    %clk_i1 = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %clk_i2 = prb i1$ %clk_i
+    %1 = const i1 0
+    %2 = eq i1 %clk_i1, %1
+    %3 = neq i1 %clk_i2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %reset_i1 = prb i1$ %reset_i
+    %up_i1 = prb i1$ %up_i
+    %4 = or i1 %reset_i1, %up_i1
+    %clear_i1 = prb i1$ %clear_i
+    %5 = or i1 %4, %clear_i1
+    br %5, %if_false, %if_true
+if_true:
+    %bits_n1 = prb i2$ %bits_n
+    %6 = const time 0s 1d
+    drv i2$ %bits_r, %bits_n1, %6
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    br %0
+}
+
+entity @bsg_counter_clear_up_one_hot (i1$ %clk_i, i1$ %reset_i, i1$ %clear_i, i1$ %up_i) -&gt; (i2$ %count_r_o) {
+    %0 = const i2 0
+    %bits_r = sig i2 %0
+    %1 = const i2 0
+    %bits_n = sig i2 %1
+    %bits_r1 = prb i2$ %bits_r
+    %2 = const time 0s 1e
+    drv i2$ %count_r_o, %bits_r1, %2
+    inst %bsg_counter_clear_up_one_hot.always_comb.246.0 (i1$ %reset_i, i1$ %clear_i, i1$ %up_i, i2$ %bits_r) -&gt; (i2$ %bits_n)
+    inst %bsg_counter_clear_up_one_hot.always_ff.247.0 (i1$ %clk_i, i1$ %reset_i, i1$ %clear_i, i1$ %up_i, i2$ %bits_n) -&gt; (i2$ %bits_r)
+}
 
 </pre>
 </body>

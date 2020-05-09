@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v</a>
 time_elapsed: 0.004s
-ram usage: 9524 KB
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
@@ -28,12 +28,6 @@ warning: `$display` not supported; ignored
    | 
    |   #1 $display(&#34;%b&#34;, y);
    |      ^^^^^^^^^^^^^^^^^ 
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:15</a>:7-20:
-   | 
-   |   if (y === 4&#39;b0011)
-   |       ^^^^^^^^^^^^^ 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:16</a>:5-23:
@@ -47,12 +41,84 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;y === 4\&#39;b0011&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:15</a>:7-20:
-   | 
-   |   if (y === 4&#39;b0011)
-   |       ^^^^^^^^^^^^^ 
+proc %bug.initial.228.0 (i4$ %y) -&gt; (i2$ %a, i3$ %b) {
+0:
+    %1 = const i32 7
+    %2 = exts i3, i32 %1, 0, 3
+    %3 = const time 0s 1e
+    drv i3$ %b, %2, %3
+    %4 = const i32 3
+    %5 = exts i2, i32 %4, 0, 2
+    %6 = const time 0s 1e
+    drv i2$ %a, %5, %6
+    %7 = const i32 1
+    wait %8 for %7
+8:
+    %9 = const i32 0
+    %y1 = prb i4$ %y
+    %10 = const i4 3
+    %11 = eq i4 %y1, %10
+    br %11, %if_false, %if_true
+if_true:
+    %12 = const i32 0
+    br %if_exit
+if_false:
+    %13 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @bug () -&gt; () {
+    %0 = const i2 0
+    %a = sig i2 %0
+    %1 = const i3 0
+    %b = sig i3 %1
+    %2 = const i4 0
+    %y = sig i4 %2
+    %3 = const i4 0
+    %a1 = prb i2$ %a
+    %4 = const i32 0
+    %b1 = prb i3$ %b
+    %5 = const i32 0
+    %6 = shl i32 %4, i32 %5, i3 %b1
+    %7 = const i2 0
+    %8 = shl i2 %a1, i2 %7, i32 %6
+    %9 = inss i4 %3, i2 %8, 0, 2
+    %a2 = prb i2$ %a
+    %10 = const i3 0
+    %b2 = prb i3$ %b
+    %11 = inss i3 %10, i3 %b2, 0, 3
+    %12 = const i66 0
+    %13 = inss i66 %12, i3 %11, 0, 3
+    %14 = inss i66 %13, i3 %11, 3, 3
+    %15 = inss i66 %14, i3 %11, 6, 3
+    %16 = inss i66 %15, i3 %11, 9, 3
+    %17 = inss i66 %16, i3 %11, 12, 3
+    %18 = inss i66 %17, i3 %11, 15, 3
+    %19 = inss i66 %18, i3 %11, 18, 3
+    %20 = inss i66 %19, i3 %11, 21, 3
+    %21 = inss i66 %20, i3 %11, 24, 3
+    %22 = inss i66 %21, i3 %11, 27, 3
+    %23 = inss i66 %22, i3 %11, 30, 3
+    %24 = inss i66 %23, i3 %11, 33, 3
+    %25 = inss i66 %24, i3 %11, 36, 3
+    %26 = inss i66 %25, i3 %11, 39, 3
+    %27 = inss i66 %26, i3 %11, 42, 3
+    %28 = inss i66 %27, i3 %11, 45, 3
+    %29 = inss i66 %28, i3 %11, 48, 3
+    %30 = inss i66 %29, i3 %11, 51, 3
+    %31 = inss i66 %30, i3 %11, 54, 3
+    %32 = inss i66 %31, i3 %11, 57, 3
+    %33 = inss i66 %32, i3 %11, 60, 3
+    %34 = inss i66 %33, i3 %11, 63, 3
+    %35 = const i2 0
+    %36 = shr i2 %a2, i2 %35, i66 %34
+    %37 = inss i4 %9, i2 %36, 2, 2
+    %38 = const time 0s 1e
+    drv i4$ %y, %37, %38
+    inst %bug.initial.228.0 (i4$ %y) -&gt; (i2$ %a, i3$ %b)
+}
 
 </pre>
 </body>

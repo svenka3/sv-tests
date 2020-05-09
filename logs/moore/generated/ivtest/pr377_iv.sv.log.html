@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,20 +18,35 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr377.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr377.v</a>
 time_elapsed: 0.000s
-ram usage: 9636 KB
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e dummy <a href="../../../../third_party/tests/ivtest/ivltests/pr377.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr377.v</a>
-compiler bug: explicit port `B` not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr377.v.html#l-1" target="file-frame">third_party/tests/ivtest/ivltests/pr377.v:1</a>:16-17:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr377.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr377.v:4</a>:4-16:
    | 
-   | module dummy (.B(A[2:1]));
-   |                ^          
+   |    $display (A);
+   |    ^^^^^^^^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+proc %dummy.always.229.0 (i2$ %A) -&gt; () {
+0:
+    br %init
+init:
+    %A1 = prb i2$ %A
+    wait %check, %A
+check:
+    %A2 = prb i2$ %A
+    %impledge = neq i2 %A1, %A2
+    br %impledge, %init, %event
+event:
+    %1 = const i32 0
+    br %0
+}
 
+entity @dummy (i2$ %A) -&gt; () {
+    inst %dummy.always.229.0 (i2$ %A) -&gt; ()
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,40 +18,22 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v</a>
 time_elapsed: 0.004s
-ram usage: 9704 KB
+ram usage: 9612 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v:11</a>:9-22:
-   | 
-   |     if (val !== 8&#39;hfc) begin
-   |         ^^^^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v:12</a>:7-63:
    | 
    |       $display(&#34;Failed unsigned, expected 8&#39;hfc, got %h&#34;, val);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v:17</a>:9-22:
-   | 
-   |     if (val !== 8&#39;h0c) begin
-   |         ^^^^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v:18</a>:7-69:
    | 
    |       $display(&#34;Failed sized unsigned, expected 8&#39;h0c, got %h&#34;, val);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v:23</a>:9-20:
-   | 
-   |     if (sval !== -4) begin
-   |         ^^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v:24</a>:7-59:
@@ -65,12 +47,93 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;val !== 8\&#39;hfc&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3077640.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr3077640.v:11</a>:9-22:
-   | 
-   |     if (val !== 8&#39;hfc) begin
-   |         ^^^^^^^^^^^^^       
+proc %top.initial.227.0 () -&gt; (i1$ %pass, i8$ %val, i8$ %sval) {
+0:
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %pass, %1, %2
+    %3 = const i32 4
+    %4 = neg i32 %3
+    %5 = exts i8, i32 %4, 0, 8
+    %6 = const time 0s 1e
+    drv i8$ %val, %5, %6
+    %val1 = prb i8$ %val
+    %7 = const i8 252
+    %8 = neq i8 %val1, %7
+    br %8, %if_false, %if_true
+if_true:
+    %9 = const i32 0
+    %10 = const i1 0
+    %11 = const time 0s 1e
+    drv i1$ %pass, %10, %11
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %12 = const i8 0
+    %13 = const i4 4
+    %14 = neg i4 %13
+    %15 = inss i8 %12, i4 %14, 0, 4
+    %16 = const time 0s 1e
+    drv i8$ %val, %15, %16
+    %val2 = prb i8$ %val
+    %17 = const i8 12
+    %18 = neq i8 %val2, %17
+    br %18, %if_false1, %if_true1
+if_true1:
+    %19 = const i32 0
+    %20 = const i1 0
+    %21 = const time 0s 1e
+    drv i1$ %pass, %20, %21
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %22 = const i4 12
+    %23 = exts i1, i4 %22, 3, 1
+    %24 = const i8 0
+    %25 = not i8 %24
+    %26 = [i8 %24, %25]
+    %27 = mux [2 x i8] %26, i1 %23
+    %28 = inss i8 %27, i4 %22, 0, 4
+    %29 = const time 0s 1e
+    drv i8$ %sval, %28, %29
+    %30 = const i32 0
+    %sval1 = prb i8$ %sval
+    %31 = inss i32 %30, i8 %sval1, 0, 8
+    %32 = const i32 4
+    %33 = neg i32 %32
+    %34 = neq i32 %31, %33
+    br %34, %if_false2, %if_true2
+if_true2:
+    %35 = const i32 0
+    %36 = const i1 0
+    %37 = const time 0s 1e
+    drv i1$ %pass, %36, %37
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    %pass1 = prb i1$ %pass
+    br %pass1, %if_false3, %if_true3
+if_true3:
+    %38 = const i32 0
+    br %if_exit3
+if_false3:
+    br %if_exit3
+if_exit3:
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i8 0
+    %val = sig i8 %1
+    %2 = const i8 0
+    %sval = sig i8 %2
+    inst %top.initial.227.0 () -&gt; (i1$ %pass, i8$ %val, i8$ %sval)
+}
 
 </pre>
 </body>

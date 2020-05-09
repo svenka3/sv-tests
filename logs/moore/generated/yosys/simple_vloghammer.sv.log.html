@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -17,33 +17,22 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/vloghammer.v.html" target="file-frame">third_party/tools/yosys/tests/simple/vloghammer.v</a>
-time_elapsed: 0.000s
-ram usage: 9592 KB
+time_elapsed: 0.004s
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e test01 <a href="../../../../third_party/tools/yosys/tests/simple/vloghammer.v.html" target="file-frame">third_party/tools/yosys/tests/simple/vloghammer.v</a>
-
-fatal: Ambiguous code, could be explicit type or implicit type
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/vloghammer.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/simple/vloghammer.v:12</a>:9-15:
-   | 
-   |   input signed [3:0] a;
-   |         ^^^^^^         
-
-
-note: explicit type would be this part
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/vloghammer.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/simple/vloghammer.v:12</a>:9-24:
-   | 
-   |   input signed [3:0] a;
-   |         ^^^^^^^^^^^^^^^
-
-
-note: implicit type would be this part
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/vloghammer.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/simple/vloghammer.v:12</a>:9-24:
-   | 
-   |   input signed [3:0] a;
-   |         ^^^^^^^^^^^^^^^
-
+entity @test01 (i8$ %a) -&gt; (i4$ %y) {
+    %a1 = prb i8$ %a
+    %0 = not i8 %a1
+    %1 = const i32 4
+    %2 = const i8 0
+    %3 = shr i8 %0, i8 %2, i32 %1
+    %4 = exts i4, i8 %3, 0, 4
+    %5 = const time 0s 1e
+    drv i4$ %y, %4, %5
+}
 
 </pre>
 </body>

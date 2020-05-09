@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,13 +18,120 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/basicstate2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/basicstate2.v</a>
 time_elapsed: 0.004s
-ram usage: 9680 KB
+ram usage: 9656 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e sm <a href="../../../../third_party/tests/ivtest/ivltests/basicstate2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/basicstate2.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %sm.always.236.0 (i1$ %clk, i1$ %rst, i2$ %next_st) -&gt; (i2$ %st) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    %rst1 = prb i1$ %rst
+    wait %check, %clk, %rst
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = eq i1 %clk1, %1
+    %3 = neq i1 %clk2, %1
+    %posedge = and i1 %2, %3
+    %rst2 = prb i1$ %rst
+    %4 = const i1 0
+    %5 = eq i1 %rst1, %4
+    %6 = neq i1 %rst2, %4
+    %posedge1 = and i1 %5, %6
+    %event_or = or i1 %posedge, %posedge1
+    br %event_or, %init, %event
+event:
+    %rst3 = prb i1$ %rst
+    br %rst3, %if_false, %if_true
+if_true:
+    %7 = const i2 0
+    %8 = const time 0s 1d
+    drv i2$ %st, %7, %8
+    br %if_exit
+if_false:
+    %next_st1 = prb i2$ %next_st
+    %9 = const time 0s 1d
+    drv i2$ %st, %next_st1, %9
+    br %if_exit
+if_exit:
+    br %0
+}
+
+proc %sm.always.237.0 (i2$ %st) -&gt; (i2$ %next_st) {
+0:
+    br %init
+init:
+    %st1 = prb i2$ %st
+    wait %check, %st
+check:
+    %st2 = prb i2$ %st
+    %impledge = neq i2 %st1, %st2
+    br %impledge, %init, %event
+event:
+    %st3 = prb i2$ %st
+    %1 = const i1 0
+    %2 = const i2 0
+    %3 = eq i2 %st3, %2
+    %4 = or i1 %1, %3
+    br %4, %5, %case_body
+case_exit:
+    br %0
+case_body:
+    %6 = const i2 1
+    %7 = const time 0s 1d
+    drv i2$ %next_st, %6, %7
+    br %case_exit
+5:
+    %8 = const i1 0
+    %9 = const i2 1
+    %10 = eq i2 %st3, %9
+    %11 = or i1 %8, %10
+    br %11, %12, %case_body1
+case_body1:
+    %13 = const i2 3
+    %14 = const time 0s 1d
+    drv i2$ %next_st, %13, %14
+    br %case_exit
+12:
+    %15 = const i1 0
+    %16 = const i2 3
+    %17 = eq i2 %st3, %16
+    %18 = or i1 %15, %17
+    br %18, %19, %case_body2
+case_body2:
+    %20 = const i2 2
+    %21 = const time 0s 1d
+    drv i2$ %next_st, %20, %21
+    br %case_exit
+19:
+    %22 = const i1 0
+    %23 = const i2 2
+    %24 = eq i2 %st3, %23
+    %25 = or i1 %22, %24
+    br %25, %26, %case_body3
+case_body3:
+    %27 = const i2 0
+    %28 = const time 0s 1d
+    drv i2$ %next_st, %27, %28
+    br %case_exit
+26:
+    br %case_exit
+}
+
+entity @sm (i1$ %clk, i1$ %rst) -&gt; (i2$ %st) {
+    %0 = const i2 0
+    %st1 = sig i2 %0
+    %1 = const i2 0
+    %next_st = sig i2 %1
+    inst %sm.always.236.0 (i1$ %clk, i1$ %rst, i2$ %next_st) -&gt; (i2$ %st1)
+    inst %sm.always.237.0 (i2$ %st1) -&gt; (i2$ %next_st)
+    %2 = const i2 0
+    %3 = const time 0s
+    drv i2$ %st, %2, %3
+}
 
 </pre>
 </body>

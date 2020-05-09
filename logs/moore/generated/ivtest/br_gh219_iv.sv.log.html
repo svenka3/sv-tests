@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,29 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v</a>
 time_elapsed: 0.004s
-ram usage: 9752 KB
+ram usage: 9588 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e Main <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v</a>
-compiler bug: lowering of expression not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v:12</a>:12-26:
-   | 
-   |       c0 = 4&#39;($signed(a)) + b;
-   |            ^^^^^^^^^^^^^^     
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: lowering of expression not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v:13</a>:12-24:
-   | 
-   |       c1 = 4&#39;(a_signed) + b;
-   |            ^^^^^^^^^^^^     
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v:15</a>:7-29:
    | 
@@ -52,18 +34,6 @@ warning: `$display` not supported; ignored
    | 
    |       $display(&#34;c1: %b&#34;, c1);
    |       ^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v:18</a>:11-25:
-   | 
-   |       if (c0 === 4&#39;b1111 &amp;&amp; c1 === 4&#39;b1111)
-   |           ^^^^^^^^^^^^^^                   
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v:18</a>:29-43:
-   | 
-   |       if (c0 === 4&#39;b1111 &amp;&amp; c1 === 4&#39;b1111)
-   |                             ^^^^^^^^^^^^^^ 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v:19</a>:10-28:
@@ -77,6 +47,63 @@ warning: `$display` not supported; ignored
    |          $display(&#34;FAILED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
+proc %Main.initial.231.0 (i3$ %a, i3$ %a_signed, i3$ %b) -&gt; (i4$ %c0, i4$ %c1) {
+0:
+    %a1 = prb i3$ %a
+    %1 = exts i1, i3 %a1, 2, 1
+    %2 = const i4 0
+    %3 = not i4 %2
+    %4 = [i4 %2, %3]
+    %5 = mux [2 x i4] %4, i1 %1
+    %6 = inss i4 %5, i3 %a1, 0, 3
+    %7 = const i4 0
+    %b1 = prb i3$ %b
+    %8 = inss i4 %7, i3 %b1, 0, 3
+    %9 = add i4 %6, %8
+    %10 = const time 0s 1e
+    drv i4$ %c0, %9, %10
+    %11 = const i4 0
+    %a_signed1 = prb i3$ %a_signed
+    %12 = inss i4 %11, i3 %a_signed1, 0, 3
+    %13 = const i4 0
+    %b2 = prb i3$ %b
+    %14 = inss i4 %13, i3 %b2, 0, 3
+    %15 = add i4 %12, %14
+    %16 = const time 0s 1e
+    drv i4$ %c1, %15, %16
+    %17 = const i32 0
+    %18 = const i32 0
+    %c01 = prb i4$ %c0
+    %19 = const i4 15
+    %20 = eq i4 %c01, %19
+    %c11 = prb i4$ %c1
+    %21 = const i4 15
+    %22 = eq i4 %c11, %21
+    %23 = and i1 %20, %22
+    br %23, %if_false, %if_true
+if_true:
+    %24 = const i32 0
+    br %if_exit
+if_false:
+    %25 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @Main () -&gt; () {
+    %0 = const i3 7
+    %a = sig i3 %0
+    %1 = const i3 7
+    %a_signed = sig i3 %1
+    %2 = const i32 0
+    %b = sig i32 %2
+    %3 = const i4 0
+    %c0 = sig i4 %3
+    %4 = const i4 0
+    %c1 = sig i4 %4
+    inst %Main.initial.231.0 (i3$ %a, i3$ %a_signed, i32$ %b) -&gt; (i4$ %c0, i4$ %c1)
+}
 
 </pre>
 </body>

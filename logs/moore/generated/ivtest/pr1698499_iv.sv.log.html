@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,20 +17,336 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v</a>
-time_elapsed: 0.004s
-ram usage: 9680 KB
+time_elapsed: 0.008s
+ram usage: 9752 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e sysSimpleTest <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v</a>
-error: variable `y$EN` has implicit type but is not initialized
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:28</a>:8-12:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:10</a>:7-24:
    | 
-   |   wire y$EN;
-   |        ^^^^ 
-   = note: specify a type for the variable; or
-   = note: add an initial value
+   |       $display(&#34;reset&#34;);
+   |       ^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:13</a>:7-29:
+   | 
+   |       $display(&#34;reset done&#34;);
+   |       ^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-118" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:118</a>:2-211:
+   | 
+   |     $display(&#34;OK:  %0d * %0d + %0d == %0d&#34;,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-125" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:125</a>:2-211:
+   | 
+   |     $display(&#34;BAD: %0d * %0d + %0d != %0d&#34;,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `$finish` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-130" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:130</a>:16-30:
+   | 
+   |     if (RST_N) $finish(32&#39;d0);
+   |                ^^^^^^^^^^^^^^ 
+
+proc %sysSimpleTest.initial.225.0 () -&gt; (i1$ %CLK, i1$ %RST_N) {
+0:
+    %1 = const i32 0
+    wait %2 for %1
+2:
+    %3 = const i1 0
+    %4 = const time 0s 1e
+    drv i1$ %RST_N, %3, %4
+    %5 = const i32 1
+    wait %6 for %5
+6:
+    %7 = const i1 1
+    %8 = const time 0s 1e
+    drv i1$ %CLK, %7, %8
+    %9 = const i32 0
+    %10 = const i32 1
+    wait %11 for %10
+11:
+    %12 = const i1 1
+    %13 = const time 0s 1e
+    drv i1$ %RST_N, %12, %13
+    %14 = const i32 0
+    halt
+}
+
+proc %sysSimpleTest.always.226.0 () -&gt; (i1$ %CLK) {
+0:
+    %1 = const i32 5
+    wait %2 for %1
+2:
+    %3 = const i1 0
+    %4 = const time 0s 1e
+    drv i1$ %CLK, %3, %4
+    %5 = const i32 5
+    wait %6 for %5
+6:
+    %7 = const i1 1
+    %8 = const time 0s 1e
+    drv i1$ %CLK, %7, %8
+    br %0
+}
+
+proc %sysSimpleTest.always.265.0 (i1$ %CLK, i1$ %RST_N, i99$ %y\24D_IN, i1$ %y\24EN, i99$ %z\24D_IN, i1$ %z\24EN) -&gt; (i99$ %y, i99$ %z) {
+0:
+    br %init
+init:
+    %CLK1 = prb i1$ %CLK
+    wait %check, %CLK
+check:
+    %CLK2 = prb i1$ %CLK
+    %1 = const i1 0
+    %2 = eq i1 %CLK1, %1
+    %3 = neq i1 %CLK2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %RST_N1 = prb i1$ %RST_N
+    %4 = not i1 %RST_N1
+    br %4, %if_false, %if_true
+if_true:
+    %5 = const i99 633825295477508599080653296050
+    %6 = const time 0s 1d
+    drv i99$ %y, %5, %6
+    %7 = const i99 662372300238342615234
+    %8 = const time 0s 1d
+    drv i99$ %z, %7, %8
+    br %if_exit
+if_false:
+    %y\24EN1 = prb i1$ %y\24EN
+    br %y\24EN1, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %y\24D_IN1 = prb i99$ %y\24D_IN
+    %9 = const time 0s 1d
+    drv i99$ %y, %y\24D_IN1, %9
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %z\24EN1 = prb i1$ %z\24EN
+    br %z\24EN1, %if_false2, %if_true2
+if_true2:
+    %z\24D_IN1 = prb i99$ %z\24D_IN
+    %10 = const time 0s 1d
+    drv i99$ %z, %z\24D_IN1, %10
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    br %if_exit
+}
+
+proc %sysSimpleTest.initial.266.0 () -&gt; (i99$ %y, i99$ %z) {
+0:
+    %1 = const i99 211275100038038233582783867562
+    %2 = const time 0s 1e
+    drv i99$ %y, %1, %2
+    %3 = const i99 211275100038038233582783867562
+    %4 = const time 0s 1e
+    drv i99$ %z, %3, %4
+    halt
+}
+
+proc %sysSimpleTest.always.267.0 (i1$ %CLK, i1$ %RST_N, i1$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d22) -&gt; () {
+0:
+    br %init
+init:
+    %CLK1 = prb i1$ %CLK
+    wait %check, %CLK
+check:
+    %CLK2 = prb i1$ %CLK
+    %1 = const i1 0
+    %2 = neq i1 %CLK1, %1
+    %3 = eq i1 %CLK2, %1
+    %negedge = and i1 %3, %2
+    br %negedge, %init, %event
+event:
+    %4 = const i32 0
+    wait %5 for %4
+5:
+    %RST_N1 = prb i1$ %RST_N
+    br %RST_N1, %if_false, %if_true
+if_true:
+    %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d221 = prb i1$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d22
+    br %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d221, %if_false1, %if_true1
+if_false:
+    br %if_exit
+if_exit:
+    %RST_N2 = prb i1$ %RST_N
+    br %RST_N2, %if_false2, %if_true2
+if_true1:
+    %6 = const i32 0
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    br %if_exit
+if_true2:
+    %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d222 = prb i1$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d22
+    %7 = not i1 %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d222
+    br %7, %if_false3, %if_true3
+if_false2:
+    br %if_exit2
+if_exit2:
+    %RST_N3 = prb i1$ %RST_N
+    br %RST_N3, %if_false4, %if_true4
+if_true3:
+    %8 = const i32 0
+    br %if_exit3
+if_false3:
+    br %if_exit3
+if_exit3:
+    br %if_exit2
+if_true4:
+    %9 = const i32 0
+    br %if_exit4
+if_false4:
+    br %if_exit4
+if_exit4:
+    br %0
+}
+
+entity @sysSimpleTest () -&gt; () {
+    %0 = const i1 0
+    %CLK = sig i1 %0
+    %1 = const i1 0
+    %RST_N = sig i1 %1
+    %2 = const i99 0
+    %y = sig i99 %2
+    %3 = const i99 0
+    %y\24D_IN = sig i99 %3
+    %4 = const i1 0
+    %y\24EN = sig i1 %4
+    %5 = const i99 0
+    %z = sig i99 %5
+    %6 = const i99 0
+    %z\24D_IN = sig i99 %6
+    %7 = const i1 0
+    %z\24EN = sig i1 %7
+    %8 = const i99 0
+    %IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT_0_AND__ETC___d29 = sig i99 %8
+    %9 = const i99 0
+    %IF_y_SLT_0_THEN_NEG_IF_y_SLT_0_THEN_NEG_y_0_EL_ETC___d28 = sig i99 %9
+    %10 = const i99 0
+    %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d30 = sig i99 %10
+    %11 = const i99 0
+    %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d31 = sig i99 %11
+    %12 = const i99 0
+    %x__h201 = sig i99 %12
+    %13 = const i99 0
+    %y__h141 = sig i99 %13
+    %14 = const i99 0
+    %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d17 = sig i99 %14
+    %15 = const i1 0
+    %y_SLT_0___d33 = sig i1 %15
+    %16 = const i1 0
+    %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d22 = sig i1 %16
+    %17 = const i1 0
+    %z_SLT_0___d32 = sig i1 %17
+    %18 = const i99 0
+    %19 = const time 0s 1e
+    drv i99$ %y\24D_IN, %18, %19
+    %20 = const i1 0
+    %21 = const time 0s 1e
+    drv i1$ %y\24EN, %20, %21
+    %22 = const i1 0
+    %23 = const time 0s 1e
+    drv i1$ %z\24EN, %22, %23
+    %24 = const i99 0
+    %25 = const time 0s 1e
+    drv i99$ %z\24D_IN, %24, %25
+    %y_SLT_0___d331 = prb i1$ %y_SLT_0___d33
+    %z_SLT_0___d321 = prb i1$ %z_SLT_0___d32
+    %26 = not i1 %z_SLT_0___d321
+    %27 = and i1 %y_SLT_0___d331, %26
+    %y_SLT_0___d332 = prb i1$ %y_SLT_0___d33
+    %28 = not i1 %y_SLT_0___d332
+    %z_SLT_0___d322 = prb i1$ %z_SLT_0___d32
+    %29 = and i1 %28, %z_SLT_0___d322
+    %30 = or i1 %27, %29
+    %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d301 = prb i99$ %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d30
+    %31 = neg i99 %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d301
+    %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d302 = prb i99$ %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d30
+    %32 = [i99 %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d302, %31]
+    %33 = mux [2 x i99] %32, i1 %30
+    %34 = const time 0s 1e
+    drv i99$ %IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT_0_AND__ETC___d29, %33, %34
+    %y_SLT_0___d333 = prb i1$ %y_SLT_0___d33
+    %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d311 = prb i99$ %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d31
+    %35 = neg i99 %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d311
+    %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d312 = prb i99$ %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d31
+    %36 = [i99 %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d312, %35]
+    %37 = mux [2 x i99] %36, i1 %y_SLT_0___d333
+    %38 = const time 0s 1e
+    drv i99$ %IF_y_SLT_0_THEN_NEG_IF_y_SLT_0_THEN_NEG_y_0_EL_ETC___d28, %37, %38
+    %x__h2011 = prb i99$ %x__h201
+    %y__h1411 = prb i99$ %y__h141
+    %39 = udiv i99 %x__h2011, %y__h1411
+    %40 = const time 0s 1e
+    drv i99$ %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_QUOT_IF_z_SLT_ETC___d30, %39, %40
+    %x__h2012 = prb i99$ %x__h201
+    %y__h1412 = prb i99$ %y__h141
+    %41 = umod i99 %x__h2012, %y__h1412
+    %42 = const time 0s 1e
+    drv i99$ %IF_y_SLT_0_THEN_NEG_y_0_ELSE_y_1_REM_IF_z_SLT__ETC___d31, %41, %42
+    %y_SLT_0___d334 = prb i1$ %y_SLT_0___d33
+    %y1 = prb i99$ %y
+    %43 = neg i99 %y1
+    %y2 = prb i99$ %y
+    %44 = [i99 %y2, %43]
+    %45 = mux [2 x i99] %44, i1 %y_SLT_0___d334
+    %46 = const time 0s 1e
+    drv i99$ %x__h201, %45, %46
+    %y3 = prb i99$ %y
+    %47 = const i99 316912650057057350374175801344
+    %48 = xor i99 %y3, %47
+    %49 = const i99 316912650057057350374175801344
+    %50 = ult i99 %48, %49
+    %51 = const time 0s 1e
+    drv i1$ %y_SLT_0___d33, %50, %51
+    %z_SLT_0___d323 = prb i1$ %z_SLT_0___d32
+    %z1 = prb i99$ %z
+    %52 = neg i99 %z1
+    %z2 = prb i99$ %z
+    %53 = [i99 %z2, %52]
+    %54 = mux [2 x i99] %53, i1 %z_SLT_0___d323
+    %55 = const time 0s 1e
+    drv i99$ %y__h141, %54, %55
+    %z3 = prb i99$ %z
+    %IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT_0_AND__ETC___d291 = prb i99$ %IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT_0_AND__ETC___d29
+    %56 = umul i99 %z3, %IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT_0_AND__ETC___d291
+    %57 = const time 0s 1e
+    drv i99$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d17, %56, %57
+    %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d171 = prb i99$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d17
+    %IF_y_SLT_0_THEN_NEG_IF_y_SLT_0_THEN_NEG_y_0_EL_ETC___d281 = prb i99$ %IF_y_SLT_0_THEN_NEG_IF_y_SLT_0_THEN_NEG_y_0_EL_ETC___d28
+    %58 = add i99 %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d171, %IF_y_SLT_0_THEN_NEG_IF_y_SLT_0_THEN_NEG_y_0_EL_ETC___d281
+    %y4 = prb i99$ %y
+    %59 = eq i99 %58, %y4
+    %60 = const time 0s 1e
+    drv i1$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d22, %59, %60
+    %z4 = prb i99$ %z
+    %61 = const i99 316912650057057350374175801344
+    %62 = xor i99 %z4, %61
+    %63 = const i99 316912650057057350374175801344
+    %64 = ult i99 %62, %63
+    %65 = const time 0s 1e
+    drv i1$ %z_SLT_0___d32, %64, %65
+    inst %sysSimpleTest.initial.225.0 () -&gt; (i1$ %CLK, i1$ %RST_N)
+    inst %sysSimpleTest.always.226.0 () -&gt; (i1$ %CLK)
+    inst %sysSimpleTest.always.265.0 (i1$ %CLK, i1$ %RST_N, i99$ %y\24D_IN, i1$ %y\24EN, i99$ %z\24D_IN, i1$ %z\24EN) -&gt; (i99$ %y, i99$ %z)
+    inst %sysSimpleTest.initial.266.0 () -&gt; (i99$ %y, i99$ %z)
+    inst %sysSimpleTest.always.267.0 (i1$ %CLK, i1$ %RST_N, i1$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d22) -&gt; ()
+}
 
 </pre>
 </body>

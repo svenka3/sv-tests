@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,13 +18,58 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v</a>
 time_elapsed: 0.004s
-ram usage: 9752 KB
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test_mod <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %test_mod.always.233.0 (i1$ %reset, i1$ %clka) -&gt; (i1$ %out) {
+0:
+    br %init
+init:
+    %clka1 = prb i1$ %clka
+    %reset1 = prb i1$ %reset
+    wait %check, %clka, %reset
+check:
+    %clka2 = prb i1$ %clka
+    %1 = const i1 0
+    %2 = eq i1 %clka1, %1
+    %3 = neq i1 %clka2, %1
+    %posedge = and i1 %2, %3
+    %reset2 = prb i1$ %reset
+    %4 = const i1 0
+    %5 = eq i1 %reset1, %4
+    %6 = neq i1 %reset2, %4
+    %posedge1 = and i1 %5, %6
+    %event_or = or i1 %posedge, %posedge1
+    br %event_or, %init, %event
+event:
+    %reset3 = prb i1$ %reset
+    br %reset3, %if_false, %if_true
+if_true:
+    %7 = const i32 0
+    %8 = exts i1, i32 %7, 0, 1
+    %9 = const time 0s 1e
+    drv i1$ %out, %8, %9
+    br %if_exit
+if_false:
+    %out1 = prb i1$ %out
+    %10 = not i1 %out1
+    %11 = const time 0s 1e
+    drv i1$ %out, %10, %11
+    br %if_exit
+if_exit:
+    br %0
+}
+
+entity @test_mod (i1$ %reset, i1$ %clka) -&gt; (i1$ %out) {
+    %0 = const i1 0
+    %out1 = sig i1 %0
+    inst %test_mod.always.233.0 (i1$ %reset, i1$ %clka) -&gt; (i1$ %out1)
+    %1 = const i1 0
+    %2 = const time 0s
+    drv i1$ %out, %1, %2
+}
 
 </pre>
 </body>

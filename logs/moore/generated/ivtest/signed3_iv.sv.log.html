@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,28 +18,16 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v</a>
 time_elapsed: 0.004s
-ram usage: 9640 KB
+ram usage: 9708 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:34</a>:8-23:
-   | 
-   |     if(R0 !== 16&#39;hfff4)
-   |        ^^^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:36</a>:10-105:
    | 
    |          $display(&#34;FAILED - negative decimal assignment failed. R0 s/b fff4, is %h&#34;,
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-41" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:41</a>:8-23:
-   | 
-   |     if(R1 !== 16&#39;hfff4)
-   |        ^^^^^^^^^^^^^^^ 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-43" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:43</a>:10-105:
@@ -47,24 +35,84 @@ warning: `$display` not supported; ignored
    |          $display(&#34;FAILED - negative decimal assignment failed. R1 s/b fff4, is %h&#34;,
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-47" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:47</a>:8-19:
-   | 
-   |     if(error === 0)
-   |        ^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-48" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:48</a>:7-25:
    | 
    |       $display(&#34;PASSED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;R0 !== 16\&#39;hfff4&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:34</a>:8-23:
-   | 
-   |     if(R0 !== 16&#39;hfff4)
-   |        ^^^^^^^^^^^^^^^ 
+proc %test.initial.229.0 () -&gt; (i16$ %R0, i16$ %R1, i4$ %error) {
+0:
+    %1 = const i16 0
+    %2 = const i4 12
+    %3 = neg i4 %2
+    %4 = inss i16 %1, i4 %3, 0, 4
+    %5 = const time 0s 1e
+    drv i16$ %R0, %4, %5
+    %6 = const i16 12
+    %7 = neg i16 %6
+    %8 = const time 0s 1e
+    drv i16$ %R1, %7, %8
+    %9 = const i32 0
+    %10 = exts i4, i32 %9, 0, 4
+    %11 = const time 0s 1e
+    drv i4$ %error, %10, %11
+    %R01 = prb i16$ %R0
+    %12 = const i16 65524
+    %13 = neq i16 %R01, %12
+    br %13, %if_false, %if_true
+if_true:
+    %14 = const i32 0
+    %15 = const i32 1
+    %16 = exts i4, i32 %15, 0, 4
+    %17 = const time 0s 1e
+    drv i4$ %error, %16, %17
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %R11 = prb i16$ %R1
+    %18 = const i16 65524
+    %19 = neq i16 %R11, %18
+    br %19, %if_false1, %if_true1
+if_true1:
+    %20 = const i32 0
+    %21 = const i32 1
+    %22 = exts i4, i32 %21, 0, 4
+    %23 = const time 0s 1e
+    drv i4$ %error, %22, %23
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %24 = const i32 0
+    %error1 = prb i4$ %error
+    %25 = inss i32 %24, i4 %error1, 0, 4
+    %26 = const i32 0
+    %27 = eq i32 %25, %26
+    br %27, %if_false2, %if_true2
+if_true2:
+    %28 = const i32 0
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    halt
+}
 
+entity @test () -&gt; () {
+    %0 = const i32 0
+    %I0 = sig i32 %0
+    %1 = const i32 0
+    %I1 = sig i32 %1
+    %2 = const i16 0
+    %R0 = sig i16 %2
+    %3 = const i16 0
+    %R1 = sig i16 %3
+    %4 = const i4 0
+    %error = sig i4 %4
+    inst %test.initial.229.0 () -&gt; (i16$ %R0, i16$ %R1, i4$ %error)
+}
 
 </pre>
 </body>

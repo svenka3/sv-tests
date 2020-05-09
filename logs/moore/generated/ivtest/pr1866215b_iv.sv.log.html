@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,14 +17,94 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1866215b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1866215b.v</a>
-time_elapsed: 0.000s
-ram usage: 9664 KB
+time_elapsed: 0.004s
+ram usage: 9652 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e A <a href="../../../../third_party/tests/ivtest/ivltests/pr1866215b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1866215b.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1866215b.v.html#l-37" target="file-frame">third_party/tests/ivtest/ivltests/pr1866215b.v:37</a>:15-69:
+   | 
+   |    initial #1 $display(&#34;CH=%h, CL=%h, SH=%h, SL=%h&#34;, CH, CL, SH, SL);
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+proc %C.initial.341.0 () -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %3 = const i32 0
+    halt
+}
+
+entity @C (i7$ %CH, i32$ %CL, i8$ %SH, i32$ %SL) -&gt; () {
+    inst %C.initial.341.0 () -&gt; ()
+}
+
+entity @B (i6$ %CH, i32$ %CL, i7$ %SH, i32$ %SL) -&gt; () {
+    %CH1 = prb i6$ %CH
+    %0 = const i6 0
+    %1 = sig i6 %0
+    %2 = const time 0s 1e
+    drv i6$ %1, %CH1, %2
+    %CL1 = prb i32$ %CL
+    %3 = const i32 0
+    %4 = sig i32 %3
+    %5 = const time 0s 1e
+    drv i32$ %4, %CL1, %5
+    %SH1 = prb i7$ %SH
+    %6 = const i7 0
+    %7 = sig i7 %6
+    %8 = const time 0s 1e
+    drv i7$ %7, %SH1, %8
+    %SL1 = prb i32$ %SL
+    %9 = const i32 0
+    %10 = sig i32 %9
+    %11 = const time 0s 1e
+    drv i32$ %10, %SL1, %11
+    inst @C (i6$ %1, i32$ %4, i7$ %7, i32$ %10) -&gt; ()
+}
+
+entity @A () -&gt; (i32$ %SL, i32$ %CL, i16$ %SH, i16$ %CH) {
+    %0 = const i16 0
+    %1 = const i8 255
+    %2 = inss i16 %0, i8 %1, 0, 8
+    %3 = const time 0s 1e
+    drv i16$ %SH, %2, %3
+    %4 = const i32 2863311530
+    %5 = const time 0s 1e
+    drv i32$ %SL, %4, %5
+    %6 = const i16 0
+    %7 = const i8 255
+    %8 = inss i16 %6, i8 %7, 0, 8
+    %9 = const time 0s 1e
+    drv i16$ %CH, %8, %9
+    %10 = const i32 1431655765
+    %11 = const time 0s 1e
+    drv i32$ %CL, %10, %11
+    %CH1 = prb i16$ %CH
+    %12 = const i16 0
+    %13 = sig i16 %12
+    %14 = const time 0s 1e
+    drv i16$ %13, %CH1, %14
+    %CL1 = prb i32$ %CL
+    %15 = const i32 0
+    %16 = sig i32 %15
+    %17 = const time 0s 1e
+    drv i32$ %16, %CL1, %17
+    %SH1 = prb i16$ %SH
+    %18 = const i16 0
+    %19 = sig i16 %18
+    %20 = const time 0s 1e
+    drv i16$ %19, %SH1, %20
+    %SL1 = prb i32$ %SL
+    %21 = const i32 0
+    %22 = sig i32 %21
+    %23 = const time 0s 1e
+    drv i32$ %22, %SL1, %23
+    inst @B (i16$ %13, i32$ %16, i16$ %19, i32$ %22) -&gt; ()
+}
 
 </pre>
 </body>

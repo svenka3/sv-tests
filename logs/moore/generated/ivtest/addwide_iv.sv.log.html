@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,14 +17,125 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/addwide.v.html" target="file-frame">third_party/tests/ivtest/ivltests/addwide.v</a>
-time_elapsed: 0.000s
-ram usage: 9612 KB
+time_elapsed: 0.004s
+ram usage: 9616 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e source <a href="../../../../third_party/tests/ivtest/ivltests/addwide.v.html" target="file-frame">third_party/tests/ivtest/ivltests/addwide.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %source.initial.241.0 () -&gt; (i1$ %C, i12$ %h, i22$ %l) {
+0:
+    %1 = const i32 5
+    wait %2 for %1
+2:
+    %3 = const i32 0
+    %4 = exts i1, i32 %3, 0, 1
+    %5 = const time 0s 1d
+    drv i1$ %C, %4, %5
+    %6 = const i32 0
+    %7 = exts i22, i32 %6, 0, 22
+    %8 = const time 0s 1d
+    drv i22$ %l, %7, %8
+    %9 = const i32 0
+    %10 = exts i12, i32 %9, 0, 12
+    %11 = const time 0s 1d
+    drv i12$ %h, %10, %11
+    halt
+}
+
+proc %source.always.242.0 () -&gt; (i1$ %C) {
+0:
+    %1 = const i32 10
+    wait %2 for %1
+2:
+    %C1 = prb i1$ %C
+    %3 = not i1 %C1
+    %4 = const time 0s 1e
+    drv i1$ %C, %3, %4
+    br %0
+}
+
+proc %source.always.243.0 (i1$ %C) -&gt; (i12$ %h, i22$ %l) {
+0:
+    br %init
+init:
+    %C1 = prb i1$ %C
+    wait %check, %C
+check:
+    %C2 = prb i1$ %C
+    %1 = const i1 0
+    %2 = eq i1 %C1, %1
+    %3 = neq i1 %C2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %l1 = prb i22$ %l
+    %4 = const i22 0
+    %5 = const i21 1048576
+    %6 = inss i22 %4, i21 %5, 0, 21
+    %7 = uge i22 %l1, %6
+    br %7, %if_false, %if_true
+if_true:
+    %l2 = prb i22$ %l
+    %8 = const i22 0
+    %9 = const i21 364066
+    %10 = inss i22 %8, i21 %9, 0, 21
+    %11 = add i22 %l2, %10
+    %12 = const i22 0
+    %13 = const i21 1048576
+    %14 = inss i22 %12, i21 %13, 0, 21
+    %15 = sub i22 %11, %14
+    %16 = const time 0s 1d
+    drv i22$ %l, %15, %16
+    %17 = const i32 0
+    %h1 = prb i12$ %h
+    %18 = inss i32 %17, i12 %h1, 0, 12
+    %19 = const i32 3
+    %20 = add i32 %18, %19
+    %21 = const i32 1
+    %22 = add i32 %20, %21
+    %23 = exts i12, i32 %22, 0, 12
+    %24 = const time 0s 1d
+    drv i12$ %h, %23, %24
+    br %if_exit
+if_false:
+    %l3 = prb i22$ %l
+    %25 = const i22 0
+    %26 = const i21 364066
+    %27 = inss i22 %25, i21 %26, 0, 21
+    %28 = add i22 %l3, %27
+    %29 = const time 0s 1d
+    drv i22$ %l, %28, %29
+    %30 = const i32 0
+    %h2 = prb i12$ %h
+    %31 = inss i32 %30, i12 %h2, 0, 12
+    %32 = const i32 3
+    %33 = add i32 %31, %32
+    %34 = exts i12, i32 %33, 0, 12
+    %35 = const time 0s 1d
+    drv i12$ %h, %34, %35
+    br %if_exit
+if_exit:
+    br %0
+}
+
+entity @source () -&gt; (i1$ %C, i12$ %h) {
+    %0 = const i1 0
+    %C1 = sig i1 %0
+    %1 = const i12 0
+    %h1 = sig i12 %1
+    %2 = const i22 0
+    %l = sig i22 %2
+    inst %source.initial.241.0 () -&gt; (i1$ %C1, i12$ %h1, i22$ %l)
+    inst %source.always.242.0 () -&gt; (i1$ %C1)
+    inst %source.always.243.0 (i1$ %C1) -&gt; (i12$ %h1, i22$ %l)
+    %3 = const i1 0
+    %4 = const time 0s
+    drv i1$ %C, %3, %4
+    %5 = const i12 0
+    %6 = const time 0s
+    drv i12$ %h, %5, %6
+}
 
 </pre>
 </body>

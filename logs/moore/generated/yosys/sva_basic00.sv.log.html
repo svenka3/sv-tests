@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/sva
@@ -17,22 +17,48 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv</a>
-time_elapsed: 0.000s
-ram usage: 9756 KB
+time_elapsed: 0.004s
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/sva -e top <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html#l-1" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv:1</a>:13-19:
+warning: unsupported: concurrent assertion; ignored
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html#l-9" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv:9</a>:15-162:
    | 
-   | module top (input clk, reset, antecedent, output reg consequent);
-   |             ^^^^^^                                               
+   |     test_assert: assert property ( @(posedge clk) disable iff (reset) antecedent |=&gt; consequent )
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %top.always.233.0 (i1$ %clk, i1$ %reset, i1$ %antecedent) -&gt; (i1$ %consequent) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = eq i1 %clk1, %1
+    %3 = neq i1 %clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %reset1 = prb i1$ %reset
+    %4 = const i32 0
+    %5 = const i32 0
+    %antecedent1 = prb i1$ %antecedent
+    %6 = inss i32 %5, i1 %antecedent1, 0, 1
+    %7 = [i32 %6, %4]
+    %8 = mux [2 x i32] %7, i1 %reset1
+    %9 = exts i1, i32 %8, 0, 1
+    %10 = const time 0s 1d
+    drv i1$ %consequent, %9, %10
+    br %0
+}
+
+entity @top (i1$ %clk, i1$ %reset, i1$ %antecedent) -&gt; (i1$ %consequent) {
+    inst %top.always.233.0 (i1$ %clk, i1$ %reset, i1$ %antecedent) -&gt; (i1$ %consequent)
+}
 
 </pre>
 </body>

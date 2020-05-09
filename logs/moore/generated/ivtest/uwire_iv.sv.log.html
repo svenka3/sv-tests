@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,20 +17,87 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/uwire.v.html" target="file-frame">third_party/tests/ivtest/ivltests/uwire.v</a>
-time_elapsed: 0.000s
-ram usage: 9536 KB
+time_elapsed: 0.004s
+ram usage: 9664 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/uwire.v.html" target="file-frame">third_party/tests/ivtest/ivltests/uwire.v</a>
-error: variable `zero` has implicit type but is not initialized
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/uwire.v:3</a>:9-13:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/uwire.v:11</a>:7-55:
    | 
-   |   uwire zero, one;
-   |         ^^^^      
-   = note: specify a type for the variable; or
-   = note: add an initial value
+   |       $display(&#34;Failed: undriven uwire gave %b&#34;, zero);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/uwire.v:15</a>:7-52:
+   | 
+   |       $display(&#34;Failed: driven uwire gave %b&#34;, one);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/uwire.v:19</a>:15-33:
+   | 
+   |     if (pass) $display(&#34;PASSED&#34;);
+   |               ^^^^^^^^^^^^^^^^^^ 
+
+proc %top.initial.227.0 (i1$ %zero, i1$ %one) -&gt; (i1$ %pass) {
+0:
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %pass, %1, %2
+    %3 = const i32 1
+    wait %4 for %3
+4:
+    %zero1 = prb i1$ %zero
+    %5 = const i1 0
+    %6 = neq i1 %zero1, %5
+    br %6, %if_false, %if_true
+if_true:
+    %7 = const i32 0
+    %8 = const i1 0
+    %9 = const time 0s 1e
+    drv i1$ %pass, %8, %9
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %one1 = prb i1$ %one
+    %10 = const i1 1
+    %11 = neq i1 %one1, %10
+    br %11, %if_false1, %if_true1
+if_true1:
+    %12 = const i32 0
+    %13 = const i1 0
+    %14 = const time 0s 1e
+    drv i1$ %pass, %13, %14
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %pass1 = prb i1$ %pass
+    br %pass1, %if_false2, %if_true2
+if_true2:
+    %15 = const i32 0
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i1 0
+    %zero = sig i1 %1
+    %2 = const i1 0
+    %one = sig i1 %2
+    %3 = const i1 1
+    %4 = const time 0s 1e
+    drv i1$ %one, %3, %4
+    inst %top.initial.227.0 (i1$ %zero, i1$ %one) -&gt; (i1$ %pass)
+}
 
 </pre>
 </body>

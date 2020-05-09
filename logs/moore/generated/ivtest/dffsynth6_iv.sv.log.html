@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,21 +18,62 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth6.v.html" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth6.v</a>
 time_elapsed: 0.004s
-ram usage: 9744 KB
+ram usage: 9704 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e DFF <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth6.v.html" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth6.v</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth6.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth6.v:5</a>:10-15:
-   | 
-   |    input wire D0,
-   |          ^^^^^   
+proc %DFF.always.250.0 (i2$ %D0, i2$ %D1, i2$ %CLK, i2$ %RST) -&gt; (i1$ %Q0, i2$ %Q1) {
+0:
+    br %init
+init:
+    %CLK1 = prb i2$ %CLK
+    %RST1 = prb i2$ %RST
+    wait %check, %CLK, %RST
+check:
+    %CLK2 = prb i2$ %CLK
+    %1 = const i2 0
+    %2 = eq i2 %CLK1, %1
+    %3 = neq i2 %CLK2, %1
+    %posedge = and i1 %2, %3
+    %RST2 = prb i2$ %RST
+    %4 = const i2 0
+    %5 = eq i2 %RST1, %4
+    %6 = neq i2 %RST2, %4
+    %posedge1 = and i1 %5, %6
+    %event_or = or i1 %posedge, %posedge1
+    br %event_or, %init, %event
+event:
+    %RST3 = prb i2$ %RST
+    %7 = const i2 0
+    %8 = neq i2 %RST3, %7
+    br %8, %if_false, %if_true
+if_true:
+    %9 = const i32 0
+    %10 = exts i1, i32 %9, 0, 1
+    %11 = const time 0s 1d
+    drv i1$ %Q0, %10, %11
+    %12 = const i32 0
+    %13 = exts i2, i32 %12, 0, 2
+    %14 = const time 0s 1d
+    drv i2$ %Q1, %13, %14
+    br %if_exit
+if_false:
+    %D01 = prb i2$ %D0
+    %15 = exts i1, i2 %D01, 0, 1
+    %16 = const time 0s 1d
+    drv i1$ %Q0, %15, %16
+    %D11 = prb i2$ %D1
+    %17 = const time 0s 1d
+    drv i2$ %Q1, %D11, %17
+    br %if_exit
+if_exit:
+    br %0
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @DFF (i2$ %D0, i2$ %D1, i2$ %CLK, i2$ %RST) -&gt; (i1$ %Q0, i2$ %Q1) {
+    inst %DFF.always.250.0 (i2$ %D0, i2$ %D1, i2$ %CLK, i2$ %RST) -&gt; (i1$ %Q0, i2$ %Q1)
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from hdlconv
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog
@@ -17,22 +17,61 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v</a>
-time_elapsed: 0.000s
-ram usage: 9648 KB
+time_elapsed: 0.004s
+ram usage: 9532 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog -e sram <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html#l-16" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v:16</a>:11-16:
-   | 
-   |     input wire i_clk,
-   |           ^^^^^      
+proc %sram.always.249.0 (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %o_data, i8$ %memory_array) {
+0:
+    br %init
+init:
+    %i_clk1 = prb i1$ %i_clk
+    wait %check, %i_clk
+check:
+    %i_clk2 = prb i1$ %i_clk
+    %1 = const i1 0
+    %2 = eq i1 %i_clk1, %1
+    %3 = neq i1 %i_clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %i_write1 = prb i8$ %i_write
+    %4 = const i8 0
+    %5 = neq i8 %i_write1, %4
+    br %5, %if_false, %if_true
+if_true:
+    %i_addr1 = prb i8$ %i_addr
+    %6 = const i8 0
+    %7 = sig i8 %6
+    %8 = shr i8$ %memory_array, i8$ %7, i8 %i_addr1
+    %9 = exts i1$, i8$ %8, 0, 1
+    %i_data1 = prb i8$ %i_data
+    %10 = exts i1, i8 %i_data1, 0, 1
+    %11 = const time 0s 1d
+    drv i1$ %9, %10, %11
+    br %if_exit
+if_false:
+    %12 = const i8 0
+    %memory_array1 = prb i8$ %memory_array
+    %i_addr2 = prb i8$ %i_addr
+    %13 = const i8 0
+    %14 = shr i8 %memory_array1, i8 %13, i8 %i_addr2
+    %15 = exts i1, i8 %14, 0, 1
+    %16 = inss i8 %12, i1 %15, 0, 1
+    %17 = const time 0s 1d
+    drv i8$ %o_data, %16, %17
+    br %if_exit
+if_exit:
+    br %0
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @sram (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %o_data) {
+    %0 = const i8 0
+    %memory_array = sig i8 %0
+    inst %sram.always.249.0 (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %o_data, i8$ %memory_array)
+}
 
 </pre>
 </body>

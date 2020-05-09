@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,13 +18,209 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_specman_switch_fabric.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_specman_switch_fabric.v</a>
 time_elapsed: 0.004s
-ram usage: 9580 KB
+ram usage: 9624 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e switch_fabric <a href="../../../../third_party/tools/yosys/tests/asicworld/code_specman_switch_fabric.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_specman_switch_fabric.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %switch.always.418.0 (i1$ %clk, i1$ %reset, i8$ %data_in, i1$ %data_in_valid) -&gt; (i8$ %data_out, i1$ %data_out_ack) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = eq i1 %clk1, %1
+    %3 = neq i1 %clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %reset1 = prb i1$ %reset
+    br %reset1, %if_false, %if_true
+if_true:
+    %4 = const i32 0
+    %5 = exts i8, i32 %4, 0, 8
+    %6 = const time 0s 1d
+    drv i8$ %data_out, %5, %6
+    %7 = const i32 0
+    %8 = exts i1, i32 %7, 0, 1
+    %9 = const time 0s 1d
+    drv i1$ %data_out_ack, %8, %9
+    br %if_exit
+if_false:
+    %data_in_valid1 = prb i1$ %data_in_valid
+    br %data_in_valid1, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %data_in1 = prb i8$ %data_in
+    %10 = const time 0s 1d
+    drv i8$ %data_out, %data_in1, %10
+    %11 = const i32 1
+    %12 = exts i1, i32 %11, 0, 1
+    %13 = const time 0s 1d
+    drv i1$ %data_out_ack, %12, %13
+    br %if_exit1
+if_false1:
+    %14 = const i32 0
+    %15 = exts i8, i32 %14, 0, 8
+    %16 = const time 0s 1d
+    drv i8$ %data_out, %15, %16
+    %17 = const i32 0
+    %18 = exts i1, i32 %17, 0, 1
+    %19 = const time 0s 1d
+    drv i1$ %data_out_ack, %18, %19
+    br %if_exit1
+if_exit1:
+    br %if_exit
+}
+
+entity @switch (i1$ %clk, i1$ %reset, i8$ %data_in, i1$ %data_in_valid) -&gt; (i8$ %data_out, i1$ %data_out_ack) {
+    %0 = const i8 0
+    %data_out1 = sig i8 %0
+    %1 = const i1 0
+    %data_out_ack1 = sig i1 %1
+    inst %switch.always.418.0 (i1$ %clk, i1$ %reset, i8$ %data_in, i1$ %data_in_valid) -&gt; (i8$ %data_out1, i1$ %data_out_ack1)
+    %2 = const i8 0
+    %3 = const time 0s
+    drv i8$ %data_out, %2, %3
+    %4 = const i1 0
+    %5 = const time 0s
+    drv i1$ %data_out_ack, %4, %5
+}
+
+entity @switch_fabric (i1$ %clk, i1$ %reset, i8$ %data_in0, i8$ %data_in1, i8$ %data_in2, i8$ %data_in3, i8$ %data_in4, i8$ %data_in5, i1$ %data_in_valid0, i1$ %data_in_valid1, i1$ %data_in_valid2, i8$ %data_in_valid3, i8$ %data_in_valid4, i8$ %data_in_valid5) -&gt; (i8$ %data_out0, i8$ %data_out1, i8$ %data_out2, i8$ %data_out3, i8$ %data_out4, i8$ %data_out5, i1$ %data_out_ack0, i1$ %data_out_ack1, i1$ %data_out_ack2, i8$ %data_out_ack3, i8$ %data_out_ack4, i8$ %data_out_ack5) {
+    %0 = const i1 0
+    %clk1 = sig i1 %0
+    %clk2 = prb i1$ %clk1
+    %1 = const i1 0
+    %2 = sig i1 %1
+    %3 = const time 0s 1e
+    drv i1$ %2, %clk2, %3
+    %reset1 = prb i1$ %reset
+    %4 = const i1 0
+    %5 = sig i1 %4
+    %6 = const time 0s 1e
+    drv i1$ %5, %reset1, %6
+    %data_in01 = prb i8$ %data_in0
+    %7 = const i8 0
+    %8 = sig i8 %7
+    %9 = const time 0s 1e
+    drv i8$ %8, %data_in01, %9
+    %data_in_valid01 = prb i1$ %data_in_valid0
+    %10 = const i1 0
+    %11 = sig i1 %10
+    %12 = const time 0s 1e
+    drv i1$ %11, %data_in_valid01, %12
+    inst @switch (i1$ %2, i1$ %5, i8$ %8, i1$ %11) -&gt; (i8$ %data_out0, i1$ %data_out_ack0)
+    %clk3 = prb i1$ %clk1
+    %13 = const i1 0
+    %14 = sig i1 %13
+    %15 = const time 0s 1e
+    drv i1$ %14, %clk3, %15
+    %reset2 = prb i1$ %reset
+    %16 = const i1 0
+    %17 = sig i1 %16
+    %18 = const time 0s 1e
+    drv i1$ %17, %reset2, %18
+    %data_in11 = prb i8$ %data_in1
+    %19 = const i8 0
+    %20 = sig i8 %19
+    %21 = const time 0s 1e
+    drv i8$ %20, %data_in11, %21
+    %data_in_valid11 = prb i1$ %data_in_valid1
+    %22 = const i1 0
+    %23 = sig i1 %22
+    %24 = const time 0s 1e
+    drv i1$ %23, %data_in_valid11, %24
+    inst @switch (i1$ %14, i1$ %17, i8$ %20, i1$ %23) -&gt; (i8$ %data_out1, i1$ %data_out_ack1)
+    %clk4 = prb i1$ %clk1
+    %25 = const i1 0
+    %26 = sig i1 %25
+    %27 = const time 0s 1e
+    drv i1$ %26, %clk4, %27
+    %reset3 = prb i1$ %reset
+    %28 = const i1 0
+    %29 = sig i1 %28
+    %30 = const time 0s 1e
+    drv i1$ %29, %reset3, %30
+    %data_in21 = prb i8$ %data_in2
+    %31 = const i8 0
+    %32 = sig i8 %31
+    %33 = const time 0s 1e
+    drv i8$ %32, %data_in21, %33
+    %data_in_valid21 = prb i1$ %data_in_valid2
+    %34 = const i1 0
+    %35 = sig i1 %34
+    %36 = const time 0s 1e
+    drv i1$ %35, %data_in_valid21, %36
+    inst @switch (i1$ %26, i1$ %29, i8$ %32, i1$ %35) -&gt; (i8$ %data_out2, i1$ %data_out_ack2)
+    %clk5 = prb i1$ %clk1
+    %37 = const i1 0
+    %38 = sig i1 %37
+    %39 = const time 0s 1e
+    drv i1$ %38, %clk5, %39
+    %reset4 = prb i1$ %reset
+    %40 = const i1 0
+    %41 = sig i1 %40
+    %42 = const time 0s 1e
+    drv i1$ %41, %reset4, %42
+    %data_in31 = prb i8$ %data_in3
+    %43 = const i8 0
+    %44 = sig i8 %43
+    %45 = const time 0s 1e
+    drv i8$ %44, %data_in31, %45
+    %data_in_valid31 = prb i8$ %data_in_valid3
+    %46 = const i8 0
+    %47 = sig i8 %46
+    %48 = const time 0s 1e
+    drv i8$ %47, %data_in_valid31, %48
+    inst @switch (i1$ %38, i1$ %41, i8$ %44, i8$ %47) -&gt; (i8$ %data_out3, i8$ %data_out_ack3)
+    %clk6 = prb i1$ %clk1
+    %49 = const i1 0
+    %50 = sig i1 %49
+    %51 = const time 0s 1e
+    drv i1$ %50, %clk6, %51
+    %reset5 = prb i1$ %reset
+    %52 = const i1 0
+    %53 = sig i1 %52
+    %54 = const time 0s 1e
+    drv i1$ %53, %reset5, %54
+    %data_in41 = prb i8$ %data_in4
+    %55 = const i8 0
+    %56 = sig i8 %55
+    %57 = const time 0s 1e
+    drv i8$ %56, %data_in41, %57
+    %data_in_valid41 = prb i8$ %data_in_valid4
+    %58 = const i8 0
+    %59 = sig i8 %58
+    %60 = const time 0s 1e
+    drv i8$ %59, %data_in_valid41, %60
+    inst @switch (i1$ %50, i1$ %53, i8$ %56, i8$ %59) -&gt; (i8$ %data_out4, i8$ %data_out_ack4)
+    %clk7 = prb i1$ %clk1
+    %61 = const i1 0
+    %62 = sig i1 %61
+    %63 = const time 0s 1e
+    drv i1$ %62, %clk7, %63
+    %reset6 = prb i1$ %reset
+    %64 = const i1 0
+    %65 = sig i1 %64
+    %66 = const time 0s 1e
+    drv i1$ %65, %reset6, %66
+    %data_in51 = prb i8$ %data_in5
+    %67 = const i8 0
+    %68 = sig i8 %67
+    %69 = const time 0s 1e
+    drv i8$ %68, %data_in51, %69
+    %data_in_valid51 = prb i8$ %data_in_valid5
+    %70 = const i8 0
+    %71 = sig i8 %70
+    %72 = const time 0s 1e
+    drv i8$ %71, %data_in_valid51, %72
+    inst @switch (i1$ %62, i1$ %65, i8$ %68, i8$ %71) -&gt; (i8$ %data_out5, i8$ %data_out_ack5)
+}
 
 </pre>
 </body>

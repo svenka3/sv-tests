@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,18 +17,12 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v</a>
-time_elapsed: 0.000s
-ram usage: 9676 KB
+time_elapsed: 0.004s
+ram usage: 9592 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:12</a>:13-20:
-   | 
-   |         if (r !== 1)
-   |             ^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:13</a>:13-41:
    | 
@@ -41,8 +35,47 @@ warning: `$display` not supported; ignored
    |             $display(&#34;PASSED&#34;);
    |             ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;no zero-value for type i69120*&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %test.initial.226.0 () -&gt; (i69120$ %mem, i1$ %r) {
+0:
+    %1 = const i32 3584
+    %2 = const i69120 0
+    %3 = sig i69120 %2
+    %4 = shr i69120$ %mem, i69120$ %3, i32 %1
+    %5 = exts i1$, i69120$ %4, 0, 1
+    %6 = const i32 1
+    %7 = exts i1, i32 %6, 0, 1
+    %8 = const time 0s 1e
+    drv i1$ %5, %7, %8
+    %mem1 = prb i69120$ %mem
+    %9 = const i32 3584
+    %10 = const i69120 0
+    %11 = shr i69120 %mem1, i69120 %10, i32 %9
+    %12 = exts i1, i69120 %11, 0, 1
+    %13 = const time 0s 1e
+    drv i1$ %r, %12, %13
+    %14 = const i32 0
+    %r1 = prb i1$ %r
+    %15 = inss i32 %14, i1 %r1, 0, 1
+    %16 = const i32 1
+    %17 = neq i32 %15, %16
+    br %17, %if_false, %if_true
+if_true:
+    %18 = const i32 0
+    br %if_exit
+if_false:
+    %19 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i69120 0
+    %mem = sig i69120 %0
+    %1 = const i1 0
+    %r = sig i1 %1
+    inst %test.initial.226.0 () -&gt; (i69120$ %mem, i1$ %r)
+}
 
 </pre>
 </body>

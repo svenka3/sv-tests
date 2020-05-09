@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/repeat_expr_probe.v.html" target="file-frame">third_party/tests/ivtest/ivltests/repeat_expr_probe.v</a>
 time_elapsed: 0.004s
-ram usage: 9648 KB
+ram usage: 9704 KB
 </pre>
 <pre class="log">
 
@@ -35,54 +35,47 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-proc %top.initial.225.0 (i3$ %delay, i32$ %lp) -&gt; (i3$ %delay1, i32$ %lp1) {
+proc %top.initial.225.0 () -&gt; (i3$ %delay, i32$ %lp) {
 0:
-    %1 = prb i32$ %lp1
-    %lp.shadow = var i32 %1
-    %2 = prb i3$ %delay1
-    %delay.shadow = var i3 %2
-    %3 = const i32 0
+    %1 = const i32 0
+    %2 = const time 0s 1e
+    drv i32$ %lp, %1, %2
+    %3 = const i3 0
     %4 = const time 0s 1e
-    drv i32$ %lp1, %3, %4
-    st i32* %lp.shadow, %3
-    %5 = const i3 0
-    %6 = const time 0s 1e
-    drv i3$ %delay1, %5, %6
-    st i3* %delay.shadow, %5
-    %7 = const i32 0
-    %delay2 = ld i3* %delay.shadow
-    %8 = inss i32 %7, i3 %delay2, 0, 3
-    %9 = const i32 4
-    %10 = add i32 %8, %9
-    %loop_count = var i32 %10
+    drv i3$ %delay, %3, %4
+    %5 = const i32 0
+    %delay1 = prb i3$ %delay
+    %6 = inss i32 %5, i3 %delay1, 0, 3
+    %7 = const i32 4
+    %8 = add i32 %6, %7
+    %loop_count = var i32 %8
     br %loop_body
 loop_body:
-    %11 = ld i32* %loop_count
-    %12 = const i32 0
-    %13 = neq i32 %11, %12
-    br %13, %loop_exit, %loop_continue
+    %9 = ld i32* %loop_count
+    %10 = const i32 0
+    %11 = neq i32 %9, %10
+    br %11, %loop_exit, %loop_continue
 loop_exit:
-    %lp2 = ld i32* %lp.shadow
-    %14 = const i32 4
-    %15 = neq i32 %lp2, %14
-    br %15, %if_false, %if_true
+    %lp1 = prb i32$ %lp
+    %12 = const i32 4
+    %13 = neq i32 %lp1, %12
+    br %13, %if_false, %if_true
 loop_continue:
-    %lp3 = ld i32* %lp.shadow
-    %16 = const i32 1
-    %17 = add i32 %lp3, %16
-    %18 = const time 0s 1e
-    drv i32$ %lp1, %17, %18
-    st i32* %lp.shadow, %17
-    %19 = ld i32* %loop_count
-    %20 = const i32 1
-    %21 = sub i32 %19, %20
-    st i32* %loop_count, %21
+    %lp2 = prb i32$ %lp
+    %14 = const i32 1
+    %15 = add i32 %lp2, %14
+    %16 = const time 0s 1e
+    drv i32$ %lp, %15, %16
+    %17 = ld i32* %loop_count
+    %18 = const i32 1
+    %19 = sub i32 %17, %18
+    st i32* %loop_count, %19
     br %loop_body
 if_true:
-    %22 = const i32 0
+    %20 = const i32 0
     br %if_exit
 if_false:
-    %23 = const i32 0
+    %21 = const i32 0
     br %if_exit
 if_exit:
     halt
@@ -93,7 +86,7 @@ entity @top () -&gt; () {
     %delay = sig i3 %0
     %1 = const i32 0
     %lp = sig i32 %1
-    inst %top.initial.225.0 (i3$ %delay, i32$ %lp) -&gt; (i3$ %delay, i32$ %lp)
+    inst %top.initial.225.0 () -&gt; (i3$ %delay, i32$ %lp)
 }
 
 </pre>

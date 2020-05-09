@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v</a>
 time_elapsed: 0.004s
-ram usage: 9672 KB
+ram usage: 9644 KB
 </pre>
 <pre class="log">
 
@@ -34,12 +34,6 @@ warning: `$display` not supported; ignored
    | 
    |       $display(&#34;FAILED: Unable to read wide option&#34;);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v:12</a>:9-38:
-   | 
-   |     if (wide !== 64&#39;h0123456789abcdef) begin
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v:13</a>:7-75:
@@ -59,12 +53,6 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED: Unable to read normal option&#34;);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v:21</a>:9-30:
-   | 
-   |     if (norm !== 32&#39;h89abcdef) begin
-   |         ^^^^^^^^^^^^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v:22</a>:7-69:
    | 
@@ -77,12 +65,85 @@ warning: `$display` not supported; ignored
    |     if (passed) $display(&#34;PASSED&#34;);
    |                 ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;wide !== 64\&#39;h0123456789abcdef&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v:12</a>:9-38:
-   | 
-   |     if (wide !== 64&#39;h0123456789abcdef) begin
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       
+proc %top.initial.227.0 (i64$ %wide, i32$ %norm) -&gt; (i1$ %passed) {
+0:
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %passed, %1, %2
+    %3 = const i32 0
+    %4 = const i32 0
+    %5 = neq i32 %3, %4
+    %6 = not i1 %5
+    br %6, %if_false, %if_true
+if_true:
+    %7 = const i32 0
+    %8 = const i1 0
+    %9 = const time 0s 1e
+    drv i1$ %passed, %8, %9
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %wide1 = prb i64$ %wide
+    %10 = const i64 81985529216486895
+    %11 = neq i64 %wide1, %10
+    br %11, %if_false1, %if_true1
+if_true1:
+    %12 = const i32 0
+    %13 = const i1 0
+    %14 = const time 0s 1e
+    drv i1$ %passed, %13, %14
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %15 = const i32 0
+    %16 = const i32 0
+    %17 = neq i32 %15, %16
+    %18 = not i1 %17
+    br %18, %if_false2, %if_true2
+if_true2:
+    %19 = const i32 0
+    %20 = const i1 0
+    %21 = const time 0s 1e
+    drv i1$ %passed, %20, %21
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    %norm1 = prb i32$ %norm
+    %22 = const i32 2309737967
+    %23 = neq i32 %norm1, %22
+    br %23, %if_false3, %if_true3
+if_true3:
+    %24 = const i32 0
+    %25 = const i1 0
+    %26 = const time 0s 1e
+    drv i1$ %passed, %25, %26
+    br %if_exit3
+if_false3:
+    br %if_exit3
+if_exit3:
+    %passed1 = prb i1$ %passed
+    br %passed1, %if_false4, %if_true4
+if_true4:
+    %27 = const i32 0
+    br %if_exit4
+if_false4:
+    br %if_exit4
+if_exit4:
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %passed = sig i1 %0
+    %1 = const i64 0
+    %wide = sig i64 %1
+    %2 = const i32 0
+    %norm = sig i32 %2
+    inst %top.initial.227.0 (i64$ %wide, i32$ %norm) -&gt; (i1$ %passed)
+}
 
 </pre>
 </body>

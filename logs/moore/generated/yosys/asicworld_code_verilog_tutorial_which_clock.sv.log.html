@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,13 +18,56 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v</a>
 time_elapsed: 0.000s
-ram usage: 9712 KB
+ram usage: 9740 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e which_clock <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %which_clock.always.235.0 (i1$ %x, i1$ %y, i1$ %d) -&gt; (i1$ %q) {
+0:
+    br %init
+init:
+    %x1 = prb i1$ %x
+    %y1 = prb i1$ %y
+    wait %check, %x, %y
+check:
+    %x2 = prb i1$ %x
+    %1 = const i1 0
+    %2 = eq i1 %x1, %1
+    %3 = neq i1 %x2, %1
+    %posedge = and i1 %2, %3
+    %y2 = prb i1$ %y
+    %4 = const i1 0
+    %5 = eq i1 %y1, %4
+    %6 = neq i1 %y2, %4
+    %posedge1 = and i1 %5, %6
+    %event_or = or i1 %posedge, %posedge1
+    br %event_or, %init, %event
+event:
+    %x3 = prb i1$ %x
+    br %x3, %if_false, %if_true
+if_true:
+    %7 = const i1 0
+    %8 = const time 0s 1d
+    drv i1$ %q, %7, %8
+    br %if_exit
+if_false:
+    %d1 = prb i1$ %d
+    %9 = const time 0s 1d
+    drv i1$ %q, %d1, %9
+    br %if_exit
+if_exit:
+    br %0
+}
+
+entity @which_clock (i1$ %x, i1$ %y, i1$ %d) -&gt; (i1$ %q) {
+    %0 = const i1 0
+    %q1 = sig i1 %0
+    inst %which_clock.always.235.0 (i1$ %x, i1$ %y, i1$ %d) -&gt; (i1$ %q1)
+    %1 = const i1 0
+    %2 = const time 0s
+    drv i1$ %q, %1, %2
+}
 
 </pre>
 </body>

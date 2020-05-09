@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,17 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2166188.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2166188.v</a>
 time_elapsed: 0.004s
-ram usage: 9752 KB
+ram usage: 9628 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e t <a href="../../../../third_party/tests/ivtest/ivltests/pr2166188.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2166188.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2166188.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/pr2166188.v:26</a>:5-29:
-   | 
-   |     if(i_norm !== (&#39;h123 &lt;&lt; 11))
-   |        ^^^^^^^^^^^^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2166188.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/pr2166188.v:27</a>:3-21:
    | 
@@ -41,12 +35,70 @@ warning: `$display` not supported; ignored
    |         $display(&#34;PASSED&#34;);
    |         ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;i_norm !== (\&#39;h123 &lt;&lt; 11)&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2166188.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/pr2166188.v:26</a>:5-29:
-   | 
-   |     if(i_norm !== (&#39;h123 &lt;&lt; 11))
-   |        ^^^^^^^^^^^^^^^^^^^^^^^^ 
+proc %t.initial.235.0 (i64$ %i_norm) -&gt; (i64$ %i_abs, i1$ %at, i6$ %fls) {
+0:
+    %1 = const i32 1
+    %2 = exts i1, i32 %1, 0, 1
+    %3 = const time 0s 1e
+    drv i1$ %at, %2, %3
+    %4 = const i32 123
+    %5 = exts i6, i32 %4, 0, 6
+    %6 = const time 0s 1e
+    drv i6$ %fls, %5, %6
+    %7 = const i64 0
+    %8 = const i9 291
+    %9 = inss i64 %7, i9 %8, 0, 9
+    %10 = const time 0s 1e
+    drv i64$ %i_abs, %9, %10
+    %11 = const i32 1
+    wait %12 for %11
+12:
+    %i_norm1 = prb i64$ %i_norm
+    %13 = const i64 0
+    %14 = const i9 291
+    %15 = const i32 11
+    %16 = const i9 0
+    %17 = shl i9 %14, i9 %16, i32 %15
+    %18 = inss i64 %13, i9 %17, 0, 9
+    %19 = neq i64 %i_norm1, %18
+    br %19, %if_false, %if_true
+if_true:
+    %20 = const i32 0
+    br %if_exit
+if_false:
+    %21 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @t () -&gt; () {
+    %0 = const i64 0
+    %i_abs = sig i64 %0
+    %1 = const i1 0
+    %at = sig i1 %1
+    %2 = const i6 0
+    %fls = sig i6 %2
+    %3 = const i64 0
+    %i_norm = sig i64 %3
+    %i_abs1 = prb i64$ %i_abs
+    %at1 = prb i1$ %at
+    %4 = const i32 64
+    %5 = const i32 52
+    %6 = sub i32 %4, %5
+    %7 = const i32 1
+    %8 = sub i32 %6, %7
+    %9 = const i32 0
+    %fls1 = prb i6$ %fls
+    %10 = inss i32 %9, i6 %fls1, 0, 6
+    %11 = [i32 %10, %8]
+    %12 = mux [2 x i32] %11, i1 %at1
+    %13 = const i64 0
+    %14 = shl i64 %i_abs1, i64 %13, i32 %12
+    %15 = const time 0s 1e
+    drv i64$ %i_norm, %14, %15
+    inst %t.initial.235.0 (i64$ %i_norm) -&gt; (i64$ %i_abs, i1$ %at, i6$ %fls)
+}
 
 </pre>
 </body>

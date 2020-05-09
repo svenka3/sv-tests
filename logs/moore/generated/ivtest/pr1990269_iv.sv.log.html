@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,28 +18,16 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1990269.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1990269.v</a>
 time_elapsed: 0.004s
-ram usage: 9632 KB
+ram usage: 9588 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr1990269.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1990269.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990269.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1990269.v:7</a>:9-22:
-   | 
-   |     if (val !== 8&#39;hx6) begin
-   |         ^^^^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990269.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1990269.v:8</a>:7-64:
    | 
    |       $display(&#34;FAILED underflow, got %h, expected 8&#39;hx6&#34;, val);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990269.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1990269.v:13</a>:9-22:
-   | 
-   |     if (val !== 8&#39;he6) begin
-   |         ^^^^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990269.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1990269.v:14</a>:7-63:
@@ -53,12 +41,68 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;val !== 8\&#39;hx6&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990269.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1990269.v:7</a>:9-22:
-   | 
-   |     if (val !== 8&#39;hx6) begin
-   |         ^^^^^^^^^^^^^       
+proc %top.initial.225.0 () -&gt; (i1$ %pass, i8$ %val) {
+0:
+    %1 = const i3 -4
+    %2 = const i8 0
+    %3 = sig i8 %2
+    %4 = shr i8$ %val, i8$ %3, i3 %1
+    %5 = exts i8$, i8$ %4, 0, 8
+    %6 = const i8 111
+    %7 = const time 0s 1e
+    drv i8$ %5, %6, %7
+    %val1 = prb i8$ %val
+    %8 = const i8 6
+    %9 = neq i8 %val1, %8
+    br %9, %if_false, %if_true
+if_true:
+    %10 = const i32 0
+    %11 = const i1 0
+    %12 = const time 0s 1e
+    drv i1$ %pass, %11, %12
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %13 = const i3 4
+    %14 = const i8 0
+    %15 = sig i8 %14
+    %16 = shr i8$ %val, i8$ %15, i3 %13
+    %17 = exts i8$, i8$ %16, 0, 8
+    %18 = const i8 254
+    %19 = const time 0s 1e
+    drv i8$ %17, %18, %19
+    %val2 = prb i8$ %val
+    %20 = const i8 230
+    %21 = neq i8 %val2, %20
+    br %21, %if_false1, %if_true1
+if_true1:
+    %22 = const i32 0
+    %23 = const i1 0
+    %24 = const time 0s 1e
+    drv i1$ %pass, %23, %24
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %pass1 = prb i1$ %pass
+    br %pass1, %if_false2, %if_true2
+if_true2:
+    %25 = const i32 0
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i1 1
+    %pass = sig i1 %0
+    %1 = const i8 0
+    %val = sig i8 %1
+    inst %top.initial.225.0 () -&gt; (i1$ %pass, i8$ %val)
+}
 
 </pre>
 </body>

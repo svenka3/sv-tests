@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,18 +17,12 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr3561350.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3561350.v</a>
-time_elapsed: 0.000s
-ram usage: 9632 KB
+time_elapsed: 0.004s
+ram usage: 9596 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e pr3561350 <a href="../../../../third_party/tests/ivtest/ivltests/pr3561350.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3561350.v</a>
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3561350.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr3561350.v:11</a>:7-20:
-   | 
-   |   if (result === 29)
-   |       ^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3561350.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr3561350.v:12</a>:5-23:
    | 
@@ -41,12 +35,43 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;result === 29&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3561350.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr3561350.v:11</a>:7-20:
-   | 
-   |   if (result === 29)
-   |       ^^^^^^^^^^^^^ 
+proc %pr3561350.initial.225.0 () -&gt; (i32$ %source, i32$ %result) {
+0:
+    %1 = const i32 10
+    %2 = const time 0s 1e
+    drv i32$ %source, %1, %2
+    %source1 = prb i32$ %source
+    %3 = const i32 2
+    %4 = umul i32 %source1, %3
+    %5 = const i32 2
+    %6 = add i32 %4, %5
+    %7 = const i32 3
+    %8 = add i32 %6, %7
+    %9 = const i32 4
+    %10 = add i32 %8, %9
+    %11 = const time 0s 1e
+    drv i32$ %result, %10, %11
+    %result1 = prb i32$ %result
+    %12 = const i32 29
+    %13 = eq i32 %result1, %12
+    br %13, %if_false, %if_true
+if_true:
+    %14 = const i32 0
+    br %if_exit
+if_false:
+    %15 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @pr3561350 () -&gt; () {
+    %0 = const i32 0
+    %source = sig i32 %0
+    %1 = const i32 0
+    %result = sig i32 %1
+    inst %pr3561350.initial.225.0 () -&gt; (i32$ %source, i32$ %result)
+}
 
 </pre>
 </body>

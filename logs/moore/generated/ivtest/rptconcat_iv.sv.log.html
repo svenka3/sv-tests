@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,18 +17,12 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v</a>
-time_elapsed: 0.004s
-ram usage: 9616 KB
+time_elapsed: 0.000s
+ram usage: 9544 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v</a>
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v:30</a>:9-31:
-   | 
-   |      if(result === 8&#39;b10111011)
-   |         ^^^^^^^^^^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v:31</a>:9-27:
    | 
@@ -41,12 +35,38 @@ warning: `$display` not supported; ignored
    |         $display(&#34;FAILED - {2{4&#39;b1011}} s/b 8&#39;b10111011 - is %b&#34;,result);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;result === 8\&#39;b10111011&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v:30</a>:9-31:
-   | 
-   |      if(result === 8&#39;b10111011)
-   |         ^^^^^^^^^^^^^^^^^^^^^^ 
+proc %test.initial.224.0 (i8$ %result) -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %result1 = prb i8$ %result
+    %3 = const i8 187
+    %4 = eq i8 %result1, %3
+    br %4, %if_false, %if_true
+if_true:
+    %5 = const i32 0
+    br %if_exit
+if_false:
+    %6 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @test () -&gt; () {
+    %0 = const i8 0
+    %result = sig i8 %0
+    %1 = const i4 0
+    %2 = const i4 11
+    %3 = inss i4 %1, i4 %2, 0, 4
+    %4 = const i8 0
+    %5 = inss i8 %4, i4 %3, 0, 4
+    %6 = inss i8 %5, i4 %3, 4, 4
+    %7 = const time 0s 1e
+    drv i8$ %result, %6, %7
+    inst %test.initial.224.0 (i8$ %result) -&gt; ()
+}
 
 </pre>
 </body>

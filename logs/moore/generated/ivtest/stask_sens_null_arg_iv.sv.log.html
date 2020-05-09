@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,20 +17,67 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/stask_sens_null_arg.v.html" target="file-frame">third_party/tests/ivtest/ivltests/stask_sens_null_arg.v</a>
-time_elapsed: 0.000s
-ram usage: 9696 KB
+time_elapsed: 0.004s
+ram usage: 9708 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/stask_sens_null_arg.v.html" target="file-frame">third_party/tests/ivtest/ivltests/stask_sens_null_arg.v</a>
-error: variable `out` has implicit type but is not initialized
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/stask_sens_null_arg.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/stask_sens_null_arg.v:2</a>:8-11:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/stask_sens_null_arg.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/stask_sens_null_arg.v:7</a>:13-31:
    | 
-   |   wire out;
-   |        ^^^ 
-   = note: specify a type for the variable; or
-   = note: add an initial value
+   |   always @* $display(,out,,in);
+   |             ^^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/stask_sens_null_arg.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/stask_sens_null_arg.v:14</a>:5-23:
+   | 
+   |     $display(&#34;PASSED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+proc %top.always.226.0 () -&gt; () {
+0:
+    wait %trigger
+trigger:
+    %1 = const i32 0
+    br %0
+}
+
+proc %top.initial.227.0 () -&gt; (i1$ %in) {
+0:
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %in, %1, %2
+    %3 = const i32 1
+    wait %4 for %3
+4:
+    %5 = const i1 1
+    %6 = const time 0s 1e
+    drv i1$ %in, %5, %6
+    %7 = const i32 1
+    wait %8 for %7
+8:
+    %9 = const i1 0
+    %10 = const time 0s 1e
+    drv i1$ %in, %9, %10
+    %11 = const i32 1
+    wait %12 for %11
+12:
+    %13 = const i32 0
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %out = sig i1 %0
+    %1 = const i1 0
+    %in = sig i1 %1
+    %in1 = prb i1$ %in
+    %2 = const time 0s 1e
+    drv i1$ %out, %in1, %2
+    inst %top.always.226.0 () -&gt; ()
+    inst %top.initial.227.0 () -&gt; (i1$ %in)
+}
 
 </pre>
 </body>

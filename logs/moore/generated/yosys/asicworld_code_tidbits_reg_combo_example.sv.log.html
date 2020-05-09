@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -17,14 +17,47 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v</a>
-time_elapsed: 0.000s
-ram usage: 9644 KB
+time_elapsed: 0.004s
+ram usage: 9560 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e reg_combo_example <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %reg_combo_example.always.235.0 (i1$ %a, i1$ %b) -&gt; (i1$ %y) {
+0:
+    br %init
+init:
+    %a1 = prb i1$ %a
+    %b1 = prb i1$ %b
+    wait %check, %a, %b
+check:
+    %a2 = prb i1$ %a
+    %impledge = neq i1 %a1, %a2
+    %b2 = prb i1$ %b
+    %impledge1 = neq i1 %b1, %b2
+    %event_or = or i1 %impledge, %impledge1
+    br %event_or, %init, %event
+event:
+    %a3 = prb i1$ %a
+    %b3 = prb i1$ %b
+    %1 = and i1 %a3, %b3
+    %2 = const time 0s 1e
+    drv i1$ %y, %1, %2
+    br %0
+}
+
+entity @reg_combo_example (i1$ %a, i1$ %b) -&gt; (i1$ %y) {
+    %0 = const i1 0
+    %y1 = sig i1 %0
+    %1 = const i1 0
+    %a1 = sig i1 %1
+    %2 = const i1 0
+    %b1 = sig i1 %2
+    inst %reg_combo_example.always.235.0 (i1$ %a1, i1$ %b1) -&gt; (i1$ %y1)
+    %3 = const i1 0
+    %4 = const time 0s
+    drv i1$ %y, %3, %4
+}
 
 </pre>
 </body>

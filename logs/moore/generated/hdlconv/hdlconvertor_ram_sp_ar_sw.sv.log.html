@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from hdlconv
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog
@@ -17,14 +17,114 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/ram_sp_ar_sw.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/ram_sp_ar_sw.v</a>
-time_elapsed: 0.000s
-ram usage: 9656 KB
+time_elapsed: 0.004s
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog -e ram_sp_ar_sw <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/ram_sp_ar_sw.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/ram_sp_ar_sw.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %ram_sp_ar_sw.always.251.0 (i1$ %clk, i8$ %address, i1$ %cs, i1$ %we, i8$ %data) -&gt; (i8$ %mem) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = eq i1 %clk1, %1
+    %3 = neq i1 %clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %cs1 = prb i1$ %cs
+    %we1 = prb i1$ %we
+    %4 = and i1 %cs1, %we1
+    br %4, %if_false, %if_true
+if_true:
+    %address1 = prb i8$ %address
+    %5 = const i8 0
+    %6 = sig i8 %5
+    %7 = shr i8$ %mem, i8$ %6, i8 %address1
+    %8 = exts i1$, i8$ %7, 0, 1
+    %data1 = prb i8$ %data
+    %9 = exts i1, i8 %data1, 0, 1
+    %10 = const time 0s 1e
+    drv i1$ %8, %9, %10
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    br %0
+}
+
+proc %ram_sp_ar_sw.always.252.0 (i8$ %address, i1$ %cs, i1$ %we, i1$ %oe, i8$ %mem) -&gt; (i8$ %data_out) {
+0:
+    br %init
+init:
+    %address1 = prb i8$ %address
+    %cs1 = prb i1$ %cs
+    %we1 = prb i1$ %we
+    %oe1 = prb i1$ %oe
+    wait %check, %address, %cs, %we, %oe
+check:
+    %address2 = prb i8$ %address
+    %impledge = neq i8 %address1, %address2
+    %cs2 = prb i1$ %cs
+    %impledge1 = neq i1 %cs1, %cs2
+    %event_or = or i1 %impledge, %impledge1
+    %we2 = prb i1$ %we
+    %impledge2 = neq i1 %we1, %we2
+    %event_or1 = or i1 %event_or, %impledge2
+    %oe2 = prb i1$ %oe
+    %impledge3 = neq i1 %oe1, %oe2
+    %event_or2 = or i1 %event_or1, %impledge3
+    br %event_or2, %init, %event
+event:
+    %cs3 = prb i1$ %cs
+    %we3 = prb i1$ %we
+    %1 = not i1 %we3
+    %2 = and i1 %cs3, %1
+    %oe3 = prb i1$ %oe
+    %3 = and i1 %2, %oe3
+    br %3, %if_false, %if_true
+if_true:
+    %4 = const i8 0
+    %mem1 = prb i8$ %mem
+    %address3 = prb i8$ %address
+    %5 = const i8 0
+    %6 = shr i8 %mem1, i8 %5, i8 %address3
+    %7 = exts i1, i8 %6, 0, 1
+    %8 = inss i8 %4, i1 %7, 0, 1
+    %9 = const time 0s 1e
+    drv i8$ %data_out, %8, %9
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    br %0
+}
+
+entity @ram_sp_ar_sw (i1$ %clk, i8$ %address, i1$ %cs, i1$ %we, i1$ %oe) -&gt; (i8$ %data) {
+    %0 = const i8 0
+    %data_out = sig i8 %0
+    %1 = const i8 0
+    %mem = sig i8 %1
+    %cs1 = prb i1$ %cs
+    %oe1 = prb i1$ %oe
+    %2 = and i1 %cs1, %oe1
+    %we1 = prb i1$ %we
+    %3 = not i1 %we1
+    %4 = and i1 %2, %3
+    %data_out1 = prb i8$ %data_out
+    %5 = const i8 0
+    %6 = [i8 %5, %data_out1]
+    %7 = mux [2 x i8] %6, i1 %4
+    %8 = const time 0s 1e
+    drv i8$ %data, %7, %8
+    inst %ram_sp_ar_sw.always.251.0 (i1$ %clk, i8$ %address, i1$ %cs, i1$ %we, i8$ %data) -&gt; (i8$ %mem)
+    inst %ram_sp_ar_sw.always.252.0 (i8$ %address, i1$ %cs, i1$ %we, i1$ %oe, i8$ %mem) -&gt; (i8$ %data_out)
+}
 
 </pre>
 </body>

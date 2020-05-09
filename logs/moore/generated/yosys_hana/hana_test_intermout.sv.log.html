@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/tests/generated/yosys_hana
@@ -18,13 +18,64 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/hana/test_intermout.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_intermout.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
 time_elapsed: 0.016s
-ram usage: 9648 KB
+ram usage: 9704 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/generated/yosys_hana -e f1_test <a href="../../../../third_party/tools/yosys/tests/hana/test_intermout.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_intermout.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %f1_test.always.372.0 (i1$ %a, i1$ %b, i1$ %c, i1$ %d) -&gt; (i1$ %z, i1$ %temp1, i1$ %temp2) {
+0:
+    br %init
+init:
+    %a1 = prb i1$ %a
+    %b1 = prb i1$ %b
+    %c1 = prb i1$ %c
+    %d1 = prb i1$ %d
+    wait %check, %a, %b, %c, %d
+check:
+    %a2 = prb i1$ %a
+    %impledge = neq i1 %a1, %a2
+    %b2 = prb i1$ %b
+    %impledge1 = neq i1 %b1, %b2
+    %event_or = or i1 %impledge, %impledge1
+    %c2 = prb i1$ %c
+    %impledge2 = neq i1 %c1, %c2
+    %event_or1 = or i1 %event_or, %impledge2
+    %d2 = prb i1$ %d
+    %impledge3 = neq i1 %d1, %d2
+    %event_or2 = or i1 %event_or1, %impledge3
+    br %event_or2, %init, %event
+event:
+    %a3 = prb i1$ %a
+    %b3 = prb i1$ %b
+    %1 = xor i1 %a3, %b3
+    %2 = const time 0s 1e
+    drv i1$ %temp1, %1, %2
+    %c3 = prb i1$ %c
+    %d3 = prb i1$ %d
+    %3 = xor i1 %c3, %d3
+    %4 = const time 0s 1e
+    drv i1$ %temp2, %3, %4
+    %temp11 = prb i1$ %temp1
+    %temp21 = prb i1$ %temp2
+    %5 = xor i1 %temp11, %temp21
+    %6 = const time 0s 1e
+    drv i1$ %z, %5, %6
+    br %0
+}
+
+entity @f1_test (i1$ %a, i1$ %b, i1$ %c, i1$ %d) -&gt; (i1$ %z) {
+    %0 = const i1 0
+    %z1 = sig i1 %0
+    %1 = const i1 0
+    %temp1 = sig i1 %1
+    %2 = const i1 0
+    %temp2 = sig i1 %2
+    inst %f1_test.always.372.0 (i1$ %a, i1$ %b, i1$ %c, i1$ %d) -&gt; (i1$ %z1, i1$ %temp1, i1$ %temp2)
+    %3 = const i1 0
+    %4 = const time 0s
+    drv i1$ %z, %3, %4
+}
 
 </pre>
 </body>

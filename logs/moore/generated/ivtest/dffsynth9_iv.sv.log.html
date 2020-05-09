@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth9.v.html" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth9.v</a>
-time_elapsed: 0.004s
-ram usage: 9748 KB
+time_elapsed: 0.008s
+ram usage: 9696 KB
 </pre>
 <pre class="log">
 
@@ -28,30 +28,6 @@ warning: `$monitor` not supported; ignored
    | 
    |   $monitor(&#34;%b %b %b %b %b %b&#34;, CLK, EN1, EN2, EN3, D, Q);
    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth9.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth9.v:29</a>:7-20:
-   | 
-   |   if (Q !== 4&#39;bxxxx) failed = 1;
-   |       ^^^^^^^^^^^^^             
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth9.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth9.v:34</a>:7-20:
-   | 
-   |   if (Q !== 4&#39;bxx0x) failed = 1;
-   |       ^^^^^^^^^^^^^             
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth9.v.html#l-40" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth9.v:40</a>:7-20:
-   | 
-   |   if (Q !== 4&#39;bx10x) failed = 1;
-   |       ^^^^^^^^^^^^^             
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth9.v.html#l-46" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth9.v:46</a>:7-20:
-   | 
-   |   if (Q !== 4&#39;b010x) failed = 1;
-   |       ^^^^^^^^^^^^^             
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth9.v.html#l-49" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth9.v:49</a>:5-23:
@@ -65,12 +41,276 @@ warning: `$display` not supported; ignored
    |     $display(&#34;PASSED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;Q !== 4\&#39;bxxxx&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth9.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth9.v:29</a>:7-20:
-   | 
-   |   if (Q !== 4&#39;bxxxx) failed = 1;
-   |       ^^^^^^^^^^^^^             
+proc %top.always.233.0 (i1$ %CLK, i4$ %D, i1$ %EN1, i1$ %EN2, i1$ %EN3) -&gt; (i4$ %Q) {
+0:
+    br %init
+init:
+    %CLK1 = prb i1$ %CLK
+    wait %check, %CLK
+check:
+    %CLK2 = prb i1$ %CLK
+    %1 = const i1 0
+    %2 = eq i1 %CLK1, %1
+    %3 = neq i1 %CLK2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %EN11 = prb i1$ %EN1
+    br %EN11, %if_false, %if_true
+if_true:
+    %4 = const i32 1
+    %5 = const i4 0
+    %6 = sig i4 %5
+    %7 = shr i4$ %Q, i4$ %6, i32 %4
+    %8 = exts i1$, i4$ %7, 0, 1
+    %D1 = prb i4$ %D
+    %9 = const i32 1
+    %10 = const i4 0
+    %11 = shr i4 %D1, i4 %10, i32 %9
+    %12 = exts i1, i4 %11, 0, 1
+    %13 = const time 0s 1d
+    drv i1$ %8, %12, %13
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %EN21 = prb i1$ %EN2
+    br %EN21, %if_false1, %if_true1
+if_true1:
+    %14 = const i32 2
+    %15 = const i4 0
+    %16 = sig i4 %15
+    %17 = shr i4$ %Q, i4$ %16, i32 %14
+    %18 = exts i1$, i4$ %17, 0, 1
+    %D2 = prb i4$ %D
+    %19 = const i32 2
+    %20 = const i4 0
+    %21 = shr i4 %D2, i4 %20, i32 %19
+    %22 = exts i1, i4 %21, 0, 1
+    %23 = const time 0s 1d
+    drv i1$ %18, %22, %23
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %EN31 = prb i1$ %EN3
+    br %EN31, %if_false2, %if_true2
+if_true2:
+    %24 = const i32 3
+    %25 = const i4 0
+    %26 = sig i4 %25
+    %27 = shr i4$ %Q, i4$ %26, i32 %24
+    %28 = exts i1$, i4$ %27, 0, 1
+    %D3 = prb i4$ %D
+    %29 = const i32 3
+    %30 = const i4 0
+    %31 = shr i4 %D3, i4 %30, i32 %29
+    %32 = exts i1, i4 %31, 0, 1
+    %33 = const time 0s 1d
+    drv i1$ %28, %32, %33
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    br %0
+}
 
+proc %top.initial.236.0 (i4$ %Q) -&gt; (i1$ %CLK, i4$ %D, i1$ %EN1, i1$ %EN2, i1$ %EN3, i1$ %failed) {
+0:
+    %1 = const i32 0
+    %2 = exts i1, i32 %1, 0, 1
+    %3 = const time 0s 1e
+    drv i1$ %failed, %2, %3
+    %4 = const i32 0
+    %5 = const i32 0
+    %6 = exts i1, i32 %5, 0, 1
+    %7 = const time 0s 1e
+    drv i1$ %CLK, %6, %7
+    %8 = const i32 0
+    %9 = exts i1, i32 %8, 0, 1
+    %10 = const time 0s 1e
+    drv i1$ %EN1, %9, %10
+    %11 = const i32 0
+    %12 = exts i1, i32 %11, 0, 1
+    %13 = const time 0s 1e
+    drv i1$ %EN2, %12, %13
+    %14 = const i32 0
+    %15 = exts i1, i32 %14, 0, 1
+    %16 = const time 0s 1e
+    drv i1$ %EN3, %15, %16
+    %17 = const i4 0
+    %18 = const time 0s 1e
+    drv i4$ %D, %17, %18
+    %19 = const i32 1
+    wait %20 for %19
+20:
+    %21 = const i32 1
+    %22 = exts i1, i32 %21, 0, 1
+    %23 = const time 0s 1e
+    drv i1$ %CLK, %22, %23
+    %24 = const i32 1
+    wait %25 for %24
+25:
+    %26 = const i32 0
+    %27 = exts i1, i32 %26, 0, 1
+    %28 = const time 0s 1e
+    drv i1$ %CLK, %27, %28
+    %Q1 = prb i4$ %Q
+    %29 = const i4 0
+    %30 = neq i4 %Q1, %29
+    br %30, %if_false, %if_true
+if_true:
+    %31 = const i32 1
+    %32 = exts i1, i32 %31, 0, 1
+    %33 = const time 0s 1e
+    drv i1$ %failed, %32, %33
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %34 = const i32 1
+    %35 = exts i1, i32 %34, 0, 1
+    %36 = const time 0s 1e
+    drv i1$ %EN1, %35, %36
+    %37 = const i4 0
+    %38 = const time 0s 1e
+    drv i4$ %D, %37, %38
+    %39 = const i32 1
+    wait %40 for %39
+40:
+    %41 = const i32 1
+    %42 = exts i1, i32 %41, 0, 1
+    %43 = const time 0s 1e
+    drv i1$ %CLK, %42, %43
+    %44 = const i32 1
+    wait %45 for %44
+45:
+    %46 = const i32 0
+    %47 = exts i1, i32 %46, 0, 1
+    %48 = const time 0s 1e
+    drv i1$ %CLK, %47, %48
+    %Q2 = prb i4$ %Q
+    %49 = const i4 0
+    %50 = neq i4 %Q2, %49
+    br %50, %if_false1, %if_true1
+if_true1:
+    %51 = const i32 1
+    %52 = exts i1, i32 %51, 0, 1
+    %53 = const time 0s 1e
+    drv i1$ %failed, %52, %53
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %54 = const i32 0
+    %55 = exts i1, i32 %54, 0, 1
+    %56 = const time 0s 1e
+    drv i1$ %EN1, %55, %56
+    %57 = const i32 1
+    %58 = exts i1, i32 %57, 0, 1
+    %59 = const time 0s 1e
+    drv i1$ %EN2, %58, %59
+    %60 = const i4 15
+    %61 = const time 0s 1e
+    drv i4$ %D, %60, %61
+    %62 = const i32 1
+    wait %63 for %62
+63:
+    %64 = const i32 1
+    %65 = exts i1, i32 %64, 0, 1
+    %66 = const time 0s 1e
+    drv i1$ %CLK, %65, %66
+    %67 = const i32 1
+    wait %68 for %67
+68:
+    %69 = const i32 0
+    %70 = exts i1, i32 %69, 0, 1
+    %71 = const time 0s 1e
+    drv i1$ %CLK, %70, %71
+    %Q3 = prb i4$ %Q
+    %72 = const i4 4
+    %73 = neq i4 %Q3, %72
+    br %73, %if_false2, %if_true2
+if_true2:
+    %74 = const i32 1
+    %75 = exts i1, i32 %74, 0, 1
+    %76 = const time 0s 1e
+    drv i1$ %failed, %75, %76
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    %77 = const i32 0
+    %78 = exts i1, i32 %77, 0, 1
+    %79 = const time 0s 1e
+    drv i1$ %EN2, %78, %79
+    %80 = const i32 1
+    %81 = exts i1, i32 %80, 0, 1
+    %82 = const time 0s 1e
+    drv i1$ %EN3, %81, %82
+    %83 = const i4 0
+    %84 = const time 0s 1e
+    drv i4$ %D, %83, %84
+    %85 = const i32 1
+    wait %86 for %85
+86:
+    %87 = const i32 1
+    %88 = exts i1, i32 %87, 0, 1
+    %89 = const time 0s 1e
+    drv i1$ %CLK, %88, %89
+    %90 = const i32 1
+    wait %91 for %90
+91:
+    %92 = const i32 0
+    %93 = exts i1, i32 %92, 0, 1
+    %94 = const time 0s 1e
+    drv i1$ %CLK, %93, %94
+    %Q4 = prb i4$ %Q
+    %95 = const i4 4
+    %96 = neq i4 %Q4, %95
+    br %96, %if_false3, %if_true3
+if_true3:
+    %97 = const i32 1
+    %98 = exts i1, i32 %97, 0, 1
+    %99 = const time 0s 1e
+    drv i1$ %failed, %98, %99
+    br %if_exit3
+if_false3:
+    br %if_exit3
+if_exit3:
+    %100 = const i32 1
+    wait %101 for %100
+101:
+    %failed1 = prb i1$ %failed
+    br %failed1, %if_false4, %if_true4
+if_true4:
+    %102 = const i32 0
+    br %if_exit4
+if_false4:
+    %103 = const i32 0
+    br %if_exit4
+if_exit4:
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %CLK = sig i1 %0
+    %1 = const i4 0
+    %D = sig i4 %1
+    %2 = const i1 0
+    %EN1 = sig i1 %2
+    %3 = const i1 0
+    %EN2 = sig i1 %3
+    %4 = const i1 0
+    %EN3 = sig i1 %4
+    %5 = const i4 0
+    %Q = sig i4 %5
+    %6 = const i1 0
+    %failed = sig i1 %6
+    inst %top.always.233.0 (i1$ %CLK, i4$ %D, i1$ %EN1, i1$ %EN2, i1$ %EN3) -&gt; (i4$ %Q)
+    inst %top.initial.236.0 (i4$ %Q) -&gt; (i1$ %CLK, i4$ %D, i1$ %EN1, i1$ %EN2, i1$ %EN3, i1$ %failed)
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/sva
@@ -17,14 +17,60 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/sva/basic01.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic01.sv</a>
-time_elapsed: 0.000s
-ram usage: 9592 KB
+time_elapsed: 0.004s
+ram usage: 9628 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/sva -e top <a href="../../../../third_party/tools/yosys/tests/sva/basic01.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic01.sv</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: unsupported: concurrent assertion; ignored
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic01.sv.html#l-10" target="file-frame">third_party/tools/yosys/tests/sva/basic01.sv:10</a>:8-62:
+   | 
+   |     a_rw: assert property ( @(posedge clock) !(read &amp;&amp; write) );
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unsupported: concurrent assertion; ignored
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic01.sv.html#l-14" target="file-frame">third_party/tools/yosys/tests/sva/basic01.sv:14</a>:8-61:
+   | 
+   |     a_wr: assert property ( @(posedge clock) write |=&gt; ready );
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+proc %top.always.231.0 (i1$ %clock, i1$ %ctrl) -&gt; (i1$ %read, i1$ %write, i1$ %ready) {
+0:
+    br %init
+init:
+    %clock1 = prb i1$ %clock
+    wait %check, %clock
+check:
+    %clock2 = prb i1$ %clock
+    %1 = const i1 0
+    %2 = eq i1 %clock1, %1
+    %3 = neq i1 %clock2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %ctrl1 = prb i1$ %ctrl
+    %4 = not i1 %ctrl1
+    %5 = const time 0s 1d
+    drv i1$ %read, %4, %5
+    %ctrl2 = prb i1$ %ctrl
+    %6 = const time 0s 1d
+    drv i1$ %write, %ctrl2, %6
+    %write1 = prb i1$ %write
+    %7 = const time 0s 1d
+    drv i1$ %ready, %write1, %7
+    br %0
+}
+
+entity @top (i1$ %clock, i1$ %ctrl) -&gt; () {
+    %0 = const i32 0
+    %read = sig i32 %0
+    %1 = const i32 0
+    %write = sig i32 %1
+    %2 = const i32 0
+    %ready = sig i32 %2
+    inst %top.always.231.0 (i1$ %clock, i1$ %ctrl) -&gt; (i32$ %read, i32$ %write, i32$ %ready)
+}
 
 </pre>
 </body>

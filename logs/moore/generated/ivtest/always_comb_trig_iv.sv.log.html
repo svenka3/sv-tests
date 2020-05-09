@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,18 +17,231 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v</a>
-time_elapsed: 0.000s
-ram usage: 9640 KB
+time_elapsed: 0.004s
+ram usage: 9680 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:5</a>:19-29:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:17</a>:7-75:
    | 
-   |   always_comb q = a !== 1&#39;bx;
-   |                   ^^^^^^^^^^ 
+   |       $display(&#34;Expected q = 1&#39;b0 with the default 1&#39;bx input, got %b&#34;, q);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:21</a>:7-77:
+   | 
+   |       $display(&#34;Expected qb = 1&#39;b1 with the default 1&#39;bx input, got %b&#34;, qb);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:29</a>:7-75:
+   | 
+   |       $display(&#34;Expected q = 1&#39;b1 with an explicit 1&#39;b0 input, got %b&#34;, q);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-37" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:37</a>:7-75:
+   | 
+   |       $display(&#34;Expected q = 1&#39;b1 with an explicit 1&#39;b1 input, got %b&#34;, q);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-45" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:45</a>:7-75:
+   | 
+   |       $display(&#34;Expected q = 1&#39;b1 with an explicit 1&#39;bz input, got %b&#34;, q);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-53" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:53</a>:7-75:
+   | 
+   |       $display(&#34;Expected q = 1&#39;b0 with an explicit 1&#39;bx input, got %b&#34;, q);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_comb_trig.v.html#l-57" target="file-frame">third_party/tests/ivtest/ivltests/always_comb_trig.v:57</a>:15-33:
+   | 
+   |     if (pass) $display(&#34;PASSED&#34;);
+   |               ^^^^^^^^^^^^^^^^^^ 
+
+proc %top.always_comb.227.0 (i1$ %a) -&gt; (i1$ %q) {
+0:
+    br %body
+body:
+    %a1 = prb i1$ %a
+    %1 = const i1 0
+    %2 = neq i1 %a1, %1
+    %3 = const time 0s 1e
+    drv i1$ %q, %2, %3
+    br %check
+check:
+    wait %body, %a
+}
+
+proc %top.always_comb.228.0 (i1$ %a) -&gt; (i1$ %qb) {
+0:
+    br %body
+body:
+    %a1 = prb i1$ %a
+    %1 = const i1 0
+    %2 = eq i1 %a1, %1
+    %3 = const time 0s 1e
+    drv i1$ %qb, %2, %3
+    br %check
+check:
+    wait %body, %a
+}
+
+proc %top.initial.229.0 (i1$ %q, i1$ %qb) -&gt; (i1$ %a, i1$ %pass) {
+0:
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %pass, %1, %2
+    %3 = const i32 0
+    wait %4 for %3
+4:
+    %5 = const i32 0
+    wait %6 for %5
+6:
+    %q1 = prb i1$ %q
+    %7 = const i1 0
+    %8 = neq i1 %q1, %7
+    br %8, %if_false, %if_true
+if_true:
+    %9 = const i32 0
+    %10 = const i1 0
+    %11 = const time 0s 1e
+    drv i1$ %pass, %10, %11
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %qb1 = prb i1$ %qb
+    %12 = const i1 1
+    %13 = neq i1 %qb1, %12
+    br %13, %if_false1, %if_true1
+if_true1:
+    %14 = const i32 0
+    %15 = const i1 0
+    %16 = const time 0s 1e
+    drv i1$ %pass, %15, %16
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %17 = const i32 1
+    wait %18 for %17
+18:
+    %19 = const i1 0
+    %20 = const time 0s 1e
+    drv i1$ %a, %19, %20
+    %21 = const i32 0
+    wait %22 for %21
+22:
+    %q2 = prb i1$ %q
+    %23 = const i1 1
+    %24 = neq i1 %q2, %23
+    br %24, %if_false2, %if_true2
+if_true2:
+    %25 = const i32 0
+    %26 = const i1 0
+    %27 = const time 0s 1e
+    drv i1$ %pass, %26, %27
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    %28 = const i32 1
+    wait %29 for %28
+29:
+    %30 = const i1 1
+    %31 = const time 0s 1e
+    drv i1$ %a, %30, %31
+    %32 = const i32 0
+    wait %33 for %32
+33:
+    %q3 = prb i1$ %q
+    %34 = const i1 1
+    %35 = neq i1 %q3, %34
+    br %35, %if_false3, %if_true3
+if_true3:
+    %36 = const i32 0
+    %37 = const i1 0
+    %38 = const time 0s 1e
+    drv i1$ %pass, %37, %38
+    br %if_exit3
+if_false3:
+    br %if_exit3
+if_exit3:
+    %39 = const i32 1
+    wait %40 for %39
+40:
+    %41 = const i1 0
+    %42 = const time 0s 1e
+    drv i1$ %a, %41, %42
+    %43 = const i32 0
+    wait %44 for %43
+44:
+    %q4 = prb i1$ %q
+    %45 = const i1 1
+    %46 = neq i1 %q4, %45
+    br %46, %if_false4, %if_true4
+if_true4:
+    %47 = const i32 0
+    %48 = const i1 0
+    %49 = const time 0s 1e
+    drv i1$ %pass, %48, %49
+    br %if_exit4
+if_false4:
+    br %if_exit4
+if_exit4:
+    %50 = const i32 1
+    wait %51 for %50
+51:
+    %52 = const i1 0
+    %53 = const time 0s 1e
+    drv i1$ %a, %52, %53
+    %54 = const i32 0
+    wait %55 for %54
+55:
+    %q5 = prb i1$ %q
+    %56 = const i1 0
+    %57 = neq i1 %q5, %56
+    br %57, %if_false5, %if_true5
+if_true5:
+    %58 = const i32 0
+    %59 = const i1 0
+    %60 = const time 0s 1e
+    drv i1$ %pass, %59, %60
+    br %if_exit5
+if_false5:
+    br %if_exit5
+if_exit5:
+    %pass1 = prb i1$ %pass
+    br %pass1, %if_false6, %if_true6
+if_true6:
+    %61 = const i32 0
+    br %if_exit6
+if_false6:
+    br %if_exit6
+if_exit6:
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %a = sig i1 %0
+    %1 = const i1 0
+    %q = sig i1 %1
+    %2 = const i1 0
+    %qb = sig i1 %2
+    %3 = const i1 0
+    %pass = sig i1 %3
+    inst %top.always_comb.227.0 (i1$ %a) -&gt; (i1$ %q)
+    inst %top.always_comb.228.0 (i1$ %a) -&gt; (i1$ %qb)
+    inst %top.initial.229.0 (i1$ %q, i1$ %qb) -&gt; (i1$ %a, i1$ %pass)
+}
 
 </pre>
 </body>

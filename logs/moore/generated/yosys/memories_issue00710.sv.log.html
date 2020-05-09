@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories
@@ -17,22 +17,78 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v</a>
-time_elapsed: 0.000s
-ram usage: 9676 KB
+time_elapsed: 0.004s
+ram usage: 9560 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories -e top <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html#l-5" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v:5</a>:12-18:
-   | 
-   | module top(input clk, input we, re, reset, input [7:0] addr, wdata, output reg [7:0] rdata);
-   |            ^^^^^^                                                                           
+proc %top.always.252.0 (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %rdata, i8$ %bram, i1$ %dummy) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = eq i1 %clk1, %1
+    %3 = neq i1 %clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %reset1 = prb i1$ %reset
+    br %reset1, %if_false, %if_true
+if_true:
+    %4 = const i1 0
+    %5 = const time 0s 1d
+    drv i1$ %dummy, %4, %5
+    br %if_exit
+if_false:
+    %re1 = prb i1$ %re
+    br %re1, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %6 = const i8 0
+    %bram1 = prb i8$ %bram
+    %addr1 = prb i8$ %addr
+    %7 = const i8 0
+    %8 = shr i8 %bram1, i8 %7, i8 %addr1
+    %9 = exts i1, i8 %8, 0, 1
+    %10 = inss i8 %6, i1 %9, 0, 1
+    %11 = const time 0s 1d
+    drv i8$ %rdata, %10, %11
+    br %if_exit1
+if_false1:
+    %we1 = prb i1$ %we
+    br %we1, %if_false2, %if_true2
+if_exit1:
+    br %if_exit
+if_true2:
+    %addr2 = prb i8$ %addr
+    %12 = const i8 0
+    %13 = sig i8 %12
+    %14 = shr i8$ %bram, i8$ %13, i8 %addr2
+    %15 = exts i1$, i8$ %14, 0, 1
+    %wdata1 = prb i8$ %wdata
+    %16 = exts i1, i8 %wdata1, 0, 1
+    %17 = const time 0s 1d
+    drv i1$ %15, %16, %17
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    br %if_exit1
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @top (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %rdata) {
+    %0 = const i8 0
+    %bram = sig i8 %0
+    %1 = const i1 0
+    %dummy = sig i1 %1
+    inst %top.always.252.0 (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %rdata, i8$ %bram, i1$ %dummy)
+}
 
 </pre>
 </body>

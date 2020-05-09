@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from hdlconv
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog
@@ -17,14 +17,63 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/dlatch_reset.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/dlatch_reset.v</a>
-time_elapsed: 0.000s
-ram usage: 9644 KB
+time_elapsed: 0.004s
+ram usage: 9688 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog -e dlatch_reset <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/dlatch_reset.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/dlatch_reset.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %dlatch_reset.always.235.0 (i1$ %data, i1$ %en, i1$ %reset) -&gt; (i1$ %q) {
+0:
+    br %init
+init:
+    %en1 = prb i1$ %en
+    %reset1 = prb i1$ %reset
+    %data1 = prb i1$ %data
+    wait %check, %en, %reset, %data
+check:
+    %en2 = prb i1$ %en
+    %impledge = neq i1 %en1, %en2
+    %reset2 = prb i1$ %reset
+    %impledge1 = neq i1 %reset1, %reset2
+    %event_or = or i1 %impledge, %impledge1
+    %data2 = prb i1$ %data
+    %impledge2 = neq i1 %data1, %data2
+    %event_or1 = or i1 %event_or, %impledge2
+    br %event_or1, %init, %event
+event:
+    %reset3 = prb i1$ %reset
+    %1 = not i1 %reset3
+    br %1, %if_false, %if_true
+if_true:
+    %2 = const i1 0
+    %3 = const time 0s 1d
+    drv i1$ %q, %2, %3
+    br %if_exit
+if_false:
+    %en3 = prb i1$ %en
+    br %en3, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %data3 = prb i1$ %data
+    %4 = const time 0s 1d
+    drv i1$ %q, %data3, %4
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    br %if_exit
+}
+
+entity @dlatch_reset (i1$ %data, i1$ %en, i1$ %reset) -&gt; (i1$ %q) {
+    %0 = const i1 0
+    %q1 = sig i1 %0
+    inst %dlatch_reset.always.235.0 (i1$ %data, i1$ %en, i1$ %reset) -&gt; (i1$ %q1)
+    %1 = const i1 0
+    %2 = const time 0s
+    drv i1$ %q, %1, %2
+}
 
 </pre>
 </body>

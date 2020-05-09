@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,20 +17,72 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr990.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr990.v</a>
-time_elapsed: 0.000s
-ram usage: 9628 KB
+time_elapsed: 0.004s
+ram usage: 9640 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bug <a href="../../../../third_party/tests/ivtest/ivltests/pr990.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr990.v</a>
-error: variable `y` has implicit type but is not initialized
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr990.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr990.v:8</a>:6-7:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr990.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr990.v:13</a>:3-23:
    | 
-   | wire y;
-   |      ^ 
-   = note: specify a type for the variable; or
-   = note: add an initial value
+   |   $display(&#34;y: %b&#34;, y);
+   |   ^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr990.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr990.v:16</a>:3-23:
+   | 
+   |   $display(&#34;y: %b&#34;, y);
+   |   ^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr990.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/pr990.v:18</a>:5-23:
+   | 
+   |     $display(&#34;PASSED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr990.v.html#l-20" target="file-frame">third_party/tests/ivtest/ivltests/pr990.v:20</a>:5-23:
+   | 
+   |     $display(&#34;FAILED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+proc %bug.initial.226.0 (i1$ %y) -&gt; (i32$ %x) {
+0:
+    %1 = const i32 0
+    %2 = const i32 0
+    %3 = const time 0s 1e
+    drv i32$ %x, %2, %3
+    %4 = const i32 0
+    wait %5 for %4
+5:
+    %6 = const i32 0
+    %y1 = prb i1$ %y
+    %7 = const i1 1
+    %8 = eq i1 %y1, %7
+    br %8, %if_false, %if_true
+if_true:
+    %9 = const i32 0
+    br %if_exit
+if_false:
+    %10 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @bug () -&gt; () {
+    %0 = const i32 0
+    %x = sig i32 %0
+    %1 = const i1 0
+    %y = sig i1 %1
+    %x1 = prb i32$ %x
+    %2 = const i32 0
+    %3 = eq i32 %x1, %2
+    %4 = const time 0s 1e
+    drv i1$ %y, %3, %4
+    inst %bug.initial.226.0 (i1$ %y) -&gt; (i32$ %x)
+}
 
 </pre>
 </body>

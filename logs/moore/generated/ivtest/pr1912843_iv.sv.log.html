@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1912843.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1912843.v</a>
 time_elapsed: 0.004s
-ram usage: 9696 KB
+ram usage: 9532 KB
 </pre>
 <pre class="log">
 
@@ -35,8 +35,54 @@ warning: `$display` not supported; ignored
    |     if (arr[0] + 1 + 1 &gt; 4) $display(&#34;FAILED&#34;); else $display(&#34;PASSED&#34;);
    |                                                      ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;no zero-value for type i32*&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %test.initial.223.0 () -&gt; (i32$ %arr) {
+0:
+    %1 = const i32 0
+    %2 = const i32 0
+    %3 = sig i32 %2
+    %4 = shr i32$ %arr, i32$ %3, i32 %1
+    %5 = exts i1$, i32$ %4, 0, 1
+    %6 = const i1 1
+    %7 = const time 0s 1e
+    drv i1$ %5, %6, %7
+    %8 = const i32 1
+    %9 = const i32 0
+    %10 = sig i32 %9
+    %11 = shr i32$ %arr, i32$ %10, i32 %8
+    %12 = exts i1$, i32$ %11, 0, 1
+    %13 = const i3 5
+    %14 = exts i1, i3 %13, 0, 1
+    %15 = const time 0s 1e
+    drv i1$ %12, %14, %15
+    %16 = const i32 0
+    %arr1 = prb i32$ %arr
+    %17 = const i32 0
+    %18 = const i32 0
+    %19 = shr i32 %arr1, i32 %18, i32 %17
+    %20 = exts i1, i32 %19, 0, 1
+    %21 = inss i32 %16, i1 %20, 0, 1
+    %22 = const i32 1
+    %23 = add i32 %21, %22
+    %24 = const i32 1
+    %25 = add i32 %23, %24
+    %26 = const i32 4
+    %27 = ugt i32 %25, %26
+    br %27, %if_false, %if_true
+if_true:
+    %28 = const i32 0
+    br %if_exit
+if_false:
+    %29 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i32 0
+    %arr = sig i32 %0
+    inst %test.initial.223.0 () -&gt; (i32$ %arr)
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,28 +18,16 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v</a>
 time_elapsed: 0.004s
-ram usage: 9572 KB
+ram usage: 9560 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:22</a>:11-22:
-   | 
-   |       if (a !== 2&#39;b01) begin
-   |           ^^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:23</a>:11-70:
    | 
    |           $display(&#34;FAILED: cont. assign, expected 2&#39;b01, got %b&#34;, a);
    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:28</a>:11-23:
-   | 
-   |       if (ra !== 2&#39;b01) begin
-   |           ^^^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:29</a>:11-71:
@@ -53,12 +41,105 @@ warning: `$display` not supported; ignored
    |       if (pass) $display(&#34;PASSED&#34;);
    |                 ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;a !== 2\&#39;b01&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:22</a>:11-22:
-   | 
-   |       if (a !== 2&#39;b01) begin
-   |           ^^^^^^^^^^^       
+proc %test.initial.232.0 (i2$ %a, i4$ %b, i4$ %c) -&gt; (i1$ %pass, i2$ %ra) {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %a1 = prb i2$ %a
+    %3 = const i2 1
+    %4 = neq i2 %a1, %3
+    br %4, %if_false, %if_true
+if_true:
+    %5 = const i32 0
+    %6 = const i1 0
+    %7 = const time 0s 1e
+    drv i1$ %pass, %6, %7
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %8 = const i2 0
+    %c1 = prb i4$ %c
+    %9 = const i4 0
+    %10 = const i1 1
+    %11 = const i9 0
+    %12 = const i1 0
+    %13 = shl i1 %10, i1 %12, i9 %11
+    %14 = inss i4 %9, i1 %13, 0, 1
+    %15 = not i4 %14
+    %16 = and i4 %c1, %15
+    %b1 = prb i4$ %b
+    %17 = and i4 %16, %b1
+    %18 = exts i1, i4 %17, 0, 1
+    %19 = exts i1, i4 %17, 1, 1
+    %20 = or i1 %18, %19
+    %21 = exts i1, i4 %17, 2, 1
+    %22 = or i1 %20, %21
+    %23 = exts i1, i4 %17, 3, 1
+    %24 = or i1 %22, %23
+    %25 = inss i2 %8, i1 %24, 0, 1
+    %26 = const time 0s 1e
+    drv i2$ %ra, %25, %26
+    %ra1 = prb i2$ %ra
+    %27 = const i2 1
+    %28 = neq i2 %ra1, %27
+    br %28, %if_false1, %if_true1
+if_true1:
+    %29 = const i32 0
+    %30 = const i1 0
+    %31 = const time 0s 1e
+    drv i1$ %pass, %30, %31
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %pass1 = prb i1$ %pass
+    br %pass1, %if_false2, %if_true2
+if_true2:
+    %32 = const i32 0
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    halt
+}
 
+entity @test () -&gt; () {
+    %0 = const i1 1
+    %pass = sig i1 %0
+    %1 = const i2 0
+    %ra = sig i2 %1
+    %2 = const i2 0
+    %a = sig i2 %2
+    %3 = const i4 15
+    %b = sig i4 %3
+    %4 = const i4 15
+    %c = sig i4 %4
+    %5 = const i2 0
+    %c1 = prb i4$ %c
+    %6 = const i4 0
+    %7 = const i1 1
+    %8 = const i9 0
+    %9 = const i1 0
+    %10 = shl i1 %7, i1 %9, i9 %8
+    %11 = inss i4 %6, i1 %10, 0, 1
+    %12 = not i4 %11
+    %13 = and i4 %c1, %12
+    %b1 = prb i4$ %b
+    %14 = and i4 %13, %b1
+    %15 = exts i1, i4 %14, 0, 1
+    %16 = exts i1, i4 %14, 1, 1
+    %17 = or i1 %15, %16
+    %18 = exts i1, i4 %14, 2, 1
+    %19 = or i1 %17, %18
+    %20 = exts i1, i4 %14, 3, 1
+    %21 = or i1 %19, %20
+    %22 = inss i2 %5, i1 %21, 0, 1
+    %23 = const time 0s 1e
+    drv i2$ %a, %22, %23
+    inst %test.initial.232.0 (i2$ %a, i4$ %b, i4$ %c) -&gt; (i1$ %pass, i2$ %ra)
+}
 
 </pre>
 </body>

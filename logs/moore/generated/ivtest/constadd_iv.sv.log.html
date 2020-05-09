@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,23 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/constadd.v.html" target="file-frame">third_party/tests/ivtest/ivltests/constadd.v</a>
 time_elapsed: 0.004s
-ram usage: 9508 KB
+ram usage: 9536 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/constadd.v.html" target="file-frame">third_party/tests/ivtest/ivltests/constadd.v</a>
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constadd.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/constadd.v:32</a>:10-24:
-   | 
-   |      if((val1 === 11&#39;h5) &amp;&amp; (val2 === 11&#39;h8))
-   |          ^^^^^^^^^^^^^^                      
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constadd.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/constadd.v:32</a>:30-44:
-   | 
-   |      if((val1 === 11&#39;h5) &amp;&amp; (val2 === 11&#39;h8))
-   |                              ^^^^^^^^^^^^^^  
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constadd.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/constadd.v:33</a>:9-27:
    | 
@@ -47,18 +35,51 @@ warning: `$display` not supported; ignored
    |         $display(&#34;FAILED&#34;);
    |         ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;val1 === 11\&#39;h5&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constadd.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/constadd.v:32</a>:10-24:
-   | 
-   |      if((val1 === 11&#39;h5) &amp;&amp; (val2 === 11&#39;h8))
-   |          ^^^^^^^^^^^^^^                      
+proc %main.initial.225.0 () -&gt; (i3$ %val1, i11$ %val2) {
+0:
+    %1 = const i11 1
+    %2 = const i11 0
+    %3 = const i3 4
+    %4 = inss i11 %2, i3 %3, 0, 3
+    %5 = add i11 %1, %4
+    %6 = exts i3, i11 %5, 0, 3
+    %7 = const time 0s 1e
+    drv i3$ %val1, %6, %7
+    %8 = const i32 0
+    %9 = const i11 2
+    %10 = inss i32 %8, i11 %9, 0, 11
+    %11 = const i32 6
+    %12 = add i32 %10, %11
+    %13 = exts i11, i32 %12, 0, 11
+    %14 = const time 0s 1e
+    drv i11$ %val2, %13, %14
+    %15 = const i11 0
+    %val11 = prb i3$ %val1
+    %16 = inss i11 %15, i3 %val11, 0, 3
+    %17 = const i11 5
+    %18 = eq i11 %16, %17
+    %val21 = prb i11$ %val2
+    %19 = const i11 8
+    %20 = eq i11 %val21, %19
+    %21 = and i1 %18, %20
+    br %21, %if_false, %if_true
+if_true:
+    %22 = const i32 0
+    br %if_exit
+if_false:
+    %23 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
-error: `&#34;val2 === 11\&#39;h8&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constadd.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/constadd.v:32</a>:30-44:
-   | 
-   |      if((val1 === 11&#39;h5) &amp;&amp; (val2 === 11&#39;h8))
-   |                              ^^^^^^^^^^^^^^  
-
+entity @main () -&gt; () {
+    %0 = const i3 0
+    %val1 = sig i3 %0
+    %1 = const i11 0
+    %val2 = sig i11 %1
+    inst %main.initial.225.0 () -&gt; (i3$ %val1, i11$ %val2)
+}
 
 </pre>
 </body>

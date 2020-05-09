@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2709097.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2709097.v</a>
 time_elapsed: 0.004s
-ram usage: 9632 KB
+ram usage: 9664 KB
 </pre>
 <pre class="log">
 
@@ -28,12 +28,6 @@ warning: `$readmemh` not supported; ignored
    | 
    |         $readmemh( &#34;ivltests/pr2709097.hex&#34;, mem );
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2709097.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2709097.v:7</a>:6-19:
-   | 
-   |     if (mem[0] !== 10) $display(&#34;FAILED&#34;);
-   |         ^^^^^^^^^^^^^                     
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2709097.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2709097.v:7</a>:21-39:
@@ -47,12 +41,34 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;mem[0] !== 10&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2709097.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2709097.v:7</a>:6-19:
-   | 
-   |     if (mem[0] !== 10) $display(&#34;FAILED&#34;);
-   |         ^^^^^^^^^^^^^                     
+proc %top.initial.223.0 (i32$ %mem) -&gt; () {
+0:
+    %1 = const i32 0
+    %2 = const i32 0
+    %mem1 = prb i32$ %mem
+    %3 = const i32 0
+    %4 = const i32 0
+    %5 = shr i32 %mem1, i32 %4, i32 %3
+    %6 = exts i1, i32 %5, 0, 1
+    %7 = inss i32 %2, i1 %6, 0, 1
+    %8 = const i32 10
+    %9 = neq i32 %7, %8
+    br %9, %if_false, %if_true
+if_true:
+    %10 = const i32 0
+    br %if_exit
+if_false:
+    %11 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i32 0
+    %mem = sig i32 %0
+    inst %top.initial.223.0 (i32$ %mem) -&gt; ()
+}
 
 </pre>
 </body>

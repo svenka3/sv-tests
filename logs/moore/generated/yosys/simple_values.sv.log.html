@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -17,33 +17,45 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/values.v.html" target="file-frame">third_party/tools/yosys/tests/simple/values.v</a>
-time_elapsed: 0.000s
-ram usage: 9572 KB
+time_elapsed: 0.004s
+ram usage: 9688 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e test_signed <a href="../../../../third_party/tools/yosys/tests/simple/values.v.html" target="file-frame">third_party/tools/yosys/tests/simple/values.v</a>
+proc %test_signed.always.247.0 (i4$ %a, i4$ %b, i4$ %c, i4$ %d) -&gt; (i8$ %y) {
+0:
+    wait %trigger, %a, %b, %c, %d
+trigger:
+    %a1 = prb i4$ %a
+    %1 = const i4 0
+    %2 = neq i4 %a1, %1
+    %b1 = prb i4$ %b
+    %3 = const i4 0
+    %4 = neq i4 %b1, %3
+    %5 = and i1 %2, %4
+    br %5, %if_false, %if_true
+if_true:
+    %6 = const i8 0
+    %c1 = prb i4$ %c
+    %7 = inss i8 %6, i4 %c1, 0, 4
+    %8 = const time 0s 1e
+    drv i8$ %y, %7, %8
+    br %if_exit
+if_false:
+    %9 = const i8 0
+    %d1 = prb i4$ %d
+    %10 = inss i8 %9, i4 %d1, 0, 4
+    %11 = const time 0s 1e
+    drv i8$ %y, %10, %11
+    br %if_exit
+if_exit:
+    br %0
+}
 
-fatal: Ambiguous code, could be explicit type or implicit type
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/values.v.html#l-5" target="file-frame">third_party/tools/yosys/tests/simple/values.v:5</a>:7-13:
-   | 
-   | input signed [3:0] d;
-   |       ^^^^^^         
-
-
-note: explicit type would be this part
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/values.v.html#l-5" target="file-frame">third_party/tools/yosys/tests/simple/values.v:5</a>:7-22:
-   | 
-   | input signed [3:0] d;
-   |       ^^^^^^^^^^^^^^^
-
-
-note: implicit type would be this part
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/values.v.html#l-5" target="file-frame">third_party/tools/yosys/tests/simple/values.v:5</a>:7-22:
-   | 
-   | input signed [3:0] d;
-   |       ^^^^^^^^^^^^^^^
-
+entity @test_signed (i4$ %a, i4$ %b, i4$ %c, i4$ %d) -&gt; (i8$ %y) {
+    inst %test_signed.always.247.0 (i4$ %a, i4$ %b, i4$ %c, i4$ %d) -&gt; (i8$ %y)
+}
 
 </pre>
 </body>

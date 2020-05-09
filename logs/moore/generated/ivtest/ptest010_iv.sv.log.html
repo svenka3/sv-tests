@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,23 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest010.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest010.v</a>
 time_elapsed: 0.004s
-ram usage: 9592 KB
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/ptest010.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest010.v</a>
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest010.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/ptest010.v:27</a>:9-17:
-   | 
-   |     if (a===4&#39;d5 &amp;&amp; b===4&#39;d8 &amp;&amp; c==4&#39;d12)
-   |         ^^^^^^^^                         
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest010.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/ptest010.v:27</a>:21-29:
-   | 
-   |     if (a===4&#39;d5 &amp;&amp; b===4&#39;d8 &amp;&amp; c==4&#39;d12)
-   |                     ^^^^^^^^             
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest010.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/ptest010.v:28</a>:7-25:
    | 
@@ -47,18 +35,51 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;a===4\&#39;d5&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest010.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/ptest010.v:27</a>:9-17:
-   | 
-   |     if (a===4&#39;d5 &amp;&amp; b===4&#39;d8 &amp;&amp; c==4&#39;d12)
-   |         ^^^^^^^^                         
+proc %main.initial.228.0 (i4$ %a, i4$ %b, i4$ %c) -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %a1 = prb i4$ %a
+    %3 = const i4 5
+    %4 = eq i4 %a1, %3
+    %b1 = prb i4$ %b
+    %5 = const i4 8
+    %6 = eq i4 %b1, %5
+    %7 = and i1 %4, %6
+    %c1 = prb i4$ %c
+    %8 = const i4 12
+    %9 = eq i4 %c1, %8
+    %10 = and i1 %7, %9
+    br %10, %if_false, %if_true
+if_true:
+    %11 = const i32 0
+    br %if_exit
+if_false:
+    %12 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
-error: `&#34;b===4\&#39;d8&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest010.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/ptest010.v:27</a>:21-29:
-   | 
-   |     if (a===4&#39;d5 &amp;&amp; b===4&#39;d8 &amp;&amp; c==4&#39;d12)
-   |                     ^^^^^^^^             
-
+entity @main () -&gt; () {
+    %0 = const i4 0
+    %a = sig i4 %0
+    %1 = const i4 0
+    %b = sig i4 %1
+    %2 = const i4 0
+    %c = sig i4 %2
+    %3 = const i4 5
+    %4 = const time 0s 1e
+    drv i4$ %a, %3, %4
+    %5 = const i4 8
+    %6 = const time 0s 1e
+    drv i4$ %b, %5, %6
+    %7 = const i4 12
+    %8 = const time 0s 1e
+    drv i4$ %c, %7, %8
+    inst %main.initial.228.0 (i4$ %a, i4$ %b, i4$ %c) -&gt; ()
+}
 
 </pre>
 </body>

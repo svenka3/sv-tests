@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,19 +18,91 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v</a>
 time_elapsed: 0.004s
-ram usage: 9652 KB
+ram usage: 9664 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e memory_monitor <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v</a>
-error: variable `Flag1` has implicit type but is not initialized
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:9</a>:6-11:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:19</a>:6-54:
    | 
-   | wire Flag1;
-   |      ^^^^^ 
-   = note: specify a type for the variable; or
-   = note: add an initial value
+   |   #1 $display(&#34;Flag1 = %b, FlagI = %b&#34;, Flag1, FlagI);
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:21</a>:6-54:
+   | 
+   |   #1 $display(&#34;Flag1 = %b, FlagI = %b&#34;, Flag1, FlagI);
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+proc %memory_monitor.initial.231.0 () -&gt; (i8$ %Memory, i4$ %Index) {
+0:
+    %1 = const i32 1
+    %2 = exts i4, i32 %1, 0, 4
+    %3 = const time 0s 1e
+    drv i4$ %Index, %2, %3
+    %Index1 = prb i4$ %Index
+    %4 = const i8 0
+    %5 = sig i8 %4
+    %6 = shr i8$ %Memory, i8$ %5, i4 %Index1
+    %7 = exts i1$, i8$ %6, 0, 1
+    %8 = const i32 0
+    %9 = exts i1, i32 %8, 0, 1
+    %10 = const time 0s 1e
+    drv i1$ %7, %9, %10
+    %11 = const i32 1
+    wait %12 for %11
+12:
+    %13 = const i32 0
+    %Index2 = prb i4$ %Index
+    %14 = const i8 0
+    %15 = sig i8 %14
+    %16 = shr i8$ %Memory, i8$ %15, i4 %Index2
+    %17 = exts i1$, i8$ %16, 0, 1
+    %18 = const i32 1
+    %19 = exts i1, i32 %18, 0, 1
+    %20 = const time 0s 1e
+    drv i1$ %17, %19, %20
+    %21 = const i32 1
+    wait %22 for %21
+22:
+    %23 = const i32 0
+    halt
+}
+
+entity @memory_monitor () -&gt; () {
+    %0 = const i8 0
+    %Memory = sig i8 %0
+    %1 = const i4 0
+    %Index = sig i4 %1
+    %2 = const i1 0
+    %Flag1 = sig i1 %2
+    %3 = const i1 0
+    %FlagI = sig i1 %3
+    %4 = const i32 0
+    %Memory1 = prb i8$ %Memory
+    %5 = const i32 1
+    %6 = const i8 0
+    %7 = shr i8 %Memory1, i8 %6, i32 %5
+    %8 = exts i1, i8 %7, 0, 1
+    %9 = inss i32 %4, i1 %8, 0, 1
+    %10 = const i32 0
+    %11 = eq i32 %9, %10
+    %12 = const time 0s 1e
+    drv i1$ %Flag1, %11, %12
+    %13 = const i32 0
+    %Memory2 = prb i8$ %Memory
+    %Index1 = prb i4$ %Index
+    %14 = const i8 0
+    %15 = shr i8 %Memory2, i8 %14, i4 %Index1
+    %16 = exts i1, i8 %15, 0, 1
+    %17 = inss i32 %13, i1 %16, 0, 1
+    %18 = const i32 0
+    %19 = eq i32 %17, %18
+    %20 = const time 0s 1e
+    drv i1$ %FlagI, %19, %20
+    inst %memory_monitor.initial.231.0 () -&gt; (i8$ %Memory, i4$ %Index)
+}
 
 </pre>
 </body>

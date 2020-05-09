@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -17,33 +17,434 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/sincos.v.html" target="file-frame">third_party/tools/yosys/tests/simple/sincos.v</a>
-time_elapsed: 0.000s
-ram usage: 9500 KB
+time_elapsed: 0.004s
+ram usage: 9580 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e d <a href="../../../../third_party/tools/yosys/tests/simple/sincos.v.html" target="file-frame">third_party/tools/yosys/tests/simple/sincos.v</a>
+proc %d.always.256.0 (i20$ %z0, i1$ %start, i1$ %clock, i1$ %reset) -&gt; (i20$ %cos_z0, i20$ %sin_z0, i1$ %done) {
+0:
+    br %init
+init:
+    %clock1 = prb i1$ %clock
+    %reset1 = prb i1$ %reset
+    wait %check, %clock, %reset
+check:
+    %clock2 = prb i1$ %clock
+    %1 = const i1 0
+    %2 = eq i1 %clock1, %1
+    %3 = neq i1 %clock2, %1
+    %posedge = and i1 %2, %3
+    %reset2 = prb i1$ %reset
+    %4 = const i1 0
+    %5 = eq i1 %reset1, %4
+    %6 = neq i1 %reset2, %4
+    %posedge1 = and i1 %5, %6
+    %event_or = or i1 %posedge, %posedge1
+    br %event_or, %init, %event
+event:
+    %7 = const i5 0
+    %i = var i5 %7
+    %8 = const i1 0
+    %state = var i1 %8
+    %9 = const i20 0
+    %dz = var i20 %9
+    %10 = const i20 0
+    %dx = var i20 %10
+    %11 = const i20 0
+    %dy = var i20 %11
+    %12 = const i20 0
+    %y = var i20 %12
+    %13 = const i20 0
+    %x = var i20 %13
+    %14 = const i20 0
+    %z = var i20 %14
+    %reset3 = prb i1$ %reset
+    br %reset3, %if_false, %if_true
+if_true:
+    %15 = const i1 0
+    st i1* %state, %15
+    %16 = const i32 1
+    %17 = exts i20, i32 %16, 0, 20
+    %18 = const time 0s 1d
+    drv i20$ %cos_z0, %17, %18
+    %19 = const i32 0
+    %20 = exts i20, i32 %19, 0, 20
+    %21 = const time 0s 1d
+    drv i20$ %sin_z0, %20, %21
+    %22 = const i1 0
+    %23 = const time 0s 1d
+    drv i1$ %done, %22, %23
+    %24 = const i32 0
+    %25 = exts i20, i32 %24, 0, 20
+    st i20* %x, %25
+    %26 = const i32 0
+    %27 = exts i20, i32 %26, 0, 20
+    st i20* %y, %27
+    %28 = const i32 0
+    %29 = exts i20, i32 %28, 0, 20
+    st i20* %z, %29
+    %30 = const i32 0
+    %31 = exts i5, i32 %30, 0, 5
+    st i5* %i, %31
+    br %if_exit
+if_false:
+    %state1 = ld i1* %state
+    %32 = const i1 0
+    %33 = const i1 0
+    %34 = eq i1 %state1, %33
+    %35 = or i1 %32, %34
+    br %35, %36, %case_body
+if_exit:
+    br %0
+case_exit:
+    br %if_exit
+case_body:
+    %start1 = prb i1$ %start
+    br %start1, %if_false1, %if_true1
+36:
+    %37 = const i1 0
+    %38 = const i1 1
+    %39 = eq i1 %state1, %38
+    %40 = or i1 %37, %39
+    br %40, %41, %case_body1
+if_true1:
+    %42 = const i32 159188
+    %43 = exts i20, i32 %42, 0, 20
+    st i20* %x, %43
+    %44 = const i32 0
+    %45 = exts i20, i32 %44, 0, 20
+    st i20* %y, %45
+    %z01 = prb i20$ %z0
+    st i20* %z, %z01
+    %46 = const i32 0
+    %47 = exts i5, i32 %46, 0, 5
+    st i5* %i, %47
+    %48 = const i1 0
+    %49 = const time 0s 1d
+    drv i1$ %done, %48, %49
+    %50 = const i1 1
+    st i1* %state, %50
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    br %case_exit
+case_body1:
+    %y1 = ld i20* %y
+    %51 = const i6 0
+    %i1 = ld i5* %i
+    %52 = inss i6 %51, i5 %i1, 0, 5
+    %53 = const i1 0
+    %54 = inss i6 %52, i1 %53, 5, 1
+    %55 = const i20 0
+    %56 = shr i20 %y1, i20 %55, i6 %54
+    st i20* %dx, %56
+    %x1 = ld i20* %x
+    %57 = const i6 0
+    %i2 = ld i5* %i
+    %58 = inss i6 %57, i5 %i2, 0, 5
+    %59 = const i1 0
+    %60 = inss i6 %58, i1 %59, 5, 1
+    %61 = const i20 0
+    %62 = shr i20 %x1, i20 %61, i6 %60
+    st i20* %dy, %62
+    %i3 = ld i5* %i
+    %63 = const i1 0
+    %64 = const i32 0
+    %65 = eq i5 %i3, %64
+    %66 = or i1 %63, %65
+    br %66, %67, %case_body2
+41:
+    br %case_exit
+case_exit1:
+    %68 = const i32 0
+    %z1 = ld i20* %z
+    %69 = inss i32 %68, i20 %z1, 0, 20
+    %70 = const i32 0
+    %71 = uge i32 %69, %70
+    br %71, %if_false2, %if_true2
+case_body2:
+    %72 = const i32 205887
+    %73 = exts i20, i32 %72, 0, 20
+    st i20* %dz, %73
+    br %case_exit1
+67:
+    %74 = const i1 0
+    %75 = const i32 1
+    %76 = eq i5 %i3, %75
+    %77 = or i1 %74, %76
+    br %77, %78, %case_body3
+case_body3:
+    %79 = const i32 121542
+    %80 = exts i20, i32 %79, 0, 20
+    st i20* %dz, %80
+    br %case_exit1
+78:
+    %81 = const i1 0
+    %82 = const i32 2
+    %83 = eq i5 %i3, %82
+    %84 = or i1 %81, %83
+    br %84, %85, %case_body4
+case_body4:
+    %86 = const i32 64220
+    %87 = exts i20, i32 %86, 0, 20
+    st i20* %dz, %87
+    br %case_exit1
+85:
+    %88 = const i1 0
+    %89 = const i32 3
+    %90 = eq i5 %i3, %89
+    %91 = or i1 %88, %90
+    br %91, %92, %case_body5
+case_body5:
+    %93 = const i32 32599
+    %94 = exts i20, i32 %93, 0, 20
+    st i20* %dz, %94
+    br %case_exit1
+92:
+    %95 = const i1 0
+    %96 = const i32 4
+    %97 = eq i5 %i3, %96
+    %98 = or i1 %95, %97
+    br %98, %99, %case_body6
+case_body6:
+    %100 = const i32 16363
+    %101 = exts i20, i32 %100, 0, 20
+    st i20* %dz, %101
+    br %case_exit1
+99:
+    %102 = const i1 0
+    %103 = const i32 5
+    %104 = eq i5 %i3, %103
+    %105 = or i1 %102, %104
+    br %105, %106, %case_body7
+case_body7:
+    %107 = const i32 8189
+    %108 = exts i20, i32 %107, 0, 20
+    st i20* %dz, %108
+    br %case_exit1
+106:
+    %109 = const i1 0
+    %110 = const i32 6
+    %111 = eq i5 %i3, %110
+    %112 = or i1 %109, %111
+    br %112, %113, %case_body8
+case_body8:
+    %114 = const i32 4096
+    %115 = exts i20, i32 %114, 0, 20
+    st i20* %dz, %115
+    br %case_exit1
+113:
+    %116 = const i1 0
+    %117 = const i32 7
+    %118 = eq i5 %i3, %117
+    %119 = or i1 %116, %118
+    br %119, %120, %case_body9
+case_body9:
+    %121 = const i32 2048
+    %122 = exts i20, i32 %121, 0, 20
+    st i20* %dz, %122
+    br %case_exit1
+120:
+    %123 = const i1 0
+    %124 = const i32 8
+    %125 = eq i5 %i3, %124
+    %126 = or i1 %123, %125
+    br %126, %127, %case_body10
+case_body10:
+    %128 = const i32 1024
+    %129 = exts i20, i32 %128, 0, 20
+    st i20* %dz, %129
+    br %case_exit1
+127:
+    %130 = const i1 0
+    %131 = const i32 9
+    %132 = eq i5 %i3, %131
+    %133 = or i1 %130, %132
+    br %133, %134, %case_body11
+case_body11:
+    %135 = const i32 512
+    %136 = exts i20, i32 %135, 0, 20
+    st i20* %dz, %136
+    br %case_exit1
+134:
+    %137 = const i1 0
+    %138 = const i32 10
+    %139 = eq i5 %i3, %138
+    %140 = or i1 %137, %139
+    br %140, %141, %case_body12
+case_body12:
+    %142 = const i32 256
+    %143 = exts i20, i32 %142, 0, 20
+    st i20* %dz, %143
+    br %case_exit1
+141:
+    %144 = const i1 0
+    %145 = const i32 11
+    %146 = eq i5 %i3, %145
+    %147 = or i1 %144, %146
+    br %147, %148, %case_body13
+case_body13:
+    %149 = const i32 128
+    %150 = exts i20, i32 %149, 0, 20
+    st i20* %dz, %150
+    br %case_exit1
+148:
+    %151 = const i1 0
+    %152 = const i32 12
+    %153 = eq i5 %i3, %152
+    %154 = or i1 %151, %153
+    br %154, %155, %case_body14
+case_body14:
+    %156 = const i32 64
+    %157 = exts i20, i32 %156, 0, 20
+    st i20* %dz, %157
+    br %case_exit1
+155:
+    %158 = const i1 0
+    %159 = const i32 13
+    %160 = eq i5 %i3, %159
+    %161 = or i1 %158, %160
+    br %161, %162, %case_body15
+case_body15:
+    %163 = const i32 32
+    %164 = exts i20, i32 %163, 0, 20
+    st i20* %dz, %164
+    br %case_exit1
+162:
+    %165 = const i1 0
+    %166 = const i32 14
+    %167 = eq i5 %i3, %166
+    %168 = or i1 %165, %167
+    br %168, %169, %case_body16
+case_body16:
+    %170 = const i32 16
+    %171 = exts i20, i32 %170, 0, 20
+    st i20* %dz, %171
+    br %case_exit1
+169:
+    %172 = const i1 0
+    %173 = const i32 15
+    %174 = eq i5 %i3, %173
+    %175 = or i1 %172, %174
+    br %175, %176, %case_body17
+case_body17:
+    %177 = const i32 8
+    %178 = exts i20, i32 %177, 0, 20
+    st i20* %dz, %178
+    br %case_exit1
+176:
+    %179 = const i1 0
+    %180 = const i32 16
+    %181 = eq i5 %i3, %180
+    %182 = or i1 %179, %181
+    br %182, %183, %case_body18
+case_body18:
+    %184 = const i32 4
+    %185 = exts i20, i32 %184, 0, 20
+    st i20* %dz, %185
+    br %case_exit1
+183:
+    %186 = const i1 0
+    %187 = const i32 17
+    %188 = eq i5 %i3, %187
+    %189 = or i1 %186, %188
+    br %189, %190, %case_body19
+case_body19:
+    %191 = const i32 2
+    %192 = exts i20, i32 %191, 0, 20
+    st i20* %dz, %192
+    br %case_exit1
+190:
+    %193 = const i32 1
+    %194 = exts i20, i32 %193, 0, 20
+    st i20* %dz, %194
+    br %case_exit1
+if_true2:
+    %x2 = ld i20* %x
+    %dx1 = ld i20* %dx
+    %195 = sub i20 %x2, %dx1
+    st i20* %x, %195
+    %y2 = ld i20* %y
+    %dy1 = ld i20* %dy
+    %196 = add i20 %y2, %dy1
+    st i20* %y, %196
+    %z2 = ld i20* %z
+    %dz1 = ld i20* %dz
+    %197 = sub i20 %z2, %dz1
+    st i20* %z, %197
+    br %if_exit2
+if_false2:
+    %x3 = ld i20* %x
+    %dx2 = ld i20* %dx
+    %198 = add i20 %x3, %dx2
+    st i20* %x, %198
+    %y3 = ld i20* %y
+    %dy2 = ld i20* %dy
+    %199 = sub i20 %y3, %dy2
+    st i20* %y, %199
+    %z3 = ld i20* %z
+    %dz2 = ld i20* %dz
+    %200 = add i20 %z3, %dz2
+    st i20* %z, %200
+    br %if_exit2
+if_exit2:
+    %201 = const i32 0
+    %i4 = ld i5* %i
+    %202 = inss i32 %201, i5 %i4, 0, 5
+    %203 = const i32 19
+    %204 = const i32 1
+    %205 = sub i32 %203, %204
+    %206 = eq i32 %202, %205
+    br %206, %if_false3, %if_true3
+if_true3:
+    %x4 = ld i20* %x
+    %207 = const time 0s 1d
+    drv i20$ %cos_z0, %x4, %207
+    %y4 = ld i20* %y
+    %208 = const time 0s 1d
+    drv i20$ %sin_z0, %y4, %208
+    %209 = const i1 0
+    st i1* %state, %209
+    %210 = const i1 1
+    %211 = const time 0s 1d
+    drv i1$ %done, %210, %211
+    br %if_exit3
+if_false3:
+    %212 = const i32 0
+    %i5 = ld i5* %i
+    %213 = inss i32 %212, i5 %i5, 0, 5
+    %214 = const i32 1
+    %215 = add i32 %213, %214
+    %216 = exts i5, i32 %215, 0, 5
+    st i5* %i, %216
+    br %if_exit3
+if_exit3:
+    br %case_exit
+}
 
-fatal: Ambiguous code, could be explicit type or implicit type
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/sincos.v.html#l-31" target="file-frame">third_party/tools/yosys/tests/simple/sincos.v:31</a>:8-14:
-   | 
-   | output signed [19:0] cos_z0;
-   |        ^^^^^^               
-
-
-note: explicit type would be this part
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/sincos.v.html#l-31" target="file-frame">third_party/tools/yosys/tests/simple/sincos.v:31</a>:8-29:
-   | 
-   | output signed [19:0] cos_z0;
-   |        ^^^^^^^^^^^^^^^^^^^^^
-
-
-note: implicit type would be this part
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/sincos.v.html#l-31" target="file-frame">third_party/tools/yosys/tests/simple/sincos.v:31</a>:8-29:
-   | 
-   | output signed [19:0] cos_z0;
-   |        ^^^^^^^^^^^^^^^^^^^^^
-
+entity @d (i20$ %z0, i1$ %start, i1$ %clock, i1$ %reset) -&gt; (i20$ %cos_z0, i20$ %sin_z0, i1$ %done) {
+    %0 = const i20 0
+    %cos_z01 = sig i20 %0
+    %1 = const i20 0
+    %sin_z01 = sig i20 %1
+    %2 = const i1 0
+    %done1 = sig i1 %2
+    %3 = const i1 0
+    %reset1 = sig i1 %3
+    inst %d.always.256.0 (i20$ %z0, i1$ %start, i1$ %clock, i1$ %reset1) -&gt; (i20$ %cos_z01, i20$ %sin_z01, i1$ %done1)
+    %4 = const i20 0
+    %5 = const time 0s
+    drv i20$ %cos_z0, %4, %5
+    %6 = const i20 0
+    %7 = const time 0s
+    drv i20$ %sin_z0, %6, %7
+    %8 = const i1 0
+    %9 = const time 0s
+    drv i1$ %done, %8, %9
+}
 
 </pre>
 </body>

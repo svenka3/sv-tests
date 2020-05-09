@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/tests/generated/yosys_hana
@@ -17,22 +17,98 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_decoder.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_decoder.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
-time_elapsed: 0.008s
-ram usage: 9616 KB
+time_elapsed: 0.016s
+ram usage: 9588 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/generated/yosys_hana -e f1_test <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_decoder.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_decoder.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_decoder.v.html#l-3" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_decoder.v:3</a>:33-39:
-   | 
-   | module f1_test (input [1:0] in, input enable, output reg  out);
-   |                                 ^^^^^^                         
+proc %f1_test.always.338.0 (i2$ %in, i2$ %enable) -&gt; (i1$ %out) {
+0:
+    br %init
+init:
+    %in1 = prb i2$ %in
+    %enable1 = prb i2$ %enable
+    wait %check, %in, %enable
+check:
+    %in2 = prb i2$ %in
+    %impledge = neq i2 %in1, %in2
+    %enable2 = prb i2$ %enable
+    %impledge1 = neq i2 %enable1, %enable2
+    %event_or = or i1 %impledge, %impledge1
+    br %event_or, %init, %event
+event:
+    %enable3 = prb i2$ %enable
+    %1 = const i2 0
+    %2 = neq i2 %enable3, %1
+    %3 = not i1 %2
+    br %3, %if_false, %if_true
+if_true:
+    %4 = const i4 0
+    %5 = exts i1, i4 %4, 0, 1
+    %6 = const time 0s 1e
+    drv i1$ %out, %5, %6
+    br %if_exit
+if_false:
+    %in3 = prb i2$ %in
+    %7 = const i1 0
+    %8 = const i2 0
+    %9 = eq i2 %in3, %8
+    %10 = or i1 %7, %9
+    br %10, %11, %case_body
+if_exit:
+    br %0
+case_exit:
+    br %if_exit
+case_body:
+    %12 = const i32 0
+    %13 = exts i1, i32 %12, 0, 1
+    %14 = const time 0s 1e
+    drv i1$ %out, %13, %14
+    br %case_exit
+11:
+    %15 = const i1 0
+    %16 = const i2 1
+    %17 = eq i2 %in3, %16
+    %18 = or i1 %15, %17
+    br %18, %19, %case_body1
+case_body1:
+    %20 = const i32 1
+    %21 = exts i1, i32 %20, 0, 1
+    %22 = const time 0s 1e
+    drv i1$ %out, %21, %22
+    br %case_exit
+19:
+    %23 = const i1 0
+    %24 = const i2 2
+    %25 = eq i2 %in3, %24
+    %26 = or i1 %23, %25
+    br %26, %27, %case_body2
+case_body2:
+    %28 = const i32 0
+    %29 = exts i1, i32 %28, 0, 1
+    %30 = const time 0s 1e
+    drv i1$ %out, %29, %30
+    br %case_exit
+27:
+    %31 = const i1 0
+    %32 = const i2 3
+    %33 = eq i2 %in3, %32
+    %34 = or i1 %31, %33
+    br %34, %35, %case_body3
+case_body3:
+    %36 = const i32 1
+    %37 = exts i1, i32 %36, 0, 1
+    %38 = const time 0s 1e
+    drv i1$ %out, %37, %38
+    br %case_exit
+35:
+    br %case_exit
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @f1_test (i2$ %in, i2$ %enable) -&gt; (i1$ %out) {
+    inst %f1_test.always.338.0 (i2$ %in, i2$ %enable) -&gt; (i1$ %out)
+}
 
 </pre>
 </body>

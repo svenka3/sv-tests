@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,28 +18,16 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2998515.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2998515.v</a>
 time_elapsed: 0.004s
-ram usage: 9636 KB
+ram usage: 9760 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2998515.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2998515.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2998515.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2998515.v:10</a>:9-31:
-   | 
-   |     if (error !== 64&#39;hc0000000) begin
-   |         ^^^^^^^^^^^^^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2998515.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr2998515.v:11</a>:7-54:
    | 
    |       $display(&#34;FAILED immediate add, got %h&#34;, error);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2998515.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr2998515.v:17</a>:9-31:
-   | 
-   |     if (error !== 64&#39;h00000000) begin
-   |         ^^^^^^^^^^^^^^^^^^^^^^       
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2998515.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/pr2998515.v:18</a>:7-54:
@@ -53,12 +41,86 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;error !== 64\&#39;hc0000000&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2998515.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2998515.v:10</a>:9-31:
-   | 
-   |     if (error !== 64&#39;hc0000000) begin
-   |         ^^^^^^^^^^^^^^^^^^^^^^       
+proc %top.initial.225.0 () -&gt; (i1$ %pass, i64$ %error) {
+0:
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %pass, %1, %2
+    %3 = const i32 0
+    %4 = exts i1, i32 %3, 31, 1
+    %5 = const i64 0
+    %6 = not i64 %5
+    %7 = [i64 %5, %6]
+    %8 = mux [2 x i64] %7, i1 %4
+    %9 = inss i64 %8, i32 %3, 0, 32
+    %10 = const time 0s 1e
+    drv i64$ %error, %9, %10
+    %error1 = prb i64$ %error
+    %11 = const i64 1073741824
+    %12 = add i64 %error1, %11
+    %13 = const time 0s 1e
+    drv i64$ %error, %12, %13
+    %error2 = prb i64$ %error
+    %14 = const i64 2147483648
+    %15 = add i64 %error2, %14
+    %16 = const time 0s 1e
+    drv i64$ %error, %15, %16
+    %error3 = prb i64$ %error
+    %17 = const i64 3221225472
+    %18 = neq i64 %error3, %17
+    br %18, %if_false, %if_true
+if_true:
+    %19 = const i32 0
+    %20 = const i1 0
+    %21 = const time 0s 1e
+    drv i1$ %pass, %20, %21
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %error4 = prb i64$ %error
+    %22 = const i64 1073741824
+    %23 = neg i64 %22
+    %24 = add i64 %error4, %23
+    %25 = const time 0s 1e
+    drv i64$ %error, %24, %25
+    %error5 = prb i64$ %error
+    %26 = const i64 2147483648
+    %27 = neg i64 %26
+    %28 = add i64 %error5, %27
+    %29 = const time 0s 1e
+    drv i64$ %error, %28, %29
+    %error6 = prb i64$ %error
+    %30 = const i64 0
+    %31 = neq i64 %error6, %30
+    br %31, %if_false1, %if_true1
+if_true1:
+    %32 = const i32 0
+    %33 = const i1 0
+    %34 = const time 0s 1e
+    drv i1$ %pass, %33, %34
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %pass1 = prb i1$ %pass
+    br %pass1, %if_false2, %if_true2
+if_true2:
+    %35 = const i32 0
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i64 0
+    %error = sig i64 %1
+    inst %top.initial.225.0 () -&gt; (i1$ %pass, i64$ %error)
+}
 
 </pre>
 </body>

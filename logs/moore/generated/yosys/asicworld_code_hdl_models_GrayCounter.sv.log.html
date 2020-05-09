@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,21 +18,107 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v</a>
 time_elapsed: 0.004s
-ram usage: 9528 KB
+ram usage: 9616 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e GrayCounter <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v</a>
-thread &#39;main&#39; panicked at &#39;internal error: entered unreachable code: compiler bug: implicit type not resolved
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_GrayCounter.v:12</a>:12-41:
-   | 
-   |      input wire                         Enable_in,  //Count enable.
-   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                           
+proc %GrayCounter.always.244.0 (i4$ %Enable_in, i4$ %Clear_in, i4$ %Clk) -&gt; (i4$ %GrayCount_out, i4$ %BinaryCount) {
+0:
+    br %init
+init:
+    %Clk1 = prb i4$ %Clk
+    wait %check, %Clk
+check:
+    %Clk2 = prb i4$ %Clk
+    %1 = const i4 0
+    %2 = eq i4 %Clk1, %1
+    %3 = neq i4 %Clk2, %1
+    %posedge = and i1 %2, %3
+    br %posedge, %init, %event
+event:
+    %Clear_in1 = prb i4$ %Clear_in
+    %4 = const i4 0
+    %5 = neq i4 %Clear_in1, %4
+    br %5, %if_false, %if_true
+if_true:
+    %6 = const i32 0
+    %7 = const i1 0
+    %8 = const i1 0
+    %9 = inss i1 %7, i1 %8, 0, 1
+    %10 = const i4 0
+    %11 = inss i4 %10, i1 %9, 0, 1
+    %12 = inss i4 %11, i1 %9, 1, 1
+    %13 = inss i4 %12, i1 %9, 2, 1
+    %14 = inss i4 %13, i1 %9, 3, 1
+    %15 = inss i32 %6, i4 %14, 0, 4
+    %16 = const i32 1
+    %17 = add i32 %15, %16
+    %18 = exts i4, i32 %17, 0, 4
+    %19 = const time 0s 1d
+    drv i4$ %BinaryCount, %18, %19
+    %20 = const i1 0
+    %21 = const i1 0
+    %22 = inss i1 %20, i1 %21, 0, 1
+    %23 = const i4 0
+    %24 = inss i4 %23, i1 %22, 0, 1
+    %25 = inss i4 %24, i1 %22, 1, 1
+    %26 = inss i4 %25, i1 %22, 2, 1
+    %27 = inss i4 %26, i1 %22, 3, 1
+    %28 = const time 0s 1d
+    drv i4$ %GrayCount_out, %27, %28
+    br %if_exit
+if_false:
+    %Enable_in1 = prb i4$ %Enable_in
+    %29 = const i4 0
+    %30 = neq i4 %Enable_in1, %29
+    br %30, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %31 = const i32 0
+    %BinaryCount1 = prb i4$ %BinaryCount
+    %32 = inss i32 %31, i4 %BinaryCount1, 0, 4
+    %33 = const i32 1
+    %34 = add i32 %32, %33
+    %35 = exts i4, i32 %34, 0, 4
+    %36 = const time 0s 1d
+    drv i4$ %BinaryCount, %35, %36
+    %37 = const i4 0
+    %BinaryCount2 = prb i4$ %BinaryCount
+    %38 = const i1 0
+    %39 = const i4 0
+    %40 = shr i4 %BinaryCount2, i4 %39, i1 %38
+    %41 = exts i3, i4 %40, 0, 3
+    %BinaryCount3 = prb i4$ %BinaryCount
+    %42 = const i1 1
+    %43 = const i4 0
+    %44 = shr i4 %BinaryCount3, i4 %43, i1 %42
+    %45 = exts i3, i4 %44, 0, 3
+    %46 = xor i3 %41, %45
+    %47 = inss i4 %37, i3 %46, 0, 3
+    %BinaryCount4 = prb i4$ %BinaryCount
+    %48 = const i32 4
+    %49 = const i32 1
+    %50 = sub i32 %48, %49
+    %51 = const i4 0
+    %52 = shr i4 %BinaryCount4, i4 %51, i32 %50
+    %53 = exts i1, i4 %52, 0, 1
+    %54 = inss i4 %47, i1 %53, 3, 1
+    %55 = const time 0s 1d
+    drv i4$ %GrayCount_out, %54, %55
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    br %if_exit
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @GrayCounter (i4$ %Enable_in, i4$ %Clear_in, i4$ %Clk) -&gt; (i4$ %GrayCount_out) {
+    %0 = const i4 0
+    %BinaryCount = sig i4 %0
+    inst %GrayCounter.always.244.0 (i4$ %Enable_in, i4$ %Clear_in, i4$ %Clk) -&gt; (i4$ %GrayCount_out, i4$ %BinaryCount)
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -17,14 +17,141 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v</a>
-time_elapsed: 0.000s
-ram usage: 9644 KB
+time_elapsed: 0.004s
+ram usage: 9560 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e omsp_dbg_uart <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %omsp_dbg_uart.always.242.0 (i1$ %mem_burst, i3$ %uart_state) -&gt; (i3$ %uart_state_nxt) {
+0:
+    br %init
+init:
+    %uart_state1 = prb i3$ %uart_state
+    %mem_burst1 = prb i1$ %mem_burst
+    wait %check, %uart_state, %mem_burst
+check:
+    %uart_state2 = prb i3$ %uart_state
+    %impledge = neq i3 %uart_state1, %uart_state2
+    %mem_burst2 = prb i1$ %mem_burst
+    %impledge1 = neq i1 %mem_burst1, %mem_burst2
+    %event_or = or i1 %impledge, %impledge1
+    br %event_or, %init, %event
+event:
+    %uart_state3 = prb i3$ %uart_state
+    %1 = const i1 0
+    %2 = const i3 0
+    %3 = eq i3 %uart_state3, %2
+    %4 = or i1 %1, %3
+    br %4, %5, %case_body
+case_exit:
+    br %0
+case_body:
+    %6 = const i3 1
+    %7 = const time 0s 1e
+    drv i3$ %uart_state_nxt, %6, %7
+    br %case_exit
+5:
+    %8 = const i1 0
+    %9 = const i3 1
+    %10 = eq i3 %uart_state3, %9
+    %11 = or i1 %8, %10
+    br %11, %12, %case_body1
+case_body1:
+    %mem_burst3 = prb i1$ %mem_burst
+    %13 = const i3 2
+    %14 = const i3 0
+    %15 = [i3 %14, %13]
+    %16 = mux [2 x i3] %15, i1 %mem_burst3
+    %17 = const time 0s 1e
+    drv i3$ %uart_state_nxt, %16, %17
+    br %case_exit
+12:
+    %18 = const i1 0
+    %19 = const i3 2
+    %20 = eq i3 %uart_state3, %19
+    %21 = or i1 %18, %20
+    br %21, %22, %case_body2
+case_body2:
+    %23 = const i3 0
+    %24 = const time 0s 1e
+    drv i3$ %uart_state_nxt, %23, %24
+    br %case_exit
+22:
+    %25 = const i3 1
+    %26 = const time 0s 1e
+    drv i3$ %uart_state_nxt, %25, %26
+    br %case_exit
+}
+
+proc %omsp_dbg_uart.always.243.0 (i1$ %dbg_clk, i1$ %dbg_rst, i1$ %mem_burst, i3$ %uart_state_nxt, i1$ %xfer_done) -&gt; (i3$ %uart_state) {
+0:
+    br %init
+init:
+    %dbg_clk1 = prb i1$ %dbg_clk
+    %dbg_rst1 = prb i1$ %dbg_rst
+    wait %check, %dbg_clk, %dbg_rst
+check:
+    %dbg_clk2 = prb i1$ %dbg_clk
+    %1 = const i1 0
+    %2 = eq i1 %dbg_clk1, %1
+    %3 = neq i1 %dbg_clk2, %1
+    %posedge = and i1 %2, %3
+    %dbg_rst2 = prb i1$ %dbg_rst
+    %4 = const i1 0
+    %5 = eq i1 %dbg_rst1, %4
+    %6 = neq i1 %dbg_rst2, %4
+    %posedge1 = and i1 %5, %6
+    %event_or = or i1 %posedge, %posedge1
+    br %event_or, %init, %event
+event:
+    %dbg_rst3 = prb i1$ %dbg_rst
+    br %dbg_rst3, %if_false, %if_true
+if_true:
+    %7 = const i3 0
+    %8 = const time 0s 1d
+    drv i3$ %uart_state, %7, %8
+    br %if_exit
+if_false:
+    %xfer_done1 = prb i1$ %xfer_done
+    %mem_burst1 = prb i1$ %mem_burst
+    %9 = or i1 %xfer_done1, %mem_burst1
+    br %9, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %uart_state_nxt1 = prb i3$ %uart_state_nxt
+    %10 = const time 0s 1d
+    drv i3$ %uart_state, %uart_state_nxt1, %10
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    br %if_exit
+}
+
+entity @omsp_dbg_uart (i1$ %dbg_clk, i1$ %dbg_rst, i1$ %mem_burst) -&gt; (i1$ %cmd_valid) {
+    %0 = const i3 0
+    %uart_state = sig i3 %0
+    %1 = const i3 0
+    %uart_state_nxt = sig i3 %1
+    %2 = const i1 0
+    %xfer_done = sig i1 %2
+    %uart_state1 = prb i3$ %uart_state
+    %3 = const i3 1
+    %4 = eq i3 %uart_state1, %3
+    %xfer_done1 = prb i1$ %xfer_done
+    %5 = and i1 %4, %xfer_done1
+    %6 = const time 0s 1e
+    drv i1$ %cmd_valid, %5, %6
+    %uart_state2 = prb i3$ %uart_state
+    %7 = const i3 0
+    %8 = neq i3 %uart_state2, %7
+    %9 = const time 0s 1e
+    drv i1$ %xfer_done, %8, %9
+    inst %omsp_dbg_uart.always.242.0 (i1$ %mem_burst, i3$ %uart_state) -&gt; (i3$ %uart_state_nxt)
+    inst %omsp_dbg_uart.always.243.0 (i1$ %dbg_clk, i1$ %dbg_rst, i1$ %mem_burst, i3$ %uart_state_nxt, i1$ %xfer_done) -&gt; (i3$ %uart_state)
+}
 
 </pre>
 </body>

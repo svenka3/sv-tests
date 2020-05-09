@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,24 +17,12 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v</a>
-time_elapsed: 0.000s
-ram usage: 9672 KB
+time_elapsed: 0.004s
+ram usage: 9708 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v</a>
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:16</a>:9-16:
-   | 
-   |     if (y === z &amp;&amp; y === 8&#39;b00000101)
-   |         ^^^^^^^                      
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:16</a>:20-37:
-   | 
-   |     if (y === z &amp;&amp; y === 8&#39;b00000101)
-   |                    ^^^^^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:17</a>:7-25:
    | 
@@ -47,18 +35,58 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED, expected 8&#39;b00000101, got %b/%b&#34;, y, z);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;y === z&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:16</a>:9-16:
-   | 
-   |     if (y === z &amp;&amp; y === 8&#39;b00000101)
-   |         ^^^^^^^                      
+proc %top.initial.230.0 (i8$ %y, i8$ %z) -&gt; (i8$ %a, i3$ %b) {
+0:
+    %1 = const i8 170
+    %2 = const time 0s 1e
+    drv i8$ %a, %1, %2
+    %3 = const i3 5
+    %4 = const time 0s 1e
+    drv i3$ %b, %3, %4
+    %5 = const i32 1
+    wait %6 for %5
+6:
+    %y1 = prb i8$ %y
+    %z1 = prb i8$ %z
+    %7 = eq i8 %y1, %z1
+    %y2 = prb i8$ %y
+    %8 = const i8 5
+    %9 = eq i8 %y2, %8
+    %10 = and i1 %7, %9
+    br %10, %if_false, %if_true
+if_true:
+    %11 = const i32 0
+    br %if_exit
+if_false:
+    %12 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
-error: `&#34;y === 8\&#39;b00000101&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:16</a>:20-37:
-   | 
-   |     if (y === z &amp;&amp; y === 8&#39;b00000101)
-   |                    ^^^^^^^^^^^^^^^^^ 
-
+entity @top () -&gt; () {
+    %0 = const i8 0
+    %a = sig i8 %0
+    %1 = const i3 0
+    %b = sig i3 %1
+    %2 = const i8 0
+    %y = sig i8 %2
+    %3 = const i8 0
+    %z = sig i8 %3
+    %a1 = prb i8$ %a
+    %b1 = prb i3$ %b
+    %4 = const i8 0
+    %5 = shr i8 %a1, i8 %4, i3 %b1
+    %6 = const time 0s 1e
+    drv i8$ %y, %5, %6
+    %a2 = prb i8$ %a
+    %b2 = prb i3$ %b
+    %7 = const i8 0
+    %8 = shr i8 %a2, i8 %7, i3 %b2
+    %9 = const time 0s 1e
+    drv i8$ %z, %8, %9
+    inst %top.initial.230.0 (i8$ %y, i8$ %z) -&gt; (i8$ %a, i3$ %b)
+}
 
 </pre>
 </body>

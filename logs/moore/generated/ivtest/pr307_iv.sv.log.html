@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v</a>
-time_elapsed: 0.004s
-ram usage: 9624 KB
+time_elapsed: 0.000s
+ram usage: 9564 KB
 </pre>
 <pre class="log">
 
@@ -28,12 +28,6 @@ warning: `$display` not supported; ignored
    | 
    |       $display(&#34;%h + %h =  %h&#34;, in1,in2,out);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:12</a>:11-39:
-   | 
-   |       if (out === 64&#39;hfffffffffffffff6)
-   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:13</a>:2-20:
@@ -47,12 +41,43 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;out === 64\&#39;hfffffffffffffff6&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:12</a>:11-39:
-   | 
-   |       if (out === 64&#39;hfffffffffffffff6)
-   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+proc %top.initial.226.0 () -&gt; (i64$ %in1, i64$ %in2, i64$ %out) {
+0:
+    %1 = const i64 18446744073709551615
+    %2 = const time 0s 1e
+    drv i64$ %in1, %1, %2
+    %3 = const i64 18446744073709551607
+    %4 = const time 0s 1e
+    drv i64$ %in2, %3, %4
+    %in11 = prb i64$ %in1
+    %in21 = prb i64$ %in2
+    %5 = add i64 %in11, %in21
+    %6 = const time 0s 1e
+    drv i64$ %out, %5, %6
+    %7 = const i32 0
+    %out1 = prb i64$ %out
+    %8 = const i64 18446744073709551606
+    %9 = eq i64 %out1, %8
+    br %9, %if_false, %if_true
+if_true:
+    %10 = const i32 0
+    br %if_exit
+if_false:
+    %11 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i64 0
+    %in1 = sig i64 %0
+    %1 = const i64 0
+    %in2 = sig i64 %1
+    %2 = const i64 0
+    %out = sig i64 %2
+    inst %top.initial.226.0 () -&gt; (i64$ %in1, i64$ %in2, i64$ %out)
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,14 +17,57 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr693.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr693.v</a>
-time_elapsed: 0.000s
-ram usage: 9664 KB
+time_elapsed: 0.004s
+ram usage: 9524 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e one_a <a href="../../../../third_party/tests/ivtest/ivltests/pr693.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr693.v</a>
-thread &#39;main&#39; panicked at &#39;port missing direction&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1587666493568/work/src/svlog/hir/lowering.rs:623:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %one_a.always.237.0 (i1$ %a, i1$ %b, i1$ %ci) -&gt; (i1$ %sum, i1$ %co) {
+0:
+    br %init
+init:
+    %a1 = prb i1$ %a
+    %b1 = prb i1$ %b
+    %ci1 = prb i1$ %ci
+    wait %check, %a, %b, %ci
+check:
+    %a2 = prb i1$ %a
+    %impledge = neq i1 %a1, %a2
+    %b2 = prb i1$ %b
+    %impledge1 = neq i1 %b1, %b2
+    %event_or = or i1 %impledge, %impledge1
+    %ci2 = prb i1$ %ci
+    %impledge2 = neq i1 %ci1, %ci2
+    %event_or1 = or i1 %event_or, %impledge2
+    br %event_or1, %init, %event
+event:
+    %a3 = prb i1$ %a
+    %b3 = prb i1$ %b
+    %1 = xor i1 %a3, %b3
+    %ci3 = prb i1$ %ci
+    %2 = xor i1 %1, %ci3
+    %3 = const time 0s 1e
+    drv i1$ %sum, %2, %3
+    %a4 = prb i1$ %a
+    %b4 = prb i1$ %b
+    %4 = umul i1 %a4, %b4
+    %a5 = prb i1$ %a
+    %ci4 = prb i1$ %ci
+    %5 = umul i1 %a5, %ci4
+    %6 = or i1 %4, %5
+    %b5 = prb i1$ %b
+    %ci5 = prb i1$ %ci
+    %7 = umul i1 %b5, %ci5
+    %8 = or i1 %6, %7
+    %9 = const time 0s 1e
+    drv i1$ %co, %8, %9
+    br %0
+}
+
+entity @one_a (i1$ %a, i1$ %b, i1$ %ci) -&gt; (i1$ %sum, i1$ %co) {
+    inst %one_a.always.237.0 (i1$ %a, i1$ %b, i1$ %ci) -&gt; (i1$ %sum, i1$ %co)
+}
 
 </pre>
 </body>

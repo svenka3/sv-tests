@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,17 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v</a>
 time_elapsed: 0.004s
-ram usage: 9700 KB
+ram usage: 9540 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e ArithmeticShiftTest <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v</a>
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:23</a>:8-41:
-   | 
-   |     if(out === (32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32)) begin
-   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:24</a>:7-60:
    | 
@@ -41,12 +35,61 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAIL: 32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32 != 0x%h,&#34;,
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: `&#34;out === (32\&#39;sh80000000 &gt;&gt;&gt; 6\&#39;d32)&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:23</a>:8-41:
-   | 
-   |     if(out === (32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32)) begin
-   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       
+proc %ArithmeticShiftTest.always.227.0 (i32$ %in, i6$ %shift) -&gt; (i32$ %out) {
+0:
+    wait %trigger, %in, %shift
+trigger:
+    %in1 = prb i32$ %in
+    %shift1 = prb i6$ %shift
+    %1 = const i32 0
+    %2 = shr i32 %in1, i32 %1, i6 %shift1
+    %3 = const time 0s 1e
+    drv i32$ %out, %2, %3
+    br %0
+}
 
+proc %ArithmeticShiftTest.initial.228.0 (i32$ %out) -&gt; (i32$ %in, i6$ %shift) {
+0:
+    %1 = const i32 2147483648
+    %2 = const time 0s 1e
+    drv i32$ %in, %1, %2
+    %3 = const i6 32
+    %4 = const time 0s 1e
+    drv i6$ %shift, %3, %4
+    %5 = const i32 1
+    wait %6 for %5
+6:
+    %out1 = prb i32$ %out
+    %7 = const i32 2147483648
+    %8 = const i6 32
+    %9 = const i32 0
+    %10 = not i32 %9
+    %11 = exts i1, i32 %7, 31, 1
+    %12 = [i32 %9, %10]
+    %13 = mux [2 x i32] %12, i1 %11
+    %14 = shr i32 %7, i32 %13, i6 %8
+    %15 = eq i32 %out1, %14
+    br %15, %if_false, %if_true
+if_true:
+    %16 = const i32 0
+    br %if_exit
+if_false:
+    %17 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @ArithmeticShiftTest () -&gt; () {
+    %0 = const i32 0
+    %in = sig i32 %0
+    %1 = const i6 0
+    %shift = sig i6 %1
+    %2 = const i32 0
+    %out = sig i32 %2
+    inst %ArithmeticShiftTest.always.227.0 (i32$ %in, i6$ %shift) -&gt; (i32$ %out)
+    inst %ArithmeticShiftTest.initial.228.0 (i32$ %out) -&gt; (i32$ %in, i6$ %shift)
+}
 
 </pre>
 </body>

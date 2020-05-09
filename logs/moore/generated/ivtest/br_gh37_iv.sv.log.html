@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh37.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh37.v</a>
 time_elapsed: 0.004s
-ram usage: 9656 KB
+ram usage: 9548 KB
 </pre>
 <pre class="log">
 
@@ -28,12 +28,6 @@ warning: `$display` not supported; ignored
    | 
    |     #10 $display(&#34;%b&#34;, y);
    |         ^^^^^^^^^^^^^^^^^ 
-
-error: `===` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh37.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/br_gh37.v:11</a>:9-35:
-   | 
-   |     if (y === 16&#39;b1111111111111110)
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh37.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh37.v:12</a>:7-25:
@@ -47,12 +41,54 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;y === 16\&#39;b1111111111111110&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh37.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/br_gh37.v:11</a>:9-35:
-   | 
-   |     if (y === 16&#39;b1111111111111110)
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+proc %test.initial.227.0 (i16$ %y) -&gt; () {
+0:
+    %1 = const i32 10
+    wait %2 for %1
+2:
+    %3 = const i32 0
+    %y1 = prb i16$ %y
+    %4 = const i16 65534
+    %5 = eq i16 %y1, %4
+    br %5, %if_false, %if_true
+if_true:
+    %6 = const i32 0
+    br %if_exit
+if_false:
+    %7 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @test () -&gt; () {
+    %0 = const i6 0
+    %a = sig i6 %0
+    %1 = const i16 0
+    %y = sig i16 %1
+    %2 = const i32 0
+    %3 = not i32 %2
+    %4 = exts i6, i32 %3, 0, 6
+    %5 = const time 0s 1e
+    drv i6$ %a, %4, %5
+    %6 = const i32 1
+    %7 = const i32 0
+    %8 = neq i32 %6, %7
+    %9 = const i32 0
+    %a1 = prb i6$ %a
+    %10 = not i6 %a1
+    %11 = inss i32 %9, i6 %10, 0, 6
+    %12 = const i32 5
+    %13 = const i32 0
+    %14 = shr i32 %11, i32 %13, i32 %12
+    %15 = const i32 0
+    %16 = [i32 %15, %14]
+    %17 = mux [2 x i32] %16, i1 %8
+    %18 = exts i16, i32 %17, 0, 16
+    %19 = const time 0s 1e
+    drv i16$ %y, %18, %19
+    inst %test.initial.227.0 (i16$ %y) -&gt; ()
+}
 
 </pre>
 </body>

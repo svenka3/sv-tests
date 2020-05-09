@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail4.v</a>
-time_elapsed: 0.004s
-ram usage: 9592 KB
+time_elapsed: 0.000s
+ram usage: 9760 KB
 </pre>
 <pre class="log">
 
@@ -28,12 +28,6 @@ warning: `$displayb` not supported; ignored
    | 
    |     $displayb(&#34;r2 = &#34;,r2);
    |     ^^^^^^^^^^^^^^^^^^^^^ 
-
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail4.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail4.v:18</a>:9-22:
-   | 
-   |     if (r2 !== 31&#39;b0x) $display(&#34;FAILED&#34;);
-   |         ^^^^^^^^^^^^^                     
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail4.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail4.v:18</a>:24-42:
@@ -47,12 +41,39 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-error: `&#34;r2 !== 31\&#39;b0x&#34;` cannot be cast to a boolean
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail4.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail4.v:18</a>:9-22:
-   | 
-   |     if (r2 !== 31&#39;b0x) $display(&#34;FAILED&#34;);
-   |         ^^^^^^^^^^^^^                     
+proc %top.initial.225.0 () -&gt; (i31$ %r2) {
+0:
+    %1 = const i31 0
+    %2 = const i1 1
+    %3 = const i1 1
+    %4 = add i1 %2, %3
+    %5 = const i1 0
+    %6 = neq i1 %4, %5
+    %7 = inss i31 %1, i1 %6, 0, 1
+    %8 = const time 0s 1e
+    drv i31$ %r2, %7, %8
+    %9 = const i32 0
+    %r21 = prb i31$ %r2
+    %10 = const i31 0
+    %11 = neq i31 %r21, %10
+    br %11, %if_false, %if_true
+if_true:
+    %12 = const i32 0
+    br %if_exit
+if_false:
+    %13 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i31 0
+    %r2 = sig i31 %0
+    %1 = const i32 1
+    %r1 = sig i32 %1
+    inst %top.initial.225.0 () -&gt; (i31$ %r2)
+}
 
 </pre>
 </body>

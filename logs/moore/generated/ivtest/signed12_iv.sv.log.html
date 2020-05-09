@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,33 +17,41 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/signed12.v.html" target="file-frame">third_party/tests/ivtest/ivltests/signed12.v</a>
-time_elapsed: 0.000s
-ram usage: 9688 KB
+time_elapsed: 0.004s
+ram usage: 9708 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/signed12.v.html" target="file-frame">third_party/tests/ivtest/ivltests/signed12.v</a>
-
-fatal: Ambiguous code, could be explicit type or implicit type
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed12.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/signed12.v:3</a>:8-14:
+warning: `$displayb` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed12.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/signed12.v:9</a>:14-28:
    | 
-   |   wire signed [7:0] out;
-   |        ^^^^^^           
+   |   initial #1 $displayb(out);
+   |              ^^^^^^^^^^^^^^ 
 
+proc %top.initial.224.0 () -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %3 = const i32 0
+    halt
+}
 
-note: explicit type would be this part
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed12.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/signed12.v:3</a>:8-25:
-   | 
-   |   wire signed [7:0] out;
-   |        ^^^^^^^^^^^^^^^^^
-
-
-note: implicit type would be this part
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed12.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/signed12.v:3</a>:8-25:
-   | 
-   |   wire signed [7:0] out;
-   |        ^^^^^^^^^^^^^^^^^
-
+entity @top () -&gt; () {
+    %0 = const i8 0
+    %out = sig i8 %0
+    %1 = const i5 31
+    %2 = exts i1, i5 %1, 4, 1
+    %3 = const i8 0
+    %4 = not i8 %3
+    %5 = [i8 %3, %4]
+    %6 = mux [2 x i8] %5, i1 %2
+    %7 = inss i8 %6, i5 %1, 0, 5
+    %8 = const time 0s 1e
+    drv i8$ %out, %7, %8
+    inst %top.initial.224.0 () -&gt; ()
+}
 
 </pre>
 </body>

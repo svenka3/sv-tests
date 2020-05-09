@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,17 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2036953.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2036953.v</a>
 time_elapsed: 0.004s
-ram usage: 9580 KB
+ram usage: 9756 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr2036953.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2036953.v</a>
-error: `!==` is not a valid binary operator
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2036953.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr2036953.v:15</a>:5-19:
-   | 
-   |     if(width1_2 !== 3)
-   |        ^^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2036953.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2036953.v:16</a>:3-21:
    | 
@@ -41,8 +35,66 @@ warning: `$display` not supported; ignored
    |         $display(&#34;PASSED&#34;);
    |         ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;no zero-value for type i2*&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %test.initial.227.0 () -&gt; (i2$ %width1, i3$ %width2, i2$ %width1_2) {
+0:
+    %1 = const i32 0
+    %2 = const i2 0
+    %3 = sig i2 %2
+    %4 = shr i2$ %width1, i2$ %3, i32 %1
+    %5 = exts i1$, i2$ %4, 0, 1
+    %6 = const i32 1
+    %7 = exts i1, i32 %6, 0, 1
+    %8 = const time 0s 1e
+    drv i1$ %5, %7, %8
+    %9 = const i32 0
+    %10 = const i3 0
+    %11 = sig i3 %10
+    %12 = shr i3$ %width2, i3$ %11, i32 %9
+    %13 = exts i1$, i3$ %12, 0, 1
+    %14 = const i32 2
+    %15 = exts i1, i32 %14, 0, 1
+    %16 = const time 0s 1e
+    drv i1$ %13, %15, %16
+    %17 = const i2 0
+    %width11 = prb i2$ %width1
+    %18 = const i32 0
+    %19 = const i2 0
+    %20 = shr i2 %width11, i2 %19, i32 %18
+    %21 = exts i1, i2 %20, 0, 1
+    %width21 = prb i3$ %width2
+    %22 = const i32 0
+    %23 = const i3 0
+    %24 = shr i3 %width21, i3 %23, i32 %22
+    %25 = exts i1, i3 %24, 0, 1
+    %26 = or i1 %21, %25
+    %27 = inss i2 %17, i1 %26, 0, 1
+    %28 = const time 0s 1e
+    drv i2$ %width1_2, %27, %28
+    %29 = const i32 0
+    %width1_21 = prb i2$ %width1_2
+    %30 = inss i32 %29, i2 %width1_21, 0, 2
+    %31 = const i32 3
+    %32 = neq i32 %30, %31
+    br %32, %if_false, %if_true
+if_true:
+    %33 = const i32 0
+    br %if_exit
+if_false:
+    %34 = const i32 0
+    br %if_exit
+if_exit:
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i2 0
+    %width1 = sig i2 %0
+    %1 = const i3 0
+    %width2 = sig i3 %1
+    %2 = const i2 0
+    %width1_2 = sig i2 %2
+    inst %test.initial.227.0 () -&gt; (i2$ %width1, i3$ %width2, i2$ %width1_2)
+}
 
 </pre>
 </body>
