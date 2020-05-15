@@ -1,0 +1,320 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+rc: 0 (means success: 1)
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth7.v.html" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth7.v</a>
+time_elapsed: 0.008s
+ram usage: 9700 KB
+</pre>
+<pre class="log">
+
+moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e dff <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth7.v.html" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth7.v</a>
+warning: `$monitor` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth7.v.html#l-20" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth7.v:20</a>:3-42:
+   | 
+   |   $monitor(&#34;%b %b %b %b&#34;, rst, clk, d, q);
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth7.v.html#l-55" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth7.v:55</a>:5-23:
+   | 
+   |     $display(&#34;FAILED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth7.v.html#l-57" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth7.v:57</a>:5-23:
+   | 
+   |     $display(&#34;PASSED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+proc %dff.always.231.0 (i1$ %clk, i1$ %rst, i1$ %ce, i4$ %d) -&gt; (i4$ %q) {
+0:
+    br %init
+init:
+    %clk1 = prb i1$ %clk
+    %rst1 = prb i1$ %rst
+    wait %check, %clk, %rst
+check:
+    %clk2 = prb i1$ %clk
+    %1 = const i1 0
+    %2 = neq i1 %clk1, %1
+    %3 = eq i1 %clk2, %1
+    %negedge = and i1 %3, %2
+    %rst2 = prb i1$ %rst
+    %4 = const i1 0
+    %5 = eq i1 %rst1, %4
+    %6 = neq i1 %rst2, %4
+    %posedge = and i1 %5, %6
+    %event_or = or i1 %negedge, %posedge
+    br %event_or, %init, %event
+event:
+    %rst3 = prb i1$ %rst
+    br %rst3, %if_false, %if_true
+if_true:
+    %7 = const i4 9
+    %8 = const time 0s 1d
+    drv i4$ %q, %7, %8
+    br %if_exit
+if_false:
+    %ce1 = prb i1$ %ce
+    br %ce1, %if_false1, %if_true1
+if_exit:
+    br %0
+if_true1:
+    %d1 = prb i4$ %d
+    %9 = const time 0s 1d
+    drv i4$ %q, %d1, %9
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    br %if_exit
+}
+
+proc %dff.initial.234.0 (i4$ %q) -&gt; (i1$ %clk, i1$ %rst, i1$ %ce, i4$ %d, i1$ %failed) {
+0:
+    %1 = const i32 0
+    %2 = const i1 0
+    %3 = const time 0s 1e
+    drv i1$ %clk, %2, %3
+    %4 = const i1 0
+    %5 = const time 0s 1e
+    drv i1$ %ce, %4, %5
+    %6 = const i1 0
+    %7 = const time 0s 1e
+    drv i1$ %rst, %6, %7
+    %8 = const i4 6
+    %9 = const time 0s 1e
+    drv i4$ %d, %8, %9
+    %10 = const i32 1
+    wait %11 for %10
+11:
+    %q1 = prb i4$ %q
+    %12 = const i4 0
+    %13 = neq i4 %q1, %12
+    br %13, %if_false, %if_true
+if_true:
+    %14 = const i32 1
+    %15 = exts i1, i32 %14, 0, 1
+    %16 = const time 0s 1e
+    drv i1$ %failed, %15, %16
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %17 = const i1 1
+    %18 = const time 0s 1e
+    drv i1$ %rst, %17, %18
+    %19 = const i32 1
+    wait %20 for %19
+20:
+    %q2 = prb i4$ %q
+    %21 = const i4 9
+    %22 = neq i4 %q2, %21
+    br %22, %if_false1, %if_true1
+if_true1:
+    %23 = const i32 1
+    %24 = exts i1, i32 %23, 0, 1
+    %25 = const time 0s 1e
+    drv i1$ %failed, %24, %25
+    br %if_exit1
+if_false1:
+    br %if_exit1
+if_exit1:
+    %26 = const i1 1
+    %27 = const time 0s 1e
+    drv i1$ %clk, %26, %27
+    %28 = const i32 1
+    wait %29 for %28
+29:
+    %q3 = prb i4$ %q
+    %30 = const i4 9
+    %31 = neq i4 %q3, %30
+    br %31, %if_false2, %if_true2
+if_true2:
+    %32 = const i32 1
+    %33 = exts i1, i32 %32, 0, 1
+    %34 = const time 0s 1e
+    drv i1$ %failed, %33, %34
+    br %if_exit2
+if_false2:
+    br %if_exit2
+if_exit2:
+    %35 = const i1 0
+    %36 = const time 0s 1e
+    drv i1$ %clk, %35, %36
+    %37 = const i32 1
+    wait %38 for %37
+38:
+    %q4 = prb i4$ %q
+    %39 = const i4 9
+    %40 = neq i4 %q4, %39
+    br %40, %if_false3, %if_true3
+if_true3:
+    %41 = const i32 1
+    %42 = exts i1, i32 %41, 0, 1
+    %43 = const time 0s 1e
+    drv i1$ %failed, %42, %43
+    br %if_exit3
+if_false3:
+    br %if_exit3
+if_exit3:
+    %44 = const i1 0
+    %45 = const time 0s 1e
+    drv i1$ %rst, %44, %45
+    %46 = const i32 1
+    wait %47 for %46
+47:
+    %q5 = prb i4$ %q
+    %48 = const i4 9
+    %49 = neq i4 %q5, %48
+    br %49, %if_false4, %if_true4
+if_true4:
+    %50 = const i32 1
+    %51 = exts i1, i32 %50, 0, 1
+    %52 = const time 0s 1e
+    drv i1$ %failed, %51, %52
+    br %if_exit4
+if_false4:
+    br %if_exit4
+if_exit4:
+    %53 = const i1 1
+    %54 = const time 0s 1e
+    drv i1$ %clk, %53, %54
+    %55 = const i32 1
+    wait %56 for %55
+56:
+    %q6 = prb i4$ %q
+    %57 = const i4 9
+    %58 = neq i4 %q6, %57
+    br %58, %if_false5, %if_true5
+if_true5:
+    %59 = const i32 1
+    %60 = exts i1, i32 %59, 0, 1
+    %61 = const time 0s 1e
+    drv i1$ %failed, %60, %61
+    br %if_exit5
+if_false5:
+    br %if_exit5
+if_exit5:
+    %62 = const i1 0
+    %63 = const time 0s 1e
+    drv i1$ %clk, %62, %63
+    %64 = const i32 1
+    wait %65 for %64
+65:
+    %q7 = prb i4$ %q
+    %66 = const i4 9
+    %67 = neq i4 %q7, %66
+    br %67, %if_false6, %if_true6
+if_true6:
+    %68 = const i32 1
+    %69 = exts i1, i32 %68, 0, 1
+    %70 = const time 0s 1e
+    drv i1$ %failed, %69, %70
+    br %if_exit6
+if_false6:
+    br %if_exit6
+if_exit6:
+    %71 = const i1 1
+    %72 = const time 0s 1e
+    drv i1$ %ce, %71, %72
+    %73 = const i32 1
+    wait %74 for %73
+74:
+    %q8 = prb i4$ %q
+    %75 = const i4 9
+    %76 = neq i4 %q8, %75
+    br %76, %if_false7, %if_true7
+if_true7:
+    %77 = const i32 1
+    %78 = exts i1, i32 %77, 0, 1
+    %79 = const time 0s 1e
+    drv i1$ %failed, %78, %79
+    br %if_exit7
+if_false7:
+    br %if_exit7
+if_exit7:
+    %80 = const i1 1
+    %81 = const time 0s 1e
+    drv i1$ %clk, %80, %81
+    %82 = const i32 1
+    wait %83 for %82
+83:
+    %q9 = prb i4$ %q
+    %84 = const i4 9
+    %85 = neq i4 %q9, %84
+    br %85, %if_false8, %if_true8
+if_true8:
+    %86 = const i32 1
+    %87 = exts i1, i32 %86, 0, 1
+    %88 = const time 0s 1e
+    drv i1$ %failed, %87, %88
+    br %if_exit8
+if_false8:
+    br %if_exit8
+if_exit8:
+    %89 = const i1 0
+    %90 = const time 0s 1e
+    drv i1$ %clk, %89, %90
+    %91 = const i32 1
+    wait %92 for %91
+92:
+    %q10 = prb i4$ %q
+    %93 = const i4 6
+    %94 = neq i4 %q10, %93
+    br %94, %if_false9, %if_true9
+if_true9:
+    %95 = const i32 1
+    %96 = exts i1, i32 %95, 0, 1
+    %97 = const time 0s 1e
+    drv i1$ %failed, %96, %97
+    br %if_exit9
+if_false9:
+    br %if_exit9
+if_exit9:
+    %failed1 = prb i1$ %failed
+    br %failed1, %if_false10, %if_true10
+if_true10:
+    %98 = const i32 0
+    br %if_exit10
+if_false10:
+    %99 = const i32 0
+    br %if_exit10
+if_exit10:
+    halt
+}
+
+entity @dff () -&gt; () {
+    %0 = const i1 0
+    %clk = sig i1 %0
+    %1 = const i1 0
+    %rst = sig i1 %1
+    %2 = const i1 0
+    %ce = sig i1 %2
+    %3 = const i4 0
+    %d = sig i4 %3
+    %4 = const i4 0
+    %q = sig i4 %4
+    %5 = const i32 0
+    %failed = sig i32 %5
+    inst %dff.always.231.0 (i1$ %clk, i1$ %rst, i1$ %ce, i4$ %d) -&gt; (i4$ %q)
+    inst %dff.initial.234.0 (i4$ %q) -&gt; (i1$ %clk, i1$ %rst, i1$ %ce, i4$ %d, i32$ %failed)
+}
+
+</pre>
+</body>
