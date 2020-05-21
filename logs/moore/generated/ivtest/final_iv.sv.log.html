@@ -1,0 +1,108 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
+<pre class="test-passed">
+description: Test imported from ivtest
+rc: 0 (means success: 1)
+should_fail: 0
+tags: ivtest
+incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tests/ivtest/ivltests/final.v.html" target="file-frame">third_party/tests/ivtest/ivltests/final.v</a>
+time_elapsed: 0.004s
+ram usage: 9596 KB
+</pre>
+<pre class="log">
+
+moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e t <a href="../../../../third_party/tests/ivtest/ivltests/final.v.html" target="file-frame">third_party/tests/ivtest/ivltests/final.v</a>
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/final.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/final.v:8</a>:16-44:
+   | 
+   |    if (x == 3) $display(&#34;x =%d, PASSED&#34;, x);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$finish` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/final.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/final.v:9</a>:4-13:
+   | 
+   |    $finish();
+   |    ^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/final.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/final.v:10</a>:4-61:
+   | 
+   |    $display(&#34;FAILED! Executed past $finish in final block!&#34;);
+   |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+proc %t.initial.224.0 () -&gt; (i8$ %x) {
+0:
+    %1 = const i32 5
+    wait %2 for %1
+2:
+    %3 = const i32 2
+    %4 = exts i8, i32 %3, 0, 8
+    %5 = const time 0s 1e
+    drv i8$ %x, %4, %5
+    halt
+}
+
+proc %t.always.225.0 () -&gt; (i8$ %x) {
+0:
+    br %init
+init:
+    %x1 = prb i8$ %x
+    wait %check, %x
+check:
+    %x2 = prb i8$ %x
+    %impledge = neq i8 %x1, %x2
+    br %impledge, %init, %event
+event:
+    %1 = const i32 5
+    wait %2 for %1
+2:
+    %3 = const i32 3
+    %4 = exts i8, i32 %3, 0, 8
+    %5 = const time 0s 1e
+    drv i8$ %x, %4, %5
+    br %0
+}
+
+proc %t.final.226.0 (i8$ %x) -&gt; () {
+0:
+    %endtimes = const time 9001s
+    wait %body for %endtimes
+body:
+    %1 = const i32 0
+    %x1 = prb i8$ %x
+    %2 = inss i32 %1, i8 %x1, 0, 8
+    %3 = const i32 3
+    %4 = eq i32 %2, %3
+    br %4, %if_false, %if_true
+if_true:
+    %5 = const i32 0
+    br %if_exit
+if_false:
+    br %if_exit
+if_exit:
+    %6 = const i32 0
+    %7 = const i32 0
+    halt
+}
+
+entity @t () -&gt; () {
+    %0 = const i32 1
+    %x = sig i32 %0
+    inst %t.initial.224.0 () -&gt; (i32$ %x)
+    inst %t.always.225.0 () -&gt; (i32$ %x)
+    inst %t.final.226.0 (i32$ %x) -&gt; ()
+}
+
+</pre>
+</body>
