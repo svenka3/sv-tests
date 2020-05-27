@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_mux_21.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_mux_21.v</a>
 time_elapsed: 0.004s
-ram usage: 9624 KB
+ram usage: 9696 KB
 </pre>
 <pre class="log">
 
@@ -27,15 +27,16 @@ entity @mux_21 (i1$ %a, i1$ %b, i1$ %sel) -&gt; (i1$ %y) {
     %0 = const i1 0
     %y1 = sig i1 %0
     %sel1 = prb i1$ %sel
+    %1 = neq i1 %sel1, %0
     %b1 = prb i1$ %b
     %a1 = prb i1$ %a
-    %1 = [i1 %a1, %b1]
-    %2 = mux [2 x i1] %1, i1 %sel1
-    %3 = const time 0s 1e
-    drv i1$ %y1, %2, %3
-    %4 = const i1 0
+    %2 = [i1 %a1, %b1]
+    %3 = mux [2 x i1] %2, i1 %1
+    %4 = const time 0s 1e
+    drv i1$ %y1, %3, %4
     %5 = const time 0s
-    drv i1$ %y, %4, %5
+    drv i1$ %y, %0, %5
+    halt
 }
 
 </pre>

@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Structure replication assignment tests
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: 5.10
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-5
@@ -18,17 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-5/5.10-structure-replication.sv.html" target="file-frame">tests/chapter-5/5.10-structure-replication.sv</a>
 time_elapsed: 0.004s
-ram usage: 9580 KB
+ram usage: 9612 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-5 -e top <a href="../../../tests/chapter-5/5.10-structure-replication.sv.html" target="file-frame">tests/chapter-5/5.10-structure-replication.sv</a>
-error: `struct` cannot be accessed by a repeat pattern
+compiler bug: struct patterns with repeat count other than 1 not supported
   --&gt; <a href="../../../tests/chapter-5/5.10-structure-replication.sv.html#l-7" target="file-frame">tests/chapter-5/5.10-structure-replication.sv:7</a>:29-36:
    | 
    |   struct {int X,Y,Z;} XYZ = &#39;{3{1}};
    |                             ^^^^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:1643
 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;struct patterns with repeat count other than 1 not supported&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

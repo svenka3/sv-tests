@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v</a>
-time_elapsed: 0.004s
-ram usage: 9548 KB
+time_elapsed: 0.008s
+ram usage: 9876 KB
 </pre>
 <pre class="log">
 
@@ -29,16 +29,50 @@ warning: `$write` not supported; ignored
    |       $write(&#34;a is %0h; b is %0h; c is %0h; d is %0h\n&#34;, a, b, c, d);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering to mir rvalue of expression `_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)))` not implemented
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v:5</a>:11-16:
+   | 
+   |       a = 5&#39;h14;
+   |           ^^^^^ 
+   = note: Casts `5&#39;h14` from `bit [4:0]` to `logic [4:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v:5</a>:11-16:
+   | 
+   |       a = 5&#39;h14;
+   |           ^^^^^ 
+
+error: expression has no self-determined type
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v:7</a>:19-151:
    | 
    |       c =        {_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)))};
    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
+   = note: The type of expression must be inferred from context, but the location where you used it does not provide such information.
+   = note: Try a cast: `T&#39;(_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2))))`
+
+error: cannot concatenate a value of type `&lt;error&gt;`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v:7</a>:18-152:
+   | 
+   |       c =        {_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)))};
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: `&lt;error&gt;` has no simple bit-vector type representation
+
+error: cannot concatenate a value of type `&lt;error&gt;`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v:7</a>:18-152:
+   | 
+   |       c =        {_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)))};
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: `&lt;error&gt;` has no simple bit-vector type representation
+
+compiler bug: lowering of expression `_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)))` to mir not yet supported
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1960619.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1960619.v:7</a>:19-151:
+   | 
+   |       c =        {_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)))};
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:450
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;Error has no width&#39;, src/svlog/ty.rs:159:18
+thread &#39;main&#39; panicked at &#39;lowering of expression `_$Finv5(_$Fsub8(_$Fadd8((32&#39;haa ^ (32&#39;hcc &amp; _$Fsll32(_$Fsrl32(_$Fsll32(32&#39;h78, 32&#39;h2), 32&#39;h3), 32&#39;h1))), 32&#39;h69), (32&#39;h50 * 32&#39;h2)))` to mir not yet supported&#39;, &lt;::std::macros::panic macros&gt;:5:6
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

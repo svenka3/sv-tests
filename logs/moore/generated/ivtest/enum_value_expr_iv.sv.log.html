@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/enum_value_expr.v.html" target="file-frame">third_party/tests/ivtest/ivltests/enum_value_expr.v</a>
 time_elapsed: 0.008s
-ram usage: 9620 KB
+ram usage: 9840 KB
 </pre>
 <pre class="log">
 
@@ -59,6 +59,7 @@ warning: `$display` not supported; ignored
    |        $display (&#34;FAILED - Initialised values P in par_enum were not elaborated properly&#34;);
    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x5562ddfc1820
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_value_expr.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/enum_value_expr.v:11</a>:5-12:
    | 
@@ -92,6 +93,7 @@ warning: `$display` not supported; ignored
    |        $display (&#34;FAILED - Initialised values S in par_enum were not elaborated properly&#34;);
    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x5562ddfc3c80
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_value_expr.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/enum_value_expr.v:17</a>:5-12:
    | 
@@ -107,6 +109,7 @@ warning: `$display` not supported; ignored
    |        $display (&#34;FAILED - The num method does not report as expected&#34;);
    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x5562ddfc5120
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_value_expr.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/enum_value_expr.v:24</a>:5-12:
    | 
@@ -152,12 +155,28 @@ error: `P4` not found
    |       if (P0 != PVALUE+0 || P1 != PVALUE+1 || P2 != PVALUE+2 || P3 != PVALUE+3 || P4 != PVALUE + 4 || Q != PVALUE+5)
    |                                                                                   ^^                                
 
-error: type `logic [1:0]` required, but expression has type `integer&lt;2&gt;`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_value_expr.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/enum_value_expr.v:8</a>:103-116:
+error: cannot cast a value of type `int&lt;2&gt;` to `bit [31:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_value_expr.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/enum_value_expr.v:8</a>:103-104:
    | 
    |       if (P0 != PVALUE+0 || P1 != PVALUE+1 || P2 != PVALUE+2 || P3 != PVALUE+3 || P4 != PVALUE + 4 || Q != PVALUE+5)
-   |                                                                                                       ^^^^^^^^^^^^^ 
+   |                                                                                                       ^             
 
+ ERROR moore_svlog::typeck        &gt; Inferred type: Int(2, TwoValued)
+ ERROR moore_svlog::typeck        &gt; Context type: BitVector { domain: TwoValued, sign: Unsigned, range: [31:0], dubbed: false }
+ ERROR moore_svlog::typeck        &gt; Cast chain thus far: int&lt;2&gt;
+compiler bug: assertion failed: mir.ty.is_bool()
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_value_expr.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/enum_value_expr.v:8</a>:11-116:
+   | 
+   |       if (P0 != PVALUE+0 || P1 != PVALUE+1 || P2 != PVALUE+2 || P3 != PVALUE+3 || P4 != PVALUE + 4 || Q != PVALUE+5)
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: Assertion failed: mir.ty.is_bool()
+   = note: Encountered at src/svlog/codegen.rs:1236
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

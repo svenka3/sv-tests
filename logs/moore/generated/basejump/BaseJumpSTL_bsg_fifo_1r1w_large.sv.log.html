@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
@@ -18,23 +18,51 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v</a>
 time_elapsed: 0.008s
-ram usage: 9660 KB
+ram usage: 10324 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dataflow -e bsg_fifo_1r1w_large <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v</a>
-error: variable `big_deq_r` has no constant value
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html#l-164" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v:164</a>:45-54:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html#l-197" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v:197</a>:27-36:
    | 
-   |    logic                big_enq, big_deq,   big_deq_r;
-   |                                             ^^^^^^^^^ 
-
-note: constant value of variable `big_deq_r` needed here
+   |    wire bypass_mode    = ~big_deq_r &amp; little_ready[0] &amp; big_empty_lo;
+   |                           ^^^^^^^^^                                  
+   = note: Casts `big_deq_r` from `logic` to `logic [0:0]`
   --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html#l-197" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v:197</a>:27-36:
    | 
    |    wire bypass_mode    = ~big_deq_r &amp; little_ready[0] &amp; big_empty_lo;
    |                           ^^^^^^^^^                                  
 
+error: value is not constant
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html#l-197" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v:197</a>:27-36:
+   | 
+   |    wire bypass_mode    = ~big_deq_r &amp; little_ready[0] &amp; big_empty_lo;
+   |                           ^^^^^^^^^                                  
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html#l-197" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v:197</a>:39-54:
+   | 
+   |    wire bypass_mode    = ~big_deq_r &amp; little_ready[0] &amp; big_empty_lo;
+   |                                       ^^^^^^^^^^^^^^^                
+   = note: Casts `little_ready[0]` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html#l-197" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v:197</a>:39-54:
+   | 
+   |    wire bypass_mode    = ~big_deq_r &amp; little_ready[0] &amp; big_empty_lo;
+   |                                       ^^^^^^^^^^^^^^^                
+
+compiler bug: constant folding of slices not implemented
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v.html#l-197" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_fifo_1r1w_large.v:197</a>:39-54:
+   | 
+   |    wire bypass_mode    = ~big_deq_r &amp; little_ready[0] &amp; big_empty_lo;
+   |                                       ^^^^^^^^^^^^^^^                
+   = note: Encountered at src/svlog/value.rs:531
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;constant folding of slices not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2593733.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2593733.v</a>
-time_elapsed: 0.004s
-ram usage: 9596 KB
+time_elapsed: 0.008s
+ram usage: 11452 KB
 </pre>
 <pre class="log">
 
@@ -35,15 +35,34 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering to mir rvalue of expression `&#34;ON&#34;` not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2593733.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2593733.v:12</a>:22-26:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2593733.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2593733.v:13</a>:17-21:
    | 
-   |     dst = (option == &#34;ON&#34;) ? {width{1&#39;b1}} : {width{1&#39;b0}};
-   |                      ^^^^                                  
+   |     if (dst === 1&#39;b0)
+   |                 ^^^^ 
+   = note: Casts `1&#39;b0` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2593733.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2593733.v:13</a>:17-21:
+   | 
+   |     if (dst === 1&#39;b0)
+   |                 ^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+proc %use_wid_gt_zero_assert.initial.225.0 () -&gt; (i1$ %dst) {
+0:
+    %1 = const i1 1
+    %2 = const i1 0
+    %3 = [i1 %2, %1]
+    %4 = extf i1, [2 x i1] %3, 1
+    %5 = const time 0s 1e
+    drv i1$ %dst, %4, %5
+    halt
+}
 
+entity @use_wid_gt_zero_assert () -&gt; () {
+    %0 = const i1 0
+    %dst = sig i1 %0
+    inst %use_wid_gt_zero_assert.initial.225.0 () -&gt; (i1$ %dst)
+    halt
+}
 
 </pre>
 </body>

@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,7 +17,7 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/enum_values.v.html" target="file-frame">third_party/tests/ivtest/ivltests/enum_values.v</a>
-time_elapsed: 0.008s
+time_elapsed: 0.004s
 ram usage: 9596 KB
 </pre>
 <pre class="log">
@@ -35,6 +35,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED&#34;);
    |      ^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55769cb1ed10
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_values.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/enum_values.v:19</a>:3-10:
    | 
@@ -50,6 +51,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED&#34;);
    |      ^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55769cb24890
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_values.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/enum_values.v:23</a>:3-10:
    | 
@@ -71,6 +73,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED&#34;);
    |      ^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55769cb26390
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_values.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/enum_values.v:31</a>:3-10:
    | 
@@ -86,6 +89,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED&#34;);
    |      ^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55769cb25510
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_values.v.html#l-35" target="file-frame">third_party/tests/ivtest/ivltests/enum_values.v:35</a>:3-10:
    | 
@@ -101,14 +105,17 @@ warning: `$display` not supported; ignored
    |       $display(&#34;PASSED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-error: type `logic [2:0]` required, but expression has type `integer&lt;3&gt;`
+error: cannot cast a value of type `int&lt;3&gt;` to `int`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/enum_values.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/enum_values.v:15</a>:14-17:
    | 
    |       var1 = RED;
    |              ^^^ 
+   = note: `int&lt;3&gt;` can be cast to an intermediate `int&lt;3&gt;`, but
+   = note: `int&lt;3&gt;` cannot be cast to the final `int`
 
-thread &#39;main&#39; panicked at &#39;Error has no width&#39;, src/svlog/ty.rs:159:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+ ERROR moore_svlog::typeck        &gt; Inferred type: Int(3, TwoValued)
+ ERROR moore_svlog::typeck        &gt; Context type: BitVector { domain: TwoValued, sign: Signed, range: [31:0], dubbed: true }
+ ERROR moore_svlog::typeck        &gt; Cast chain thus far: int&lt;3&gt; -&gt; Sign(Signed) int&lt;3&gt;
 
 </pre>
 </body>

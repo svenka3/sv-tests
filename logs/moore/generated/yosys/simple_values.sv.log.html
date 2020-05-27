@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/values.v.html" target="file-frame">third_party/tools/yosys/tests/simple/values.v</a>
 time_elapsed: 0.004s
-ram usage: 9660 KB
+ram usage: 9688 KB
 </pre>
 <pre class="log">
 
@@ -31,30 +31,28 @@ trigger:
     %1 = const i4 0
     %2 = neq i4 %a1, %1
     %b1 = prb i4$ %b
-    %3 = const i4 0
-    %4 = neq i4 %b1, %3
-    %5 = and i1 %2, %4
-    br %5, %if_false, %if_true
-if_true:
-    %6 = const i8 0
-    %c1 = prb i4$ %c
-    %7 = inss i8 %6, i4 %c1, 0, 4
+    %3 = neq i4 %b1, %1
+    %4 = and i1 %2, %3
+    %5 = const i1 0
+    %6 = neq i1 %4, %5
+    %7 = const i8 0
     %8 = const time 0s 1e
-    drv i8$ %y, %7, %8
-    br %if_exit
+    br %6, %if_false, %if_true
+if_true:
+    %c1 = prb i4$ %c
+    %9 = inss i8 %7, i4 %c1, 0, 4
+    drv i8$ %y, %9, %8
+    br %0
 if_false:
-    %9 = const i8 0
     %d1 = prb i4$ %d
-    %10 = inss i8 %9, i4 %d1, 0, 4
-    %11 = const time 0s 1e
-    drv i8$ %y, %10, %11
-    br %if_exit
-if_exit:
+    %10 = inss i8 %7, i4 %d1, 0, 4
+    drv i8$ %y, %10, %8
     br %0
 }
 
 entity @test_signed (i4$ %a, i4$ %b, i4$ %c, i4$ %d) -&gt; (i8$ %y) {
     inst %test_signed.always.247.0 (i4$ %a, i4$ %b, i4$ %c, i4$ %d) -&gt; (i8$ %y)
+    halt
 }
 
 </pre>

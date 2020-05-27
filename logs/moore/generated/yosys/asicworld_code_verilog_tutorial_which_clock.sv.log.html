@@ -18,55 +18,69 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v</a>
 time_elapsed: 0.004s
-ram usage: 9588 KB
+ram usage: 9676 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e which_clock <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html#l-8" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v:8</a>:11-15:
+   | 
+   |      q &lt;= 1&#39;b0;
+   |           ^^^^ 
+   = note: Casts `1&#39;b0` from `bit` to `logic`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html#l-8" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v:8</a>:11-15:
+   | 
+   |      q &lt;= 1&#39;b0;
+   |           ^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html#l-8" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v:8</a>:11-15:
+   | 
+   |      q &lt;= 1&#39;b0;
+   |           ^^^^ 
+   = note: Casts `1&#39;b0` from `bit [0:0]` to `bit`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v.html#l-8" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_which_clock.v:8</a>:11-15:
+   | 
+   |      q &lt;= 1&#39;b0;
+   |           ^^^^ 
+
 proc %which_clock.always.235.0 (i1$ %x, i1$ %y, i1$ %d) -&gt; (i1$ %q) {
-0:
-    br %init
 init:
     %x1 = prb i1$ %x
     %y1 = prb i1$ %y
     wait %check, %x, %y
 check:
     %x2 = prb i1$ %x
-    %1 = const i1 0
-    %2 = eq i1 %x1, %1
-    %3 = neq i1 %x2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %x1, %0
+    %2 = neq i1 %x2, %0
+    %posedge = and i1 %1, %2
     %y2 = prb i1$ %y
-    %4 = const i1 0
-    %5 = eq i1 %y1, %4
-    %6 = neq i1 %y2, %4
-    %posedge1 = and i1 %5, %6
+    %3 = eq i1 %y1, %0
+    %4 = neq i1 %y2, %0
+    %posedge1 = and i1 %3, %4
     %event_or = or i1 %posedge, %posedge1
     br %event_or, %init, %event
 event:
-    %x3 = prb i1$ %x
-    br %x3, %if_false, %if_true
+    %5 = const time 0s 1d
+    br %2, %if_false, %if_true
 if_true:
-    %7 = const i1 0
-    %8 = const time 0s 1d
-    drv i1$ %q, %7, %8
-    br %if_exit
+    drv i1$ %q, %0, %5
+    br %init
 if_false:
     %d1 = prb i1$ %d
-    %9 = const time 0s 1d
-    drv i1$ %q, %d1, %9
-    br %if_exit
-if_exit:
-    br %0
+    drv i1$ %q, %d1, %5
+    br %init
 }
 
 entity @which_clock (i1$ %x, i1$ %y, i1$ %d) -&gt; (i1$ %q) {
     %0 = const i1 0
     %q1 = sig i1 %0
     inst %which_clock.always.235.0 (i1$ %x, i1$ %y, i1$ %d) -&gt; (i1$ %q1)
-    %1 = const i1 0
-    %2 = const time 0s
-    drv i1$ %q, %1, %2
+    %1 = const time 0s
+    drv i1$ %q, %0, %1
+    halt
 }
 
 </pre>

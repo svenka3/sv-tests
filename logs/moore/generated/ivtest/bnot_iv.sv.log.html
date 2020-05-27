@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/bnot.v.html" target="file-frame">third_party/tests/ivtest/ivltests/bnot.v</a>
 time_elapsed: 0.004s
-ram usage: 9644 KB
+ram usage: 9684 KB
 </pre>
 <pre class="log">
 
@@ -35,6 +35,28 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED --- b = %b&#34;, b);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/bnot.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/bnot.v:5</a>:9-11:
+   | 
+   |       x=10;
+   |         ^^ 
+   = note: Casts `10` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/bnot.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/bnot.v:5</a>:9-11:
+   | 
+   |       x=10;
+   |         ^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/bnot.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/bnot.v:15</a>:17-21:
+   | 
+   |       if (b === 1&#39;b1)
+   |                 ^^^^ 
+   = note: Casts `1&#39;b1` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/bnot.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/bnot.v:15</a>:17-21:
+   | 
+   |       if (b === 1&#39;b1)
+   |                 ^^^^ 
+
 proc %test.initial.226.0 () -&gt; (i1$ %a, i1$ %b, i32$ %x) {
 0:
     %1 = const i32 10
@@ -42,35 +64,21 @@ proc %test.initial.226.0 () -&gt; (i1$ %a, i1$ %b, i32$ %x) {
     drv i32$ %x, %1, %2
     %x1 = prb i32$ %x
     %3 = exts i1, i32 %x1, 0, 1
-    %4 = const time 0s 1e
-    drv i1$ %a, %3, %4
-    %x2 = prb i32$ %x
-    %5 = not i32 %x2
-    %6 = exts i1, i32 %5, 0, 1
-    %7 = const time 0s 1e
-    drv i1$ %b, %6, %7
-    %b1 = prb i1$ %b
-    %8 = const i1 1
-    %9 = eq i1 %b1, %8
-    br %9, %if_false, %if_true
-if_true:
-    %10 = const i32 0
-    br %if_exit
-if_false:
-    %11 = const i32 0
-    br %if_exit
-if_exit:
+    drv i1$ %a, %3, %2
+    %4 = not i32 %x1
+    %5 = exts i1, i32 %4, 0, 1
+    drv i1$ %b, %5, %2
     halt
 }
 
 entity @test () -&gt; () {
     %0 = const i1 0
     %a = sig i1 %0
-    %1 = const i1 0
-    %b = sig i1 %1
-    %2 = const i32 0
-    %x = sig i32 %2
+    %b = sig i1 %0
+    %1 = const i32 0
+    %x = sig i32 %1
     inst %test.initial.226.0 () -&gt; (i1$ %a, i1$ %b, i32$ %x)
+    halt
 }
 
 </pre>

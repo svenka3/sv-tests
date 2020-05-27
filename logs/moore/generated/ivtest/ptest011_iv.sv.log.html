@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,131 +18,29 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest011.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest011.v</a>
 time_elapsed: 0.004s
-ram usage: 9640 KB
+ram usage: 9900 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/ptest011.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest011.v</a>
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest011.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/ptest011.v:32</a>:7-25:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest011.v.html#l-41" target="file-frame">third_party/tests/ivtest/ivltests/ptest011.v:41</a>:14-15:
    | 
-   |       $display(&#34;PASSED&#34;);
-   |       ^^^^^^^^^^^^^^^^^^ 
-
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest011.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/ptest011.v:34</a>:7-25:
+   |   assign x = P;
+   |              ^ 
+   = note: Casts `P` from `bit [3:0]` to `logic [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest011.v.html#l-41" target="file-frame">third_party/tests/ivtest/ivltests/ptest011.v:41</a>:14-15:
    | 
-   |       $display(&#34;FAILED&#34;);
-   |       ^^^^^^^^^^^^^^^^^^ 
+   |   assign x = P;
+   |              ^ 
 
-entity @ma () -&gt; (i4$ %x) {
-    %0 = const i4 5
-    %1 = const time 0s 1e
-    drv i4$ %x, %0, %1
-}
+thread &#39;main&#39; panicked at &#39;Internal error, cycle detected:
+- __SalsaQueryDescriptor { kind: type_of((n252, p2)) }
 
-entity @ma.param1 () -&gt; (i4$ %x) {
-    %0 = const i4 9
-    %1 = const time 0s 1e
-    drv i4$ %x, %0, %1
-}
+- __SalsaQueryDescriptor { kind: type_of((n270, p0)) }
 
-entity @ma.param3 () -&gt; (i4$ %x) {
-    %0 = const i4 12
-    %1 = const time 0s 1e
-    drv i4$ %x, %0, %1
-}
-
-entity @mb.param2 () -&gt; (i4$ %x) {
-    inst @ma.param3 () -&gt; (i4$ %x)
-}
-
-entity @ma.param4 () -&gt; (i4$ %x) {
-    %0 = const i4 7
-    %1 = const time 0s 1e
-    drv i4$ %x, %0, %1
-}
-
-entity @mb () -&gt; (i4$ %x) {
-    inst @ma.param4 () -&gt; (i4$ %x)
-}
-
-entity @ma.param6 () -&gt; (i4$ %x) {
-    %0 = const i4 2
-    %1 = const time 0s 1e
-    drv i4$ %x, %0, %1
-}
-
-entity @ma.param7 () -&gt; (i4$ %x) {
-    %0 = const i4 3
-    %1 = const time 0s 1e
-    drv i4$ %x, %0, %1
-}
-
-entity @mc.param5 () -&gt; (i4$ %x, i4$ %y) {
-    inst @ma.param6 () -&gt; (i4$ %x)
-    inst @ma.param7 () -&gt; (i4$ %y)
-}
-
-proc %main.initial.241.0 (i4$ %a, i4$ %b, i4$ %c, i4$ %d, i4$ %e, i4$ %f) -&gt; () {
-0:
-    %1 = const i32 1
-    wait %2 for %1
-2:
-    %a1 = prb i4$ %a
-    %3 = const i4 5
-    %4 = eq i4 %a1, %3
-    %b1 = prb i4$ %b
-    %5 = const i4 9
-    %6 = eq i4 %b1, %5
-    %7 = and i1 %4, %6
-    %c1 = prb i4$ %c
-    %8 = const i4 12
-    %9 = eq i4 %c1, %8
-    %10 = and i1 %7, %9
-    %d1 = prb i4$ %d
-    %11 = const i4 7
-    %12 = eq i4 %d1, %11
-    %13 = and i1 %10, %12
-    %e1 = prb i4$ %e
-    %14 = const i4 2
-    %15 = eq i4 %e1, %14
-    %16 = and i1 %13, %15
-    %f1 = prb i4$ %f
-    %17 = const i4 3
-    %18 = eq i4 %f1, %17
-    %19 = and i1 %16, %18
-    br %19, %if_false, %if_true
-if_true:
-    %20 = const i32 0
-    br %if_exit
-if_false:
-    %21 = const i32 0
-    br %if_exit
-if_exit:
-    halt
-}
-
-entity @main () -&gt; () {
-    %0 = const i4 0
-    %a = sig i4 %0
-    %1 = const i4 0
-    %b = sig i4 %1
-    %2 = const i4 0
-    %c = sig i4 %2
-    %3 = const i4 0
-    %d = sig i4 %3
-    %4 = const i4 0
-    %e = sig i4 %4
-    %5 = const i4 0
-    %f = sig i4 %5
-    inst @ma () -&gt; (i4$ %a)
-    inst @ma.param1 () -&gt; (i4$ %b)
-    inst @mb.param2 () -&gt; (i4$ %c)
-    inst @mb () -&gt; (i4$ %d)
-    inst @mc.param5 () -&gt; (i4$ %e, i4$ %f)
-    inst %main.initial.241.0 (i4$ %a, i4$ %b, i4$ %c, i4$ %d, i4$ %e, i4$ %f) -&gt; ()
-}
+&#39;, &lt;::std::macros::panic macros&gt;:2:4
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

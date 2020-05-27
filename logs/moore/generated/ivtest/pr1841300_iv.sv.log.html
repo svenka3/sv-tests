@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1841300.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1841300.v</a>
 time_elapsed: 0.004s
-ram usage: 9564 KB
+ram usage: 9628 KB
 </pre>
 <pre class="log">
 
@@ -29,21 +29,37 @@ warning: `$display` not supported; ignored
    |       $display(&#34;a is &#39;%h&#39;; b is &#39;%h&#39;; c is &#39;%h&#39;&#34;, a, b, c);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering to mir rvalue of expression `_$Finv5(32&#39;hab)` not implemented
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1841300.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1841300.v:8</a>:11-19:
+   | 
+   |       a = 5&#39;b10100;
+   |           ^^^^^^^^ 
+   = note: Casts `5&#39;b10100` from `bit [4:0]` to `logic [4:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1841300.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1841300.v:8</a>:11-19:
+   | 
+   |       a = 5&#39;b10100;
+   |           ^^^^^^^^ 
+
+error: expression has no self-determined type
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1841300.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1841300.v:10</a>:11-35:
+   | 
+   |       c = $signed(_$Finv5(32&#39;hab));
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: The type of expression must be inferred from context, but the location where you used it does not provide such information.
+   = note: Try a cast: `T&#39;($signed(_$Finv5(32&#39;hab)))`
+
+compiler bug: lowering of expression `_$Finv5(32&#39;hab)` to mir not yet supported
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1841300.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1841300.v:10</a>:19-34:
    | 
    |       c = $signed(_$Finv5(32&#39;hab));
    |                   ^^^^^^^^^^^^^^^  
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:450
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-error: `_$Finv5(32&#39;hab)` cannot be sign-cast
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1841300.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1841300.v:10</a>:19-34:
-   | 
-   |       c = $signed(_$Finv5(32&#39;hab));
-   |                   ^^^^^^^^^^^^^^^  
-
+thread &#39;main&#39; panicked at &#39;lowering of expression `_$Finv5(32&#39;hab)` to mir not yet supported&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

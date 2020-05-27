@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v</a>
-time_elapsed: 0.000s
-ram usage: 9596 KB
+time_elapsed: 0.004s
+ram usage: 9600 KB
 </pre>
 <pre class="log">
 
@@ -35,15 +35,45 @@ warning: `$readmempath` not supported; ignored
    |     $readmempath(str);
    |     ^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering to mir rvalue of expression `&#34;test&#34;` not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v:6</a>:11-17:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v:7</a>:16-19:
    | 
-   |     str = &#34;test&#34;;
-   |           ^^^^^^ 
+   |     str[7:0] = &#39;d2;
+   |                ^^^ 
+   = note: Casts `&#39;d2` from `byte unsigned` to `logic [7:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v:7</a>:16-19:
+   | 
+   |     str[7:0] = &#39;d2;
+   |                ^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v:7</a>:16-19:
+   | 
+   |     str[7:0] = &#39;d2;
+   |                ^^^ 
+   = note: Casts `&#39;d2` from `bit [1:0]` to `byte unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v:7</a>:16-19:
+   | 
+   |     str[7:0] = &#39;d2;
+   |                ^^^ 
 
+proc %top.initial.223.0 () -&gt; (i80$ %str) {
+0:
+    %1 = const i80 0
+    %2 = const time 0s 1e
+    drv i80$ %str, %1, %2
+    %3 = exts i8$, i80$ %str, 0, 8
+    %4 = const i8 2
+    drv i8$ %3, %4, %2
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i80 0
+    %str = sig i80 %0
+    inst %top.initial.223.0 () -&gt; (i80$ %str)
+    halt
+}
 
 </pre>
 </body>

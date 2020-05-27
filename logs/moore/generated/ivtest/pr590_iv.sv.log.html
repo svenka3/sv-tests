@@ -17,7 +17,7 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v</a>
-time_elapsed: 0.004s
+time_elapsed: 0.008s
 ram usage: 9640 KB
 </pre>
 <pre class="log">
@@ -29,9 +29,18 @@ warning: `$display` not supported; ignored
    |         $display(&#34;out: %b, in: %b&#34;,outsig,insig);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v:17</a>:20-24:
+   | 
+   |         outsig = ~(4&#39;hf &lt;&lt; insig);
+   |                    ^^^^           
+   = note: Casts `4&#39;hf` from `bit [3:0]` to `logic [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v:17</a>:20-24:
+   | 
+   |         outsig = ~(4&#39;hf &lt;&lt; insig);
+   |                    ^^^^           
+
 proc %ex1.always.240.0 (i4$ %insig) -&gt; (i4$ %outsig) {
-0:
-    br %init
 init:
     %insig1 = prb i4$ %insig
     wait %check, %insig
@@ -40,24 +49,22 @@ check:
     %impledge = neq i4 %insig1, %insig2
     br %impledge, %init, %event
 event:
-    %1 = const i4 15
-    %insig3 = prb i4$ %insig
-    %2 = const i4 0
-    %3 = shl i4 %1, i4 %2, i4 %insig3
-    %4 = not i4 %3
-    %5 = const time 0s 1e
-    drv i4$ %outsig, %4, %5
-    %6 = const i32 0
-    br %0
+    %0 = const i4 15
+    %1 = const i4 0
+    %2 = shl i4 %0, i4 %1, i4 %insig2
+    %3 = not i4 %2
+    %4 = const time 0s 1e
+    drv i4$ %outsig, %3, %4
+    br %init
 }
 
 entity @ex1 (i1$ %clk, i1$ %reset, i4$ %insig) -&gt; (i4$ %outsig) {
     %0 = const i4 0
     %outsig1 = sig i4 %0
     inst %ex1.always.240.0 (i4$ %insig) -&gt; (i4$ %outsig1)
-    %1 = const i4 0
-    %2 = const time 0s
-    drv i4$ %outsig, %1, %2
+    %1 = const time 0s
+    drv i4$ %outsig, %0, %1
+    halt
 }
 
 </pre>

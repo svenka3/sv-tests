@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,23 +18,30 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1752353.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1752353.v</a>
 time_elapsed: 0.004s
-ram usage: 9672 KB
+ram usage: 9804 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1752353.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1752353.v</a>
-error: net `tmp` has no constant value
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1752353.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1752353.v:4</a>:15-18:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1752353.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1752353.v:8</a>:22-41:
    | 
-   |    wire [7:0] tmp;
-   |               ^^^ 
+   |    wire [31:0] dst = {24&#39;h00_00_00, tmp};
+   |                      ^^^^^^^^^^^^^^^^^^^ 
+   = note: Casts `{24&#39;h00_00_00, tmp}` from `logic [31:0]` to `bit [31:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1752353.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1752353.v:8</a>:22-41:
+   | 
+   |    wire [31:0] dst = {24&#39;h00_00_00, tmp};
+   |                      ^^^^^^^^^^^^^^^^^^^ 
 
-note: constant value of net `tmp` needed here
+error: value is not constant
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1752353.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1752353.v:8</a>:37-40:
    | 
    |    wire [31:0] dst = {24&#39;h00_00_00, tmp};
    |                                     ^^^  
 
+thread &#39;main&#39; panicked at &#39;concat non-integer&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1590399716078/work/src/svlog/value.rs:437:27
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

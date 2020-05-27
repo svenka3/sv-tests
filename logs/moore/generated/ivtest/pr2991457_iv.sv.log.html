@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v</a>
 time_elapsed: 0.004s
-ram usage: 9672 KB
+ram usage: 9476 KB
 </pre>
 <pre class="log">
 
@@ -35,25 +35,44 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:5</a>:11-18:
+   | 
+   |     val = 4&#39;b1111;
+   |           ^^^^^^^ 
+   = note: Casts `4&#39;b1111` from `bit [3:0]` to `logic [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:5</a>:11-18:
+   | 
+   |     val = 4&#39;b1111;
+   |           ^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
+   | 
+   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
+   |                 ^^^                      
+   = note: Casts `&#39;b0` from `bit [3:0]` to `logic [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
+   | 
+   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
+   |                 ^^^                      
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
+   | 
+   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
+   |                 ^^^                      
+   = note: Casts `&#39;b0` from `bit [-1:0]` to `bit [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
+   | 
+   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
+   |                 ^^^                      
+
 proc %top.initial.223.0 () -&gt; (i4$ %val) {
 0:
     %1 = const i4 15
     %2 = const time 0s 1e
     drv i4$ %val, %1, %2
-    %val1 = prb i4$ %val
-    %3 = not i4 %val1
-    %4 = const i4 0
-    %5 = const i0 0
-    %6 = inss i4 %4, i0 %5, 0, 0
-    %7 = eq i4 %3, %6
-    br %7, %if_false, %if_true
-if_true:
-    %8 = const i32 0
-    br %if_exit
-if_false:
-    %9 = const i32 0
-    br %if_exit
-if_exit:
     halt
 }
 
@@ -61,6 +80,7 @@ entity @top () -&gt; () {
     %0 = const i4 0
     %val = sig i4 %0
     inst %top.initial.223.0 () -&gt; (i4$ %val)
+    halt
 }
 
 </pre>

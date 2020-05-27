@@ -17,12 +17,23 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/if_part_no_else.v.html" target="file-frame">third_party/tests/ivtest/ivltests/if_part_no_else.v</a>
-time_elapsed: 0.004s
-ram usage: 9596 KB
+time_elapsed: 0.008s
+ram usage: 9748 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/if_part_no_else.v.html" target="file-frame">third_party/tests/ivtest/ivltests/if_part_no_else.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/if_part_no_else.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/if_part_no_else.v:12</a>:8-19:
+   | 
+   |     foo = foo_default;
+   |           ^^^^^^^^^^^ 
+   = note: Casts `foo_default` from `bit [1:0]` to `logic [1:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/if_part_no_else.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/if_part_no_else.v:12</a>:8-19:
+   | 
+   |     foo = foo_default;
+   |           ^^^^^^^^^^^ 
+
 proc %test.always.248.0 (i2$ %in0, i2$ %en0, i2$ %in1, i2$ %en1) -&gt; (i2$ %foo) {
 0:
     wait %trigger, %in0, %en0, %in1, %en1
@@ -31,46 +42,32 @@ trigger:
     %2 = const time 0s 1e
     drv i2$ %foo, %1, %2
     %en01 = prb i2$ %en0
-    %3 = const i2 0
-    %4 = neq i2 %en01, %3
-    br %4, %if_false, %if_true
+    %3 = neq i2 %en01, %1
+    br %3, %if_exit, %if_true
 if_true:
-    %5 = const i32 0
-    %6 = const i2 0
-    %7 = sig i2 %6
-    %8 = shr i2$ %foo, i2$ %7, i32 %5
-    %9 = exts i1$, i2$ %8, 0, 1
+    %4 = exts i1$, i2$ %foo, 0, 1
     %in01 = prb i2$ %in0
-    %10 = exts i1, i2 %in01, 0, 1
-    %11 = const time 0s 1e
-    drv i1$ %9, %10, %11
-    br %if_exit
-if_false:
+    %5 = exts i1, i2 %in01, 0, 1
+    drv i1$ %4, %5, %2
     br %if_exit
 if_exit:
     %en11 = prb i2$ %en1
-    %12 = const i2 0
-    %13 = neq i2 %en11, %12
-    br %13, %if_false1, %if_true1
+    %6 = neq i2 %en11, %1
+    br %6, %0, %if_true1
 if_true1:
-    %14 = const i32 1
-    %15 = const i2 0
-    %16 = sig i2 %15
-    %17 = shr i2$ %foo, i2$ %16, i32 %14
-    %18 = exts i1$, i2$ %17, 0, 1
+    %7 = const i32 1
+    %8 = sig i2 %1
+    %9 = shr i2$ %foo, i2$ %8, i32 %7
+    %10 = exts i1$, i2$ %9, 0, 1
     %in11 = prb i2$ %in1
-    %19 = exts i1, i2 %in11, 0, 1
-    %20 = const time 0s 1e
-    drv i1$ %18, %19, %20
-    br %if_exit1
-if_false1:
-    br %if_exit1
-if_exit1:
+    %11 = exts i1, i2 %in11, 0, 1
+    drv i1$ %10, %11, %2
     br %0
 }
 
 entity @test (i2$ %in0, i2$ %en0, i2$ %in1, i2$ %en1) -&gt; (i2$ %foo) {
     inst %test.always.248.0 (i2$ %in0, i2$ %en0, i2$ %in1, i2$ %en1) -&gt; (i2$ %foo)
+    halt
 }
 
 </pre>

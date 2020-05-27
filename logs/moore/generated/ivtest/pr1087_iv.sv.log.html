@@ -17,69 +17,88 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v</a>
-time_elapsed: 0.004s
-ram usage: 9636 KB
+time_elapsed: 0.008s
+ram usage: 9684 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e COUNTER <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:14</a>:15-19:
+   | 
+   |   if(nARST_I==1&#39;b0)
+   |               ^^^^ 
+   = note: Casts `1&#39;b0` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:14</a>:15-19:
+   | 
+   |   if(nARST_I==1&#39;b0)
+   |               ^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
+   | 
+   |     COUNT_O    &lt;= COUNT_O + 1;
+   |                             ^ 
+   = note: Casts `1` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
+   | 
+   |     COUNT_O    &lt;= COUNT_O + 1;
+   |                             ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
+   | 
+   |     COUNT_O    &lt;= COUNT_O + 1;
+   |                             ^ 
+   = note: Casts `1` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
+   | 
+   |     COUNT_O    &lt;= COUNT_O + 1;
+   |                             ^ 
+
 proc %COUNTER.always.237.0 (i1$ %CLOCK_I, i1$ %nARST_I) -&gt; (i3$ %COUNT_O) {
-0:
-    br %init
 init:
     %CLOCK_I1 = prb i1$ %CLOCK_I
     %nARST_I1 = prb i1$ %nARST_I
     wait %check, %CLOCK_I, %nARST_I
 check:
     %CLOCK_I2 = prb i1$ %CLOCK_I
-    %1 = const i1 0
-    %2 = eq i1 %CLOCK_I1, %1
-    %3 = neq i1 %CLOCK_I2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %CLOCK_I1, %0
+    %2 = neq i1 %CLOCK_I2, %0
+    %posedge = and i1 %1, %2
     %nARST_I2 = prb i1$ %nARST_I
-    %4 = const i1 0
-    %5 = neq i1 %nARST_I1, %4
-    %6 = eq i1 %nARST_I2, %4
-    %negedge = and i1 %6, %5
+    %3 = neq i1 %nARST_I1, %0
+    %4 = eq i1 %nARST_I2, %0
+    %negedge = and i1 %4, %3
     %event_or = or i1 %posedge, %negedge
     br %event_or, %init, %event
 event:
-    %nARST_I3 = prb i1$ %nARST_I
-    %7 = const i1 0
-    %8 = eq i1 %nARST_I3, %7
-    br %8, %if_false, %if_true
+    %5 = neq i1 %4, %0
+    %6 = const time 0s 1d
+    br %5, %if_false, %if_true
 if_true:
-    %9 = const i1 0
-    %10 = const i1 0
-    %11 = inss i1 %9, i1 %10, 0, 1
-    %12 = const i3 0
-    %13 = inss i3 %12, i1 %11, 0, 1
-    %14 = inss i3 %13, i1 %11, 1, 1
-    %15 = inss i3 %14, i1 %11, 2, 1
-    %16 = const time 0s 1d
-    drv i3$ %COUNT_O, %15, %16
-    br %if_exit
+    %7 = const i3 0
+    drv i3$ %COUNT_O, %7, %6
+    br %init
 if_false:
-    %17 = const i32 0
+    %8 = const i32 0
     %COUNT_O1 = prb i3$ %COUNT_O
-    %18 = inss i32 %17, i3 %COUNT_O1, 0, 3
-    %19 = const i32 1
-    %20 = add i32 %18, %19
-    %21 = exts i3, i32 %20, 0, 3
-    %22 = const time 0s 1d
-    drv i3$ %COUNT_O, %21, %22
-    br %if_exit
-if_exit:
-    br %0
+    %9 = inss i32 %8, i3 %COUNT_O1, 0, 3
+    %10 = const i32 1
+    %11 = add i32 %9, %10
+    %12 = exts i3, i32 %11, 0, 3
+    drv i3$ %COUNT_O, %12, %6
+    br %init
 }
 
 entity @COUNTER (i1$ %CLOCK_I, i1$ %nARST_I) -&gt; (i3$ %COUNT_O) {
     %0 = const i3 0
     %COUNT_O1 = sig i3 %0
     inst %COUNTER.always.237.0 (i1$ %CLOCK_I, i1$ %nARST_I) -&gt; (i3$ %COUNT_O1)
-    %1 = const i3 0
-    %2 = const time 0s
-    drv i3$ %COUNT_O, %1, %2
+    %1 = const time 0s
+    drv i3$ %COUNT_O, %0, %1
+    halt
 }
 
 </pre>

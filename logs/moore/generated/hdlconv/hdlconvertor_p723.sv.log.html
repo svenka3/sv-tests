@@ -18,34 +18,21 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p723.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p723.sv</a>
 time_elapsed: 0.004s
-ram usage: 9656 KB
+ram usage: 9632 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017 -e cct <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p723.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p723.sv</a>
-proc %mod.always.236.0 (i1$ %in) -&gt; () {
-0:
-    br %init
+proc %mod.param1.always.236.1 (i1$ %in) -&gt; () {
 init:
-    %in1 = prb i1$ %in
     wait %check, %in
 check:
-    %in2 = prb i1$ %in
-    %1 = const i1 0
-    %2 = eq i1 %in1, %1
-    %3 = neq i1 %in2, %1
-    %posedge = and i1 %2, %3
-    br %posedge, %init, %event
-event:
-    %4 = const i1 0
-    %hold = var i1 %4
-    %in3 = prb i1$ %in
-    st i1* %hold, %in3
-    br %0
+    br %init
 }
 
-entity @mod (i1$ %in) -&gt; () {
-    inst %mod.always.236.0 (i1$ %in) -&gt; ()
+entity @mod.param1 (i1$ %in) -&gt; () {
+    inst %mod.param1.always.236.1 (i1$ %in) -&gt; ()
+    halt
 }
 
 entity @cct (i1$ %stim1, i1$ %stim2) -&gt; () {
@@ -54,13 +41,12 @@ entity @cct (i1$ %stim1, i1$ %stim2) -&gt; () {
     %1 = sig i1 %0
     %2 = const time 0s 1e
     drv i1$ %1, %stim11, %2
-    inst @mod (i1$ %1) -&gt; ()
+    inst @mod.param1 (i1$ %1) -&gt; ()
     %stim21 = prb i1$ %stim2
-    %3 = const i1 0
-    %4 = sig i1 %3
-    %5 = const time 0s 1e
-    drv i1$ %4, %stim21, %5
-    inst @mod (i1$ %4) -&gt; ()
+    %3 = sig i1 %0
+    drv i1$ %3, %stim21, %2
+    inst @mod.param1 (i1$ %3) -&gt; ()
+    halt
 }
 
 </pre>

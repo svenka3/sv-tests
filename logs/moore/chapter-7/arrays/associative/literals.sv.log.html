@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test associative arrays literals support
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: 7.9.11 7.8
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-7/arrays/associative
@@ -18,48 +18,26 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/associative/literals.sv.html" target="file-frame">tests/chapter-7/arrays/associative/literals.sv</a>
 time_elapsed: 0.004s
-ram usage: 9596 KB
+ram usage: 9652 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-7/arrays/associative -e top <a href="../../../../../tests/chapter-7/arrays/associative/literals.sv.html" target="file-frame">tests/chapter-7/arrays/associative/literals.sv</a>
-
-error: expected hierarchy item, found `string` instead
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/literals.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/literals.sv:9</a>:1-7:
+compiler bug: type assertion failed: `byte [0:0]` != `byte`
+  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/literals.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/literals.sv:9</a>:33-40:
    | 
    | string words [int] = &#39;{default: &#34;hello&#34;};
-   | ^^^^^^                                   
+   |                                 ^^^^^^^  
+   = note: Type mismatch:
+   = note:     Left-hand side:  `byte [0:0]`
+   = note:     Right-hand side: `byte`
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:964
 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-note: parsing as net declaration:
-
-
-error: expected net type
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/literals.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/literals.sv:9</a>:1-7:
-   | 
-   | string words [int] = &#39;{default: &#34;hello&#34;};
-   | ^^^^^^                                   
-
-
-note: parsing as instantiation:
-
-
-error: expected module name, but found string instead
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/literals.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/literals.sv:9</a>:1-7:
-   | 
-   | string words [int] = &#39;{default: &#34;hello&#34;};
-   | ^^^^^^                                   
-
-
-note: parsing as variable declaration:
-
-
-error: expected expression, found int instead
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/literals.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/literals.sv:9</a>:15-18:
-   | 
-   | string words [int] = &#39;{default: &#34;hello&#34;};
-   |               ^^^                        
-
+thread &#39;main&#39; panicked at &#39;type assertion failed: `byte [0:0]` != `byte`&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

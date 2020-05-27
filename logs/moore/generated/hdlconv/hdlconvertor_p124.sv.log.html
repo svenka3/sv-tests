@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from hdlconv
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017
@@ -17,14 +17,47 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv</a>
-time_elapsed: 0.004s
-ram usage: 9536 KB
+time_elapsed: 0.008s
+ram usage: 11496 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017 -e ma <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv</a>
-thread &#39;main&#39; panicked at &#39;create int value `1` with non-int type Named(p2(9), n223, BitVector { domain: TwoValued, sign: Signed, range: Range { size: 16, dir: Down, offset: 0 }, dubbed: true })&#39;, src/svlog/value.rs:109:14
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv.html#l-4" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv:4</a>:8-9:
+   | 
+   | p2 j = 0; // type of j is set by a parameter, (shortint unless redefined)
+   |        ^                                                                 
+   = note: Casts `0` from `int` to `shortint`
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv.html#l-4" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p124.sv:4</a>:8-9:
+   | 
+   | p2 j = 0; // type of j is set by a parameter, (shortint unless redefined)
+   |        ^                                                                 
+
+proc %ma.always.236.0 (i2$ %i, i16$ %j) -&gt; (i2$ %o) {
+init:
+    %i1 = prb i2$ %i
+    wait %check, %i
+check:
+    %i2 = prb i2$ %i
+    %impledge = neq i2 %i1, %i2
+    br %impledge, %init, %event
+event:
+    %0 = const time 0s 1e
+    drv i2$ %o, %i2, %0
+    %j1 = prb i16$ %j
+    %1 = const i16 1
+    %2 = add i16 %j1, %1
+    drv i16$ %j, %2, %0
+    br %init
+}
+
+entity @ma (i2$ %i) -&gt; (i2$ %o) {
+    %0 = const i16 0
+    %j = sig i16 %0
+    inst %ma.always.236.0 (i2$ %i, i16$ %j) -&gt; (i2$ %o)
+    halt
+}
 
 </pre>
 </body>

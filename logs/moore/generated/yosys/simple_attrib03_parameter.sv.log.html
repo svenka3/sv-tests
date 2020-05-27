@@ -18,49 +18,100 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v</a>
 time_elapsed: 0.004s
-ram usage: 9588 KB
+ram usage: 9572 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e bar <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-15" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:15</a>:21-22:
+   | 
+   |     if (rst) out &lt;= 0;
+   |                     ^ 
+   = note: Casts `0` from `bit [1:0]` to `logic [1:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-15" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:15</a>:21-22:
+   | 
+   |     if (rst) out &lt;= 0;
+   |                     ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-15" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:15</a>:21-22:
+   | 
+   |     if (rst) out &lt;= 0;
+   |                     ^ 
+   = note: Casts `0` from `bit signed [1:0]` to `bit [1:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-15" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:15</a>:21-22:
+   | 
+   |     if (rst) out &lt;= 0;
+   |                     ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-15" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:15</a>:21-22:
+   | 
+   |     if (rst) out &lt;= 0;
+   |                     ^ 
+   = note: Casts `0` from `int` to `bit signed [1:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-15" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:15</a>:21-22:
+   | 
+   |     if (rst) out &lt;= 0;
+   |                     ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-16" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:16</a>:27-36:
+   | 
+   |     else     out &lt;= inp + INCREMENT;
+   |                           ^^^^^^^^^ 
+   = note: Casts `INCREMENT` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-16" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:16</a>:27-36:
+   | 
+   |     else     out &lt;= inp + INCREMENT;
+   |                           ^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-16" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:16</a>:27-36:
+   | 
+   |     else     out &lt;= inp + INCREMENT;
+   |                           ^^^^^^^^^ 
+   = note: Casts `INCREMENT` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib03_parameter.v.html#l-16" target="file-frame">third_party/tools/yosys/tests/simple/attrib03_parameter.v:16</a>:27-36:
+   | 
+   |     else     out &lt;= inp + INCREMENT;
+   |                           ^^^^^^^^^ 
+
 proc %bar.always.240.0 (i1$ %clk, i1$ %rst, i2$ %inp) -&gt; (i2$ %out) {
-0:
-    br %init
 init:
     %clk1 = prb i1$ %clk
     wait %check, %clk
 check:
     %clk2 = prb i1$ %clk
-    %1 = const i1 0
-    %2 = eq i1 %clk1, %1
-    %3 = neq i1 %clk2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
     %rst1 = prb i1$ %rst
-    br %rst1, %if_false, %if_true
+    %3 = neq i1 %rst1, %0
+    %4 = const time 0s 1d
+    br %3, %if_false, %if_true
 if_true:
-    %4 = const i32 0
-    %5 = exts i2, i32 %4, 0, 2
-    %6 = const time 0s 1d
-    drv i2$ %out, %5, %6
-    br %if_exit
+    %5 = const i2 0
+    drv i2$ %out, %5, %4
+    br %init
 if_false:
-    %7 = const i32 0
+    %6 = const i32 0
     %inp1 = prb i2$ %inp
-    %8 = inss i32 %7, i2 %inp1, 0, 2
-    %9 = const i32 5
-    %10 = add i32 %8, %9
-    %11 = exts i2, i32 %10, 0, 2
-    %12 = const time 0s 1d
-    drv i2$ %out, %11, %12
-    br %if_exit
-if_exit:
-    br %0
+    %7 = inss i32 %6, i2 %inp1, 0, 2
+    %8 = const i32 5
+    %9 = add i32 %7, %8
+    %10 = exts i2, i32 %9, 0, 2
+    drv i2$ %out, %10, %4
+    br %init
 }
 
 entity @bar (i1$ %clk, i1$ %rst, i2$ %inp) -&gt; (i2$ %out) {
     inst %bar.always.240.0 (i1$ %clk, i1$ %rst, i2$ %inp) -&gt; (i2$ %out)
+    halt
 }
 
 </pre>

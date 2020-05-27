@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v</a>
-time_elapsed: 0.004s
-ram usage: 9604 KB
+time_elapsed: 0.008s
+ram usage: 9600 KB
 </pre>
 <pre class="log">
 
@@ -34,6 +34,61 @@ warning: `$display` not supported; ignored
    | 
    |       $display(&#34;FAIL: 32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32 != 0x%h,&#34;,
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:17</a>:10-23:
+   | 
+   |     in = 32&#39;sh80000000;//set to highest value negative number(-2147483648)
+   |          ^^^^^^^^^^^^^                                                    
+   = note: Casts `32&#39;sh80000000` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:17</a>:10-23:
+   | 
+   |     in = 32&#39;sh80000000;//set to highest value negative number(-2147483648)
+   |          ^^^^^^^^^^^^^                                                    
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:17</a>:10-23:
+   | 
+   |     in = 32&#39;sh80000000;//set to highest value negative number(-2147483648)
+   |          ^^^^^^^^^^^^^                                                    
+   = note: Casts `32&#39;sh80000000` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:17</a>:10-23:
+   | 
+   |     in = 32&#39;sh80000000;//set to highest value negative number(-2147483648)
+   |          ^^^^^^^^^^^^^                                                    
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:18</a>:13-18:
+   | 
+   |     shift = 6&#39;d32;     //shift the entire width of the word
+   |             ^^^^^                                          
+   = note: Casts `6&#39;d32` from `bit [5:0]` to `logic [5:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:18</a>:13-18:
+   | 
+   |     shift = 6&#39;d32;     //shift the entire width of the word
+   |             ^^^^^                                          
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:23</a>:17-30:
+   | 
+   |     if(out === (32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32)) begin
+   |                 ^^^^^^^^^^^^^                  
+   = note: Casts `32&#39;sh80000000` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:23</a>:17-30:
+   | 
+   |     if(out === (32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32)) begin
+   |                 ^^^^^^^^^^^^^                  
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:23</a>:17-30:
+   | 
+   |     if(out === (32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32)) begin
+   |                 ^^^^^^^^^^^^^                  
+   = note: Casts `32&#39;sh80000000` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/shift5.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/shift5.v:23</a>:17-30:
+   | 
+   |     if(out === (32&#39;sh80000000 &gt;&gt;&gt; 6&#39;d32)) begin
+   |                 ^^^^^^^^^^^^^                  
 
 proc %ArithmeticShiftTest.always.227.0 (i32$ %in, i6$ %shift) -&gt; (i32$ %out) {
 0:
@@ -54,29 +109,10 @@ proc %ArithmeticShiftTest.initial.228.0 (i32$ %out) -&gt; (i32$ %in, i6$ %shift)
     %2 = const time 0s 1e
     drv i32$ %in, %1, %2
     %3 = const i6 32
-    %4 = const time 0s 1e
-    drv i6$ %shift, %3, %4
-    %5 = const i32 1
-    wait %6 for %5
-6:
-    %out1 = prb i32$ %out
-    %7 = const i32 2147483648
-    %8 = const i6 32
-    %9 = const i32 0
-    %10 = not i32 %9
-    %11 = exts i1, i32 %7, 31, 1
-    %12 = [i32 %9, %10]
-    %13 = mux [2 x i32] %12, i1 %11
-    %14 = shr i32 %7, i32 %13, i6 %8
-    %15 = eq i32 %out1, %14
-    br %15, %if_false, %if_true
-if_true:
-    %16 = const i32 0
-    br %if_exit
-if_false:
-    %17 = const i32 0
-    br %if_exit
-if_exit:
+    drv i6$ %shift, %3, %2
+    %4 = const i32 1
+    wait %5 for %4
+5:
     halt
 }
 
@@ -85,10 +121,10 @@ entity @ArithmeticShiftTest () -&gt; () {
     %in = sig i32 %0
     %1 = const i6 0
     %shift = sig i6 %1
-    %2 = const i32 0
-    %out = sig i32 %2
+    %out = sig i32 %0
     inst %ArithmeticShiftTest.always.227.0 (i32$ %in, i6$ %shift) -&gt; (i32$ %out)
     inst %ArithmeticShiftTest.initial.228.0 (i32$ %out) -&gt; (i32$ %in, i6$ %shift)
+    halt
 }
 
 </pre>

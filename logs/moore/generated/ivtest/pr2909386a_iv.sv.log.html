@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2909386a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2909386a.v</a>
 time_elapsed: 0.016s
-ram usage: 9756 KB
+ram usage: 10328 KB
 </pre>
 <pre class="log">
 
@@ -263,12 +263,43 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: `**` operator on non-constants not supported
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2909386a.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2909386a.v:8</a>:12-16:
+   | 
+   |     pass = 1&#39;b1;
+   |            ^^^^ 
+   = note: Casts `1&#39;b1` from `bit` to `logic`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2909386a.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2909386a.v:8</a>:12-16:
+   | 
+   |     pass = 1&#39;b1;
+   |            ^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2909386a.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2909386a.v:8</a>:12-16:
+   | 
+   |     pass = 1&#39;b1;
+   |            ^^^^ 
+   = note: Casts `1&#39;b1` from `bit [0:0]` to `bit`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2909386a.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2909386a.v:8</a>:12-16:
+   | 
+   |     pass = 1&#39;b1;
+   |            ^^^^ 
+
+compiler bug: type assertion failed: `bit [-1:0]` != `integer`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2909386a.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2909386a.v:12</a>:11-18:
    | 
    |     res = -3**&#39;bx;
    |           ^^^^^^^ 
+   = note: Type mismatch:
+   = note:     Left-hand side:  `bit [-1:0]`
+   = note:     Right-hand side: `integer`
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:1383
 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;type assertion failed: `bit [-1:0]` != `integer`&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

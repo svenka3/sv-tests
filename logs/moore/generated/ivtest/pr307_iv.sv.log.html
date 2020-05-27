@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v</a>
 time_elapsed: 0.004s
-ram usage: 9640 KB
+ram usage: 9684 KB
 </pre>
 <pre class="log">
 
@@ -41,42 +41,60 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:8</a>:13-33:
+   | 
+   |       in1 = 64&#39;hffffffffffffffff;
+   |             ^^^^^^^^^^^^^^^^^^^^ 
+   = note: Casts `64&#39;hffffffffffffffff` from `longint unsigned` to `logic [63:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:8</a>:13-33:
+   | 
+   |       in1 = 64&#39;hffffffffffffffff;
+   |             ^^^^^^^^^^^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:9</a>:13-33:
+   | 
+   |       in2 = 64&#39;hfffffffffffffff7;
+   |             ^^^^^^^^^^^^^^^^^^^^ 
+   = note: Casts `64&#39;hfffffffffffffff7` from `longint unsigned` to `logic [63:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:9</a>:13-33:
+   | 
+   |       in2 = 64&#39;hfffffffffffffff7;
+   |             ^^^^^^^^^^^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:12</a>:19-39:
+   | 
+   |       if (out === 64&#39;hfffffffffffffff6)
+   |                   ^^^^^^^^^^^^^^^^^^^^ 
+   = note: Casts `64&#39;hfffffffffffffff6` from `longint unsigned` to `logic [63:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:12</a>:19-39:
+   | 
+   |       if (out === 64&#39;hfffffffffffffff6)
+   |                   ^^^^^^^^^^^^^^^^^^^^ 
+
 proc %top.initial.226.0 () -&gt; (i64$ %in1, i64$ %in2, i64$ %out) {
 0:
     %1 = const i64 18446744073709551615
     %2 = const time 0s 1e
     drv i64$ %in1, %1, %2
     %3 = const i64 18446744073709551607
-    %4 = const time 0s 1e
-    drv i64$ %in2, %3, %4
+    drv i64$ %in2, %3, %2
     %in11 = prb i64$ %in1
     %in21 = prb i64$ %in2
-    %5 = add i64 %in11, %in21
-    %6 = const time 0s 1e
-    drv i64$ %out, %5, %6
-    %7 = const i32 0
-    %out1 = prb i64$ %out
-    %8 = const i64 18446744073709551606
-    %9 = eq i64 %out1, %8
-    br %9, %if_false, %if_true
-if_true:
-    %10 = const i32 0
-    br %if_exit
-if_false:
-    %11 = const i32 0
-    br %if_exit
-if_exit:
+    %4 = add i64 %in11, %in21
+    drv i64$ %out, %4, %2
     halt
 }
 
 entity @top () -&gt; () {
     %0 = const i64 0
     %in1 = sig i64 %0
-    %1 = const i64 0
-    %in2 = sig i64 %1
-    %2 = const i64 0
-    %out = sig i64 %2
+    %in2 = sig i64 %0
+    %out = sig i64 %0
     inst %top.initial.226.0 () -&gt; (i64$ %in1, i64$ %in2, i64$ %out)
+    halt
 }
 
 </pre>

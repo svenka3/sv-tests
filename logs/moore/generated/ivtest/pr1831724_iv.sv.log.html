@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1831724.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1831724.v</a>
 time_elapsed: 0.004s
-ram usage: 9716 KB
+ram usage: 9648 KB
 </pre>
 <pre class="log">
 
@@ -29,30 +29,54 @@ warning: `$display` not supported; ignored
    |     $display(&#34;tmp1: &#39;%b&#39;; tmp2: &#39;%b&#39;&#34;, tmp1, tmp2);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1831724.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1831724.v:7</a>:9-21:
+   | 
+   |     tmp1 = 9&#39;bxxx000000;
+   |            ^^^^^^^^^^^^ 
+   = note: Casts `9&#39;bxxx000000` from `shortint unsigned` to `logic [15:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1831724.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1831724.v:7</a>:9-21:
+   | 
+   |     tmp1 = 9&#39;bxxx000000;
+   |            ^^^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1831724.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1831724.v:7</a>:9-21:
+   | 
+   |     tmp1 = 9&#39;bxxx000000;
+   |            ^^^^^^^^^^^^ 
+   = note: Casts `9&#39;bxxx000000` from `bit [8:0]` to `shortint unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1831724.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1831724.v:7</a>:9-21:
+   | 
+   |     tmp1 = 9&#39;bxxx000000;
+   |            ^^^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1831724.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1831724.v:8</a>:9-23:
+   | 
+   |     tmp2 = {9&#39;bxxx000000};
+   |            ^^^^^^^^^^^^^^ 
+   = note: Casts `{9&#39;bxxx000000}` from `logic [8:0]` to `logic [15:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1831724.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1831724.v:8</a>:9-23:
+   | 
+   |     tmp2 = {9&#39;bxxx000000};
+   |            ^^^^^^^^^^^^^^ 
+
 proc %test.initial.224.0 () -&gt; (i16$ %tmp1, i16$ %tmp2) {
 0:
     %1 = const i16 0
-    %2 = const i9 0
-    %3 = inss i16 %1, i9 %2, 0, 9
-    %4 = const time 0s 1e
-    drv i16$ %tmp1, %3, %4
-    %5 = const i16 0
-    %6 = const i9 0
-    %7 = const i9 0
-    %8 = inss i9 %6, i9 %7, 0, 9
-    %9 = inss i16 %5, i9 %8, 0, 9
-    %10 = const time 0s 1e
-    drv i16$ %tmp2, %9, %10
-    %11 = const i32 0
+    %2 = const time 0s 1e
+    drv i16$ %tmp1, %1, %2
+    drv i16$ %tmp2, %1, %2
     halt
 }
 
 entity @test () -&gt; () {
     %0 = const i16 0
     %tmp1 = sig i16 %0
-    %1 = const i16 0
-    %tmp2 = sig i16 %1
+    %tmp2 = sig i16 %0
     inst %test.initial.224.0 () -&gt; (i16$ %tmp1, i16$ %tmp2)
+    halt
 }
 
 </pre>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: String assignment tests
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: 5.9
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-5
@@ -18,19 +18,45 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-5/5.9-string-word-assignment.sv.html" target="file-frame">tests/chapter-5/5.9-string-word-assignment.sv</a>
 time_elapsed: 0.004s
-ram usage: 9652 KB
+ram usage: 9692 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-5 -e top <a href="../../../tests/chapter-5/5.9-string-word-assignment.sv.html" target="file-frame">tests/chapter-5/5.9-string-word-assignment.sv</a>
-entity @top () -&gt; () {
-    %0 = const i8 0
-    %1 = [i8 %0]
-    %a = sig [1 x i8] %1
-    %2 = const i8 0
-    %3 = [i8 %2]
-    %b = sig [1 x i8] %3
-}
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../tests/chapter-5/5.9-string-word-assignment.sv.html#l-7" target="file-frame">tests/chapter-5/5.9-string-word-assignment.sv:7</a>:27-32:
+   | 
+   |   bit [8 * 3 - 1 : 0] a = &#34;hi0&#34;;
+   |                           ^^^^^ 
+   = note: Casts `&#34;hi0&#34;` from `logic [23:0]` to `bit [23:0]`
+  --&gt; <a href="../../../tests/chapter-5/5.9-string-word-assignment.sv.html#l-7" target="file-frame">tests/chapter-5/5.9-string-word-assignment.sv:7</a>:27-32:
+   | 
+   |   bit [8 * 3 - 1 : 0] a = &#34;hi0&#34;;
+   |                           ^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../tests/chapter-5/5.9-string-word-assignment.sv.html#l-7" target="file-frame">tests/chapter-5/5.9-string-word-assignment.sv:7</a>:27-32:
+   | 
+   |   bit [8 * 3 - 1 : 0] a = &#34;hi0&#34;;
+   |                           ^^^^^ 
+   = note: Casts `&#34;hi0&#34;` from `logic [7:0]` to `logic [23:0]`
+  --&gt; <a href="../../../tests/chapter-5/5.9-string-word-assignment.sv.html#l-7" target="file-frame">tests/chapter-5/5.9-string-word-assignment.sv:7</a>:27-32:
+   | 
+   |   bit [8 * 3 - 1 : 0] a = &#34;hi0&#34;;
+   |                           ^^^^^ 
+
+compiler bug: constant folding of slices not implemented
+  --&gt; <a href="../../../tests/chapter-5/5.9-string-word-assignment.sv.html#l-7" target="file-frame">tests/chapter-5/5.9-string-word-assignment.sv:7</a>:27-32:
+   | 
+   |   bit [8 * 3 - 1 : 0] a = &#34;hi0&#34;;
+   |                           ^^^^^ 
+   = note: Encountered at src/svlog/value.rs:531
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;constant folding of slices not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

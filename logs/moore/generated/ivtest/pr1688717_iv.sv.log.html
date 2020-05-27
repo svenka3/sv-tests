@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,11 +18,33 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v</a>
 time_elapsed: 0.004s
-ram usage: 9580 KB
+ram usage: 9952 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bar <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:2</a>:26-36:
+   | 
+   |    reg [24:1] original = 24&#39;h123456;
+   |                          ^^^^^^^^^^ 
+   = note: Casts `24&#39;h123456` from `bit [24:1]` to `logic [24:1]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:2</a>:26-36:
+   | 
+   |    reg [24:1] original = 24&#39;h123456;
+   |                          ^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:2</a>:26-36:
+   | 
+   |    reg [24:1] original = 24&#39;h123456;
+   |                          ^^^^^^^^^^ 
+   = note: Casts `24&#39;h123456` from `bit [23:0]` to `bit [24:1]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:2</a>:26-36:
+   | 
+   |    reg [24:1] original = 24&#39;h123456;
+   |                          ^^^^^^^^^^ 
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:10</a>:7-130:
    | 
@@ -35,12 +57,30 @@ warning: `$display` not supported; ignored
    |       $display (&#34;Orig = %h, Second = %h, Minus Indexed = %h, Plus Indexed = %h&#34;,
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: type `logic [8:1]` required, but expression has type `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:7</a>:16-30:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:13</a>:13-14:
    | 
-   |       second = original[16:9];
-   |                ^^^^^^^^^^^^^^ 
+   |       tmp = 9;
+   |             ^ 
+   = note: Casts `9` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:13</a>:13-14:
+   | 
+   |       tmp = 9;
+   |             ^ 
 
+compiler bug: assertion failed: ty::identical(delta_rvalue.ty, base.ty)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1688717.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr1688717.v:15</a>:40-41:
+   | 
+   |       minus_indexed = original[tmp+7 -:8];
+   |                                        ^  
+   = note: Assertion failed: ty::identical(delta_rvalue.ty, base.ty)
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:489
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;assertion failed: ty::identical(delta_rvalue.ty, base.ty)&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

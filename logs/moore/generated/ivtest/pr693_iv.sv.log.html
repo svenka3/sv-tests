@@ -18,14 +18,12 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr693.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr693.v</a>
 time_elapsed: 0.004s
-ram usage: 9560 KB
+ram usage: 9668 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e one_a <a href="../../../../third_party/tests/ivtest/ivltests/pr693.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr693.v</a>
 proc %one_a.always.237.0 (i1$ %a, i1$ %b, i1$ %ci) -&gt; (i1$ %sum, i1$ %co) {
-0:
-    br %init
 init:
     %a1 = prb i1$ %a
     %b1 = prb i1$ %b
@@ -42,31 +40,27 @@ check:
     %event_or1 = or i1 %event_or, %impledge2
     br %event_or1, %init, %event
 event:
-    %a3 = prb i1$ %a
-    %b3 = prb i1$ %b
-    %1 = xor i1 %a3, %b3
-    %ci3 = prb i1$ %ci
-    %2 = xor i1 %1, %ci3
-    %3 = const time 0s 1e
-    drv i1$ %sum, %2, %3
-    %a4 = prb i1$ %a
-    %b4 = prb i1$ %b
-    %4 = umul i1 %a4, %b4
-    %a5 = prb i1$ %a
-    %ci4 = prb i1$ %ci
-    %5 = umul i1 %a5, %ci4
-    %6 = or i1 %4, %5
-    %b5 = prb i1$ %b
-    %ci5 = prb i1$ %ci
-    %7 = umul i1 %b5, %ci5
-    %8 = or i1 %6, %7
-    %9 = const time 0s 1e
-    drv i1$ %co, %8, %9
-    br %0
+    %0 = xor i1 %a2, %b2
+    %1 = xor i1 %0, %ci2
+    %2 = const time 0s 1e
+    drv i1$ %sum, %1, %2
+    %3 = umul i1 %a2, %b2
+    %4 = const i1 0
+    %5 = neq i1 %3, %4
+    %6 = umul i1 %a2, %ci2
+    %7 = neq i1 %6, %4
+    %8 = or i1 %5, %7
+    %9 = neq i1 %8, %4
+    %10 = umul i1 %b2, %ci2
+    %11 = neq i1 %10, %4
+    %12 = or i1 %9, %11
+    drv i1$ %co, %12, %2
+    br %init
 }
 
 entity @one_a (i1$ %a, i1$ %b, i1$ %ci) -&gt; (i1$ %sum, i1$ %co) {
     inst %one_a.always.237.0 (i1$ %a, i1$ %b, i1$ %ci) -&gt; (i1$ %sum, i1$ %co)
+    halt
 }
 
 </pre>

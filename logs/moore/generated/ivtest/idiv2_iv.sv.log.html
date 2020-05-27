@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v</a>
-time_elapsed: 0.004s
-ram usage: 9544 KB
+time_elapsed: 0.008s
+ram usage: 9848 KB
 </pre>
 <pre class="log">
 
@@ -35,6 +35,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED -- result is %b&#34;, result);
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x5616dcb30ea0
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-41" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:41</a>:3-10:
    | 
@@ -50,15 +51,62 @@ warning: `$display` not supported; ignored
    |       $display(&#34;PASSED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering to mir rvalue of expression `mod(c, nl, result)` not implemented
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:11-13:
+   | 
+   |       c = 13; nl = 3;
+   |           ^^         
+   = note: Casts `13` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:11-13:
+   | 
+   |       c = 13; nl = 3;
+   |           ^^         
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:11-13:
+   | 
+   |       c = 13; nl = 3;
+   |           ^^         
+   = note: Casts `13` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:11-13:
+   | 
+   |       c = 13; nl = 3;
+   |           ^^         
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:20-21:
+   | 
+   |       c = 13; nl = 3;
+   |                    ^ 
+   = note: Casts `3` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:20-21:
+   | 
+   |       c = 13; nl = 3;
+   |                    ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:20-21:
+   | 
+   |       c = 13; nl = 3;
+   |                    ^ 
+   = note: Casts `3` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:36</a>:20-21:
+   | 
+   |       c = 13; nl = 3;
+   |                    ^ 
+
+compiler bug: lowering of expression `mod(c, nl, result)` to mir not yet supported
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/idiv2.v.html#l-37" target="file-frame">third_party/tests/ivtest/ivltests/idiv2.v:37</a>:7-25:
    | 
    |       mod(c, nl, result);
    |       ^^^^^^^^^^^^^^^^^^ 
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:450
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
+thread &#39;main&#39; panicked at &#39;lowering of expression `mod(c, nl, result)` to mir not yet supported&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

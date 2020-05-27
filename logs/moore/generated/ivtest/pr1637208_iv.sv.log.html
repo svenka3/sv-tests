@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,23 +18,51 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v</a>
 time_elapsed: 0.004s
-ram usage: 9664 KB
+ram usage: 9852 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v</a>
-error: variable `sel` has no constant value
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v:16</a>:8-11:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v:17</a>:22-42:
    | 
-   |    reg sel;
-   |        ^^^ 
+   |    wire [31:0] foo = sel? mem[1] : mem[0];
+   |                      ^^^^^^^^^^^^^^^^^^^^ 
+   = note: Casts `sel? mem[1] : mem[0]` from `logic [31:0]` to `bit [31:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v:17</a>:22-42:
+   | 
+   |    wire [31:0] foo = sel? mem[1] : mem[0];
+   |                      ^^^^^^^^^^^^^^^^^^^^ 
 
-note: constant value of variable `sel` needed here
+error: value is not constant
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v:17</a>:22-25:
    | 
    |    wire [31:0] foo = sel? mem[1] : mem[0];
    |                      ^^^                  
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v:17</a>:27-33:
+   | 
+   |    wire [31:0] foo = sel? mem[1] : mem[0];
+   |                           ^^^^^^          
+   = note: Casts `mem[1]` from `logic [0:0]` to `logic [31:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v:17</a>:27-33:
+   | 
+   |    wire [31:0] foo = sel? mem[1] : mem[0];
+   |                           ^^^^^^          
+
+compiler bug: constant folding of slices not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1637208.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1637208.v:17</a>:27-33:
+   | 
+   |    wire [31:0] foo = sel? mem[1] : mem[0];
+   |                           ^^^^^^          
+   = note: Encountered at src/svlog/value.rs:531
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;constant folding of slices not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

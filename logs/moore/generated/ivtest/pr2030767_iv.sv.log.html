@@ -17,12 +17,34 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v</a>
-time_elapsed: 0.004s
-ram usage: 9652 KB
+time_elapsed: 0.008s
+ram usage: 9656 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:2</a>:25-45:
+   | 
+   |   reg signed [63:0] a = 64&#39;h12345678abcdabcd;
+   |                         ^^^^^^^^^^^^^^^^^^^^ 
+   = note: Casts `64&#39;h12345678abcdabcd` from `longint unsigned` to `logic [63:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:2</a>:25-45:
+   | 
+   |   reg signed [63:0] a = 64&#39;h12345678abcdabcd;
+   |                         ^^^^^^^^^^^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:3</a>:25-33:
+   | 
+   |   reg signed [63:0] b = 64&#39;h1234;
+   |                         ^^^^^^^^ 
+   = note: Casts `64&#39;h1234` from `longint unsigned` to `logic [63:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:3</a>:25-33:
+   | 
+   |   reg signed [63:0] b = 64&#39;h1234;
+   |                         ^^^^^^^^ 
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:7</a>:7-70:
    | 
@@ -35,21 +57,19 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:6</a>:17-34:
+   | 
+   |     if (a/b !== 64&#39;h10004c017806b)
+   |                 ^^^^^^^^^^^^^^^^^ 
+   = note: Casts `64&#39;h10004c017806b` from `longint unsigned` to `logic [63:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:6</a>:17-34:
+   | 
+   |     if (a/b !== 64&#39;h10004c017806b)
+   |                 ^^^^^^^^^^^^^^^^^ 
+
 proc %top.initial.225.0 (i64$ %a, i64$ %b) -&gt; () {
 0:
-    %a1 = prb i64$ %a
-    %b1 = prb i64$ %b
-    %1 = udiv i64 %a1, %b1
-    %2 = const i64 281495379345515
-    %3 = neq i64 %1, %2
-    br %3, %if_false, %if_true
-if_true:
-    %4 = const i32 0
-    br %if_exit
-if_false:
-    %5 = const i32 0
-    br %if_exit
-if_exit:
     halt
 }
 
@@ -59,6 +79,7 @@ entity @top () -&gt; () {
     %1 = const i64 4660
     %b = sig i64 %1
     inst %top.initial.225.0 (i64$ %a, i64$ %b) -&gt; ()
+    halt
 }
 
 </pre>

@@ -18,17 +18,18 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/wandwor.v.html" target="file-frame">third_party/tools/yosys/tests/simple/wandwor.v</a>
 time_elapsed: 0.004s
-ram usage: 9636 KB
+ram usage: 9584 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e wandwor_test0 <a href="../../../../third_party/tools/yosys/tests/simple/wandwor.v.html" target="file-frame">third_party/tools/yosys/tests/simple/wandwor.v</a>
-entity @foo (i1$ %I0, i1$ %I1) -&gt; (i1$ %O) {
+entity @foo.param1 (i1$ %I0, i1$ %I1) -&gt; (i1$ %O) {
     %I01 = prb i1$ %I0
     %I11 = prb i1$ %I1
     %0 = xor i1 %I01, %I11
     %1 = const time 0s 1e
     drv i1$ %O, %0, %1
+    halt
 }
 
 entity @wandwor_test0 (i1$ %A, i1$ %B, i1$ %C, i1$ %D) -&gt; (i1$ %X, i1$ %Y, i1$ %Z) {
@@ -36,47 +37,30 @@ entity @wandwor_test0 (i1$ %A, i1$ %B, i1$ %C, i1$ %D) -&gt; (i1$ %X, i1$ %Y, i1
     %0 = const time 0s 1e
     drv i1$ %X, %A1, %0
     %B1 = prb i1$ %B
-    %1 = const time 0s 1e
-    drv i1$ %X, %B1, %1
+    drv i1$ %X, %B1, %0
     %C1 = prb i1$ %C
-    %2 = const time 0s 1e
-    drv i1$ %Y, %C1, %2
+    drv i1$ %Y, %C1, %0
     %D1 = prb i1$ %D
-    %3 = const time 0s 1e
-    drv i1$ %Y, %D1, %3
-    %C2 = prb i1$ %C
-    %4 = const i1 0
-    %5 = sig i1 %4
-    %6 = const time 0s 1e
-    drv i1$ %5, %C2, %6
-    %D2 = prb i1$ %D
-    %7 = const i1 0
-    %8 = sig i1 %7
-    %9 = const time 0s 1e
-    drv i1$ %8, %D2, %9
-    inst @foo (i1$ %5, i1$ %8) -&gt; (i1$ %X)
-    %A2 = prb i1$ %A
-    %10 = const i1 0
-    %11 = sig i1 %10
-    %12 = const time 0s 1e
-    drv i1$ %11, %A2, %12
-    %B2 = prb i1$ %B
-    %13 = const i1 0
-    %14 = sig i1 %13
-    %15 = const time 0s 1e
-    drv i1$ %14, %B2, %15
-    inst @foo (i1$ %11, i1$ %14) -&gt; (i1$ %Y)
+    drv i1$ %Y, %D1, %0
+    %1 = const i1 0
+    %2 = sig i1 %1
+    drv i1$ %2, %C1, %0
+    %3 = sig i1 %1
+    drv i1$ %3, %D1, %0
+    inst @foo.param1 (i1$ %2, i1$ %3) -&gt; (i1$ %X)
+    %4 = sig i1 %1
+    drv i1$ %4, %A1, %0
+    %5 = sig i1 %1
+    drv i1$ %5, %B1, %0
+    inst @foo.param1 (i1$ %4, i1$ %5) -&gt; (i1$ %Y)
     %X1 = prb i1$ %X
-    %16 = const i1 0
-    %17 = sig i1 %16
-    %18 = const time 0s 1e
-    drv i1$ %17, %X1, %18
+    %6 = sig i1 %1
+    drv i1$ %6, %X1, %0
     %Y1 = prb i1$ %Y
-    %19 = const i1 0
-    %20 = sig i1 %19
-    %21 = const time 0s 1e
-    drv i1$ %20, %Y1, %21
-    inst @foo (i1$ %17, i1$ %20) -&gt; (i1$ %Z)
+    %7 = sig i1 %1
+    drv i1$ %7, %Y1, %0
+    inst @foo.param1 (i1$ %6, i1$ %7) -&gt; (i1$ %Z)
+    halt
 }
 
 </pre>

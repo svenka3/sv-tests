@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v</a>
-time_elapsed: 0.004s
-ram usage: 9604 KB
+time_elapsed: 0.008s
+ram usage: 9528 KB
 </pre>
 <pre class="log">
 
@@ -35,15 +35,47 @@ warning: `$write` not supported; ignored
    |     $write(&#34;String is %s\n&#34;, str[idx]); // This fails.
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                
 
-compiler bug: lowering to mir rvalue of expression `&#34;test_counter&#34;` not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v:6</a>:14-28:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v:7</a>:11-12:
    | 
-   |     str[0] = &#34;test_counter&#34;;
-   |              ^^^^^^^^^^^^^^ 
+   |     idx = 0;
+   |           ^ 
+   = note: Casts `0` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v:7</a>:11-12:
+   | 
+   |     idx = 0;
+   |           ^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v:7</a>:11-12:
+   | 
+   |     idx = 0;
+   |           ^ 
+   = note: Casts `0` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v:7</a>:11-12:
+   | 
+   |     idx = 0;
+   |           ^ 
 
+proc %test.initial.225.0 () -&gt; (i128$ %str, i32$ %idx) {
+0:
+    %1 = exts i1$, i128$ %str, 0, 1
+    %2 = const i1 0
+    %3 = const time 0s 1e
+    drv i1$ %1, %2, %3
+    %4 = const i32 0
+    drv i32$ %idx, %4, %3
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i128 0
+    %str = sig i128 %0
+    %1 = const i32 0
+    %idx = sig i32 %1
+    inst %test.initial.225.0 () -&gt; (i128$ %str, i32$ %idx)
+    halt
+}
 
 </pre>
 </body>

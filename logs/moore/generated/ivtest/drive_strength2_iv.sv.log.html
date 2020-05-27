@@ -18,21 +18,43 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/drive_strength2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/drive_strength2.v</a>
 time_elapsed: 0.004s
-ram usage: 9592 KB
+ram usage: 9596 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e drvz <a href="../../../../third_party/tests/ivtest/ivltests/drive_strength2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/drive_strength2.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/drive_strength2.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/drive_strength2.v:24</a>:31-34:
+   | 
+   |     assign  ioS = (iC) ? iA : &#39;bz ;
+   |                               ^^^  
+   = note: Casts `&#39;bz` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/drive_strength2.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/drive_strength2.v:24</a>:31-34:
+   | 
+   |     assign  ioS = (iC) ? iA : &#39;bz ;
+   |                               ^^^  
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/drive_strength2.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/drive_strength2.v:24</a>:31-34:
+   | 
+   |     assign  ioS = (iC) ? iA : &#39;bz ;
+   |                               ^^^  
+   = note: Casts `&#39;bz` from `bit [-1:0]` to `bit [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/drive_strength2.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/drive_strength2.v:24</a>:31-34:
+   | 
+   |     assign  ioS = (iC) ? iA : &#39;bz ;
+   |                               ^^^  
+
 entity @drvz (i1$ %clk, i1$ %iA, i1$ %iC) -&gt; (i1$ %ioS) {
     %iC1 = prb i1$ %iC
-    %iA1 = prb i1$ %iA
     %0 = const i1 0
-    %1 = const i0 0
-    %2 = inss i1 %0, i0 %1, 0, 0
-    %3 = [i1 %2, %iA1]
-    %4 = mux [2 x i1] %3, i1 %iC1
-    %5 = const time 0s 1e
-    drv i1$ %ioS, %4, %5
+    %1 = neq i1 %iC1, %0
+    %iA1 = prb i1$ %iA
+    %2 = [i1 %0, %iA1]
+    %3 = mux [2 x i1] %2, i1 %1
+    %4 = const time 0s 1e
+    drv i1$ %ioS, %3, %4
+    halt
 }
 
 </pre>

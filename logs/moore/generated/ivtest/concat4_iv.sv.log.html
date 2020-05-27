@@ -18,33 +18,59 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v</a>
 time_elapsed: 0.004s
-ram usage: 9584 KB
+ram usage: 9600 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v</a>
-compiler bug: lowering to mir rvalue of expression `ufunc(0)` not implemented
+error: expression has no self-determined type
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v:4</a>:26-34:
    | 
    |   wire [31:0] var1 = {{0{ufunc(0)}}, ufunc(0)};
    |                          ^^^^^^^^              
+   = note: The type of expression must be inferred from context, but the location where you used it does not provide such information.
+   = note: Try a cast: `T&#39;(ufunc(0))`
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+error: cannot concatenate a value of type `&lt;error&gt;`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v:4</a>:23-36:
+   | 
+   |   wire [31:0] var1 = {{0{ufunc(0)}}, ufunc(0)};
+   |                       ^^^^^^^^^^^^^            
+   = note: `&lt;error&gt;` has no simple bit-vector type representation
 
-compiler bug: lowering to mir rvalue of expression `ufunc(0)` not implemented
+error: expression has no self-determined type
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v:4</a>:38-46:
    | 
    |   wire [31:0] var1 = {{0{ufunc(0)}}, ufunc(0)};
    |                                      ^^^^^^^^  
+   = note: The type of expression must be inferred from context, but the location where you used it does not provide such information.
+   = note: Try a cast: `T&#39;(ufunc(0))`
+
+error: cannot concatenate a value of type `&lt;error&gt;`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v:4</a>:22-47:
+   | 
+   |   wire [31:0] var1 = {{0{ufunc(0)}}, ufunc(0)};
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: `&lt;error&gt;` has no simple bit-vector type representation
+
+error: cannot concatenate a value of type `&lt;error&gt;`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v:4</a>:23-36:
+   | 
+   |   wire [31:0] var1 = {{0{ufunc(0)}}, ufunc(0)};
+   |                       ^^^^^^^^^^^^^            
+   = note: `&lt;error&gt;` has no simple bit-vector type representation
+
+compiler bug: lowering of expression `ufunc(0)` to mir not yet supported
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v:4</a>:26-34:
+   | 
+   |   wire [31:0] var1 = {{0{ufunc(0)}}, ufunc(0)};
+   |                          ^^^^^^^^              
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:450
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;Internal error, cycle detected:
-- __SalsaQueryDescriptor { kind: constant_value_of((n232, ParamEnv(0))) }
-
-&#39;, &lt;::std::macros::panic macros&gt;:2:4
+thread &#39;main&#39; panicked at &#39;lowering of expression `ufunc(0)` to mir not yet supported&#39;, &lt;::std::macros::panic macros&gt;:5:6
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

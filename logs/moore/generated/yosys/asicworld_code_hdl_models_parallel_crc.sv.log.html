@@ -17,368 +17,221 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v</a>
-time_elapsed: 0.008s
-ram usage: 9748 KB
+time_elapsed: 0.012s
+ram usage: 10320 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e parallel_crc_ccitt <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v.html#l-31" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v:31</a>:14-22:
+   | 
+   |   crc_reg &lt;= 16&#39;hFFFF;
+   |              ^^^^^^^^ 
+   = note: Casts `16&#39;hFFFF` from `shortint unsigned` to `logic [15:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v.html#l-31" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v:31</a>:14-22:
+   | 
+   |   crc_reg &lt;= 16&#39;hFFFF;
+   |              ^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v.html#l-34" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v:34</a>:17-25:
+   | 
+   |      crc_reg &lt;= 16&#39;hFFFF;
+   |                 ^^^^^^^^ 
+   = note: Casts `16&#39;hFFFF` from `shortint unsigned` to `logic [15:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v.html#l-34" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_parallel_crc.v:34</a>:17-25:
+   | 
+   |      crc_reg &lt;= 16&#39;hFFFF;
+   |                 ^^^^^^^^ 
+
 proc %parallel_crc_ccitt.always.248.0 (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i16$ %next_crc) -&gt; (i16$ %crc_reg) {
-0:
-    br %init1
 init1:
     %clk1 = prb i1$ %clk
     wait %check, %clk
 check:
     %clk2 = prb i1$ %clk
-    %1 = const i1 0
-    %2 = eq i1 %clk1, %1
-    %3 = neq i1 %clk2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
     br %posedge, %init1, %event
 event:
     %reset1 = prb i1$ %reset
-    br %reset1, %if_false, %if_true
-if_true:
+    %3 = neq i1 %reset1, %0
     %4 = const i16 65535
     %5 = const time 0s 1d
+    br %3, %if_false, %if_true
+if_true:
     drv i16$ %crc_reg, %4, %5
-    br %if_exit
+    br %init1
 if_false:
     %enable1 = prb i1$ %enable
-    br %enable1, %if_false1, %if_true1
-if_exit:
-    br %0
+    %6 = neq i1 %enable1, %0
+    br %6, %init1, %if_true1
 if_true1:
     %init2 = prb i1$ %init
-    br %init2, %if_false2, %if_true2
-if_false1:
-    br %if_exit1
-if_exit1:
-    br %if_exit
+    %7 = neq i1 %init2, %0
+    br %7, %if_false1, %if_true2
 if_true2:
-    %6 = const i16 65535
-    %7 = const time 0s 1d
-    drv i16$ %crc_reg, %6, %7
-    br %if_exit2
-if_false2:
+    drv i16$ %crc_reg, %4, %5
+    br %init1
+if_false1:
     %next_crc1 = prb i16$ %next_crc
-    %8 = const time 0s 1d
-    drv i16$ %crc_reg, %next_crc1, %8
-    br %if_exit2
-if_exit2:
-    br %if_exit1
+    drv i16$ %crc_reg, %next_crc1, %5
+    br %init1
 }
 
 entity @parallel_crc_ccitt (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i8$ %data_in) -&gt; (i16$ %crc_out) {
     %0 = const i16 0
     %crc_reg = sig i16 %0
-    %1 = const i16 0
-    %next_crc = sig i16 %1
+    %next_crc = sig i16 %0
     %crc_reg1 = prb i16$ %crc_reg
-    %2 = const time 0s 1e
-    drv i16$ %crc_out, %crc_reg1, %2
-    %3 = const i32 0
-    %4 = const i16 0
-    %5 = sig i16 %4
-    %6 = shr i16$ %next_crc, i16$ %5, i32 %3
-    %7 = exts i1$, i16$ %6, 0, 1
+    %1 = const time 0s 1e
+    drv i16$ %crc_out, %crc_reg1, %1
+    %2 = exts i1$, i16$ %next_crc, 0, 1
     %data_in1 = prb i8$ %data_in
-    %8 = const i32 7
-    %9 = const i8 0
-    %10 = shr i8 %data_in1, i8 %9, i32 %8
-    %11 = exts i1, i8 %10, 0, 1
-    %data_in2 = prb i8$ %data_in
-    %12 = const i32 0
-    %13 = const i8 0
-    %14 = shr i8 %data_in2, i8 %13, i32 %12
-    %15 = exts i1, i8 %14, 0, 1
-    %16 = xor i1 %11, %15
-    %crc_reg2 = prb i16$ %crc_reg
-    %17 = const i32 4
-    %18 = const i16 0
-    %19 = shr i16 %crc_reg2, i16 %18, i32 %17
-    %20 = exts i1, i16 %19, 0, 1
-    %21 = xor i1 %16, %20
-    %crc_reg3 = prb i16$ %crc_reg
-    %22 = const i32 11
-    %23 = const i16 0
-    %24 = shr i16 %crc_reg3, i16 %23, i32 %22
-    %25 = exts i1, i16 %24, 0, 1
-    %26 = xor i1 %21, %25
-    %27 = const time 0s 1e
-    drv i1$ %7, %26, %27
-    %28 = const i32 1
-    %29 = const i16 0
-    %30 = sig i16 %29
-    %31 = shr i16$ %next_crc, i16$ %30, i32 %28
-    %32 = exts i1$, i16$ %31, 0, 1
-    %data_in3 = prb i8$ %data_in
-    %33 = const i32 1
-    %34 = const i8 0
-    %35 = shr i8 %data_in3, i8 %34, i32 %33
-    %36 = exts i1, i8 %35, 0, 1
-    %crc_reg4 = prb i16$ %crc_reg
-    %37 = const i32 5
-    %38 = const i16 0
-    %39 = shr i16 %crc_reg4, i16 %38, i32 %37
-    %40 = exts i1, i16 %39, 0, 1
-    %41 = xor i1 %36, %40
-    %42 = const time 0s 1e
-    drv i1$ %32, %41, %42
-    %43 = const i32 2
-    %44 = const i16 0
-    %45 = sig i16 %44
-    %46 = shr i16$ %next_crc, i16$ %45, i32 %43
-    %47 = exts i1$, i16$ %46, 0, 1
-    %data_in4 = prb i8$ %data_in
-    %48 = const i32 2
-    %49 = const i8 0
-    %50 = shr i8 %data_in4, i8 %49, i32 %48
-    %51 = exts i1, i8 %50, 0, 1
-    %crc_reg5 = prb i16$ %crc_reg
-    %52 = const i32 6
-    %53 = const i16 0
-    %54 = shr i16 %crc_reg5, i16 %53, i32 %52
-    %55 = exts i1, i16 %54, 0, 1
-    %56 = xor i1 %51, %55
-    %57 = const time 0s 1e
-    drv i1$ %47, %56, %57
-    %58 = const i32 3
-    %59 = const i16 0
-    %60 = sig i16 %59
-    %61 = shr i16$ %next_crc, i16$ %60, i32 %58
-    %62 = exts i1$, i16$ %61, 0, 1
-    %data_in5 = prb i8$ %data_in
-    %63 = const i32 3
-    %64 = const i8 0
-    %65 = shr i8 %data_in5, i8 %64, i32 %63
-    %66 = exts i1, i8 %65, 0, 1
-    %crc_reg6 = prb i16$ %crc_reg
-    %67 = const i32 7
-    %68 = const i16 0
-    %69 = shr i16 %crc_reg6, i16 %68, i32 %67
-    %70 = exts i1, i16 %69, 0, 1
-    %71 = xor i1 %66, %70
-    %72 = const time 0s 1e
-    drv i1$ %62, %71, %72
-    %73 = const i32 4
-    %74 = const i16 0
-    %75 = sig i16 %74
-    %76 = shr i16$ %next_crc, i16$ %75, i32 %73
-    %77 = exts i1$, i16$ %76, 0, 1
-    %data_in6 = prb i8$ %data_in
-    %78 = const i32 4
-    %79 = const i8 0
-    %80 = shr i8 %data_in6, i8 %79, i32 %78
-    %81 = exts i1, i8 %80, 0, 1
-    %crc_reg7 = prb i16$ %crc_reg
-    %82 = const i32 8
-    %83 = const i16 0
-    %84 = shr i16 %crc_reg7, i16 %83, i32 %82
-    %85 = exts i1, i16 %84, 0, 1
-    %86 = xor i1 %81, %85
-    %87 = const time 0s 1e
-    drv i1$ %77, %86, %87
-    %88 = const i32 5
-    %89 = const i16 0
-    %90 = sig i16 %89
-    %91 = shr i16$ %next_crc, i16$ %90, i32 %88
+    %3 = exts i1, i8 %data_in1, 7, 1
+    %4 = const i8 0
+    %5 = inss i8 %4, i1 %3, 0, 1
+    %6 = exts i1, i8 %5, 0, 1
+    %7 = exts i1, i8 %data_in1, 0, 1
+    %8 = xor i1 %6, %7
+    %9 = exts i12, i16 %crc_reg1, 4, 12
+    %10 = inss i16 %0, i12 %9, 0, 12
+    %11 = exts i1, i16 %10, 0, 1
+    %12 = xor i1 %8, %11
+    %13 = exts i5, i16 %crc_reg1, 11, 5
+    %14 = inss i16 %0, i5 %13, 0, 5
+    %15 = exts i1, i16 %14, 0, 1
+    %16 = xor i1 %12, %15
+    drv i1$ %2, %16, %1
+    %17 = const i32 1
+    %18 = sig i16 %0
+    %19 = shr i16$ %next_crc, i16$ %18, i32 %17
+    %20 = exts i1$, i16$ %19, 0, 1
+    %21 = exts i7, i8 %data_in1, 1, 7
+    %22 = inss i8 %4, i7 %21, 0, 7
+    %23 = exts i1, i8 %22, 0, 1
+    %24 = exts i11, i16 %crc_reg1, 5, 11
+    %25 = inss i16 %0, i11 %24, 0, 11
+    %26 = exts i1, i16 %25, 0, 1
+    %27 = xor i1 %23, %26
+    drv i1$ %20, %27, %1
+    %28 = const i32 2
+    %29 = sig i16 %0
+    %30 = shr i16$ %next_crc, i16$ %29, i32 %28
+    %31 = exts i1$, i16$ %30, 0, 1
+    %32 = exts i6, i8 %data_in1, 2, 6
+    %33 = inss i8 %4, i6 %32, 0, 6
+    %34 = exts i1, i8 %33, 0, 1
+    %35 = exts i10, i16 %crc_reg1, 6, 10
+    %36 = inss i16 %0, i10 %35, 0, 10
+    %37 = exts i1, i16 %36, 0, 1
+    %38 = xor i1 %34, %37
+    drv i1$ %31, %38, %1
+    %39 = const i32 3
+    %40 = sig i16 %0
+    %41 = shr i16$ %next_crc, i16$ %40, i32 %39
+    %42 = exts i1$, i16$ %41, 0, 1
+    %43 = exts i5, i8 %data_in1, 3, 5
+    %44 = inss i8 %4, i5 %43, 0, 5
+    %45 = exts i1, i8 %44, 0, 1
+    %46 = exts i9, i16 %crc_reg1, 7, 9
+    %47 = inss i16 %0, i9 %46, 0, 9
+    %48 = exts i1, i16 %47, 0, 1
+    %49 = xor i1 %45, %48
+    drv i1$ %42, %49, %1
+    %50 = const i32 4
+    %51 = sig i16 %0
+    %52 = shr i16$ %next_crc, i16$ %51, i32 %50
+    %53 = exts i1$, i16$ %52, 0, 1
+    %54 = exts i4, i8 %data_in1, 4, 4
+    %55 = inss i8 %4, i4 %54, 0, 4
+    %56 = exts i1, i8 %55, 0, 1
+    %57 = exts i8, i16 %crc_reg1, 8, 8
+    %58 = inss i16 %0, i8 %57, 0, 8
+    %59 = exts i1, i16 %58, 0, 1
+    %60 = xor i1 %56, %59
+    drv i1$ %53, %60, %1
+    %61 = const i32 5
+    %62 = sig i16 %0
+    %63 = shr i16$ %next_crc, i16$ %62, i32 %61
+    %64 = exts i1$, i16$ %63, 0, 1
+    %65 = exts i3, i8 %data_in1, 5, 3
+    %66 = inss i8 %4, i3 %65, 0, 3
+    %67 = exts i1, i8 %66, 0, 1
+    %68 = xor i1 %6, %67
+    %69 = xor i1 %68, %7
+    %70 = xor i1 %69, %11
+    %71 = exts i7, i16 %crc_reg1, 9, 7
+    %72 = inss i16 %0, i7 %71, 0, 7
+    %73 = exts i1, i16 %72, 0, 1
+    %74 = xor i1 %70, %73
+    %75 = xor i1 %74, %15
+    drv i1$ %64, %75, %1
+    %76 = const i32 6
+    %77 = sig i16 %0
+    %78 = shr i16$ %next_crc, i16$ %77, i32 %76
+    %79 = exts i1$, i16$ %78, 0, 1
+    %80 = exts i2, i8 %data_in1, 6, 2
+    %81 = inss i8 %4, i2 %80, 0, 2
+    %82 = exts i1, i8 %81, 0, 1
+    %83 = xor i1 %82, %23
+    %84 = xor i1 %83, %26
+    %85 = exts i6, i16 %crc_reg1, 10, 6
+    %86 = inss i16 %0, i6 %85, 0, 6
+    %87 = exts i1, i16 %86, 0, 1
+    %88 = xor i1 %84, %87
+    drv i1$ %79, %88, %1
+    %89 = const i32 7
+    %90 = sig i16 %0
+    %91 = shr i16$ %next_crc, i16$ %90, i32 %89
     %92 = exts i1$, i16$ %91, 0, 1
-    %data_in7 = prb i8$ %data_in
-    %93 = const i32 7
-    %94 = const i8 0
-    %95 = shr i8 %data_in7, i8 %94, i32 %93
-    %96 = exts i1, i8 %95, 0, 1
-    %data_in8 = prb i8$ %data_in
-    %97 = const i32 5
-    %98 = const i8 0
-    %99 = shr i8 %data_in8, i8 %98, i32 %97
-    %100 = exts i1, i8 %99, 0, 1
-    %101 = xor i1 %96, %100
-    %data_in9 = prb i8$ %data_in
-    %102 = const i32 0
-    %103 = const i8 0
-    %104 = shr i8 %data_in9, i8 %103, i32 %102
-    %105 = exts i1, i8 %104, 0, 1
-    %106 = xor i1 %101, %105
-    %crc_reg8 = prb i16$ %crc_reg
-    %107 = const i32 4
-    %108 = const i16 0
-    %109 = shr i16 %crc_reg8, i16 %108, i32 %107
-    %110 = exts i1, i16 %109, 0, 1
-    %111 = xor i1 %106, %110
-    %crc_reg9 = prb i16$ %crc_reg
-    %112 = const i32 9
-    %113 = const i16 0
-    %114 = shr i16 %crc_reg9, i16 %113, i32 %112
-    %115 = exts i1, i16 %114, 0, 1
-    %116 = xor i1 %111, %115
-    %crc_reg10 = prb i16$ %crc_reg
-    %117 = const i32 11
-    %118 = const i16 0
-    %119 = shr i16 %crc_reg10, i16 %118, i32 %117
-    %120 = exts i1, i16 %119, 0, 1
-    %121 = xor i1 %116, %120
-    %122 = const time 0s 1e
-    drv i1$ %92, %121, %122
-    %123 = const i32 6
-    %124 = const i16 0
-    %125 = sig i16 %124
-    %126 = shr i16$ %next_crc, i16$ %125, i32 %123
-    %127 = exts i1$, i16$ %126, 0, 1
-    %data_in10 = prb i8$ %data_in
-    %128 = const i32 6
-    %129 = const i8 0
-    %130 = shr i8 %data_in10, i8 %129, i32 %128
-    %131 = exts i1, i8 %130, 0, 1
-    %data_in11 = prb i8$ %data_in
-    %132 = const i32 1
-    %133 = const i8 0
-    %134 = shr i8 %data_in11, i8 %133, i32 %132
-    %135 = exts i1, i8 %134, 0, 1
-    %136 = xor i1 %131, %135
-    %crc_reg11 = prb i16$ %crc_reg
-    %137 = const i32 5
-    %138 = const i16 0
-    %139 = shr i16 %crc_reg11, i16 %138, i32 %137
-    %140 = exts i1, i16 %139, 0, 1
-    %141 = xor i1 %136, %140
-    %crc_reg12 = prb i16$ %crc_reg
-    %142 = const i32 10
-    %143 = const i16 0
-    %144 = shr i16 %crc_reg12, i16 %143, i32 %142
-    %145 = exts i1, i16 %144, 0, 1
-    %146 = xor i1 %141, %145
-    %147 = const time 0s 1e
-    drv i1$ %127, %146, %147
-    %148 = const i32 7
-    %149 = const i16 0
-    %150 = sig i16 %149
-    %151 = shr i16$ %next_crc, i16$ %150, i32 %148
-    %152 = exts i1$, i16$ %151, 0, 1
-    %data_in12 = prb i8$ %data_in
-    %153 = const i32 7
-    %154 = const i8 0
-    %155 = shr i8 %data_in12, i8 %154, i32 %153
-    %156 = exts i1, i8 %155, 0, 1
-    %data_in13 = prb i8$ %data_in
-    %157 = const i32 2
-    %158 = const i8 0
-    %159 = shr i8 %data_in13, i8 %158, i32 %157
-    %160 = exts i1, i8 %159, 0, 1
-    %161 = xor i1 %156, %160
-    %crc_reg13 = prb i16$ %crc_reg
-    %162 = const i32 6
-    %163 = const i16 0
-    %164 = shr i16 %crc_reg13, i16 %163, i32 %162
-    %165 = exts i1, i16 %164, 0, 1
-    %166 = xor i1 %161, %165
-    %crc_reg14 = prb i16$ %crc_reg
-    %167 = const i32 11
-    %168 = const i16 0
-    %169 = shr i16 %crc_reg14, i16 %168, i32 %167
-    %170 = exts i1, i16 %169, 0, 1
-    %171 = xor i1 %166, %170
-    %172 = const time 0s 1e
-    drv i1$ %152, %171, %172
-    %173 = const i32 8
-    %174 = const i16 0
-    %175 = sig i16 %174
-    %176 = shr i16$ %next_crc, i16$ %175, i32 %173
-    %177 = exts i1$, i16$ %176, 0, 1
-    %data_in14 = prb i8$ %data_in
-    %178 = const i32 3
-    %179 = const i8 0
-    %180 = shr i8 %data_in14, i8 %179, i32 %178
-    %181 = exts i1, i8 %180, 0, 1
-    %crc_reg15 = prb i16$ %crc_reg
-    %182 = const i32 0
-    %183 = const i16 0
-    %184 = shr i16 %crc_reg15, i16 %183, i32 %182
-    %185 = exts i1, i16 %184, 0, 1
-    %186 = xor i1 %181, %185
-    %crc_reg16 = prb i16$ %crc_reg
-    %187 = const i32 7
-    %188 = const i16 0
-    %189 = shr i16 %crc_reg16, i16 %188, i32 %187
-    %190 = exts i1, i16 %189, 0, 1
-    %191 = xor i1 %186, %190
-    %192 = const time 0s 1e
-    drv i1$ %177, %191, %192
-    %193 = const i32 9
-    %194 = const i16 0
-    %195 = sig i16 %194
-    %196 = shr i16$ %next_crc, i16$ %195, i32 %193
-    %197 = exts i1$, i16$ %196, 0, 1
-    %data_in15 = prb i8$ %data_in
-    %198 = const i32 4
-    %199 = const i8 0
-    %200 = shr i8 %data_in15, i8 %199, i32 %198
-    %201 = exts i1, i8 %200, 0, 1
-    %crc_reg17 = prb i16$ %crc_reg
-    %202 = const i32 1
-    %203 = const i16 0
-    %204 = shr i16 %crc_reg17, i16 %203, i32 %202
-    %205 = exts i1, i16 %204, 0, 1
-    %206 = xor i1 %201, %205
-    %crc_reg18 = prb i16$ %crc_reg
-    %207 = const i32 8
-    %208 = const i16 0
-    %209 = shr i16 %crc_reg18, i16 %208, i32 %207
-    %210 = exts i1, i16 %209, 0, 1
-    %211 = xor i1 %206, %210
-    %212 = const time 0s 1e
-    drv i1$ %197, %211, %212
-    %213 = const i32 10
-    %214 = const i16 0
-    %215 = sig i16 %214
-    %216 = shr i16$ %next_crc, i16$ %215, i32 %213
-    %217 = exts i1$, i16$ %216, 0, 1
-    %data_in16 = prb i8$ %data_in
-    %218 = const i32 5
-    %219 = const i8 0
-    %220 = shr i8 %data_in16, i8 %219, i32 %218
-    %221 = exts i1, i8 %220, 0, 1
-    %crc_reg19 = prb i16$ %crc_reg
-    %222 = const i32 2
-    %223 = const i16 0
-    %224 = shr i16 %crc_reg19, i16 %223, i32 %222
-    %225 = exts i1, i16 %224, 0, 1
-    %226 = xor i1 %221, %225
-    %crc_reg20 = prb i16$ %crc_reg
-    %227 = const i32 9
-    %228 = const i16 0
-    %229 = shr i16 %crc_reg20, i16 %228, i32 %227
-    %230 = exts i1, i16 %229, 0, 1
-    %231 = xor i1 %226, %230
-    %232 = const time 0s 1e
-    drv i1$ %217, %231, %232
-    %233 = const i32 11
-    %234 = const i16 0
-    %235 = sig i16 %234
-    %236 = shr i16$ %next_crc, i16$ %235, i32 %233
-    %237 = exts i1$, i16$ %236, 0, 1
-    %data_in17 = prb i8$ %data_in
-    %238 = const i32 6
-    %239 = const i8 0
-    %240 = shr i8 %data_in17, i8 %239, i32 %238
-    %241 = exts i1, i8 %240, 0, 1
-    %crc_reg21 = prb i16$ %crc_reg
-    %242 = const i32 3
-    %243 = const i16 0
-    %244 = shr i16 %crc_reg21, i16 %243, i32 %242
-    %245 = exts i1, i16 %244, 0, 1
-    %246 = xor i1 %241, %245
-    %crc_reg22 = prb i16$ %crc_reg
-    %247 = const i32 10
-    %248 = const i16 0
-    %249 = shr i16 %crc_reg22, i16 %248, i32 %247
-    %250 = exts i1, i16 %249, 0, 1
-    %251 = xor i1 %246, %250
-    %252 = const time 0s 1e
-    drv i1$ %237, %251, %252
+    %93 = xor i1 %6, %34
+    %94 = xor i1 %93, %37
+    %95 = xor i1 %94, %15
+    drv i1$ %92, %95, %1
+    %96 = const i32 8
+    %97 = sig i16 %0
+    %98 = shr i16$ %next_crc, i16$ %97, i32 %96
+    %99 = exts i1$, i16$ %98, 0, 1
+    %100 = exts i1, i16 %crc_reg1, 0, 1
+    %101 = xor i1 %45, %100
+    %102 = xor i1 %101, %48
+    drv i1$ %99, %102, %1
+    %103 = const i32 9
+    %104 = sig i16 %0
+    %105 = shr i16$ %next_crc, i16$ %104, i32 %103
+    %106 = exts i1$, i16$ %105, 0, 1
+    %107 = exts i15, i16 %crc_reg1, 1, 15
+    %108 = inss i16 %0, i15 %107, 0, 15
+    %109 = exts i1, i16 %108, 0, 1
+    %110 = xor i1 %56, %109
+    %111 = xor i1 %110, %59
+    drv i1$ %106, %111, %1
+    %112 = const i32 10
+    %113 = sig i16 %0
+    %114 = shr i16$ %next_crc, i16$ %113, i32 %112
+    %115 = exts i1$, i16$ %114, 0, 1
+    %116 = exts i14, i16 %crc_reg1, 2, 14
+    %117 = inss i16 %0, i14 %116, 0, 14
+    %118 = exts i1, i16 %117, 0, 1
+    %119 = xor i1 %67, %118
+    %120 = xor i1 %119, %73
+    drv i1$ %115, %120, %1
+    %121 = const i32 11
+    %122 = sig i16 %0
+    %123 = shr i16$ %next_crc, i16$ %122, i32 %121
+    %124 = exts i1$, i16$ %123, 0, 1
+    %125 = exts i13, i16 %crc_reg1, 3, 13
+    %126 = inss i16 %0, i13 %125, 0, 13
+    %127 = exts i1, i16 %126, 0, 1
+    %128 = xor i1 %82, %127
+    %129 = xor i1 %128, %87
+    drv i1$ %124, %129, %1
     inst %parallel_crc_ccitt.always.248.0 (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i16$ %next_crc) -&gt; (i16$ %crc_reg)
+    halt
 }
 
 </pre>

@@ -18,14 +18,12 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/basiclatch.v.html" target="file-frame">third_party/tests/ivtest/ivltests/basiclatch.v</a>
 time_elapsed: 0.004s
-ram usage: 9624 KB
+ram usage: 9640 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e basiclatch <a href="../../../../third_party/tests/ivtest/ivltests/basiclatch.v.html" target="file-frame">third_party/tests/ivtest/ivltests/basiclatch.v</a>
 proc %basiclatch.always.233.0 (i1$ %clk, i1$ %d) -&gt; (i1$ %q) {
-0:
-    br %init
 init:
     %clk1 = prb i1$ %clk
     %d1 = prb i1$ %d
@@ -38,27 +36,23 @@ check:
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %clk3 = prb i1$ %clk
-    %1 = not i1 %clk3
-    br %1, %if_false, %if_true
+    %0 = not i1 %clk2
+    %1 = const i1 0
+    %2 = neq i1 %0, %1
+    br %2, %init, %if_true
 if_true:
-    %d3 = prb i1$ %d
-    %2 = const time 0s 1e
-    drv i1$ %q, %d3, %2
-    br %if_exit
-if_false:
-    br %if_exit
-if_exit:
-    br %0
+    %3 = const time 0s 1e
+    drv i1$ %q, %d2, %3
+    br %init
 }
 
 entity @basiclatch (i1$ %clk, i1$ %d) -&gt; (i1$ %q) {
     %0 = const i1 0
     %q1 = sig i1 %0
     inst %basiclatch.always.233.0 (i1$ %clk, i1$ %d) -&gt; (i1$ %q1)
-    %1 = const i1 0
-    %2 = const time 0s
-    drv i1$ %q, %1, %2
+    %1 = const time 0s
+    drv i1$ %q, %0, %1
+    halt
 }
 
 </pre>

@@ -18,14 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v</a>
 time_elapsed: 0.004s
-ram usage: 9504 KB
+ram usage: 11304 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e mux_using_if <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v.html#l-22" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v:22</a>:14-18:
+   | 
+   |   if (sel == 1&#39;b0) begin
+   |              ^^^^       
+   = note: Casts `1&#39;b0` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v.html#l-22" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_mux_using_if.v:22</a>:14-18:
+   | 
+   |   if (sel == 1&#39;b0) begin
+   |              ^^^^       
+
 proc %mux_using_if.always.235.0 (i1$ %din_0, i1$ %din_1, i1$ %sel) -&gt; (i1$ %mux_out) {
-0:
-    br %init
 init:
     %sel1 = prb i1$ %sel
     %din_01 = prb i1$ %din_0
@@ -42,31 +51,26 @@ check:
     %event_or1 = or i1 %event_or, %impledge2
     br %event_or1, %init, %event
 event:
-    %sel3 = prb i1$ %sel
-    %1 = const i1 0
-    %2 = eq i1 %sel3, %1
+    %0 = const i1 0
+    %1 = eq i1 %sel2, %0
+    %2 = neq i1 %1, %0
+    %3 = const time 0s 1e
     br %2, %if_false, %if_true
 if_true:
-    %din_03 = prb i1$ %din_0
-    %3 = const time 0s 1e
-    drv i1$ %mux_out, %din_03, %3
-    br %if_exit
+    drv i1$ %mux_out, %din_02, %3
+    br %init
 if_false:
-    %din_13 = prb i1$ %din_1
-    %4 = const time 0s 1e
-    drv i1$ %mux_out, %din_13, %4
-    br %if_exit
-if_exit:
-    br %0
+    drv i1$ %mux_out, %din_12, %3
+    br %init
 }
 
 entity @mux_using_if (i1$ %din_0, i1$ %din_1, i1$ %sel) -&gt; (i1$ %mux_out) {
     %0 = const i1 0
     %mux_out1 = sig i1 %0
     inst %mux_using_if.always.235.0 (i1$ %din_0, i1$ %din_1, i1$ %sel) -&gt; (i1$ %mux_out1)
-    %1 = const i1 0
-    %2 = const time 0s
-    drv i1$ %mux_out, %1, %2
+    %1 = const time 0s
+    drv i1$ %mux_out, %0, %1
+    halt
 }
 
 </pre>

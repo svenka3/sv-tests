@@ -18,14 +18,12 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/hana/test_intermout.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_intermout.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
 time_elapsed: 0.024s
-ram usage: 9848 KB
+ram usage: 11140 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/generated/yosys_hana -e f1_test <a href="../../../../third_party/tools/yosys/tests/hana/test_intermout.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_intermout.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
 proc %f1_test.always.372.0 (i1$ %a, i1$ %b, i1$ %c, i1$ %d) -&gt; (i1$ %z, i1$ %temp1, i1$ %temp2) {
-0:
-    br %init
 init:
     %a1 = prb i1$ %a
     %b1 = prb i1$ %b
@@ -46,35 +44,27 @@ check:
     %event_or2 = or i1 %event_or1, %impledge3
     br %event_or2, %init, %event
 event:
-    %a3 = prb i1$ %a
-    %b3 = prb i1$ %b
-    %1 = xor i1 %a3, %b3
-    %2 = const time 0s 1e
-    drv i1$ %temp1, %1, %2
-    %c3 = prb i1$ %c
-    %d3 = prb i1$ %d
-    %3 = xor i1 %c3, %d3
-    %4 = const time 0s 1e
-    drv i1$ %temp2, %3, %4
+    %0 = xor i1 %a2, %b2
+    %1 = const time 0s 1e
+    drv i1$ %temp1, %0, %1
+    %2 = xor i1 %c2, %d2
+    drv i1$ %temp2, %2, %1
     %temp11 = prb i1$ %temp1
     %temp21 = prb i1$ %temp2
-    %5 = xor i1 %temp11, %temp21
-    %6 = const time 0s 1e
-    drv i1$ %z, %5, %6
-    br %0
+    %3 = xor i1 %temp11, %temp21
+    drv i1$ %z, %3, %1
+    br %init
 }
 
 entity @f1_test (i1$ %a, i1$ %b, i1$ %c, i1$ %d) -&gt; (i1$ %z) {
     %0 = const i1 0
     %z1 = sig i1 %0
-    %1 = const i1 0
-    %temp1 = sig i1 %1
-    %2 = const i1 0
-    %temp2 = sig i1 %2
+    %temp1 = sig i1 %0
+    %temp2 = sig i1 %0
     inst %f1_test.always.372.0 (i1$ %a, i1$ %b, i1$ %c, i1$ %d) -&gt; (i1$ %z1, i1$ %temp1, i1$ %temp2)
-    %3 = const i1 0
-    %4 = const time 0s
-    drv i1$ %z, %3, %4
+    %1 = const time 0s
+    drv i1$ %z, %0, %1
+    halt
 }
 
 </pre>

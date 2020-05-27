@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest005.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest005.v</a>
 time_elapsed: 0.004s
-ram usage: 9552 KB
+ram usage: 9692 KB
 </pre>
 <pre class="log">
 
@@ -35,6 +35,17 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest005.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/ptest005.v:27</a>:9-16:
+   | 
+   |     a = 4&#39;b0110;
+   |         ^^^^^^^ 
+   = note: Casts `4&#39;b0110` from `bit [3:0]` to `logic [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest005.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/ptest005.v:27</a>:9-16:
+   | 
+   |     a = 4&#39;b0110;
+   |         ^^^^^^^ 
+
 proc %main.initial.226.0 (i4$ %b) -&gt; (i4$ %a) {
 0:
     %1 = const i4 6
@@ -43,30 +54,19 @@ proc %main.initial.226.0 (i4$ %b) -&gt; (i4$ %a) {
     %3 = const i32 1
     wait %4 for %3
 4:
-    %b1 = prb i4$ %b
-    %5 = const i4 9
-    %6 = eq i4 %b1, %5
-    br %6, %if_false, %if_true
-if_true:
-    %7 = const i32 0
-    br %if_exit
-if_false:
-    %8 = const i32 0
-    br %if_exit
-if_exit:
     halt
 }
 
 entity @main () -&gt; () {
     %0 = const i4 0
     %a = sig i4 %0
-    %1 = const i4 0
-    %b = sig i4 %1
+    %b = sig i4 %0
     %a1 = prb i4$ %a
-    %2 = not i4 %a1
-    %3 = const time 0s 1e
-    drv i4$ %b, %2, %3
+    %1 = not i4 %a1
+    %2 = const time 0s 1e
+    drv i4$ %b, %1, %2
     inst %main.initial.226.0 (i4$ %b) -&gt; (i4$ %a)
+    halt
 }
 
 </pre>

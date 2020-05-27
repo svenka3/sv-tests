@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: string replication operator test
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 11.4.12.2
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-11
@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../tests/chapter-11/11.4.12.2--string_repl_op.sv.html" target="file-frame">tests/chapter-11/11.4.12.2--string_repl_op.sv</a>
 time_elapsed: 0.004s
-ram usage: 9604 KB
+ram usage: 9744 KB
 </pre>
 <pre class="log">
 
@@ -29,17 +29,22 @@ warning: `$display` not supported; ignored
    |     $display(&#34;:assert:(&#39;%s&#39; == &#39;testtesttesttest&#39;)&#34;, str);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering to mir rvalue of expression `&#34;test&#34;` not implemented
-  --&gt; <a href="../../../tests/chapter-11/11.4.12.2--string_repl_op.sv.html#l-12" target="file-frame">tests/chapter-11/11.4.12.2--string_repl_op.sv:12</a>:11-17:
-   | 
-   |     str = {4{&#34;test&#34;}};
-   |              ^^^^^^   
+proc %top.initial.223.0 () -&gt; ([1 x i8]$ %str) {
+0:
+    %1 = const i8 0
+    %2 = [i8 %1]
+    %3 = const time 0s 1e
+    drv [1 x i8]$ %str, %2, %3
+    halt
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;Error has no width&#39;, src/svlog/ty.rs:159:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @top () -&gt; () {
+    %0 = const i8 0
+    %1 = [i8 %0]
+    %str = sig [1 x i8] %1
+    inst %top.initial.223.0 () -&gt; ([1 x i8]$ %str)
+    halt
+}
 
 </pre>
 </body>

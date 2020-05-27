@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v</a>
 time_elapsed: 0.004s
-ram usage: 9708 KB
+ram usage: 9544 KB
 </pre>
 <pre class="log">
 
@@ -28,6 +28,61 @@ warning: `$display` not supported; ignored
    | 
    |   $display(&#34;&#39;h%h&#34;, j);
    |   ^^^^^^^^^^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:7</a>:7-14:
+   | 
+   |   i = 10&#39;h3ff;
+   |       ^^^^^^^ 
+   = note: Casts `10&#39;h3ff` from `bit [9:0]` to `logic [9:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:7</a>:7-14:
+   | 
+   |   i = 10&#39;h3ff;
+   |       ^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:12-13:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |            ^          
+   = note: Casts `4` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:12-13:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |            ^          
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:12-13:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |            ^          
+   = note: Casts `4` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:12-13:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |            ^          
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:17-22:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |                 ^^^^^ 
+   = note: Casts `8&#39;hfe` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:17-22:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |                 ^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:17-22:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |                 ^^^^^ 
+   = note: Casts `8&#39;hfe` from `byte unsigned` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146824.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146824.v:8</a>:17-22:
+   | 
+   |   j = (i / 4) &amp; 8&#39;hfe;
+   |                 ^^^^^ 
 
 proc %bug.initial.225.0 () -&gt; (i10$ %i, i8$ %j) {
 0:
@@ -39,14 +94,10 @@ proc %bug.initial.225.0 () -&gt; (i10$ %i, i8$ %j) {
     %4 = inss i32 %3, i10 %i1, 0, 10
     %5 = const i32 4
     %6 = udiv i32 %4, %5
-    %7 = const i32 0
-    %8 = const i8 254
-    %9 = inss i32 %7, i8 %8, 0, 8
-    %10 = and i32 %6, %9
-    %11 = exts i8, i32 %10, 0, 8
-    %12 = const time 0s 1e
-    drv i8$ %j, %11, %12
-    %13 = const i32 0
+    %7 = const i32 254
+    %8 = and i32 %6, %7
+    %9 = exts i8, i32 %8, 0, 8
+    drv i8$ %j, %9, %2
     halt
 }
 
@@ -56,6 +107,7 @@ entity @bug () -&gt; () {
     %1 = const i8 0
     %j = sig i8 %1
     inst %bug.initial.225.0 () -&gt; (i10$ %i, i8$ %j)
+    halt
 }
 
 </pre>

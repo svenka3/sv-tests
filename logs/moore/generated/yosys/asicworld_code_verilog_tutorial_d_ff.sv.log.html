@@ -18,51 +18,43 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_d_ff.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_d_ff.v</a>
 time_elapsed: 0.004s
-ram usage: 9640 KB
+ram usage: 9636 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e d_ff <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_d_ff.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_d_ff.v</a>
 proc %d_ff.always.239.0 (i1$ %d, i1$ %clk) -&gt; (i1$ %q, i1$ %q_bar) {
-0:
-    br %init
 init:
     %clk1 = prb i1$ %clk
     wait %check, %clk
 check:
     %clk2 = prb i1$ %clk
-    %1 = const i1 0
-    %2 = eq i1 %clk1, %1
-    %3 = neq i1 %clk2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
     %d1 = prb i1$ %d
-    %4 = const time 0s 1d
-    drv i1$ %q, %d1, %4
-    %d2 = prb i1$ %d
-    %5 = not i1 %d2
-    %6 = const time 0s 1d
-    drv i1$ %q_bar, %5, %6
-    br %0
+    %3 = const time 0s 1d
+    drv i1$ %q, %d1, %3
+    %4 = neq i1 %d1, %0
+    %5 = not i1 %4
+    drv i1$ %q_bar, %5, %3
+    br %init
 }
 
 entity @d_ff (i1$ %d, i1$ %clk) -&gt; (i1$ %q, i1$ %q_bar) {
     %0 = const i1 0
     %d1 = sig i1 %0
-    %1 = const i1 0
-    %clk1 = sig i1 %1
-    %2 = const i1 0
-    %q1 = sig i1 %2
-    %3 = const i1 0
-    %q_bar1 = sig i1 %3
+    %clk1 = sig i1 %0
+    %q1 = sig i1 %0
+    %q_bar1 = sig i1 %0
     inst %d_ff.always.239.0 (i1$ %d1, i1$ %clk1) -&gt; (i1$ %q1, i1$ %q_bar1)
-    %4 = const i1 0
-    %5 = const time 0s
-    drv i1$ %q, %4, %5
-    %6 = const i1 0
-    %7 = const time 0s
-    drv i1$ %q_bar, %6, %7
+    %1 = const time 0s
+    drv i1$ %q, %0, %1
+    drv i1$ %q_bar, %0, %1
+    halt
 }
 
 </pre>

@@ -18,62 +18,54 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/arrays01.v.html" target="file-frame">third_party/tools/yosys/tests/simple/arrays01.v</a>
 time_elapsed: 0.004s
-ram usage: 9704 KB
+ram usage: 9636 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e uut_arrays01 <a href="../../../../third_party/tools/yosys/tests/simple/arrays01.v.html" target="file-frame">third_party/tools/yosys/tests/simple/arrays01.v</a>
 proc %uut_arrays01.always.246.0 (i1$ %clock, i1$ %we, i4$ %addr, i4$ %wr_data) -&gt; (i4$ %rd_data, i4$ %memory) {
-0:
-    br %init
 init:
     %clock1 = prb i1$ %clock
     wait %check, %clock
 check:
     %clock2 = prb i1$ %clock
-    %1 = const i1 0
-    %2 = eq i1 %clock1, %1
-    %3 = neq i1 %clock2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %clock1, %0
+    %2 = neq i1 %clock2, %0
+    %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
     %we1 = prb i1$ %we
-    br %we1, %if_false, %if_true
-if_true:
-    %addr1 = prb i4$ %addr
+    %3 = neq i1 %we1, %0
     %4 = const i4 0
-    %5 = sig i4 %4
-    %6 = shr i4$ %memory, i4$ %5, i4 %addr1
-    %7 = exts i1$, i4$ %6, 0, 1
+    %addr1 = prb i4$ %addr
+    %5 = const time 0s 1d
+    br %3, %if_exit, %if_true
+if_true:
+    %6 = sig i4 %4
+    %7 = shr i4$ %memory, i4$ %6, i4 %addr1
+    %8 = exts i1$, i4$ %7, 0, 1
     %wr_data1 = prb i4$ %wr_data
-    %8 = exts i1, i4 %wr_data1, 0, 1
-    %9 = const time 0s 1d
-    drv i1$ %7, %8, %9
-    br %if_exit
-if_false:
+    %9 = exts i1, i4 %wr_data1, 0, 1
+    drv i1$ %8, %9, %5
     br %if_exit
 if_exit:
-    %10 = const i4 0
     %memory1 = prb i4$ %memory
-    %addr2 = prb i4$ %addr
-    %11 = const i4 0
-    %12 = shr i4 %memory1, i4 %11, i4 %addr2
-    %13 = exts i1, i4 %12, 0, 1
-    %14 = inss i4 %10, i1 %13, 0, 1
-    %15 = const time 0s 1d
-    drv i4$ %rd_data, %14, %15
-    br %0
+    %10 = shr i4 %memory1, i4 %4, i4 %addr1
+    %11 = exts i1, i4 %10, 0, 1
+    %12 = inss i4 %4, i1 %11, 0, 1
+    drv i4$ %rd_data, %12, %5
+    br %init
 }
 
 entity @uut_arrays01 (i1$ %clock, i1$ %we, i4$ %addr, i4$ %wr_data) -&gt; (i4$ %rd_data) {
     %0 = const i4 0
     %rd_data1 = sig i4 %0
-    %1 = const i4 0
-    %memory = sig i4 %1
+    %memory = sig i4 %0
     inst %uut_arrays01.always.246.0 (i1$ %clock, i1$ %we, i4$ %addr, i4$ %wr_data) -&gt; (i4$ %rd_data1, i4$ %memory)
-    %2 = const i4 0
-    %3 = const time 0s
-    drv i4$ %rd_data, %2, %3
+    %1 = const time 0s
+    drv i4$ %rd_data, %0, %1
+    halt
 }
 
 </pre>

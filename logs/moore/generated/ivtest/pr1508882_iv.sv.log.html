@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,23 +18,30 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1508882.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1508882.v</a>
 time_elapsed: 0.004s
-ram usage: 9548 KB
+ram usage: 9960 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/pr1508882.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1508882.v</a>
-error: net `sum` has no constant value
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1508882.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1508882.v:10</a>:15-18:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1508882.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1508882.v:14</a>:24-35:
    | 
-   |    wire [4:0] sum;
-   |               ^^^ 
+   |    wire [5:0] padded = {1&#39;b0, sum};
+   |                        ^^^^^^^^^^^ 
+   = note: Casts `{1&#39;b0, sum}` from `logic [5:0]` to `bit [5:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1508882.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1508882.v:14</a>:24-35:
+   | 
+   |    wire [5:0] padded = {1&#39;b0, sum};
+   |                        ^^^^^^^^^^^ 
 
-note: constant value of net `sum` needed here
+error: value is not constant
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1508882.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1508882.v:14</a>:31-34:
    | 
    |    wire [5:0] padded = {1&#39;b0, sum};
    |                               ^^^  
 
+thread &#39;main&#39; panicked at &#39;concat non-integer&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1590399716078/work/src/svlog/value.rs:437:27
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

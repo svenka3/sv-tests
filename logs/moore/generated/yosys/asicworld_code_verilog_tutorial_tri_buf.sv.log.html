@@ -18,24 +18,35 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v</a>
 time_elapsed: 0.004s
-ram usage: 9656 KB
+ram usage: 11300 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e tri_buf <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html#l-7" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v:7</a>:27-31:
+   | 
+   | assign b = (enable) ? a : 1&#39;bz;
+   |                           ^^^^ 
+   = note: Casts `1&#39;bz` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html#l-7" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v:7</a>:27-31:
+   | 
+   | assign b = (enable) ? a : 1&#39;bz;
+   |                           ^^^^ 
+
 entity @tri_buf (i1$ %a, i1$ %enable) -&gt; (i1$ %b) {
     %0 = const i1 0
     %b1 = sig i1 %0
     %enable1 = prb i1$ %enable
+    %1 = neq i1 %enable1, %0
     %a1 = prb i1$ %a
-    %1 = const i1 0
-    %2 = [i1 %1, %a1]
-    %3 = mux [2 x i1] %2, i1 %enable1
+    %2 = [i1 %0, %a1]
+    %3 = mux [2 x i1] %2, i1 %1
     %4 = const time 0s 1e
     drv i1$ %b1, %3, %4
-    %5 = const i1 0
-    %6 = const time 0s
-    drv i1$ %b, %5, %6
+    %5 = const time 0s
+    drv i1$ %b, %0, %5
+    halt
 }
 
 </pre>

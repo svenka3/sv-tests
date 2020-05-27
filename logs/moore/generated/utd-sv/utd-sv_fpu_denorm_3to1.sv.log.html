@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/fpu_denorm_3to1.v.html" target="file-frame">third_party/tests/utd-sv/fpu_denorm_3to1.v</a>
 time_elapsed: 0.004s
-ram usage: 9588 KB
+ram usage: 9652 KB
 </pre>
 <pre class="log">
 
@@ -26,41 +26,46 @@ moore -I /tmpfs/src/github/sv-tests/third_party/tests/utd-sv -e fpu_denorm_3to1 
 entity @fpu_denorm_3to1 (i1$ %din2_din1_nz_hi, i1$ %din2_din1_denorm_hi, i1$ %din2_din1_nz_mid, i1$ %din2_din1_denorm_mid, i1$ %din2_din1_nz_lo, i1$ %din2_din1_denorm_lo) -&gt; (i1$ %din2_din1_nz, i1$ %din2_din1_denorm) {
     %0 = const i1 0
     %din2_din1_nz1 = sig i1 %0
-    %1 = const i1 0
-    %din2_din1_denorm1 = sig i1 %1
+    %din2_din1_denorm1 = sig i1 %0
     %din2_din1_nz_hi1 = prb i1$ %din2_din1_nz_hi
+    %1 = neq i1 %din2_din1_nz_hi1, %0
     %din2_din1_nz_mid1 = prb i1$ %din2_din1_nz_mid
-    %2 = or i1 %din2_din1_nz_hi1, %din2_din1_nz_mid1
+    %2 = neq i1 %din2_din1_nz_mid1, %0
+    %3 = or i1 %1, %2
+    %4 = neq i1 %3, %0
     %din2_din1_nz_lo1 = prb i1$ %din2_din1_nz_lo
-    %3 = or i1 %2, %din2_din1_nz_lo1
-    %4 = const time 0s 1e
-    drv i1$ %din2_din1_nz1, %3, %4
-    %din2_din1_nz_hi2 = prb i1$ %din2_din1_nz_hi
+    %5 = neq i1 %din2_din1_nz_lo1, %0
+    %6 = or i1 %4, %5
+    %7 = const time 0s 1e
+    drv i1$ %din2_din1_nz1, %6, %7
     %din2_din1_denorm_hi1 = prb i1$ %din2_din1_denorm_hi
-    %5 = and i1 %din2_din1_nz_hi2, %din2_din1_denorm_hi1
-    %din2_din1_nz_hi3 = prb i1$ %din2_din1_nz_hi
-    %6 = not i1 %din2_din1_nz_hi3
-    %din2_din1_nz_mid2 = prb i1$ %din2_din1_nz_mid
-    %7 = and i1 %6, %din2_din1_nz_mid2
+    %8 = neq i1 %din2_din1_denorm_hi1, %0
+    %9 = and i1 %1, %8
+    %10 = neq i1 %9, %0
+    %11 = not i1 %1
+    %12 = neq i1 %11, %0
+    %13 = and i1 %12, %2
+    %14 = neq i1 %13, %0
     %din2_din1_denorm_mid1 = prb i1$ %din2_din1_denorm_mid
-    %8 = and i1 %7, %din2_din1_denorm_mid1
-    %9 = or i1 %5, %8
-    %din2_din1_nz_hi4 = prb i1$ %din2_din1_nz_hi
-    %10 = not i1 %din2_din1_nz_hi4
-    %din2_din1_nz_mid3 = prb i1$ %din2_din1_nz_mid
-    %11 = not i1 %din2_din1_nz_mid3
-    %12 = and i1 %10, %11
+    %15 = neq i1 %din2_din1_denorm_mid1, %0
+    %16 = and i1 %14, %15
+    %17 = neq i1 %16, %0
+    %18 = or i1 %10, %17
+    %19 = neq i1 %18, %0
+    %20 = not i1 %2
+    %21 = neq i1 %20, %0
+    %22 = and i1 %12, %21
+    %23 = neq i1 %22, %0
     %din2_din1_denorm_lo1 = prb i1$ %din2_din1_denorm_lo
-    %13 = and i1 %12, %din2_din1_denorm_lo1
-    %14 = or i1 %9, %13
-    %15 = const time 0s 1e
-    drv i1$ %din2_din1_denorm1, %14, %15
-    %16 = const i1 0
-    %17 = const time 0s
-    drv i1$ %din2_din1_nz, %16, %17
-    %18 = const i1 0
-    %19 = const time 0s
-    drv i1$ %din2_din1_denorm, %18, %19
+    %24 = neq i1 %din2_din1_denorm_lo1, %0
+    %25 = and i1 %23, %24
+    %26 = neq i1 %25, %0
+    %27 = or i1 %19, %26
+    drv i1$ %din2_din1_denorm1, %27, %7
+    %28 = const time 0s
+    drv i1$ %din2_din1_nz, %0, %28
+    drv i1$ %din2_din1_denorm, %0, %28
+    halt
 }
 
 </pre>

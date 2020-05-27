@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,11 +18,12 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v</a>
 time_elapsed: 0.004s
-ram usage: 9712 KB
+ram usage: 9780 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e repwhile_test001 <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v</a>
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55f69b9e6a68
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html#l-28" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v:28</a>:23-30:
    | 
@@ -32,15 +33,40 @@ compiler bug: lowering of expression not implemented
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-compiler bug: lowering to mir rvalue of expression `mylog2(i)` not implemented
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html#l-28" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v:28</a>:12-13:
+   | 
+   |         for (i = 0; i &lt; 64; i = i+1) begin
+   |                  ^                        
+   = note: Casts `0` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html#l-28" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v:28</a>:12-13:
+   | 
+   |         for (i = 0; i &lt; 64; i = i+1) begin
+   |                  ^                        
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html#l-28" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v:28</a>:19-21:
+   | 
+   |         for (i = 0; i &lt; 64; i = i+1) begin
+   |                         ^^                
+   = note: Casts `64` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html#l-28" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v:28</a>:19-21:
+   | 
+   |         for (i = 0; i &lt; 64; i = i+1) begin
+   |                         ^^                
+
+compiler bug: lowering of expression `mylog2(i)` to mir not yet supported
   --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/repwhile.v.html#l-29" target="file-frame">third_party/tools/yosys/tests/simple/repwhile.v:29</a>:18-27:
    | 
    |             y_table[i] &lt;= mylog2(i);
    |                           ^^^^^^^^^ 
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:450
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
+thread &#39;main&#39; panicked at &#39;lowering of expression `mylog2(i)` to mir not yet supported&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

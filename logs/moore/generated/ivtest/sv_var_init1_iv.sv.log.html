@@ -17,12 +17,34 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v</a>
-time_elapsed: 0.004s
-ram usage: 9668 KB
+time_elapsed: 0.008s
+ram usage: 9748 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:3</a>:13-14:
+   | 
+   | integer i = 1;
+   |             ^ 
+   = note: Casts `1` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:3</a>:13-14:
+   | 
+   | integer i = 1;
+   |             ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:4</a>:13-14:
+   | 
+   | integer j = 0;
+   |             ^ 
+   = note: Casts `0` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:4</a>:13-14:
+   | 
+   | integer j = 0;
+   |             ^ 
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:9</a>:6-31:
    | 
@@ -41,9 +63,29 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:10</a>:14-15:
+   | 
+   |   if ((i === 1) &amp;&amp; (j === 0))
+   |              ^               
+   = note: Casts `1` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:10</a>:14-15:
+   | 
+   |   if ((i === 1) &amp;&amp; (j === 0))
+   |              ^               
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:10</a>:27-28:
+   | 
+   |   if ((i === 1) &amp;&amp; (j === 0))
+   |                           ^  
+   = note: Casts `0` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:10</a>:27-28:
+   | 
+   |   if ((i === 1) &amp;&amp; (j === 0))
+   |                           ^  
+
 proc %top.always.225.0 (i32$ %i) -&gt; (i32$ %j) {
-0:
-    br %init
 init:
     %i1 = prb i32$ %i
     wait %check, %i
@@ -52,10 +94,9 @@ check:
     %impledge = neq i32 %i1, %i2
     br %impledge, %init, %event
 event:
-    %i3 = prb i32$ %i
-    %1 = const time 0s 1e
-    drv i32$ %j, %i3, %1
-    br %0
+    %0 = const time 0s 1e
+    drv i32$ %j, %i2, %0
+    br %init
 }
 
 proc %top.initial.226.0 (i32$ %i, i32$ %j) -&gt; () {
@@ -63,22 +104,6 @@ proc %top.initial.226.0 (i32$ %i, i32$ %j) -&gt; () {
     %1 = const i32 0
     wait %2 for %1
 2:
-    %3 = const i32 0
-    %i1 = prb i32$ %i
-    %4 = const i32 1
-    %5 = eq i32 %i1, %4
-    %j1 = prb i32$ %j
-    %6 = const i32 0
-    %7 = eq i32 %j1, %6
-    %8 = and i1 %5, %7
-    br %8, %if_false, %if_true
-if_true:
-    %9 = const i32 0
-    br %if_exit
-if_false:
-    %10 = const i32 0
-    br %if_exit
-if_exit:
     halt
 }
 
@@ -89,6 +114,7 @@ entity @top () -&gt; () {
     %j = sig i32 %1
     inst %top.always.225.0 (i32$ %i) -&gt; (i32$ %j)
     inst %top.initial.226.0 (i32$ %i, i32$ %j) -&gt; ()
+    halt
 }
 
 </pre>

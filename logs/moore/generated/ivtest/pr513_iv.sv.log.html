@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr513.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr513.v</a>
-time_elapsed: 0.004s
-ram usage: 9764 KB
+time_elapsed: 0.008s
+ram usage: 9596 KB
 </pre>
 <pre class="log">
 
@@ -41,6 +41,17 @@ warning: `$display` not supported; ignored
    |     $display( &#34;PASSED&#34; );
    |     ^^^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr513.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr513.v:12</a>:10-39:
+   | 
+   |     fd = $fopen( &#34;work/example.dump&#34; );
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: Casts `$fopen( &#34;work/example.dump&#34; )` from `int` to `integer`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr513.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr513.v:12</a>:10-39:
+   | 
+   |     fd = $fopen( &#34;work/example.dump&#34; );
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
 proc %example.initial.223.0 () -&gt; (i32$ %fd) {
 0:
     %1 = const i32 100
@@ -49,11 +60,9 @@ proc %example.initial.223.0 () -&gt; (i32$ %fd) {
     %3 = const i32 0
     %4 = const time 0s 1e
     drv i32$ %fd, %3, %4
-    %5 = const i32 0
-    %6 = const i32 1000
-    wait %7 for %6
-7:
-    %8 = const i32 0
+    %5 = const i32 1000
+    wait %6 for %5
+6:
     halt
 }
 
@@ -61,6 +70,7 @@ entity @example () -&gt; () {
     %0 = const i32 0
     %fd = sig i32 %0
     inst %example.initial.223.0 () -&gt; (i32$ %fd)
+    halt
 }
 
 </pre>

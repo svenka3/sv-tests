@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v</a>
 time_elapsed: 0.004s
-ram usage: 9636 KB
+ram usage: 9684 KB
 </pre>
 <pre class="log">
 
@@ -35,12 +35,43 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-error: type `logic [119:110]` required, but expression has type `logic [9:0]`
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:13</a>:12-19:
+   | 
+   |     r163 = 10&#39;h17d;
+   |            ^^^^^^^ 
+   = note: Casts `10&#39;h17d` from `bit [119:110]` to `logic [119:110]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:13</a>:12-19:
    | 
    |     r163 = 10&#39;h17d;
    |            ^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:13</a>:12-19:
+   | 
+   |     r163 = 10&#39;h17d;
+   |            ^^^^^^^ 
+   = note: Casts `10&#39;h17d` from `bit [9:0]` to `bit [119:110]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:13</a>:12-19:
+   | 
+   |     r163 = 10&#39;h17d;
+   |            ^^^^^^^ 
+
+compiler bug: type assertion failed: `logic [119:110]` != `logic [9:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:15</a>:35-40:
+   | 
+   |     r222 = (1&#39;b1 + (22&#39;h3a15 &amp;&amp; ((^r163) &lt; 4&#39;h8))) != 1&#39;bx;
+   |                                   ^^^^^                    
+   = note: Type mismatch:
+   = note:     Left-hand side:  `logic [119:110]`
+   = note:     Right-hand side: `logic [9:0]`
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:1707
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;type assertion failed: `logic [119:110]` != `logic [9:0]`&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

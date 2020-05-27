@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/packed/variable-slice.sv.html" target="file-frame">tests/chapter-7/arrays/packed/variable-slice.sv</a>
 time_elapsed: 0.004s
-ram usage: 9616 KB
+ram usage: 9592 KB
 </pre>
 <pre class="log">
 
@@ -35,37 +35,42 @@ warning: `$display` not supported; ignored
    |     $display(&#34;:assert: (&#39;%b&#39; == &#39;01110000&#39;)&#34;, arr_b);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../../tests/chapter-7/arrays/packed/variable-slice.sv.html#l-12" target="file-frame">tests/chapter-7/arrays/packed/variable-slice.sv:12</a>:23-24:
+   | 
+   | parameter integer c = 3;
+   |                       ^ 
+   = note: Casts `3` from `int` to `integer`
+  --&gt; <a href="../../../../../tests/chapter-7/arrays/packed/variable-slice.sv.html#l-12" target="file-frame">tests/chapter-7/arrays/packed/variable-slice.sv:12</a>:23-24:
+   | 
+   | parameter integer c = 3;
+   |                       ^ 
+
 proc %top.initial.226.0 () -&gt; (i8$ %arr_a, i8$ %arr_b) {
 0:
     %1 = const i8 255
     %2 = const time 0s 1e
     drv i8$ %arr_a, %1, %2
     %3 = const i8 0
-    %4 = const time 0s 1e
-    drv i8$ %arr_b, %3, %4
-    %5 = const i32 0
-    %6 = const i32 4
-    %7 = const i8 0
-    %8 = sig i8 %7
-    %9 = shr i8$ %arr_b, i8$ %8, i32 %6
-    %10 = exts i3$, i8$ %9, 0, 3
+    drv i8$ %arr_b, %3, %2
+    %4 = const i32 4
+    %5 = sig i8 %3
+    %6 = shr i8$ %arr_b, i8$ %5, i32 %4
+    %7 = exts i3$, i8$ %6, 0, 3
     %arr_a1 = prb i8$ %arr_a
-    %11 = const i32 1
-    %12 = const i8 0
-    %13 = shr i8 %arr_a1, i8 %12, i32 %11
-    %14 = exts i3, i8 %13, 0, 3
-    %15 = const time 0s 1e
-    drv i3$ %10, %14, %15
-    %16 = const i32 0
+    %8 = exts i7, i8 %arr_a1, 1, 7
+    %9 = inss i8 %3, i7 %8, 0, 7
+    %10 = exts i3, i8 %9, 0, 3
+    drv i3$ %7, %10, %2
     halt
 }
 
 entity @top () -&gt; () {
     %0 = const i8 0
     %arr_a = sig i8 %0
-    %1 = const i8 0
-    %arr_b = sig i8 %1
+    %arr_b = sig i8 %0
     inst %top.initial.226.0 () -&gt; (i8$ %arr_a, i8$ %arr_b)
+    halt
 }
 
 </pre>

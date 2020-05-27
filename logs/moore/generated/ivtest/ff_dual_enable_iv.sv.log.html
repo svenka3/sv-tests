@@ -24,44 +24,38 @@ ram usage: 9648 KB
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/ff_dual_enable.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ff_dual_enable.v</a>
 proc %test.always.243.0 (i1$ %clk, i1$ %foo_valid, i1$ %foo_in, i1$ %bar_valid, i1$ %bar_in) -&gt; (i1$ %foo, i1$ %bar) {
-0:
-    br %init
 init:
     %clk1 = prb i1$ %clk
     wait %check, %clk
 check:
     %clk2 = prb i1$ %clk
-    %1 = const i1 0
-    %2 = eq i1 %clk1, %1
-    %3 = neq i1 %clk2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
     %foo_valid1 = prb i1$ %foo_valid
-    br %foo_valid1, %if_false, %if_true
+    %3 = neq i1 %foo_valid1, %0
+    %4 = const time 0s 1d
+    br %3, %if_exit, %if_true
 if_true:
     %foo_in1 = prb i1$ %foo_in
-    %4 = const time 0s 1d
     drv i1$ %foo, %foo_in1, %4
-    br %if_exit
-if_false:
     br %if_exit
 if_exit:
     %bar_valid1 = prb i1$ %bar_valid
-    br %bar_valid1, %if_false1, %if_true1
+    %5 = neq i1 %bar_valid1, %0
+    br %5, %init, %if_true1
 if_true1:
     %bar_in1 = prb i1$ %bar_in
-    %5 = const time 0s 1d
-    drv i1$ %bar, %bar_in1, %5
-    br %if_exit1
-if_false1:
-    br %if_exit1
-if_exit1:
-    br %0
+    drv i1$ %bar, %bar_in1, %4
+    br %init
 }
 
 entity @test (i1$ %clk, i1$ %foo_valid, i1$ %foo_in, i1$ %bar_valid, i1$ %bar_in) -&gt; (i1$ %foo, i1$ %bar) {
     inst %test.always.243.0 (i1$ %clk, i1$ %foo_valid, i1$ %foo_in, i1$ %bar_valid, i1$ %bar_in) -&gt; (i1$ %foo, i1$ %bar)
+    halt
 }
 
 </pre>

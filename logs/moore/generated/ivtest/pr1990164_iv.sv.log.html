@@ -17,12 +17,45 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v</a>
-time_elapsed: 0.004s
-ram usage: 9764 KB
+time_elapsed: 0.008s
+ram usage: 9704 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:2</a>:27-29:
+   | 
+   |   reg signed [7:0] test = -1;
+   |                           ^^ 
+   = note: Casts `-1` from `logic [31:0]` to `logic [7:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:2</a>:27-29:
+   | 
+   |   reg signed [7:0] test = -1;
+   |                           ^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:2</a>:28-29:
+   | 
+   |   reg signed [7:0] test = -1;
+   |                            ^ 
+   = note: Casts `1` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:2</a>:28-29:
+   | 
+   |   reg signed [7:0] test = -1;
+   |                            ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:2</a>:28-29:
+   | 
+   |   reg signed [7:0] test = -1;
+   |                            ^ 
+   = note: Casts `1` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:2</a>:28-29:
+   | 
+   |   reg signed [7:0] test = -1;
+   |                            ^ 
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:8</a>:7-85:
    | 
@@ -35,37 +68,34 @@ warning: `$display` not supported; ignored
    |     end else  $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:7</a>:19-26:
+   | 
+   |     if (result != 32&#39;h0ff) begin
+   |                   ^^^^^^^       
+   = note: Casts `32&#39;h0ff` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1990164.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1990164.v:7</a>:19-26:
+   | 
+   |     if (result != 32&#39;h0ff) begin
+   |                   ^^^^^^^       
+
 proc %top.initial.225.0 (i8$ %test) -&gt; (i32$ %result) {
 0:
     %1 = const i32 0
     %test1 = prb i8$ %test
-    %2 = const i1 0
-    %3 = const i8 0
-    %4 = shr i8 %test1, i8 %3, i1 %2
-    %5 = exts i8, i8 %4, 0, 8
-    %6 = inss i32 %1, i8 %5, 0, 8
-    %7 = const time 0s 1e
-    drv i32$ %result, %6, %7
-    %result1 = prb i32$ %result
-    %8 = const i32 255
-    %9 = neq i32 %result1, %8
-    br %9, %if_false, %if_true
-if_true:
-    %10 = const i32 0
-    br %if_exit
-if_false:
-    %11 = const i32 0
-    br %if_exit
-if_exit:
+    %2 = inss i32 %1, i8 %test1, 0, 8
+    %3 = const time 0s 1e
+    drv i32$ %result, %2, %3
     halt
 }
 
 entity @top () -&gt; () {
-    %0 = const i32 -1
-    %test = sig i32 %0
+    %0 = const i8 255
+    %test = sig i8 %0
     %1 = const i32 0
     %result = sig i32 %1
-    inst %top.initial.225.0 (i32$ %test) -&gt; (i32$ %result)
+    inst %top.initial.225.0 (i8$ %test) -&gt; (i32$ %result)
+    halt
 }
 
 </pre>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v</a>
-time_elapsed: 0.004s
-ram usage: 9704 KB
+time_elapsed: 0.008s
+ram usage: 9644 KB
 </pre>
 <pre class="log">
 
@@ -41,15 +41,47 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering to mir rvalue of expression `&#34;x&#34;` not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:10</a>:17-20:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:7</a>:11-16:
    | 
-   |     if (res !== &#34;x&#34;) $display(&#34;Failed: expected &#39;bx , got &#39;b%s&#34;, res);
-   |                 ^^^                                                   
+   |     val = 8&#39;hff;
+   |           ^^^^^ 
+   = note: Casts `8&#39;hff` from `byte unsigned` to `logic [7:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:7</a>:11-16:
+   | 
+   |     val = 8&#39;hff;
+   |           ^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:8</a>:11-15:
+   | 
+   |     idx = 4&#39;bx;
+   |           ^^^^ 
+   = note: Casts `4&#39;bx` from `bit [3:0]` to `logic [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:8</a>:11-15:
+   | 
+   |     idx = 4&#39;bx;
+   |           ^^^^ 
 
+proc %top.initial.227.0 (i8$ %res) -&gt; (i8$ %val, i4$ %idx) {
+0:
+    %1 = const i8 255
+    %2 = const time 0s 1e
+    drv i8$ %val, %1, %2
+    %3 = const i4 0
+    drv i4$ %idx, %3, %2
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i8 0
+    %val = sig i8 %0
+    %1 = const i4 0
+    %idx = sig i4 %1
+    %res = sig i8 %0
+    inst %top.initial.227.0 (i8$ %res) -&gt; (i8$ %val, i4$ %idx)
+    halt
+}
 
 </pre>
 </body>

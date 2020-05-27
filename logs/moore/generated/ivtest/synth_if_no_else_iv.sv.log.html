@@ -18,34 +18,74 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v</a>
 time_elapsed: 0.004s
-ram usage: 9740 KB
+ram usage: 9712 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+   = note: Casts `0` from `bit` to `logic`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+   = note: Casts `0` from `bit signed` to `bit`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+   = note: Casts `0` from `bit signed [0:0]` to `bit signed`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+   = note: Casts `0` from `int` to `bit signed [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/synth_if_no_else.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/synth_if_no_else.v:5</a>:11-12:
+   | 
+   |       Q = 0;
+   |           ^ 
+
 proc %test.always.231.0 (i1$ %D, i1$ %OE) -&gt; (i1$ %Q) {
 0:
     wait %trigger, %D, %OE
 trigger:
-    %1 = const i32 0
-    %2 = exts i1, i32 %1, 0, 1
-    %3 = const time 0s 1e
-    drv i1$ %Q, %2, %3
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %Q, %1, %2
     %OE1 = prb i1$ %OE
-    br %OE1, %if_false, %if_true
+    %3 = neq i1 %OE1, %1
+    br %3, %0, %if_true
 if_true:
     %D1 = prb i1$ %D
-    %4 = const time 0s 1e
-    drv i1$ %Q, %D1, %4
-    br %if_exit
-if_false:
-    br %if_exit
-if_exit:
+    drv i1$ %Q, %D1, %2
     br %0
 }
 
 entity @test (i1$ %D, i1$ %OE) -&gt; (i1$ %Q) {
     inst %test.always.231.0 (i1$ %D, i1$ %OE) -&gt; (i1$ %Q)
+    halt
 }
 
 </pre>

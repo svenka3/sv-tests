@@ -18,263 +18,197 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v</a>
 time_elapsed: 0.008s
-ram usage: 9700 KB
+ram usage: 10000 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e serial_crc_ccitt <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-30" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:30</a>:11-19:
+   | 
+   |   lfsr &lt;= 16&#39;hFFFF;
+   |           ^^^^^^^^ 
+   = note: Casts `16&#39;hFFFF` from `shortint unsigned` to `logic [15:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-30" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:30</a>:11-19:
+   | 
+   |   lfsr &lt;= 16&#39;hFFFF;
+   |           ^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-33" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:33</a>:14-22:
+   | 
+   |     lfsr &lt;=  16&#39;hFFFF;
+   |              ^^^^^^^^ 
+   = note: Casts `16&#39;hFFFF` from `shortint unsigned` to `logic [15:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-33" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:33</a>:14-22:
+   | 
+   |     lfsr &lt;=  16&#39;hFFFF;
+   |              ^^^^^^^^ 
+
 proc %serial_crc_ccitt.always.244.0 (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i1$ %data_in) -&gt; (i16$ %lfsr) {
-0:
-    br %init1
 init1:
     %clk1 = prb i1$ %clk
     wait %check, %clk
 check:
     %clk2 = prb i1$ %clk
-    %1 = const i1 0
-    %2 = eq i1 %clk1, %1
-    %3 = neq i1 %clk2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
     br %posedge, %init1, %event
 event:
     %reset1 = prb i1$ %reset
-    br %reset1, %if_false, %if_true
-if_true:
+    %3 = neq i1 %reset1, %0
     %4 = const i16 65535
     %5 = const time 0s 1d
+    br %3, %if_false, %if_true
+if_true:
     drv i16$ %lfsr, %4, %5
-    br %if_exit
+    br %init1
 if_false:
     %enable1 = prb i1$ %enable
-    br %enable1, %if_false1, %if_true1
-if_exit:
-    br %0
+    %6 = neq i1 %enable1, %0
+    br %6, %init1, %if_true1
 if_true1:
     %init2 = prb i1$ %init
-    br %init2, %if_false2, %if_true2
-if_false1:
-    br %if_exit1
-if_exit1:
-    br %if_exit
+    %7 = neq i1 %init2, %0
+    br %7, %if_false1, %if_true2
 if_true2:
-    %6 = const i16 65535
-    %7 = const time 0s 1d
-    drv i16$ %lfsr, %6, %7
-    br %if_exit2
-if_false2:
-    %8 = const i32 0
-    %9 = const i16 0
-    %10 = sig i16 %9
-    %11 = shr i16$ %lfsr, i16$ %10, i32 %8
-    %12 = exts i1$, i16$ %11, 0, 1
+    drv i16$ %lfsr, %4, %5
+    br %init1
+if_false1:
+    %8 = exts i1$, i16$ %lfsr, 0, 1
     %data_in1 = prb i1$ %data_in
     %lfsr1 = prb i16$ %lfsr
-    %13 = const i32 15
-    %14 = const i16 0
-    %15 = shr i16 %lfsr1, i16 %14, i32 %13
-    %16 = exts i1, i16 %15, 0, 1
-    %17 = xor i1 %data_in1, %16
-    %18 = const time 0s 1d
-    drv i1$ %12, %17, %18
-    %19 = const i32 1
-    %20 = const i16 0
-    %21 = sig i16 %20
-    %22 = shr i16$ %lfsr, i16$ %21, i32 %19
-    %23 = exts i1$, i16$ %22, 0, 1
-    %lfsr2 = prb i16$ %lfsr
-    %24 = const i32 0
-    %25 = const i16 0
-    %26 = shr i16 %lfsr2, i16 %25, i32 %24
-    %27 = exts i1, i16 %26, 0, 1
-    %28 = const time 0s 1d
-    drv i1$ %23, %27, %28
-    %29 = const i32 2
-    %30 = const i16 0
-    %31 = sig i16 %30
-    %32 = shr i16$ %lfsr, i16$ %31, i32 %29
-    %33 = exts i1$, i16$ %32, 0, 1
-    %lfsr3 = prb i16$ %lfsr
-    %34 = const i32 1
-    %35 = const i16 0
-    %36 = shr i16 %lfsr3, i16 %35, i32 %34
-    %37 = exts i1, i16 %36, 0, 1
-    %38 = const time 0s 1d
-    drv i1$ %33, %37, %38
-    %39 = const i32 3
-    %40 = const i16 0
-    %41 = sig i16 %40
-    %42 = shr i16$ %lfsr, i16$ %41, i32 %39
+    %9 = exts i1, i16 %lfsr1, 15, 1
+    %10 = const i16 0
+    %11 = inss i16 %10, i1 %9, 0, 1
+    %12 = exts i1, i16 %11, 0, 1
+    %13 = xor i1 %data_in1, %12
+    drv i1$ %8, %13, %5
+    %14 = const i32 1
+    %15 = sig i16 %10
+    %16 = shr i16$ %lfsr, i16$ %15, i32 %14
+    %17 = exts i1$, i16$ %16, 0, 1
+    %18 = exts i1, i16 %lfsr1, 0, 1
+    drv i1$ %17, %18, %5
+    %19 = const i32 2
+    %20 = sig i16 %10
+    %21 = shr i16$ %lfsr, i16$ %20, i32 %19
+    %22 = exts i1$, i16$ %21, 0, 1
+    %23 = exts i15, i16 %lfsr1, 1, 15
+    %24 = inss i16 %10, i15 %23, 0, 15
+    %25 = exts i1, i16 %24, 0, 1
+    drv i1$ %22, %25, %5
+    %26 = const i32 3
+    %27 = sig i16 %10
+    %28 = shr i16$ %lfsr, i16$ %27, i32 %26
+    %29 = exts i1$, i16$ %28, 0, 1
+    %30 = exts i14, i16 %lfsr1, 2, 14
+    %31 = inss i16 %10, i14 %30, 0, 14
+    %32 = exts i1, i16 %31, 0, 1
+    drv i1$ %29, %32, %5
+    %33 = const i32 4
+    %34 = sig i16 %10
+    %35 = shr i16$ %lfsr, i16$ %34, i32 %33
+    %36 = exts i1$, i16$ %35, 0, 1
+    %37 = exts i13, i16 %lfsr1, 3, 13
+    %38 = inss i16 %10, i13 %37, 0, 13
+    %39 = exts i1, i16 %38, 0, 1
+    drv i1$ %36, %39, %5
+    %40 = const i32 5
+    %41 = sig i16 %10
+    %42 = shr i16$ %lfsr, i16$ %41, i32 %40
     %43 = exts i1$, i16$ %42, 0, 1
-    %lfsr4 = prb i16$ %lfsr
-    %44 = const i32 2
-    %45 = const i16 0
-    %46 = shr i16 %lfsr4, i16 %45, i32 %44
-    %47 = exts i1, i16 %46, 0, 1
-    %48 = const time 0s 1d
-    drv i1$ %43, %47, %48
-    %49 = const i32 4
-    %50 = const i16 0
-    %51 = sig i16 %50
-    %52 = shr i16$ %lfsr, i16$ %51, i32 %49
-    %53 = exts i1$, i16$ %52, 0, 1
-    %lfsr5 = prb i16$ %lfsr
-    %54 = const i32 3
-    %55 = const i16 0
-    %56 = shr i16 %lfsr5, i16 %55, i32 %54
-    %57 = exts i1, i16 %56, 0, 1
-    %58 = const time 0s 1d
-    drv i1$ %53, %57, %58
-    %59 = const i32 5
-    %60 = const i16 0
-    %61 = sig i16 %60
-    %62 = shr i16$ %lfsr, i16$ %61, i32 %59
-    %63 = exts i1$, i16$ %62, 0, 1
-    %lfsr6 = prb i16$ %lfsr
-    %64 = const i32 4
-    %65 = const i16 0
-    %66 = shr i16 %lfsr6, i16 %65, i32 %64
-    %67 = exts i1, i16 %66, 0, 1
-    %data_in2 = prb i1$ %data_in
-    %68 = xor i1 %67, %data_in2
-    %lfsr7 = prb i16$ %lfsr
-    %69 = const i32 15
-    %70 = const i16 0
-    %71 = shr i16 %lfsr7, i16 %70, i32 %69
-    %72 = exts i1, i16 %71, 0, 1
-    %73 = xor i1 %68, %72
-    %74 = const time 0s 1d
-    drv i1$ %63, %73, %74
-    %75 = const i32 6
-    %76 = const i16 0
-    %77 = sig i16 %76
-    %78 = shr i16$ %lfsr, i16$ %77, i32 %75
-    %79 = exts i1$, i16$ %78, 0, 1
-    %lfsr8 = prb i16$ %lfsr
-    %80 = const i32 5
-    %81 = const i16 0
-    %82 = shr i16 %lfsr8, i16 %81, i32 %80
+    %44 = exts i12, i16 %lfsr1, 4, 12
+    %45 = inss i16 %10, i12 %44, 0, 12
+    %46 = exts i1, i16 %45, 0, 1
+    %47 = xor i1 %46, %data_in1
+    %48 = xor i1 %47, %12
+    drv i1$ %43, %48, %5
+    %49 = const i32 6
+    %50 = sig i16 %10
+    %51 = shr i16$ %lfsr, i16$ %50, i32 %49
+    %52 = exts i1$, i16$ %51, 0, 1
+    %53 = exts i11, i16 %lfsr1, 5, 11
+    %54 = inss i16 %10, i11 %53, 0, 11
+    %55 = exts i1, i16 %54, 0, 1
+    drv i1$ %52, %55, %5
+    %56 = const i32 7
+    %57 = sig i16 %10
+    %58 = shr i16$ %lfsr, i16$ %57, i32 %56
+    %59 = exts i1$, i16$ %58, 0, 1
+    %60 = exts i10, i16 %lfsr1, 6, 10
+    %61 = inss i16 %10, i10 %60, 0, 10
+    %62 = exts i1, i16 %61, 0, 1
+    drv i1$ %59, %62, %5
+    %63 = const i32 8
+    %64 = sig i16 %10
+    %65 = shr i16$ %lfsr, i16$ %64, i32 %63
+    %66 = exts i1$, i16$ %65, 0, 1
+    %67 = exts i9, i16 %lfsr1, 7, 9
+    %68 = inss i16 %10, i9 %67, 0, 9
+    %69 = exts i1, i16 %68, 0, 1
+    drv i1$ %66, %69, %5
+    %70 = const i32 9
+    %71 = sig i16 %10
+    %72 = shr i16$ %lfsr, i16$ %71, i32 %70
+    %73 = exts i1$, i16$ %72, 0, 1
+    %74 = exts i8, i16 %lfsr1, 8, 8
+    %75 = inss i16 %10, i8 %74, 0, 8
+    %76 = exts i1, i16 %75, 0, 1
+    drv i1$ %73, %76, %5
+    %77 = const i32 10
+    %78 = sig i16 %10
+    %79 = shr i16$ %lfsr, i16$ %78, i32 %77
+    %80 = exts i1$, i16$ %79, 0, 1
+    %81 = exts i7, i16 %lfsr1, 9, 7
+    %82 = inss i16 %10, i7 %81, 0, 7
     %83 = exts i1, i16 %82, 0, 1
-    %84 = const time 0s 1d
-    drv i1$ %79, %83, %84
-    %85 = const i32 7
-    %86 = const i16 0
-    %87 = sig i16 %86
-    %88 = shr i16$ %lfsr, i16$ %87, i32 %85
-    %89 = exts i1$, i16$ %88, 0, 1
-    %lfsr9 = prb i16$ %lfsr
-    %90 = const i32 6
-    %91 = const i16 0
-    %92 = shr i16 %lfsr9, i16 %91, i32 %90
-    %93 = exts i1, i16 %92, 0, 1
-    %94 = const time 0s 1d
-    drv i1$ %89, %93, %94
-    %95 = const i32 8
-    %96 = const i16 0
-    %97 = sig i16 %96
-    %98 = shr i16$ %lfsr, i16$ %97, i32 %95
-    %99 = exts i1$, i16$ %98, 0, 1
-    %lfsr10 = prb i16$ %lfsr
-    %100 = const i32 7
-    %101 = const i16 0
-    %102 = shr i16 %lfsr10, i16 %101, i32 %100
-    %103 = exts i1, i16 %102, 0, 1
-    %104 = const time 0s 1d
-    drv i1$ %99, %103, %104
-    %105 = const i32 9
-    %106 = const i16 0
-    %107 = sig i16 %106
-    %108 = shr i16$ %lfsr, i16$ %107, i32 %105
-    %109 = exts i1$, i16$ %108, 0, 1
-    %lfsr11 = prb i16$ %lfsr
-    %110 = const i32 8
-    %111 = const i16 0
-    %112 = shr i16 %lfsr11, i16 %111, i32 %110
+    drv i1$ %80, %83, %5
+    %84 = const i32 11
+    %85 = sig i16 %10
+    %86 = shr i16$ %lfsr, i16$ %85, i32 %84
+    %87 = exts i1$, i16$ %86, 0, 1
+    %88 = exts i6, i16 %lfsr1, 10, 6
+    %89 = inss i16 %10, i6 %88, 0, 6
+    %90 = exts i1, i16 %89, 0, 1
+    drv i1$ %87, %90, %5
+    %91 = const i32 12
+    %92 = sig i16 %10
+    %93 = shr i16$ %lfsr, i16$ %92, i32 %91
+    %94 = exts i1$, i16$ %93, 0, 1
+    %95 = exts i5, i16 %lfsr1, 11, 5
+    %96 = inss i16 %10, i5 %95, 0, 5
+    %97 = exts i1, i16 %96, 0, 1
+    %98 = xor i1 %97, %data_in1
+    %99 = xor i1 %98, %12
+    drv i1$ %94, %99, %5
+    %100 = const i32 13
+    %101 = sig i16 %10
+    %102 = shr i16$ %lfsr, i16$ %101, i32 %100
+    %103 = exts i1$, i16$ %102, 0, 1
+    %104 = exts i4, i16 %lfsr1, 12, 4
+    %105 = inss i16 %10, i4 %104, 0, 4
+    %106 = exts i1, i16 %105, 0, 1
+    drv i1$ %103, %106, %5
+    %107 = const i32 14
+    %108 = sig i16 %10
+    %109 = shr i16$ %lfsr, i16$ %108, i32 %107
+    %110 = exts i1$, i16$ %109, 0, 1
+    %111 = exts i3, i16 %lfsr1, 13, 3
+    %112 = inss i16 %10, i3 %111, 0, 3
     %113 = exts i1, i16 %112, 0, 1
-    %114 = const time 0s 1d
-    drv i1$ %109, %113, %114
-    %115 = const i32 10
-    %116 = const i16 0
-    %117 = sig i16 %116
-    %118 = shr i16$ %lfsr, i16$ %117, i32 %115
-    %119 = exts i1$, i16$ %118, 0, 1
-    %lfsr12 = prb i16$ %lfsr
-    %120 = const i32 9
-    %121 = const i16 0
-    %122 = shr i16 %lfsr12, i16 %121, i32 %120
-    %123 = exts i1, i16 %122, 0, 1
-    %124 = const time 0s 1d
-    drv i1$ %119, %123, %124
-    %125 = const i32 11
-    %126 = const i16 0
-    %127 = sig i16 %126
-    %128 = shr i16$ %lfsr, i16$ %127, i32 %125
-    %129 = exts i1$, i16$ %128, 0, 1
-    %lfsr13 = prb i16$ %lfsr
-    %130 = const i32 10
-    %131 = const i16 0
-    %132 = shr i16 %lfsr13, i16 %131, i32 %130
-    %133 = exts i1, i16 %132, 0, 1
-    %134 = const time 0s 1d
-    drv i1$ %129, %133, %134
-    %135 = const i32 12
-    %136 = const i16 0
-    %137 = sig i16 %136
-    %138 = shr i16$ %lfsr, i16$ %137, i32 %135
-    %139 = exts i1$, i16$ %138, 0, 1
-    %lfsr14 = prb i16$ %lfsr
-    %140 = const i32 11
-    %141 = const i16 0
-    %142 = shr i16 %lfsr14, i16 %141, i32 %140
-    %143 = exts i1, i16 %142, 0, 1
-    %data_in3 = prb i1$ %data_in
-    %144 = xor i1 %143, %data_in3
-    %lfsr15 = prb i16$ %lfsr
-    %145 = const i32 15
-    %146 = const i16 0
-    %147 = shr i16 %lfsr15, i16 %146, i32 %145
-    %148 = exts i1, i16 %147, 0, 1
-    %149 = xor i1 %144, %148
-    %150 = const time 0s 1d
-    drv i1$ %139, %149, %150
-    %151 = const i32 13
-    %152 = const i16 0
-    %153 = sig i16 %152
-    %154 = shr i16$ %lfsr, i16$ %153, i32 %151
-    %155 = exts i1$, i16$ %154, 0, 1
-    %lfsr16 = prb i16$ %lfsr
-    %156 = const i32 12
-    %157 = const i16 0
-    %158 = shr i16 %lfsr16, i16 %157, i32 %156
-    %159 = exts i1, i16 %158, 0, 1
-    %160 = const time 0s 1d
-    drv i1$ %155, %159, %160
-    %161 = const i32 14
-    %162 = const i16 0
-    %163 = sig i16 %162
-    %164 = shr i16$ %lfsr, i16$ %163, i32 %161
-    %165 = exts i1$, i16$ %164, 0, 1
-    %lfsr17 = prb i16$ %lfsr
-    %166 = const i32 13
-    %167 = const i16 0
-    %168 = shr i16 %lfsr17, i16 %167, i32 %166
-    %169 = exts i1, i16 %168, 0, 1
-    %170 = const time 0s 1d
-    drv i1$ %165, %169, %170
-    %171 = const i32 15
-    %172 = const i16 0
-    %173 = sig i16 %172
-    %174 = shr i16$ %lfsr, i16$ %173, i32 %171
-    %175 = exts i1$, i16$ %174, 0, 1
-    %lfsr18 = prb i16$ %lfsr
-    %176 = const i32 14
-    %177 = const i16 0
-    %178 = shr i16 %lfsr18, i16 %177, i32 %176
-    %179 = exts i1, i16 %178, 0, 1
-    %180 = const time 0s 1d
-    drv i1$ %175, %179, %180
-    br %if_exit2
-if_exit2:
-    br %if_exit1
+    drv i1$ %110, %113, %5
+    %114 = const i32 15
+    %115 = sig i16 %10
+    %116 = shr i16$ %lfsr, i16$ %115, i32 %114
+    %117 = exts i1$, i16$ %116, 0, 1
+    %118 = exts i2, i16 %lfsr1, 14, 2
+    %119 = inss i16 %10, i2 %118, 0, 2
+    %120 = exts i1, i16 %119, 0, 1
+    drv i1$ %117, %120, %5
+    br %init1
 }
 
 entity @serial_crc_ccitt (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i1$ %data_in) -&gt; (i16$ %crc_out) {
@@ -284,6 +218,7 @@ entity @serial_crc_ccitt (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i1$ %dat
     %1 = const time 0s 1e
     drv i16$ %crc_out, %lfsr1, %1
     inst %serial_crc_ccitt.always.244.0 (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i1$ %data_in) -&gt; (i16$ %lfsr)
+    halt
 }
 
 </pre>

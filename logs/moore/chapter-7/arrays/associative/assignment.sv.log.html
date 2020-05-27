@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test associative arrays assignment support
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 7.9.9 7.8
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-7/arrays/associative
@@ -18,48 +18,63 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv</a>
 time_elapsed: 0.004s
-ram usage: 9660 KB
+ram usage: 11516 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-7/arrays/associative -e top <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv</a>
-
-error: expected hierarchy item, found `string` instead
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv:9</a>:1-7:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html#l-16" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv:16</a>:2-118:
    | 
-   | string words [ int ];
-   | ^^^^^^               
+   |     $display(&#34;:assert: ((&#39;%s&#39; == &#39;hello&#39;) and (&#39;%s&#39; == &#39;happy&#39;) and (&#39;%s&#39; == &#39;world&#39;))&#34;,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
-note: parsing as net declaration:
-
-
-error: expected net type
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv:9</a>:1-7:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html#l-22" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv:22</a>:2-118:
    | 
-   | string words [ int ];
-   | ^^^^^^               
+   |     $display(&#34;:assert: ((&#39;%s&#39; == &#39;hello&#39;) and (&#39;%s&#39; == &#39;happy&#39;) and (&#39;%s&#39; == &#39;world&#39;))&#34;,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
-note: parsing as instantiation:
-
-
-error: expected module name, but found string instead
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv:9</a>:1-7:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html#l-24" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv:24</a>:2-104:
    | 
-   | string words [ int ];
-   | ^^^^^^               
+   |     $display(&#34;:assert: ((&#39;%s&#39; == &#39;hello&#39;) and (&#39;%s&#39; == &#39;sad&#39;) and (&#39;%s&#39; == &#39;world&#39;))&#34;,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+proc %top.initial.225.0 () -&gt; ([1 x i8]$ %words, [1 x i8]$ %w) {
+0:
+    %1 = extf i8$, [1 x i8]$ %words, 0
+    %2 = const i8 0
+    %3 = const time 0s 1e
+    drv i8$ %1, %2, %3
+    %4 = const i32 1
+    %5 = [1 x i8 %2]
+    %6 = sig [1 x i8] %5
+    %7 = shr [1 x i8]$ %words, [1 x i8]$ %6, i32 %4
+    %8 = extf i8$, [1 x i8]$ %7, 0
+    drv i8$ %8, %2, %3
+    %9 = const i32 2
+    %10 = sig [1 x i8] %5
+    %11 = shr [1 x i8]$ %words, [1 x i8]$ %10, i32 %9
+    %12 = extf i8$, [1 x i8]$ %11, 0
+    drv i8$ %12, %2, %3
+    %words1 = prb [1 x i8]$ %words
+    drv [1 x i8]$ %w, %words1, %3
+    %13 = sig [1 x i8] %5
+    %14 = shr [1 x i8]$ %w, [1 x i8]$ %13, i32 %4
+    %15 = extf i8$, [1 x i8]$ %14, 0
+    drv i8$ %15, %2, %3
+    halt
+}
 
-note: parsing as variable declaration:
-
-
-error: expected expression, found int instead
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/associative/assignment.sv.html#l-9" target="file-frame">tests/chapter-7/arrays/associative/assignment.sv:9</a>:16-19:
-   | 
-   | string words [ int ];
-   |                ^^^   
-
+entity @top () -&gt; () {
+    %0 = const i8 0
+    %1 = [i8 %0]
+    %words = sig [1 x i8] %1
+    %w = sig [1 x i8] %1
+    inst %top.initial.225.0 () -&gt; ([1 x i8]$ %words, [1 x i8]$ %w)
+    halt
+}
 
 </pre>
 </body>

@@ -18,11 +18,33 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v</a>
 time_elapsed: 0.004s
-ram usage: 9588 KB
+ram usage: 9676 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
+   | 
+   |   assign a = b[3:2] + 1;
+   |                       ^ 
+   = note: Casts `1` from `int unsigned` to `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
+   | 
+   |   assign a = b[3:2] + 1;
+   |                       ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
+   | 
+   |   assign a = b[3:2] + 1;
+   |                       ^ 
+   = note: Casts `1` from `int` to `int unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
+   | 
+   |   assign a = b[3:2] + 1;
+   |                       ^ 
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:29</a>:7-25:
    | 
@@ -35,6 +57,17 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:26</a>:9-16:
+   | 
+   |     b = 4&#39;b1011;
+   |         ^^^^^^^ 
+   = note: Casts `4&#39;b1011` from `bit [3:0]` to `logic [3:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:26</a>:9-16:
+   | 
+   |     b = 4&#39;b1011;
+   |         ^^^^^^^ 
+
 proc %main.initial.226.0 (i2$ %a) -&gt; (i4$ %b) {
 0:
     %1 = const i4 11
@@ -43,17 +76,6 @@ proc %main.initial.226.0 (i2$ %a) -&gt; (i4$ %b) {
     %3 = const i32 1
     wait %4 for %3
 4:
-    %a1 = prb i2$ %a
-    %5 = const i2 3
-    %6 = eq i2 %a1, %5
-    br %6, %if_false, %if_true
-if_true:
-    %7 = const i32 0
-    br %if_exit
-if_false:
-    %8 = const i32 0
-    br %if_exit
-if_exit:
     halt
 }
 
@@ -64,17 +86,17 @@ entity @main () -&gt; () {
     %a = sig i2 %1
     %2 = const i32 0
     %b1 = prb i4$ %b
-    %3 = const i2 2
-    %4 = const i4 0
-    %5 = shr i4 %b1, i4 %4, i2 %3
-    %6 = exts i2, i4 %5, 0, 2
-    %7 = inss i32 %2, i2 %6, 0, 2
-    %8 = const i32 1
-    %9 = add i32 %7, %8
-    %10 = exts i2, i32 %9, 0, 2
-    %11 = const time 0s 1e
-    drv i2$ %a, %10, %11
+    %3 = exts i2, i4 %b1, 2, 2
+    %4 = inss i4 %0, i2 %3, 0, 2
+    %5 = exts i2, i4 %4, 0, 2
+    %6 = inss i32 %2, i2 %5, 0, 2
+    %7 = const i32 1
+    %8 = add i32 %6, %7
+    %9 = exts i2, i32 %8, 0, 2
+    %10 = const time 0s 1e
+    drv i2$ %a, %9, %10
     inst %main.initial.226.0 (i2$ %a) -&gt; (i4$ %b)
+    halt
 }
 
 </pre>

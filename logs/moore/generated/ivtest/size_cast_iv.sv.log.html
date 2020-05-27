@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v</a>
 time_elapsed: 0.004s
-ram usage: 9508 KB
+ram usage: 9700 KB
 </pre>
 <pre class="log">
 
@@ -29,6 +29,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED -- $bits(foo) = %d&#34;, $bits(foo));
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55db14de17f0
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v:11</a>:3-10:
    | 
@@ -44,6 +45,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED -- $bits( 4&#39;(foo) ) = %d&#34;, $bits( 4&#39;(foo) ));
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55db14de5f50
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v:16</a>:3-10:
    | 
@@ -59,6 +61,7 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED -- foo=%b, bar=%b&#34;, foo, bar);
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+ ERROR moore_svlog::hir::lowering &gt; Expr #0x55db14de87a0
 compiler bug: lowering of expression not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v:22</a>:3-10:
    | 
@@ -74,12 +77,30 @@ warning: `$display` not supported; ignored
    |       $display(&#34;PASSED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-error: type `logic [31:0]` required, but expression has type `integer`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v:9</a>:11-27:
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v:7</a>:13-17:
+   | 
+   |       foo = &#39;hff;
+   |             ^^^^ 
+   = note: Casts `&#39;hff` from `byte unsigned` to `logic [7:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v:7</a>:13-17:
+   | 
+   |       foo = &#39;hff;
+   |             ^^^^ 
+
+compiler bug: rvalue lowering produced type `int`, expected `int`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/size_cast.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/size_cast.v:9</a>:11-21:
    | 
    |       if ($bits(foo) !== 8) begin
-   |           ^^^^^^^^^^^^^^^^       
+   |           ^^^^^^^^^^             
+   = note: Assertion failed: ty::identical(rvalue.ty, cast.init)
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:98
 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;rvalue lowering produced type `int`, expected `int`&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

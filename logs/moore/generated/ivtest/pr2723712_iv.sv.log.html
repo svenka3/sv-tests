@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v</a>
-time_elapsed: 0.004s
-ram usage: 9552 KB
+time_elapsed: 0.008s
+ram usage: 9556 KB
 </pre>
 <pre class="log">
 
@@ -35,32 +35,38 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED, expected 8&#39;b00000101, got %b/%b&#34;, y, z);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:11</a>:9-20:
+   | 
+   |     a = 8&#39;b10101010;
+   |         ^^^^^^^^^^^ 
+   = note: Casts `8&#39;b10101010` from `byte unsigned` to `logic [7:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:11</a>:9-20:
+   | 
+   |     a = 8&#39;b10101010;
+   |         ^^^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:12</a>:9-15:
+   | 
+   |     b = 3&#39;b101;
+   |         ^^^^^^ 
+   = note: Casts `3&#39;b101` from `bit [2:0]` to `logic [2:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2723712.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2723712.v:12</a>:9-15:
+   | 
+   |     b = 3&#39;b101;
+   |         ^^^^^^ 
+
 proc %top.initial.230.0 (i8$ %y, i8$ %z) -&gt; (i8$ %a, i3$ %b) {
 0:
     %1 = const i8 170
     %2 = const time 0s 1e
     drv i8$ %a, %1, %2
     %3 = const i3 5
-    %4 = const time 0s 1e
-    drv i3$ %b, %3, %4
-    %5 = const i32 1
-    wait %6 for %5
-6:
-    %y1 = prb i8$ %y
-    %z1 = prb i8$ %z
-    %7 = eq i8 %y1, %z1
-    %y2 = prb i8$ %y
-    %8 = const i8 5
-    %9 = eq i8 %y2, %8
-    %10 = and i1 %7, %9
-    br %10, %if_false, %if_true
-if_true:
-    %11 = const i32 0
-    br %if_exit
-if_false:
-    %12 = const i32 0
-    br %if_exit
-if_exit:
+    drv i3$ %b, %3, %2
+    %4 = const i32 1
+    wait %5 for %4
+5:
     halt
 }
 
@@ -69,23 +75,16 @@ entity @top () -&gt; () {
     %a = sig i8 %0
     %1 = const i3 0
     %b = sig i3 %1
-    %2 = const i8 0
-    %y = sig i8 %2
-    %3 = const i8 0
-    %z = sig i8 %3
+    %y = sig i8 %0
+    %z = sig i8 %0
     %a1 = prb i8$ %a
     %b1 = prb i3$ %b
-    %4 = const i8 0
-    %5 = shr i8 %a1, i8 %4, i3 %b1
-    %6 = const time 0s 1e
-    drv i8$ %y, %5, %6
-    %a2 = prb i8$ %a
-    %b2 = prb i3$ %b
-    %7 = const i8 0
-    %8 = shr i8 %a2, i8 %7, i3 %b2
-    %9 = const time 0s 1e
-    drv i8$ %z, %8, %9
+    %2 = shr i8 %a1, i8 %0, i3 %b1
+    %3 = const time 0s 1e
+    drv i8$ %y, %2, %3
+    drv i8$ %z, %2, %3
     inst %top.initial.230.0 (i8$ %y, i8$ %z) -&gt; (i8$ %a, i3$ %b)
+    halt
 }
 
 </pre>

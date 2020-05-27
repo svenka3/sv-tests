@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v</a>
-time_elapsed: 0.004s
-ram usage: 9620 KB
+time_elapsed: 0.008s
+ram usage: 11444 KB
 </pre>
 <pre class="log">
 
@@ -47,6 +47,61 @@ warning: `$strobe` not supported; ignored
    |     $strobe(&#34;out[3:0]: %b, in[%0d] %b:&#34;, out[j*1-1 +: 4], j, in[j]);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:11</a>:13-22:
+   | 
+   |     in[1] = 6&#39;b110001;
+   |             ^^^^^^^^^ 
+   = note: Casts `6&#39;b110001` from `bit [0:0]` to `logic [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:11</a>:13-22:
+   | 
+   |     in[1] = 6&#39;b110001;
+   |             ^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:11</a>:13-22:
+   | 
+   |     in[1] = 6&#39;b110001;
+   |             ^^^^^^^^^ 
+   = note: Casts `6&#39;b110001` from `bit [5:0]` to `bit [0:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:11</a>:13-22:
+   | 
+   |     in[1] = 6&#39;b110001;
+   |             ^^^^^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:13</a>:9-10:
+   | 
+   |     j = 1;
+   |         ^ 
+   = note: Casts `1` from `bit [4:0]` to `logic [4:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:13</a>:9-10:
+   | 
+   |     j = 1;
+   |         ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:13</a>:9-10:
+   | 
+   |     j = 1;
+   |         ^ 
+   = note: Casts `1` from `bit signed [4:0]` to `bit [4:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:13</a>:9-10:
+   | 
+   |     j = 1;
+   |         ^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:13</a>:9-10:
+   | 
+   |     j = 1;
+   |         ^ 
+   = note: Casts `1` from `int` to `bit signed [4:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:13</a>:9-10:
+   | 
+   |     j = 1;
+   |         ^ 
+
 proc %test.initial.228.0 () -&gt; (i5$ %j, i6$ %in) {
 0:
     %1 = const i32 1
@@ -54,21 +109,13 @@ proc %test.initial.228.0 () -&gt; (i5$ %j, i6$ %in) {
     %3 = sig i6 %2
     %4 = shr i6$ %in, i6$ %3, i32 %1
     %5 = exts i1$, i6$ %4, 0, 1
-    %6 = const i6 49
-    %7 = exts i1, i6 %6, 0, 1
-    %8 = const time 0s 1e
-    drv i1$ %5, %7, %8
-    %9 = const i32 1
-    %10 = exts i5, i32 %9, 0, 5
-    %11 = const time 0s 1e
-    drv i5$ %j, %10, %11
-    %12 = const i32 1
-    wait %13 for %12
-13:
-    %14 = const i32 0
-    %15 = const i32 0
-    %16 = const i32 0
-    %17 = const i32 0
+    %6 = const i1 1
+    %7 = const time 0s 1e
+    drv i1$ %5, %6, %7
+    %8 = const i5 1
+    drv i5$ %j, %8, %7
+    wait %9 for %1
+9:
     halt
 }
 
@@ -77,18 +124,16 @@ entity @test () -&gt; () {
     %j = sig i5 %0
     %1 = const i6 0
     %in = sig i6 %1
-    %2 = const i6 0
-    %out = sig i6 %2
-    %3 = const i6 0
+    %out = sig i6 %1
     %in1 = prb i6$ %in
     %j1 = prb i5$ %j
-    %4 = const i6 0
-    %5 = shr i6 %in1, i6 %4, i5 %j1
-    %6 = exts i1, i6 %5, 0, 1
-    %7 = inss i6 %3, i1 %6, 0, 1
-    %8 = const time 0s 1e
-    drv i6$ %out, %7, %8
+    %2 = shr i6 %in1, i6 %1, i5 %j1
+    %3 = exts i1, i6 %2, 0, 1
+    %4 = inss i6 %1, i1 %3, 0, 1
+    %5 = const time 0s 1e
+    drv i6$ %out, %4, %5
     inst %test.initial.228.0 () -&gt; (i5$ %j, i6$ %in)
+    halt
 }
 
 </pre>

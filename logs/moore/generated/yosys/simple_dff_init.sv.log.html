@@ -17,43 +17,74 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v</a>
-time_elapsed: 0.004s
-ram usage: 9596 KB
+time_elapsed: 0.008s
+ram usage: 9676 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e dff0_test <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v</a>
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v:4</a>:12-17:
+   | 
+   |   reg n1 = 32&#39;d0;
+   |            ^^^^^ 
+   = note: Casts `32&#39;d0` from `bit` to `logic`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v:4</a>:12-17:
+   | 
+   |   reg n1 = 32&#39;d0;
+   |            ^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v:4</a>:12-17:
+   | 
+   |   reg n1 = 32&#39;d0;
+   |            ^^^^^ 
+   = note: Casts `32&#39;d0` from `bit [0:0]` to `bit`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v:4</a>:12-17:
+   | 
+   |   reg n1 = 32&#39;d0;
+   |            ^^^^^ 
+
+warning: cast ignored during constant evaluation
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v:4</a>:12-17:
+   | 
+   |   reg n1 = 32&#39;d0;
+   |            ^^^^^ 
+   = note: Casts `32&#39;d0` from `int unsigned` to `bit [0:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dff_init.v.html#l-4" target="file-frame">third_party/tools/yosys/tests/simple/dff_init.v:4</a>:12-17:
+   | 
+   |   reg n1 = 32&#39;d0;
+   |            ^^^^^ 
+
 proc %dff0_test.always.236.0 (i1$ %clk, i1$ %n1_inv) -&gt; (i1$ %n1) {
-0:
-    br %init
 init:
     %clk1 = prb i1$ %clk
     wait %check, %clk
 check:
     %clk2 = prb i1$ %clk
-    %1 = const i1 0
-    %2 = eq i1 %clk1, %1
-    %3 = neq i1 %clk2, %1
-    %posedge = and i1 %2, %3
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
     %n1_inv1 = prb i1$ %n1_inv
-    %4 = const time 0s 1d
-    drv i1$ %n1, %n1_inv1, %4
-    br %0
+    %3 = const time 0s 1d
+    drv i1$ %n1, %n1_inv1, %3
+    br %init
 }
 
 entity @dff0_test (i1$ %clk) -&gt; (i1$ %n1, i1$ %n1_inv) {
-    %0 = const i32 0
-    %n11 = sig i32 %0
-    %n12 = prb i32$ %n11
-    %1 = not i32 %n12
+    %0 = const i1 0
+    %n11 = sig i1 %0
+    %n12 = prb i1$ %n11
+    %1 = not i1 %n12
     %2 = const time 0s 1e
     drv i1$ %n1_inv, %1, %2
-    inst %dff0_test.always.236.0 (i1$ %clk, i1$ %n1_inv) -&gt; (i32$ %n11)
-    %3 = const i1 0
-    %4 = const time 0s
-    drv i1$ %n1, %3, %4
+    inst %dff0_test.always.236.0 (i1$ %clk, i1$ %n1_inv) -&gt; (i1$ %n11)
+    %3 = const time 0s
+    drv i1$ %n1, %0, %3
+    halt
 }
 
 </pre>

@@ -18,14 +18,12 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v</a>
 time_elapsed: 0.004s
-ram usage: 9640 KB
+ram usage: 9728 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e simple_if <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v</a>
 proc %simple_if.always.226.0 (i1$ %enable, i1$ %din) -&gt; (i1$ %latch) {
-0:
-    br %init
 init:
     %enable1 = prb i1$ %enable
     %din1 = prb i1$ %din
@@ -38,27 +36,22 @@ check:
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %enable3 = prb i1$ %enable
-    br %enable3, %if_false, %if_true
+    %0 = const i1 0
+    %1 = neq i1 %enable2, %0
+    br %1, %init, %if_true
 if_true:
-    %din3 = prb i1$ %din
-    %1 = const time 0s 1d
-    drv i1$ %latch, %din3, %1
-    br %if_exit
-if_false:
-    br %if_exit
-if_exit:
-    br %0
+    %2 = const time 0s 1d
+    drv i1$ %latch, %din2, %2
+    br %init
 }
 
 entity @simple_if () -&gt; () {
     %0 = const i1 0
     %latch = sig i1 %0
-    %1 = const i1 0
-    %enable = sig i1 %1
-    %2 = const i1 0
-    %din = sig i1 %2
+    %enable = sig i1 %0
+    %din = sig i1 %0
     inst %simple_if.always.226.0 (i1$ %enable, i1$ %din) -&gt; (i1$ %latch)
+    halt
 }
 
 </pre>

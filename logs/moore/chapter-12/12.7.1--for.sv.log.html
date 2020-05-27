@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-12/12.7.1--for.sv.html" target="file-frame">tests/chapter-12/12.7.1--for.sv</a>
 time_elapsed: 0.004s
-ram usage: 9572 KB
+ram usage: 9568 KB
 </pre>
 <pre class="log">
 
@@ -32,29 +32,23 @@ warning: `$display` not supported; ignored
 proc %for_tb.initial.221.0 () -&gt; () {
 0:
     %1 = const i32 0
-    %i = var i32 %1
     br %loop_body
 loop_body:
-    %i1 = ld i32* %i
-    %2 = const i32 256
-    %3 = slt i32 %i1, %2
-    br %3, %loop_exit, %loop_continue
+    %i = phi i32 [%1, %0], [%2, %loop_continue]
+    %3 = const i32 256
+    %4 = slt i32 %i, %3
+    br %4, %loop_exit, %loop_continue
 loop_exit:
     halt
 loop_continue:
-    %4 = const i32 0
-    %i2 = ld i32* %i
     %5 = const i32 1
-    %6 = add i32 %i2, %5
-    st i32* %i, %6
-    %i3 = ld i32* %i
-    %7 = const i32 0
-    %8 = neq i32 %i3, %7
+    %2 = add i32 %i, %5
     br %loop_body
 }
 
 entity @for_tb () -&gt; () {
     inst %for_tb.initial.221.0 () -&gt; ()
+    halt
 }
 
 </pre>
