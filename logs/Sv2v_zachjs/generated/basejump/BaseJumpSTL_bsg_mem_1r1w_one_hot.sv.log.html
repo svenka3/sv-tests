@@ -1,0 +1,70 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+rc: 0 (means success: 1)
+should_fail: 0
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_mem
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_one_hot.v</a>
+time_elapsed: 0.236s
+ram usage: 15680 KB
+</pre>
+<pre class="log">
+
+zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_mem <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_one_hot.v</a>
+module bsg_mem_1r1w_one_hot (
+	w_clk_i,
+	w_reset_i,
+	w_v_i,
+	w_data_i,
+	r_v_i,
+	r_data_o
+);
+	parameter width_p = -1;
+	parameter els_p = -1;
+	input w_clk_i;
+	input w_reset_i;
+	input [els_p - 1:0] w_v_i;
+	input [width_p - 1:0] w_data_i;
+	input [els_p - 1:0] r_v_i;
+	output wire [width_p - 1:0] r_data_o;
+	wire [((els_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (els_p * width_p) + -1 : (els_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):((els_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] data_r;
+	wire unused0 = w_reset_i;
+	generate
+		genvar i;
+		for (i = 0; i &lt; els_p; i = i + 1) begin : mem_array
+			bsg_dff_en #(.width_p(width_p)) mem_reg(
+				.clk_i(w_clk_i),
+				.en_i(w_v_i[i]),
+				.data_i(w_data_i),
+				.data_o(data_r[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((els_p - 1) &gt;= 0 ? i : 0 - (i - (els_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)])
+			);
+		end
+	endgenerate
+	bsg_mux_one_hot #(
+		.width_p(width_p),
+		.els_p(els_p)
+	) one_hot_sel(
+		.data_i(data_r),
+		.sel_one_hot_i(r_v_i),
+		.data_o(r_data_o)
+	);
+	initial if ((width_p * els_p) &gt;= 64)
+		$display(&#34;## %L: instantiating width_p=%d, els_p=%d (%m)&#34;, width_p, els_p);
+	always @(negedge w_clk_i)
+		;
+endmodule
+
+</pre>
+</body>

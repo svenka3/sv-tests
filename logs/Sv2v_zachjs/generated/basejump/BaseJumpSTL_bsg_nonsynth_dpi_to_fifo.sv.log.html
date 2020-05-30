@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from basejump
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_test
@@ -17,127 +17,13 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_to_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_to_fifo.v</a>
-time_elapsed: 0.488s
-ram usage: 15712 KB
+time_elapsed: 0.124s
+ram usage: 12100 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_test <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_to_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_to_fifo.v</a>
-module bsg_nonsynth_dpi_to_fifo (
-	clk_i,
-	reset_i,
-	v_o,
-	data_o,
-	ready_i,
-	debug_o
-);
-	parameter string name_p = &#34;bsg_nonsynth_dpi_to_fifo&#34;;
-	parameter width_p = &#34;inv&#34;;
-	parameter debug_p = 0;
-	input clk_i;
-	input reset_i;
-	output reg v_o;
-	output reg [width_p - 1:0] data_o;
-	input ready_i;
-	output reg debug_o;
-	wire init_r = 0;
-	reg tx_r = 0;
-	generate
-		if (!(|{((32&#39;d8 ^ 32&#39;d8) !== ((width_p ^ width_p) ^ (32&#39;d8 ^ 32&#39;d8)) ? 1&#39;bx : (32&#39;d8 ^ 32&#39;d8) === (32&#39;d8 ^ width_p)), ((32&#39;d16 ^ 32&#39;d16) !== ((width_p ^ width_p) ^ (32&#39;d16 ^ 32&#39;d16)) ? 1&#39;bx : (32&#39;d16 ^ 32&#39;d16) === (32&#39;d16 ^ width_p)), ((32&#39;d32 ^ 32&#39;d32) !== ((width_p ^ width_p) ^ (32&#39;d32 ^ 32&#39;d32)) ? 1&#39;bx : (32&#39;d32 ^ 32&#39;d32) === (32&#39;d32 ^ width_p)), ((32&#39;d64 ^ 32&#39;d64) !== ((width_p ^ width_p) ^ (32&#39;d64 ^ 32&#39;d64)) ? 1&#39;bx : (32&#39;d64 ^ 32&#39;d64) === (32&#39;d64 ^ width_p))})) ThisModuleDoesNotExist __sv2v_elab_fatal(
-			1,
-			&#34;BSG ERROR: bsg_nonsynth_dpi_to_fifo (%s) -- width_p of %d is not supported. Must be a power of 2 and divisible by 8&#34;,
-			name_p,
-			width_p
-		);
-	endgenerate
-	initial begin
-		debug_o = debug_p;
-		$display(&#34;BSG INFO: bsg_nonsynth_dpi_to_fifo (initial begin)&#34;);
-		$display(&#34;BSG INFO:     name_p  = %s&#34;, name_p);
-		$display(&#34;BSG INFO:     width_p = %d&#34;, width_p);
-		$display(&#34;BSG INFO:     debug_p = %d&#34;, debug_p);
-		$display(&#34;BSG INFO:     debug_o = %d&#34;, debug_o);
-	end
-	final if (init_r === 1)
-		$fatal(1, &#34;BSG ERROR: bsg_nonsynth_dpi_to_fifo (%s) -- fini() was not called before $finish&#34;, name_p);
-	task debug;
-		input reg switch_i;
-		begin
-			if (!debug_o &amp; switch_i)
-				$display(&#34;BSG DBGINFO (%s@%t): DEBUG ENABLED&#34;, name_p, $time);
-			else if (debug_o &amp; !switch_i)
-				$display(&#34;BSG DBGINFO (%s@%t): DEBUG DISABLED&#34;, name_p, $time);
-			debug_o = switch_i;
-		end
-	endtask
-	function signed [31:0] width;
-		input _sv2v_unused;
-		width = width_p;
-	endfunction
-	task init;
-		
-		begin
-			if (debug_o)
-				$display(&#34;BSG DBGINFO (%s@%t): init() called&#34;, name_p, $time);
-			if (init_r)
-				$fatal(1, &#34;BSG ERROR (%s): init() already called&#34;, name_p);
-			init_r = 1;
-		end
-	endtask
-	task fini;
-		
-		begin
-			if (debug_o)
-				$display(&#34;BSG DBGINFO (%s@%t): fini() called&#34;, name_p, $time);
-			if (~init_r)
-				$fatal(1, &#34;BSG ERROR (%s): fini() already called&#34;, name_p);
-			init_r = 0;
-		end
-	endtask
-	reg v_o_n;
-	wire [width_p - 1:0] data_o_n;
-	reg [width_p - 1:0] data_o_r;
-	reg ready_i_r;
-	reg edgepol;
-	always @(posedge clk_i or negedge clk_i) edgepol &lt;= clk_i;
-	function tx;
-		input reg [width_p - 1:0] data_i;
-		begin
-			if (init_r === 0)
-				$fatal(1, &#34;BSG ERROR (%s): tx() called before init()&#34;, name_p);
-			if (reset_i === 1)
-				$fatal(1, &#34;BSG ERROR (%s): tx() called while reset_i === 1&#34;, name_p);
-			if (tx_r !== 0)
-				$fatal(1, &#34;BSG ERROR (%s): tx() called multiple times in a clk_i cycle&#34;, name_p);
-			if (clk_i === 0)
-				$fatal(1, &#34;BSG ERROR (%s): tx() must be called when clk_i == 1&#34;, name_p);
-			if (edgepol === 0)
-				$fatal(1, &#34;BSG ERROR (%s): tx() must be called after the positive edge of clk_i has been evaluated&#34;, name_p);
-			if (((ready_i_r === 0) &amp; (v_o === 1)) &amp; !(data_i === data_o_r))
-				$fatal(1, &#34;BSG ERROR (%s): tx() argument data_i must be constant across calls/cycles when the consumer is not ready&#34;, name_p);
-			v_o_n = 1&#39;sb1;
-			data_o_n = data_i;
-			tx_r = 1;
-			if (debug_o)
-				$display(&#34;BSG DBGINFO (%s@%t): tx() called -- ready_i: %b, data_o_n: 0x%x&#34;, name_p, $time, ready_i, data_i);
-			tx = ready_i === 1;
-		end
-	endfunction
-	always @(negedge clk_i) begin
-		if ((v_o_n === 0) &amp; ((v_o === 1) &amp; (ready_i_r === 0)))
-			$fatal(1, &#34;BSG ERROR: tx() was not called again on the cycle after the consumer was not ready&#34;);
-		data_o &lt;= data_o_n;
-		v_o &lt;= v_o_n;
-		v_o_n = 0;
-	end
-	always @(posedge clk_i) begin
-		ready_i_r &lt;= ready_i;
-		data_o_r &lt;= data_o;
-		tx_r = 0;
-		if (debug_o)
-			$display(&#34;BSG DBGINFO (%s@%t): posedge clk_i -- reset_i: %b v_o: %b ready_i: %b data_i: 0x%x&#34;, name_p, $time, reset_i, v_o, ready_i, data_o);
-	end
-endmodule
+<a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_to_fifo.v.html#l-96" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_to_fifo.v:96</a>:11: Parse error: unexpected token &#39;&#34;DPI-C&#34;&#39; (Lit_string).
 
 </pre>
 </body>

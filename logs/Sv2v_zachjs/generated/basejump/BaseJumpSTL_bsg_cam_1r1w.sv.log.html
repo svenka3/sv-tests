@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w.v</a>
-time_elapsed: 0.360s
-ram usage: 14120 KB
+time_elapsed: 0.252s
+ram usage: 17984 KB
 </pre>
 <pre class="log">
 
@@ -26,105 +26,71 @@ zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc 
 module bsg_cam_1r1w (
 	clk_i,
 	reset_i,
-	en_i,
 	w_v_i,
-	w_set_not_clear_i,
-	w_addr_i,
+	w_nuke_i,
+	w_tag_i,
 	w_data_i,
 	r_v_i,
-	r_data_i,
-	r_v_o,
-	r_addr_o,
-	empty_v_o,
-	empty_addr_o
+	r_tag_i,
+	r_data_o,
+	r_v_o
 );
 	parameter els_p = &#34;inv&#34;;
-	parameter width_p = &#34;inv&#34;;
-	parameter multiple_entries_p = &#34;inv&#34;;
-	parameter find_empty_entry_p = &#34;inv&#34;;
-	localparam lg_els_lp = (els_p == 1 ? 1 : $clog2(els_p));
+	parameter tag_width_p = &#34;inv&#34;;
+	parameter data_width_p = &#34;inv&#34;;
+	parameter repl_scheme_p = &#34;lru&#34;;
 	input clk_i;
 	input reset_i;
-	input en_i;
 	input w_v_i;
-	input w_set_not_clear_i;
-	input [lg_els_lp - 1:0] w_addr_i;
-	input [width_p - 1:0] w_data_i;
+	input w_nuke_i;
+	input [tag_width_p - 1:0] w_tag_i;
+	input [data_width_p - 1:0] w_data_i;
 	input r_v_i;
-	input [width_p - 1:0] r_data_i;
+	input [tag_width_p - 1:0] r_tag_i;
+	output wire [data_width_p - 1:0] r_data_o;
 	output wire r_v_o;
-	output wire [lg_els_lp - 1:0] r_addr_o;
-	output wire empty_v_o;
-	output wire [lg_els_lp - 1:0] empty_addr_o;
-	reg [width_p - 1:0] mem [0:els_p - 1];
-	wire [els_p - 1:0] match_array;
-	wire [els_p - 1:0] empty_array;
-	reg [els_p - 1:0] valid;
-	wire matched;
-	wire empty_found;
-	assign r_v_o = (en_i &amp; r_v_i) &amp; matched;
-	always @(posedge clk_i)
-		if (reset_i) begin : fi
-			valid &lt;= 1&#39;sb0;
-		end
-		else if (en_i &amp;&amp; w_v_i) begin : fi2
-			valid[w_addr_i] &lt;= w_set_not_clear_i;
-			mem[w_addr_i] &lt;= w_data_i;
-		end
-	genvar i;
-	generate
-		for (i = 0; i &lt; els_p; i = i + 1) begin : rof
-			assign match_array[i] = ((~reset_i &amp; en_i) &amp; (mem[i] == r_data_i)) &amp; valid[i];
-			assign empty_array[i] = (~reset_i &amp; en_i) &amp; ~valid[i];
-		end
-	endgenerate
-	generate
-		if (multiple_entries_p) begin : fi3
-			bsg_priority_encode #(
-				.width_p(els_p),
-				.lo_to_hi_p(1)
-			) pe(
-				.i(match_array),
-				.addr_o(r_addr_o),
-				.v_o(matched)
-			);
-		end
-		else begin : fi4
-			bsg_encode_one_hot #(
-				.width_p(els_p),
-				.lo_to_hi_p(1)
-			) ohe(
-				.i(match_array),
-				.addr_o(r_addr_o),
-				.v_o(matched)
-			);
-		end
-	endgenerate
-	generate
-		if (find_empty_entry_p) begin : fi5
-			bsg_priority_encode #(
-				.width_p(els_p),
-				.lo_to_hi_p(1)
-			) epe(
-				.i(empty_array),
-				.addr_o(empty_addr_o),
-				.v_o(empty_found)
-			);
-			assign empty_v_o = en_i &amp; empty_found;
-		end
-		else begin : fi6
-			assign empty_v_o = 1&#39;b0;
-			assign empty_addr_o = 1&#39;sb0;
-		end
-	endgenerate
-	always @(negedge clk_i) begin
-		if (((~multiple_entries_p &amp; ~reset_i) &amp; en_i) &amp; r_v_i) begin : fi_debug1
-			
-		end
-		if ((~reset_i &amp; en_i) &amp; w_v_i) begin : fi_debug2
-			
-		end
-	end
+	wire [els_p - 1:0] tag_r_match_lo;
+	wire [els_p - 1:0] tag_empty_lo;
+	wire [els_p - 1:0] repl_way_lo;
+	wire [els_p - 1:0] tag_w_v_li = repl_way_lo | {els_p {w_nuke_i}};
+	bsg_cam_1r1w_tag_array #(
+		.width_p(tag_width_p),
+		.els_p(els_p)
+	) cam_tag_array(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.w_v_i(tag_w_v_li),
+		.w_set_not_clear_i(w_v_i &amp; ~w_nuke_i),
+		.w_tag_i(w_tag_i),
+		.w_empty_o(tag_empty_lo),
+		.r_v_i(r_v_i),
+		.r_tag_i(r_tag_i),
+		.r_match_o(tag_r_match_lo)
+	);
+	bsg_cam_1r1w_replacement #(
+		.els_p(els_p),
+		.scheme_p(repl_scheme_p)
+	) replacement(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.read_v_i(tag_r_match_lo),
+		.alloc_v_i(w_v_i),
+		.alloc_empty_i(tag_empty_lo),
+		.alloc_v_o(repl_way_lo)
+	);
+	wire [els_p - 1:0] mem_w_v_li = repl_way_lo;
+	bsg_mem_1r1w_one_hot #(
+		.width_p(data_width_p),
+		.els_p(els_p)
+	) one_hot_mem(
+		.w_clk_i(clk_i),
+		.w_reset_i(reset_i),
+		.w_v_i(mem_w_v_li),
+		.w_data_i(w_data_i),
+		.r_v_i(tag_r_match_lo),
+		.r_data_o(r_data_o)
+	);
+	assign r_v_o = |tag_r_match_lo;
 endmodule
 
 </pre>
