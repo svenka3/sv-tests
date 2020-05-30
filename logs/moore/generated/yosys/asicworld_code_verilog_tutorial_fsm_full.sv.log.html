@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_fsm_full.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_fsm_full.v</a>
 time_elapsed: 0.020s
-ram usage: 10116 KB
+ram usage: 10888 KB
 </pre>
 <pre class="log">
 
@@ -694,7 +694,7 @@ warning: cast ignored during constant evaluation
    |                  state &lt;= IDLE;
    |                           ^^^^ 
 
-proc %fsm_full.always.267.0 (i1$ %req_0, i1$ %req_1, i1$ %req_2, i1$ %req_3, i3$ %state) -&gt; (i3$ %next_state) {
+proc %fsm_full.always.463.0 (i3$ %state, i1$ %req_0, i1$ %req_1, i1$ %req_2, i1$ %req_3) -&gt; (i3$ %next_state) {
 init:
     %state1 = prb i3$ %state
     %req_01 = prb i1$ %req_0
@@ -818,7 +818,7 @@ if_false7:
     br %init
 }
 
-proc %fsm_full.always.268.0 (i1$ %clock, i1$ %reset, i3$ %next_state) -&gt; (i1$ %gnt_0, i1$ %gnt_1, i1$ %gnt_2, i1$ %gnt_3, i3$ %state) {
+proc %fsm_full.always.657.0 (i3$ %next_state, i1$ %clock, i1$ %reset) -&gt; (i3$ %state, i1$ %gnt_0, i1$ %gnt_1, i1$ %gnt_2, i1$ %gnt_3) {
 init:
     %clock1 = prb i1$ %clock
     wait %check, %clock
@@ -889,21 +889,11 @@ case_body4:
 }
 
 entity @fsm_full (i1$ %clock, i1$ %reset, i1$ %req_0, i1$ %req_1, i1$ %req_2, i1$ %req_3) -&gt; (i1$ %gnt_0, i1$ %gnt_1, i1$ %gnt_2, i1$ %gnt_3) {
-    %0 = const i1 0
-    %gnt_01 = sig i1 %0
-    %gnt_11 = sig i1 %0
-    %gnt_21 = sig i1 %0
-    %gnt_31 = sig i1 %0
-    %1 = const i3 0
-    %state = sig i3 %1
-    %next_state = sig i3 %1
-    inst %fsm_full.always.267.0 (i1$ %req_0, i1$ %req_1, i1$ %req_2, i1$ %req_3, i3$ %state) -&gt; (i3$ %next_state)
-    inst %fsm_full.always.268.0 (i1$ %clock, i1$ %reset, i3$ %next_state) -&gt; (i1$ %gnt_01, i1$ %gnt_11, i1$ %gnt_21, i1$ %gnt_31, i3$ %state)
-    %2 = const time 0s
-    drv i1$ %gnt_0, %0, %2
-    drv i1$ %gnt_1, %0, %2
-    drv i1$ %gnt_2, %0, %2
-    drv i1$ %gnt_3, %0, %2
+    %0 = const i3 0
+    %state = sig i3 %0
+    %next_state = sig i3 %0
+    inst %fsm_full.always.463.0 (i3$ %state, i1$ %req_0, i1$ %req_1, i1$ %req_2, i1$ %req_3) -&gt; (i3$ %next_state)
+    inst %fsm_full.always.657.0 (i3$ %next_state, i1$ %clock, i1$ %reset) -&gt; (i3$ %state, i1$ %gnt_0, i1$ %gnt_1, i1$ %gnt_2, i1$ %gnt_3)
     halt
 }
 

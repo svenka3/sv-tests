@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,11 +18,16 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest005.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest005.v</a>
 time_elapsed: 0.004s
-ram usage: 9692 KB
+ram usage: 10356 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/ptest005.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest005.v</a>
+compiler bug: no ast node for n11 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest005.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/ptest005.v:30</a>:7-25:
    | 
@@ -46,28 +51,19 @@ warning: cast ignored during constant evaluation
    |     a = 4&#39;b0110;
    |         ^^^^^^^ 
 
-proc %main.initial.226.0 (i4$ %b) -&gt; (i4$ %a) {
-0:
-    %1 = const i4 6
-    %2 = const time 0s 1e
-    drv i4$ %a, %1, %2
-    %3 = const i32 1
-    wait %4 for %3
-4:
-    halt
-}
+compiler bug: assertion failed: mir.ty.is_bool()
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest005.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/ptest005.v:29</a>:9-20:
+   | 
+   |     if (b===4&#39;b1001)
+   |         ^^^^^^^^^^^ 
+   = note: Assertion failed: mir.ty.is_bool()
+   = note: Encountered at src/svlog/codegen.rs:1236
 
-entity @main () -&gt; () {
-    %0 = const i4 0
-    %a = sig i4 %0
-    %b = sig i4 %0
-    %a1 = prb i4$ %a
-    %1 = not i4 %a1
-    %2 = const time 0s 1e
-    drv i4$ %b, %1, %2
-    inst %main.initial.226.0 (i4$ %b) -&gt; (i4$ %a)
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

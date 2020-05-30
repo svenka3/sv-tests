@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -17,36 +17,27 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/multiplier.v.html" target="file-frame">third_party/tools/yosys/tests/simple/multiplier.v</a>
-time_elapsed: 0.004s
-ram usage: 9776 KB
+time_elapsed: 0.008s
+ram usage: 10800 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e Multiplier_flat <a href="../../../../third_party/tools/yosys/tests/simple/multiplier.v.html" target="file-frame">third_party/tools/yosys/tests/simple/multiplier.v</a>
+compiler bug: no ast node for n69 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+error: `PP` cannot be index into
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/multiplier.v.html#l-29" target="file-frame">third_party/tools/yosys/tests/simple/multiplier.v:29</a>:8-10:
+   | 
+   | assign PP[`calc_pp_range(1)] = { 1&#39;b0 , { A &amp; {M{B[0]}} } };
+   |        ^^                                                   
+
 entity @Multiplier_flat (i4$ %A, i4$ %B) -&gt; (i8$ %P) {
-    %0 = const i26 0
-    %PP = sig i26 %0
-    %1 = exts i5$, i26$ %PP, 0, 5
-    %2 = const i5 0
-    %A1 = prb i4$ %A
-    %B1 = prb i4$ %B
-    %3 = exts i1, i4 %B1, 0, 1
-    %4 = const i4 0
-    %5 = inss i4 %4, i1 %3, 0, 1
-    %6 = inss i4 %5, i1 %3, 1, 1
-    %7 = inss i4 %6, i1 %3, 2, 1
-    %8 = inss i4 %7, i1 %3, 3, 1
-    %9 = and i4 %A1, %8
-    %10 = inss i5 %2, i4 %9, 0, 4
-    %11 = const i1 0
-    %12 = inss i5 %10, i1 %11, 4, 1
-    %13 = const time 0s 1e
-    drv i5$ %1, %12, %13
-    %PP1 = prb i26$ %PP
-    %14 = exts i8, i26 %PP1, 18, 8
-    %15 = inss i26 %0, i8 %14, 0, 8
-    %16 = exts i8, i26 %15, 0, 8
-    drv i8$ %P, %16, %13
+    %0 = const i8 0
+    %1 = const time 0s
+    drv i8$ %P, %0, %1
     halt
 }
 

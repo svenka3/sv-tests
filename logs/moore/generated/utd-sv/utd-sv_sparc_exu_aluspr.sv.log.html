@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from utd-sv
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: utd-sv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/utd-sv
@@ -18,43 +18,71 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v</a>
 time_elapsed: 0.004s
-ram usage: 9752 KB
+ram usage: 10752 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/utd-sv -e sparc_exu_aluspr <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v</a>
-entity @sparc_exu_aluspr (i64$ %rs1_data, i64$ %rs2_data, i1$ %cin) -&gt; (i64$ %spr_out) {
-    %0 = const i64 0
-    %rs1_data_xor_rs2_data = sig i64 %0
-    %1 = const i63 0
-    %rs1_data_or_rs2_data = sig i63 %1
-    %shift_or = sig i64 %0
-    %2 = exts i64$, i64$ %rs1_data_xor_rs2_data, 0, 64
-    %rs1_data1 = prb i64$ %rs1_data
-    %rs2_data1 = prb i64$ %rs2_data
-    %3 = xor i64 %rs1_data1, %rs2_data1
-    %4 = const time 0s 1e
-    drv i64$ %2, %3, %4
-    %5 = exts i63$, i63$ %rs1_data_or_rs2_data, 0, 63
-    %6 = exts i63, i64 %rs1_data1, 0, 63
-    %7 = exts i63, i64 %rs2_data1, 0, 63
-    %8 = or i63 %6, %7
-    drv i63$ %5, %8, %4
-    %9 = exts i64$, i64$ %shift_or, 0, 64
-    %cin1 = prb i1$ %cin
-    %10 = inss i64 %0, i1 %cin1, 0, 1
-    %rs1_data_or_rs2_data1 = prb i63$ %rs1_data_or_rs2_data
-    %11 = inss i64 %10, i63 %rs1_data_or_rs2_data1, 1, 63
-    drv i64$ %9, %11, %4
-    %12 = exts i64$, i64$ %spr_out, 0, 64
-    %rs1_data_xor_rs2_data1 = prb i64$ %rs1_data_xor_rs2_data
-    %shift_or1 = prb i64$ %shift_or
-    %13 = xor i64 %rs1_data_xor_rs2_data1, %shift_or1
-    drv i64$ %12, %13, %4
-    %14 = const time 0s
-    drv i64$ %spr_out, %0, %14
-    halt
-}
+compiler bug: no ast node for n52 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+error: `rs1_data_xor_rs2_data` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html#l-45" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v:45</a>:8-29:
+   | 
+   | assign rs1_data_xor_rs2_data[63:0] = rs1_data[63:0] ^ rs2_data[63:0];
+   |        ^^^^^^^^^^^^^^^^^^^^^                                         
+
+compiler bug: no ast node for n58 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+error: `rs1_data_or_rs2_data` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html#l-46" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v:46</a>:8-28:
+   | 
+   | assign rs1_data_or_rs2_data[62:0] = rs1_data[62:0] | rs2_data[62:0];
+   |        ^^^^^^^^^^^^^^^^^^^^                                         
+
+compiler bug: no ast node for n64 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+error: cannot concatenate a value of type `&lt;error&gt;`
+  --&gt; <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html#l-47" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v:47</a>:25-57:
+   | 
+   | assign shift_or[63:0] = {rs1_data_or_rs2_data[62:0],cin};
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: `&lt;error&gt;` has no simple bit-vector type representation
+
+error: `shift_or` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html#l-47" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v:47</a>:8-16:
+   | 
+   | assign shift_or[63:0] = {rs1_data_or_rs2_data[62:0],cin};
+   |        ^^^^^^^^                                          
+
+error: cannot concatenate a value of type `&lt;error&gt;`
+  --&gt; <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html#l-47" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v:47</a>:25-57:
+   | 
+   | assign shift_or[63:0] = {rs1_data_or_rs2_data[62:0],cin};
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: `&lt;error&gt;` has no simple bit-vector type representation
+
+compiler bug: assertion failed: value.ty.is_simple_bit_vector()
+  --&gt; <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluspr.v.html#l-47" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluspr.v:47</a>:26-52:
+   | 
+   | assign shift_or[63:0] = {rs1_data_or_rs2_data[62:0],cin};
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^      
+   = note: Assertion failed: value.ty.is_simple_bit_vector()
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:293
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.is_simple_bit_vector()&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

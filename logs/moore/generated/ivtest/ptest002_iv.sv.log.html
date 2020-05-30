@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,32 +18,15 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v</a>
 time_elapsed: 0.004s
-ram usage: 9676 KB
+ram usage: 10512 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
-   | 
-   |   assign a = b[3:2] + 1;
-   |                       ^ 
-   = note: Casts `1` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
-   | 
-   |   assign a = b[3:2] + 1;
-   |                       ^ 
+compiler bug: no ast node for n11 in the map
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
-   | 
-   |   assign a = b[3:2] + 1;
-   |                       ^ 
-   = note: Casts `1` from `int` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:23</a>:23-24:
-   | 
-   |   assign a = b[3:2] + 1;
-   |                       ^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:29</a>:7-25:
@@ -68,36 +51,19 @@ warning: cast ignored during constant evaluation
    |     b = 4&#39;b1011;
    |         ^^^^^^^ 
 
-proc %main.initial.226.0 (i2$ %a) -&gt; (i4$ %b) {
-0:
-    %1 = const i4 11
-    %2 = const time 0s 1e
-    drv i4$ %b, %1, %2
-    %3 = const i32 1
-    wait %4 for %3
-4:
-    halt
-}
+compiler bug: assertion failed: mir.ty.is_bool()
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest002.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/ptest002.v:28</a>:9-18:
+   | 
+   |     if (a===2&#39;b11)
+   |         ^^^^^^^^^ 
+   = note: Assertion failed: mir.ty.is_bool()
+   = note: Encountered at src/svlog/codegen.rs:1236
 
-entity @main () -&gt; () {
-    %0 = const i4 0
-    %b = sig i4 %0
-    %1 = const i2 0
-    %a = sig i2 %1
-    %2 = const i32 0
-    %b1 = prb i4$ %b
-    %3 = exts i2, i4 %b1, 2, 2
-    %4 = inss i4 %0, i2 %3, 0, 2
-    %5 = exts i2, i4 %4, 0, 2
-    %6 = inss i32 %2, i2 %5, 0, 2
-    %7 = const i32 1
-    %8 = add i32 %6, %7
-    %9 = exts i2, i32 %8, 0, 2
-    %10 = const time 0s 1e
-    drv i2$ %a, %9, %10
-    inst %main.initial.226.0 (i2$ %a) -&gt; (i4$ %b)
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Tests imported from utd-sv
-rc: 101 (means success: 0)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: utd-sv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/utd-sv
@@ -18,24 +18,29 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/fpu_denorm_3b.v.html" target="file-frame">third_party/tests/utd-sv/fpu_denorm_3b.v</a>
 time_elapsed: 0.004s
-ram usage: 9656 KB
+ram usage: 10084 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/utd-sv -e fpu_denorm_3b <a href="../../../../third_party/tests/utd-sv/fpu_denorm_3b.v.html" target="file-frame">third_party/tests/utd-sv/fpu_denorm_3b.v</a>
-compiler bug: assertion failed: ty::identical(result_ty, op_ty.get_value_domain().unwrap().bit_type())
-  --&gt; <a href="../../../../third_party/tests/utd-sv/fpu_denorm_3b.v.html#l-51" target="file-frame">third_party/tests/utd-sv/fpu_denorm_3b.v:51</a>:25-45:
-   | 
-   | assign din2_din1_nz= (!(&amp;din2_din1_zero[2:0]));
-   |                         ^^^^^^^^^^^^^^^^^^^^   
-   = note: Assertion failed: ty::identical(result_ty, op_ty.get_value_domain().unwrap().bit_type())
-   = note: Encountered at src/svlog/mir/lower/rvalue.rs:1700
+compiler bug: no ast node for n52 in the map
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;assertion failed: ty::identical(result_ty, op_ty.get_value_domain().unwrap().bit_type())&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: `din2_din1_zero` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/utd-sv/fpu_denorm_3b.v.html#l-49" target="file-frame">third_party/tests/utd-sv/fpu_denorm_3b.v:49</a>:8-22:
+   | 
+   | assign din2_din1_zero[2:0]= (~(din1 | din2));
+   |        ^^^^^^^^^^^^^^                        
+
+entity @fpu_denorm_3b (i3$ %din1, i3$ %din2) -&gt; (i1$ %din2_din1_nz, i1$ %din2_din1_denorm) {
+    %0 = const i1 0
+    %1 = const time 0s
+    drv i1$ %din2_din1_nz, %0, %1
+    drv i1$ %din2_din1_denorm, %0, %1
+    halt
+}
 
 </pre>
 </body>

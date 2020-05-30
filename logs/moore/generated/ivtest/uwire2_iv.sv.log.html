@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,21 +18,27 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v</a>
 time_elapsed: 0.004s
-ram usage: 9636 KB
+ram usage: 10404 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:8</a>:24-30:
+compiler bug: no ast node for n4 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+error: `foo` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:7</a>:11-14:
+   | 
+   |    assign foo[15:0] = &#39;haaaa;
+   |           ^^^                
+
+error: `foo` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:8</a>:11-14:
    | 
    |    assign foo[31:16] = &#39;h5555;
-   |                        ^^^^^^ 
-   = note: Casts `&#39;h5555` from `bit [14:0]` to `shortint unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:8</a>:24-30:
-   | 
-   |    assign foo[31:16] = &#39;h5555;
-   |                        ^^^^^^ 
+   |           ^^^                 
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:12</a>:3-36:
@@ -40,33 +46,19 @@ warning: `$display` not supported; ignored
    |      $display(&#34;FAILED -- foo=%h&#34;, foo);
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::hir::lowering &gt; Expr #0x55b43f0294a0
-compiler bug: lowering of expression not implemented
+ ERROR moore_svlog::hir::lowering &gt; Expr #50
+compiler bug: lowering of expression to hir not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:13</a>:3-10:
    | 
    |      $finish;
    |      ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1368
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:16</a>:7-25:
-   | 
-   |       $display(&#34;PASSED&#34;);
-   |       ^^^^^^^^^^^^^^^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:11</a>:22-32:
-   | 
-   |       #1 if (foo !== &#39;h5555aaaa) begin
-   |                      ^^^^^^^^^^       
-   = note: Casts `&#39;h5555aaaa` from `bit [30:0]` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/uwire2.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/uwire2.v:11</a>:22-32:
-   | 
-   |       #1 if (foo !== &#39;h5555aaaa) begin
-   |                      ^^^^^^^^^^       
-
+thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

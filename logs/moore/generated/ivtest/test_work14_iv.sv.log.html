@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/test_work14.v.html" target="file-frame">third_party/tests/ivtest/ivltests/test_work14.v</a>
 time_elapsed: 0.004s
-ram usage: 9620 KB
+ram usage: 10608 KB
 </pre>
 <pre class="log">
 
@@ -56,18 +56,21 @@ warning: cast ignored during constant evaluation
    | bit clk = 0;
    |           ^ 
 
-error: `work14_pkg` not found
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/test_work14.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/test_work14.v:2</a>:8-18:
+compiler bug: type assertion failed: `int` != `longint`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/test_work14.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/test_work14.v:5</a>:30-35:
    | 
-   | import work14_pkg::*;
-   |        ^^^^^^^^^^    
+   | parameter longint maxvalue = 2**29 + 17;
+   |                              ^^^^^      
+   = note: Type mismatch:
+   = note:     Left-hand side:  `int`
+   = note:     Right-hand side: `longint`
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:1383
 
-error: unknown module or interface `work14_comp`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/test_work14.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/test_work14.v:13</a>:1-12:
-   | 
-   | work14_comp #(.max_out_val(maxvalue)) duv (.clk_i(clk), .val(mvalue));
-   | ^^^^^^^^^^^                                                           
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
+thread &#39;main&#39; panicked at &#39;type assertion failed: `int` != `longint`&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

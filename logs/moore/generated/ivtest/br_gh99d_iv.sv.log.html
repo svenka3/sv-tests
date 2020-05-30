@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,59 +17,41 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v</a>
-time_elapsed: 0.008s
-ram usage: 9676 KB
+time_elapsed: 0.004s
+ram usage: 10508 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v</a>
- ERROR moore_svlog::hir::lowering &gt; Expr #0x55de23de1f70
-compiler bug: lowering of expression not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v:8</a>:26-29:
-   | 
-   | assign value2 = value1 + 0.0;
-   |                          ^^^ 
+compiler bug: no ast node for n4 in the map
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v:12</a>:6-39:
+error: `value1` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v:6</a>:8-14:
    | 
-   |   #2 $display(&#34;%b %b&#34;, value1, value2);
-   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   | assign value1[3:0] = 4&#39;d2;
+   |        ^^^^^^             
 
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v:14</a>:5-23:
+compiler bug: no ast node for n10 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+ ERROR moore_svlog::hir::lowering &gt; Expr #30
+compiler bug: lowering of expression to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v:8</a>:26-29:
    | 
-   |     $display(&#34;PASSED&#34;);
-   |     ^^^^^^^^^^^^^^^^^^ 
+   | assign value2 = value1 + 0.0;
+   |                          ^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1368
 
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99d.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99d.v:16</a>:5-23:
-   | 
-   |     $display(&#34;FAILED&#34;);
-   |     ^^^^^^^^^^^^^^^^^^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-proc %test.initial.227.0 (i8$ %value2) -&gt; () {
-0:
-    %1 = const i32 2
-    wait %2 for %1
-2:
-    halt
-}
-
-entity @test () -&gt; () {
-    %0 = const i8 0
-    %value1 = sig i8 %0
-    %value2 = sig i8 %0
-    %1 = exts i4$, i8$ %value1, 0, 4
-    %2 = const i4 2
-    %3 = const time 0s 1e
-    drv i4$ %1, %2, %3
-    inst %test.initial.227.0 (i8$ %value2) -&gt; ()
-    halt
-}
+thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

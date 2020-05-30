@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,54 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v</a>
 time_elapsed: 0.008s
-ram usage: 9644 KB
+ram usage: 10008 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e memory_monitor <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:12</a>:30-31:
-   | 
-   | assign Flag1 = (Memory[1] == 0);
-   |                              ^  
-   = note: Casts `0` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:12</a>:30-31:
-   | 
-   | assign Flag1 = (Memory[1] == 0);
-   |                              ^  
+compiler bug: no ast node for n20 in the map
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:12</a>:30-31:
-   | 
-   | assign Flag1 = (Memory[1] == 0);
-   |                              ^  
-   = note: Casts `0` from `int` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:12</a>:30-31:
-   | 
-   | assign Flag1 = (Memory[1] == 0);
-   |                              ^  
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:14</a>:34-35:
-   | 
-   | assign FlagI = (Memory[Index] == 0);
-   |                                  ^  
-   = note: Casts `0` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:14</a>:34-35:
-   | 
-   | assign FlagI = (Memory[Index] == 0);
-   |                                  ^  
+compiler bug: no ast node for n26 in the map
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:14</a>:34-35:
-   | 
-   | assign FlagI = (Memory[Index] == 0);
-   |                                  ^  
-   = note: Casts `0` from `int` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:14</a>:34-35:
-   | 
-   | assign FlagI = (Memory[Index] == 0);
-   |                                  ^  
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1851310.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/pr1851310.v:19</a>:6-54:
@@ -178,7 +144,7 @@ warning: cast ignored during constant evaluation
    |   Memory[Index] = 1;
    |                   ^ 
 
-proc %memory_monitor.initial.231.0 () -&gt; (i8$ %Memory, i4$ %Index) {
+proc %memory_monitor.initial.165.0 () -&gt; (i8$ %Memory, i4$ %Index) {
 0:
     %1 = const i4 1
     %2 = const time 0s 1e
@@ -212,25 +178,7 @@ entity @memory_monitor () -&gt; () {
     %Memory = sig i8 %0
     %1 = const i4 0
     %Index = sig i4 %1
-    %2 = const i1 0
-    %Flag1 = sig i1 %2
-    %FlagI = sig i1 %2
-    %3 = const i32 0
-    %Memory1 = prb i8$ %Memory
-    %4 = exts i7, i8 %Memory1, 1, 7
-    %5 = inss i8 %0, i7 %4, 0, 7
-    %6 = exts i1, i8 %5, 0, 1
-    %7 = inss i32 %3, i1 %6, 0, 1
-    %8 = eq i32 %7, %3
-    %9 = const time 0s 1e
-    drv i1$ %Flag1, %8, %9
-    %Index1 = prb i4$ %Index
-    %10 = shr i8 %Memory1, i8 %0, i4 %Index1
-    %11 = exts i1, i8 %10, 0, 1
-    %12 = inss i32 %3, i1 %11, 0, 1
-    %13 = eq i32 %12, %3
-    drv i1$ %FlagI, %13, %9
-    inst %memory_monitor.initial.231.0 () -&gt; (i8$ %Memory, i4$ %Index)
+    inst %memory_monitor.initial.165.0 () -&gt; (i8$ %Memory, i4$ %Index)
     halt
 }
 

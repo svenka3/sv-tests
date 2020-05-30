@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,32 +18,15 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v</a>
 time_elapsed: 0.008s
-ram usage: 9632 KB
+ram usage: 10860 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e omsp_dbg_uart <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html#l-30" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v:30</a>:33-39:
-   | 
-   | assign cmd_valid = (uart_state==RX_CMD) &amp; xfer_done;
-   |                                 ^^^^^^              
-   = note: Casts `RX_CMD` from `bit [2:0]` to `logic [2:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html#l-30" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v:30</a>:33-39:
-   | 
-   | assign cmd_valid = (uart_state==RX_CMD) &amp; xfer_done;
-   |                                 ^^^^^^              
+compiler bug: no ast node for n66 in the map
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html#l-31" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v:31</a>:32-39:
-   | 
-   | assign xfer_done = uart_state!=RX_SYNC;
-   |                                ^^^^^^^ 
-   = note: Casts `RX_SYNC` from `bit [2:0]` to `logic [2:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html#l-31" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v:31</a>:32-39:
-   | 
-   | assign xfer_done = uart_state!=RX_SYNC;
-   |                                ^^^^^^^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
 warning: cast ignored during constant evaluation
   --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html#l-20" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v:20</a>:5-12:
@@ -144,104 +127,19 @@ warning: cast ignored during constant evaluation
    |   if (dbg_rst) uart_state &lt;= RX_SYNC;
    |                              ^^^^^^^ 
 
-proc %omsp_dbg_uart.always.242.0 (i1$ %mem_burst, i3$ %uart_state) -&gt; (i3$ %uart_state_nxt) {
-init:
-    %uart_state1 = prb i3$ %uart_state
-    %mem_burst1 = prb i1$ %mem_burst
-    wait %check, %uart_state, %mem_burst
-check:
-    %uart_state2 = prb i3$ %uart_state
-    %impledge = neq i3 %uart_state1, %uart_state2
-    %mem_burst2 = prb i1$ %mem_burst
-    %impledge1 = neq i1 %mem_burst1, %mem_burst2
-    %event_or = or i1 %impledge, %impledge1
-    br %event_or, %init, %event
-event:
-    %0 = const i3 0
-    %1 = eq i3 %uart_state2, %0
-    %2 = const i3 1
-    %3 = const time 0s 1e
-    br %1, %4, %case_body
-case_body:
-    drv i3$ %uart_state_nxt, %2, %3
-    br %init
-4:
-    %5 = eq i3 %uart_state2, %2
-    %6 = const i3 2
-    br %5, %7, %case_body1
-case_body1:
-    %8 = const i1 0
-    %9 = neq i1 %mem_burst2, %8
-    %10 = [i3 %0, %6]
-    %11 = mux [2 x i3] %10, i1 %9
-    drv i3$ %uart_state_nxt, %11, %3
-    br %init
-7:
-    %12 = eq i3 %uart_state2, %6
-    br %12, %13, %case_body2
-case_body2:
-    drv i3$ %uart_state_nxt, %0, %3
-    br %init
-13:
-    drv i3$ %uart_state_nxt, %2, %3
-    br %init
-}
+compiler bug: assertion failed: mir.ty.is_bool()
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/omsp_dbg_uart.v.html#l-28" target="file-frame">third_party/tools/yosys/tests/simple/omsp_dbg_uart.v:28</a>:12-33:
+   | 
+   |   else if (xfer_done | mem_burst) uart_state &lt;= uart_state_nxt;
+   |            ^^^^^^^^^^^^^^^^^^^^^                               
+   = note: Assertion failed: mir.ty.is_bool()
+   = note: Encountered at src/svlog/codegen.rs:1236
 
-proc %omsp_dbg_uart.always.243.0 (i1$ %dbg_clk, i1$ %dbg_rst, i1$ %mem_burst, i3$ %uart_state_nxt, i1$ %xfer_done) -&gt; (i3$ %uart_state) {
-init:
-    %dbg_clk1 = prb i1$ %dbg_clk
-    %dbg_rst1 = prb i1$ %dbg_rst
-    wait %check, %dbg_clk, %dbg_rst
-check:
-    %dbg_clk2 = prb i1$ %dbg_clk
-    %0 = const i1 0
-    %1 = eq i1 %dbg_clk1, %0
-    %2 = neq i1 %dbg_clk2, %0
-    %posedge = and i1 %1, %2
-    %dbg_rst2 = prb i1$ %dbg_rst
-    %3 = eq i1 %dbg_rst1, %0
-    %4 = neq i1 %dbg_rst2, %0
-    %posedge1 = and i1 %3, %4
-    %event_or = or i1 %posedge, %posedge1
-    br %event_or, %init, %event
-event:
-    %5 = const time 0s 1d
-    br %4, %if_false, %if_true
-if_true:
-    %6 = const i3 0
-    drv i3$ %uart_state, %6, %5
-    br %init
-if_false:
-    %xfer_done1 = prb i1$ %xfer_done
-    %mem_burst1 = prb i1$ %mem_burst
-    %7 = or i1 %xfer_done1, %mem_burst1
-    %8 = neq i1 %7, %0
-    br %8, %init, %if_true1
-if_true1:
-    %uart_state_nxt1 = prb i3$ %uart_state_nxt
-    drv i3$ %uart_state, %uart_state_nxt1, %5
-    br %init
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-entity @omsp_dbg_uart (i1$ %dbg_clk, i1$ %dbg_rst, i1$ %mem_burst) -&gt; (i1$ %cmd_valid) {
-    %0 = const i3 0
-    %uart_state = sig i3 %0
-    %uart_state_nxt = sig i3 %0
-    %1 = const i1 0
-    %xfer_done = sig i1 %1
-    %uart_state1 = prb i3$ %uart_state
-    %2 = const i3 1
-    %3 = eq i3 %uart_state1, %2
-    %xfer_done1 = prb i1$ %xfer_done
-    %4 = and i1 %3, %xfer_done1
-    %5 = const time 0s 1e
-    drv i1$ %cmd_valid, %4, %5
-    %6 = neq i3 %uart_state1, %0
-    drv i1$ %xfer_done, %6, %5
-    inst %omsp_dbg_uart.always.242.0 (i1$ %mem_burst, i3$ %uart_state) -&gt; (i3$ %uart_state_nxt)
-    inst %omsp_dbg_uart.always.243.0 (i1$ %dbg_clk, i1$ %dbg_rst, i1$ %mem_burst, i3$ %uart_state_nxt, i1$ %xfer_done) -&gt; (i3$ %uart_state)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

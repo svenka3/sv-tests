@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: event control
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: 9.4.2
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-9
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-9/9.4.2--event_control_posedge.sv.html" target="file-frame">tests/chapter-9/9.4.2--event_control_posedge.sv</a>
 time_elapsed: 0.004s
-ram usage: 11460 KB
+ram usage: 9744 KB
 </pre>
 <pre class="log">
 
@@ -56,33 +56,11 @@ warning: cast ignored during constant evaluation
    |     reg [3:0] a = 0;
    |                   ^ 
 
-proc %block_tb.always.225.0 (i32$ %clk) -&gt; (i4$ %a) {
-init:
-    %clk1 = prb i32$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i32$ %clk
-    %0 = const i32 0
-    %1 = eq i32 %clk1, %0
-    %2 = neq i32 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %a1 = prb i4$ %a
-    %3 = not i4 %a1
-    %4 = const time 0s 1e
-    drv i4$ %a, %3, %4
-    br %init
-}
+compiler bug: no ast node for n13 in the map
 
-entity @block_tb () -&gt; () {
-    %0 = const i4 0
-    %a = sig i4 %0
-    %1 = const i32 0
-    %clk = sig i32 %1
-    inst %block_tb.always.225.0 (i32$ %clk) -&gt; (i4$ %a)
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
 
 </pre>
 </body>

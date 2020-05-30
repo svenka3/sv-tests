@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,11 +18,27 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v</a>
 time_elapsed: 0.004s
-ram usage: 9612 KB
+ram usage: 10308 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v</a>
+compiler bug: no ast node for n4 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+error: `value` cannot be index into
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v:6</a>:8-13:
+   | 
+   | assign value[3:0] = 4&#39;d2;
+   |        ^^^^^             
+
+compiler bug: no ast node for n10 in the map
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v:11</a>:6-36:
    | 
@@ -41,52 +57,19 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v:12</a>:16-17:
+compiler bug: assertion failed: mir.ty.is_bool()
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v:12</a>:7-17:
    | 
    |   if (pass === 1)
-   |                ^ 
-   = note: Casts `1` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v:12</a>:16-17:
-   | 
-   |   if (pass === 1)
-   |                ^ 
+   |       ^^^^^^^^^^ 
+   = note: Assertion failed: mir.ty.is_bool()
+   = note: Encountered at src/svlog/codegen.rs:1236
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v:12</a>:16-17:
-   | 
-   |   if (pass === 1)
-   |                ^ 
-   = note: Casts `1` from `int` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99a.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99a.v:12</a>:16-17:
-   | 
-   |   if (pass === 1)
-   |                ^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-proc %test.initial.227.0 (i1$ %pass) -&gt; () {
-0:
-    %1 = const i32 2
-    wait %2 for %1
-2:
-    halt
-}
-
-entity @test () -&gt; () {
-    %0 = const i8 0
-    %value = sig i8 %0
-    %1 = const i1 0
-    %pass = sig i1 %1
-    %2 = exts i4$, i8$ %value, 0, 4
-    %3 = const i4 2
-    %4 = const time 0s 1e
-    drv i4$ %2, %3, %4
-    %value1 = prb i8$ %value
-    %5 = const i8 2
-    %6 = eq i8 %value1, %5
-    drv i1$ %pass, %6, %4
-    inst %test.initial.227.0 (i1$ %pass) -&gt; ()
-    halt
-}
+thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>
