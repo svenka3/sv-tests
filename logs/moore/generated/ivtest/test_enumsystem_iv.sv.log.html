@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/test_enumsystem.v.html" target="file-frame">third_party/tests/ivtest/ivltests/test_enumsystem.v</a>
-time_elapsed: 0.004s
-ram usage: 10588 KB
+time_elapsed: 0.008s
+ram usage: 10568 KB
 </pre>
 <pre class="log">
 
@@ -183,7 +183,7 @@ proc %stim.initial.85.0 (i1$ %clk) -&gt; (i1$ %en) {
     %3 = const i32 100
     br %loop_body
 loop_body:
-    %4 = phi i32 [%3, %0], [%5, %event]
+    %4 = phi i32 [%5, %event], [%3, %0]
     %6 = const i32 0
     %7 = neq i32 %4, %6
     br %7, %loop_exit, %init
@@ -192,13 +192,12 @@ loop_exit:
     drv i1$ %en, %8, %2
     halt
 init:
-    %clk1 = prb i1$ %clk
     wait %check, %clk
 check:
-    %clk2 = prb i1$ %clk
+    %clk1 = prb i1$ %clk
     %9 = const i1 0
     %10 = eq i1 %clk1, %9
-    %11 = neq i1 %clk2, %9
+    %11 = neq i1 %clk1, %9
     %posedge = and i1 %10, %11
     br %posedge, %init, %event
 event:
