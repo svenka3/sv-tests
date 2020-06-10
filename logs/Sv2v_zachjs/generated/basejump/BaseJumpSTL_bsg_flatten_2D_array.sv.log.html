@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_flatten_2D_array.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_flatten_2D_array.v</a>
-time_elapsed: 0.348s
-ram usage: 15476 KB
+time_elapsed: 0.288s
+ram usage: 15120 KB
 </pre>
 <pre class="log">
 
@@ -29,11 +29,11 @@ module bsg_flatten_2D_array (
 );
 	parameter width_p = -1;
 	parameter items_p = -1;
-	input [((items_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (items_p * width_p) + -1 : (items_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - items_p) * width_p) + (((items_p - 1) * width_p) - 1) : ((2 - items_p) * (2 - width_p)) + (((width_p - 1) + ((items_p - 1) * (2 - width_p))) - 1))):((items_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (items_p - 1) * width_p : (width_p - 1) + ((items_p - 1) * (2 - width_p))))] i;
+	input [(items_p &gt;= 1 ? (width_p &gt;= 1 ? (items_p * width_p) + -1 : (items_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - items_p) * width_p) + (((items_p - 1) * width_p) - 1) : ((2 - items_p) * (2 - width_p)) + (((width_p - 1) + ((items_p - 1) * (2 - width_p))) - 1))):(items_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (items_p - 1) * width_p : (width_p - 1) + ((items_p - 1) * (2 - width_p))))] i;
 	output [(width_p * items_p) - 1:0] o;
 	genvar j;
 	generate
-		for (j = 0; j &lt; items_p; j = j + 1) assign o[j * width_p+:width_p] = i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((items_p - 1) &gt;= 0 ? j : 0 - (j - (items_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)];
+		for (j = 0; j &lt; items_p; j = j + 1) assign o[j * width_p+:width_p] = i[(width_p &gt;= 1 ? 0 : width_p - 1) + ((items_p &gt;= 1 ? j : 0 - (j - (items_p - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)];
 	endgenerate
 endmodule
 

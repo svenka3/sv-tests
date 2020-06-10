@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,52 +18,22 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v</a>
 time_elapsed: 0.004s
-ram usage: 10520 KB
+ram usage: 10388 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v</a>
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `bit` to `reg [31:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v:4</a>:18-21:
    | 
    |    initial foo = &#39;b0;
    |                  ^^^ 
-   = note: Casts `&#39;b0` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v:4</a>:18-21:
-   | 
-   |    initial foo = &#39;b0;
-   |                  ^^^ 
+   = note: `bit` can be cast to an intermediate `logic [31:0]`, but
+   = note: `logic [31:0]` cannot be cast to the final `reg [31:0]`
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v:4</a>:18-21:
-   | 
-   |    initial foo = &#39;b0;
-   |                  ^^^ 
-   = note: Casts `&#39;b0` from `bit [-1:0]` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v:4</a>:18-21:
-   | 
-   |    initial foo = &#39;b0;
-   |                  ^^^ 
-
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v:8</a>:3-21:
-   | 
-   |      $display(&#34;FAILED&#34;);
-   |      ^^^^^^^^^^^^^^^^^^ 
-
- ERROR moore_svlog::hir::lowering &gt; Expr #33
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr823.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr823.v:9</a>:3-10:
-   | 
-   |      $finish;
-   |      ^^^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1368
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([31:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: bit -&gt; PackSBVT bit [0:0] -&gt; Range([31:0], false) bit [31:0] -&gt; Domain(FourValued) logic [31:0]
 
 </pre>
 </body>

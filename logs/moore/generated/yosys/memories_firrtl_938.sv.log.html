@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories
@@ -18,53 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/firrtl_938.v.html" target="file-frame">third_party/tools/yosys/tests/memories/firrtl_938.v</a>
 time_elapsed: 0.004s
-ram usage: 10316 KB
+ram usage: 10456 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories -e top <a href="../../../../third_party/tools/yosys/tests/memories/firrtl_938.v.html" target="file-frame">third_party/tools/yosys/tests/memories/firrtl_938.v</a>
-proc %top.always.106.0 (i8$ %data_a, i6$ %addr_a, i6$ %we_a, i6$ %clk) -&gt; (i8$ %ram, i8$ %q_a) {
-init:
-    %clk1 = prb i6$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i6$ %clk
-    %0 = const i6 0
-    %1 = eq i6 %clk1, %0
-    %2 = neq i6 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %we_a1 = prb i6$ %we_a
-    %3 = neq i6 %we_a1, %0
-    %4 = const i8 0
-    %addr_a1 = prb i6$ %addr_a
-    %5 = const time 0s 1d
-    br %3, %if_exit, %if_true
-if_true:
-    %6 = sig i8 %4
-    %7 = shr i8$ %ram, i8$ %6, i6 %addr_a1
-    %8 = exts i1$, i8$ %7, 0, 1
-    %data_a1 = prb i8$ %data_a
-    %9 = exts i1, i8 %data_a1, 0, 1
-    drv i1$ %8, %9, %5
-    drv i8$ %q_a, %data_a1, %5
-    br %if_exit
-if_exit:
-    %ram1 = prb i8$ %ram
-    %10 = shr i8 %ram1, i8 %4, i6 %addr_a1
-    %11 = exts i1, i8 %10, 0, 1
-    %12 = inss i8 %4, i1 %11, 0, 1
-    drv i8$ %q_a, %12, %5
-    br %init
-}
+error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/firrtl_938.v.html#l-16" target="file-frame">third_party/tools/yosys/tests/memories/firrtl_938.v:16</a>:19-25:
+   | 
+   |             ram[addr_a] &lt;= data_a;
+   |                            ^^^^^^ 
 
-entity @top (i8$ %data_a, i6$ %addr_a, i6$ %we_a, i6$ %clk) -&gt; (i8$ %q_a) {
-    %0 = const i8 0
-    %ram = sig i8 %0
-    inst %top.always.106.0 (i8$ %data_a, i6$ %addr_a, i6$ %we_a, i6$ %clk) -&gt; (i8$ %ram, i8$ %q_a)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
 
 </pre>
 </body>

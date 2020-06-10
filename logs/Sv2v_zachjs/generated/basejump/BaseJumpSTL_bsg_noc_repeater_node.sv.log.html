@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_noc_repeater_node.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_noc_repeater_node.v</a>
-time_elapsed: 0.356s
-ram usage: 15532 KB
+time_elapsed: 0.292s
+ram usage: 15696 KB
 </pre>
 <pre class="log">
 
@@ -39,10 +39,10 @@ module bsg_noc_repeater_node (
 	output [bsg_ready_and_link_sif_width_lp - 1:0] side_A_links_o;
 	input [bsg_ready_and_link_sif_width_lp - 1:0] side_B_links_i;
 	output [bsg_ready_and_link_sif_width_lp - 1:0] side_B_links_o;
-	wire [(2 + ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) - 1:0] links_A_cast_i;
-	wire [(2 + ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) - 1:0] links_B_cast_i;
-	wire [(2 + ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) - 1:0] links_A_cast_o;
-	wire [(2 + ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)) - 1:0] links_B_cast_o;
+	wire [(2 + (width_p &gt;= 1 ? width_p : 2 - width_p)) - 1:0] links_A_cast_i;
+	wire [(2 + (width_p &gt;= 1 ? width_p : 2 - width_p)) - 1:0] links_B_cast_i;
+	wire [(2 + (width_p &gt;= 1 ? width_p : 2 - width_p)) - 1:0] links_A_cast_o;
+	wire [(2 + (width_p &gt;= 1 ? width_p : 2 - width_p)) - 1:0] links_B_cast_o;
 	assign links_A_cast_i = side_A_links_i;
 	assign links_B_cast_i = side_B_links_i;
 	assign side_A_links_o = links_A_cast_o;
@@ -50,22 +50,22 @@ module bsg_noc_repeater_node (
 	bsg_two_fifo #(.width_p(width_p)) A_to_B(
 		.clk_i(clk_i),
 		.reset_i(reset_i),
-		.v_i(links_A_cast_i[1 + (1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.data_i(links_A_cast_i[((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1-:((((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) : 1 - (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.ready_o(links_A_cast_o[1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1)]),
-		.v_o(links_B_cast_o[1 + (1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.data_o(links_B_cast_o[((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1-:((((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) : 1 - (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.yumi_i(links_B_cast_i[1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1)] &amp; links_B_cast_o[1 + (1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))])
+		.v_i(links_A_cast_i[2 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)]),
+		.data_i(links_A_cast_i[(width_p &gt;= 1 ? width_p : 2 - width_p) + -1-:(((width_p &gt;= 1 ? width_p : 2 - width_p) + -1) &gt;= 0 ? (width_p &gt;= 1 ? width_p : 2 - width_p) : 1 - ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1))]),
+		.ready_o(links_A_cast_o[1 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)]),
+		.v_o(links_B_cast_o[2 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)]),
+		.data_o(links_B_cast_o[(width_p &gt;= 1 ? width_p : 2 - width_p) + -1-:(((width_p &gt;= 1 ? width_p : 2 - width_p) + -1) &gt;= 0 ? (width_p &gt;= 1 ? width_p : 2 - width_p) : 1 - ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1))]),
+		.yumi_i(links_B_cast_i[1 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)] &amp; links_B_cast_o[2 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)])
 	);
 	bsg_two_fifo #(.width_p(width_p)) B_to_A(
 		.clk_i(clk_i),
 		.reset_i(reset_i),
-		.v_i(links_B_cast_i[1 + (1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.data_i(links_B_cast_i[((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1-:((((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) : 1 - (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.ready_o(links_B_cast_o[1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1)]),
-		.v_o(links_A_cast_o[1 + (1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.data_o(links_A_cast_o[((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1-:((((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) : 1 - (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))]),
-		.yumi_i(links_A_cast_i[1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1)] &amp; links_A_cast_o[1 + (1 + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) + -1))])
+		.v_i(links_B_cast_i[2 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)]),
+		.data_i(links_B_cast_i[(width_p &gt;= 1 ? width_p : 2 - width_p) + -1-:(((width_p &gt;= 1 ? width_p : 2 - width_p) + -1) &gt;= 0 ? (width_p &gt;= 1 ? width_p : 2 - width_p) : 1 - ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1))]),
+		.ready_o(links_B_cast_o[1 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)]),
+		.v_o(links_A_cast_o[2 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)]),
+		.data_o(links_A_cast_o[(width_p &gt;= 1 ? width_p : 2 - width_p) + -1-:(((width_p &gt;= 1 ? width_p : 2 - width_p) + -1) &gt;= 0 ? (width_p &gt;= 1 ? width_p : 2 - width_p) : 1 - ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1))]),
+		.yumi_i(links_A_cast_i[1 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)] &amp; links_A_cast_o[2 + ((width_p &gt;= 1 ? width_p : 2 - width_p) + -1)])
 	);
 endmodule
 

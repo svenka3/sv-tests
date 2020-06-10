@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_input.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_input.v</a>
 time_elapsed: 0.520s
-ram usage: 16776 KB
+ram usage: 17092 KB
 </pre>
 <pre class="log">
 
@@ -98,7 +98,7 @@ module bsg_source_sync_input (
 	);
 	localparam lg_io_trigger_words_lp = 3;
 	reg io_trigger_line_r;
-	reg [(lg_io_trigger_words_lp + 1) - 1:0] io_trigger_count_r;
+	reg [lg_io_trigger_words_lp:0] io_trigger_count_r;
 	wire io_trigger_line = (io_trigger_mode_alt_en_i ? io_trigger_mode_1 : io_trigger_mode_0);
 	wire io_trigger_mode_active = |io_trigger_count_r;
 	always @(posedge io_clk_i)
@@ -156,12 +156,12 @@ module bsg_source_sync_input (
 			core_sent_0_want_to_send_1_r &lt;= 0;
 		else
 			core_sent_0_want_to_send_1_r &lt;= (core_transfer_success ? ~core_actual_deque : core_sent_0_want_to_send_1_r);
-	wire [(lg_fifo_depth_p + 1) - 1:0] core_credits_gray_r_iosync;
-	wire [(lg_fifo_depth_p + 1) - 1:0] core_credits_binary_r_iosync;
-	reg [(lg_fifo_depth_p + 1) - 1:0] io_credits_sent_r;
-	wire [(lg_fifo_depth_p + 1) - 1:0] io_credits_sent_r_gray;
-	reg [(lg_fifo_depth_p + 1) - 1:0] io_credits_sent_r_p1;
-	reg [(lg_fifo_depth_p + 1) - 1:0] io_credits_sent_r_p2;
+	wire [lg_fifo_depth_p:0] core_credits_gray_r_iosync;
+	wire [lg_fifo_depth_p:0] core_credits_binary_r_iosync;
+	reg [lg_fifo_depth_p:0] io_credits_sent_r;
+	wire [lg_fifo_depth_p:0] io_credits_sent_r_gray;
+	reg [lg_fifo_depth_p:0] io_credits_sent_r_p1;
+	reg [lg_fifo_depth_p:0] io_credits_sent_r_p2;
 	bsg_async_ptr_gray #(.lg_size_p(lg_fifo_depth_p + 1)) bapg(
 		.w_clk_i(core_clk_i),
 		.w_reset_i(core_reset_i),
@@ -175,7 +175,7 @@ module bsg_source_sync_input (
 	always @(*) io_credits_sent_r_p2 = io_credits_sent_r + 2;
 	assign io_token_r_o = io_credits_sent_r[lg_credit_to_token_decimation_p];
 	assign io_credits_sent_r_gray = (io_credits_sent_r &gt;&gt; 1) ^ io_credits_sent_r;
-	wire [(lg_fifo_depth_p + 1) - 1:0] io_credits_sent_p1_r_gray;
+	wire [lg_fifo_depth_p:0] io_credits_sent_p1_r_gray;
 	bsg_binary_plus_one_to_gray #(.width_p(lg_fifo_depth_p + 1)) bsg_bp1_2g(
 		.binary_i(io_credits_sent_r),
 		.gray_o(io_credits_sent_p1_r_gray)

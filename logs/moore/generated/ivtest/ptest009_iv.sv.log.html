@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,16 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest009.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest009.v</a>
 time_elapsed: 0.004s
-ram usage: 10232 KB
+ram usage: 10352 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/ptest009.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest009.v</a>
-compiler bug: no ast node for n4 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest009.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/ptest009.v:28</a>:7-25:
    | 
@@ -40,19 +35,23 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: assertion failed: mir.ty.is_bool()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest009.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/ptest009.v:27</a>:9-17:
-   | 
-   |     if (a===1&#39;b1)
-   |         ^^^^^^^^ 
-   = note: Assertion failed: mir.ty.is_bool()
-   = note: Encountered at src/svlog/codegen.rs:1236
+proc %main.initial.37.0 (i1$ %a) -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    halt
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @main () -&gt; () {
+    %0 = const i1 0
+    %a = sig i1 %0
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %a, %1, %2
+    inst %main.initial.37.0 (i1$ %a) -&gt; ()
+    halt
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v</a>
 time_elapsed: 0.004s
-ram usage: 10648 KB
+ram usage: 10652 KB
 </pre>
 <pre class="log">
 
@@ -35,57 +35,25 @@ warning: `$display` not supported; ignored
    |       else $display(&#34;FAILED&#34;);
    |            ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
-   = note: Casts `0` from `bit` to `logic`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
+proc %lower.param1.initial.302.1 () -&gt; (i1$ %err) {
+0:
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %err, %1, %2
+    halt
+}
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
-   = note: Casts `0` from `bit signed` to `bit`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
+entity @lower.param1 () -&gt; () {
+    %0 = const i1 0
+    %err = sig i1 %0
+    inst %lower.param1.initial.302.1 () -&gt; (i1$ %err)
+    halt
+}
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
-   = note: Casts `0` from `bit signed [0:0]` to `bit signed`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
-   = note: Casts `0` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890b.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890b.v:22</a>:13-14:
-   | 
-   |       err = 0;
-   |             ^ 
-
-thread &#39;main&#39; panicked at &#39;Internal error, cycle detected:
-- __SalsaQueryDescriptor { kind: type_of((n19, p1)) }
-
-- __SalsaQueryDescriptor { kind: type_of((n0, p0)) }
-
-&#39;, &lt;::std::macros::panic macros&gt;:2:4
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @top () -&gt; () {
+    inst @lower.param1 () -&gt; ()
+    halt
+}
 
 </pre>
 </body>

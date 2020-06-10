@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99c.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99c.v</a>
 time_elapsed: 0.004s
-ram usage: 10456 KB
+ram usage: 10552 KB
 </pre>
 <pre class="log">
 
@@ -28,22 +28,6 @@ error: `abs` not found
    | 
    | assign value2 = abs(value1);
    |                 ^^^         
-
-compiler bug: no ast node for n4 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-error: `value1` cannot be index into
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99c.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99c.v:6</a>:8-14:
-   | 
-   | assign value1[3:0] = 4&#39;d2;
-   |        ^^^^^^             
-
-compiler bug: no ast node for n10 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
 
 error: `abs` not found
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99c.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99c.v:8</a>:17-20:
@@ -69,19 +53,25 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: assertion failed: mir.ty.is_bool()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99c.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99c.v:12</a>:7-22:
-   | 
-   |   if (value2 === 8&#39;bx)
-   |       ^^^^^^^^^^^^^^^ 
-   = note: Assertion failed: mir.ty.is_bool()
-   = note: Encountered at src/svlog/codegen.rs:1236
+proc %test.initial.80.0 (i8$ %value2) -&gt; () {
+0:
+    %1 = const i32 2
+    wait %2 for %1
+2:
+    halt
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @test () -&gt; () {
+    %0 = const i8 0
+    %value1 = sig i8 %0
+    %value2 = sig i8 %0
+    %1 = exts i4$, i8$ %value1, 0, 4
+    %2 = const i4 2
+    %3 = const time 0s 1e
+    drv i4$ %1, %2, %3
+    inst %test.initial.80.0 (i8$ %value2) -&gt; ()
+    halt
+}
 
 </pre>
 </body>

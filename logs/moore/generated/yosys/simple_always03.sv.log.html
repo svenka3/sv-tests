@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,71 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/always03.v.html" target="file-frame">third_party/tools/yosys/tests/simple/always03.v</a>
 time_elapsed: 0.004s
-ram usage: 10232 KB
+ram usage: 10804 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e uut_always03 <a href="../../../../third_party/tools/yosys/tests/simple/always03.v.html" target="file-frame">third_party/tools/yosys/tests/simple/always03.v</a>
-proc %uut_always03.always.195.0 (i1$ %clock, i1$ %in1, i1$ %in2, i1$ %in3, i1$ %in4, i1$ %in5, i1$ %in6, i1$ %in7) -&gt; (i1$ %out1, i1$ %out2, i1$ %out3) {
-init:
-    %clock1 = prb i1$ %clock
-    wait %check, %clock
-check:
-    %clock2 = prb i1$ %clock
-    %0 = const i1 0
-    %1 = eq i1 %clock1, %0
-    %2 = neq i1 %clock2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %in11 = prb i1$ %in1
-    %3 = const time 0s 1e
-    drv i1$ %out1, %in11, %3
-    %in21 = prb i1$ %in2
-    %4 = neq i1 %in21, %0
-    %out11 = prb i1$ %out1
-    br %4, %if_exit, %if_true
-if_true:
-    %5 = neq i1 %out11, %0
-    %6 = not i1 %5
-    drv i1$ %out1, %6, %3
-    br %if_exit
-if_exit:
-    %7 = const time 0s 1d
-    drv i1$ %out2, %out11, %7
-    %in31 = prb i1$ %in3
-    %8 = neq i1 %in31, %0
-    %out21 = prb i1$ %out2
-    br %8, %if_exit1, %if_true1
-if_true1:
-    drv i1$ %out2, %out21, %7
-    br %if_exit1
-if_exit1:
-    %in41 = prb i1$ %in4
-    %9 = neq i1 %in41, %0
-    br %9, %if_exit2, %if_true2
-if_true2:
-    %in51 = prb i1$ %in5
-    %10 = neq i1 %in51, %0
-    br %10, %if_false, %if_true3
-if_exit2:
-    %11 = xor i1 %out11, %out21
-    drv i1$ %out1, %11, %3
-    br %init
-if_true3:
-    %in61 = prb i1$ %in6
-    drv i1$ %out3, %in61, %7
-    br %if_exit2
-if_false:
-    %in71 = prb i1$ %in7
-    drv i1$ %out3, %in71, %7
-    br %if_exit2
-}
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #67)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/always03.v.html#l-3" target="file-frame">third_party/tools/yosys/tests/simple/always03.v:3</a>:7-12:
+   | 
+   | input clock, in1, in2, in3, in4, in5, in6, in7;
+   |       ^^^^^                                    
+   = note: Encountered at src/svlog/typeck.rs:61
 
-entity @uut_always03 (i1$ %clock, i1$ %in1, i1$ %in2, i1$ %in3, i1$ %in4, i1$ %in5, i1$ %in6, i1$ %in7) -&gt; (i1$ %out1, i1$ %out2, i1$ %out3) {
-    inst %uut_always03.always.195.0 (i1$ %clock, i1$ %in1, i1$ %in2, i1$ %in3, i1$ %in4, i1$ %in5, i1$ %in6, i1$ %in7) -&gt; (i1$ %out1, i1$ %out2, i1$ %out3)
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #67)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

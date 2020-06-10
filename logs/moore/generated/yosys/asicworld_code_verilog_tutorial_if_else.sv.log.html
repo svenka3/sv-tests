@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,26 +18,45 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v</a>
 time_elapsed: 0.004s
-ram usage: 9692 KB
+ram usage: 10440 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e if_else <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_if_else.v</a>
-compiler bug: no ast node for n9 in the map
+proc %if_else.always.46.0 (i1$ %clk, i1$ %din, i1$ %reset) -&gt; (i1$ %dff) {
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
+    br %posedge, %init, %event
+event:
+    %reset1 = prb i1$ %reset
+    %3 = neq i1 %reset1, %0
+    %4 = const time 0s 1d
+    br %3, %if_false, %if_true
+if_true:
+    drv i1$ %dff, %0, %4
+    br %init
+if_false:
+    %din1 = prb i1$ %din
+    drv i1$ %dff, %din1, %4
+    br %init
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: no ast node for n11 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: no ast node for n10 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
+entity @if_else () -&gt; () {
+    %0 = const i1 0
+    %dff = sig i1 %0
+    %clk = sig i1 %0
+    %din = sig i1 %0
+    %reset = sig i1 %0
+    inst %if_else.always.46.0 (i1$ %clk, i1$ %din, i1$ %reset) -&gt; (i1$ %dff)
+    halt
+}
 
 </pre>
 </body>

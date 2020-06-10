@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v</a>
-time_elapsed: 0.680s
-ram usage: 17132 KB
+time_elapsed: 0.520s
+ram usage: 15052 KB
 </pre>
 <pre class="log">
 
@@ -38,22 +38,14 @@ module bsg_source_sync_channel_control_slave (
 	core_loopback_en_o,
 	out_channel_active_o
 );
-	localparam [3:0] sBegin = 0;
-	localparam [3:0] sPhase1 = 1;
-	localparam [3:0] sPhase2 = 2;
-	localparam [3:0] sPhase3 = 3;
-	localparam [3:0] sPhase4 = 4;
-	localparam [3:0] sActive = 5;
-	localparam [3:0] sInactive = 6;
-	localparam [3:0] sResetClock = 7;
 	parameter width_p = -1;
 	parameter lg_token_width_p = &#34;inv&#34;;
 	input out_clk_i;
 	input out_reset_i;
 	output reg out_clk_init_r_o;
 	output out_override_en_o;
-	output [(width_p + 1) - 1:0] out_override_valid_data_o;
-	input [(width_p + 1) - 1:0] in_snoop_valid_data_i;
+	output [width_p:0] out_override_valid_data_o;
+	input [width_p:0] in_snoop_valid_data_i;
 	input in_clk_i;
 	output in_trigger_mode_en_o;
 	output in_trigger_mode_alt_en_o;
@@ -70,15 +62,23 @@ module bsg_source_sync_channel_control_slave (
 	endgenerate
 	generate
 		if (width_p &lt;= 4) assign out_active_mismatch = 1&#39;b0;
-		else assign out_active_mismatch = |(out_active_pattern[((width_p + 1) - 5) - 1:0] ^ in_snoop_valid_data_i[((width_p + 1) - 5) - 1:0]);
+		else assign out_active_mismatch = |(out_active_pattern[width_p + -5:0] ^ in_snoop_valid_data_i[width_p + -5:0]);
 	endgenerate
 	reg [3:0] out_state_n;
 	reg [3:0] out_state_r;
+	localparam [3:0] sBegin = 0;
 	always @(posedge out_clk_i)
 		if (out_reset_i)
 			out_state_r &lt;= sBegin;
 		else
 			out_state_r &lt;= out_state_n;
+	localparam [3:0] sActive = 5;
+	localparam [3:0] sInactive = 6;
+	localparam [3:0] sPhase1 = 1;
+	localparam [3:0] sPhase2 = 2;
+	localparam [3:0] sPhase3 = 3;
+	localparam [3:0] sPhase4 = 4;
+	localparam [3:0] sResetClock = 7;
 	always @(*) begin
 		out_state_n = out_state_r;
 		if (out_state_r == sBegin)
@@ -103,13 +103,17 @@ module bsg_source_sync_channel_control_slave (
 	reg [counter_bits_lp - 1:0] out_ctr_n;
 	reg [7:0] out_rot_r;
 	reg [7:0] out_rot_n;
-	reg [(width_p + 1) - 1:0] out_override_valid_data_r;
-	reg [(width_p + 1) - 1:0] out_override_valid_data_n;
+	reg [width_p:0] out_override_valid_data_r;
+	reg [width_p:0] out_override_valid_data_n;
 	reg out_override_en_r;
 	reg out_override_en_n;
 	assign out_override_valid_data_o = out_override_valid_data_r;
 	assign out_override_en_o = out_override_en_r;
 	reg out_reset_r;
+	function automatic [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] sv2v_cast_E3772;
+		input reg [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] inp;
+		sv2v_cast_E3772 = inp;
+	endfunction
 	always @(posedge out_clk_i) begin
 		out_reset_r &lt;= out_reset_i;
 		out_clk_init_r_o &lt;= (~out_reset_i &amp; (out_state_n == sResetClock)) &amp; (out_state_r == sBegin);
@@ -129,7 +133,6 @@ module bsg_source_sync_channel_control_slave (
 	end
 	always @(out_state_r)
 		$display(&#34;## Slave %m entering state %s with in_snoop_valid_data_i %b&#34;, out_state_r.name, in_snoop_valid_data_i);
-	initial ;
 	assign out_channel_active_o = out_state_r == sActive;
 	wire out_loopback_en = (out_state_r == sPhase3) || (out_state_r == sPhase4);
 	wire out_trigger_mode_alt_en = out_state_r == sPhase4;
@@ -181,10 +184,6 @@ module bsg_source_sync_channel_control_slave (
 				;
 		endcase
 	end
-	function automatic [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] sv2v_cast_E3772;
-		input reg [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] inp;
-		sv2v_cast_E3772 = inp;
-	endfunction
 endmodule
 
 </pre>

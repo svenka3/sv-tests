@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,34 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v</a>
 time_elapsed: 0.004s
-ram usage: 9964 KB
+ram usage: 10624 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e reg_combo_example <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v</a>
-proc %reg_combo_example.always.66.0 (i1$ %a, i1$ %b) -&gt; (i1$ %y) {
-init:
-    %a1 = prb i1$ %a
-    %b1 = prb i1$ %b
-    wait %check, %a, %b
-check:
-    %a2 = prb i1$ %a
-    %impledge = neq i1 %a1, %a2
-    %b2 = prb i1$ %b
-    %impledge1 = neq i1 %b1, %b2
-    %event_or = or i1 %impledge, %impledge1
-    br %event_or, %init, %event
-event:
-    %0 = and i1 %a2, %b2
-    %1 = const time 0s 1e
-    drv i1$ %y, %0, %1
-    br %init
-}
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #21)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v.html#l-2" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_combo_example.v:2</a>:7-8:
+   | 
+   | input a, b;
+   |       ^    
+   = note: Encountered at src/svlog/typeck.rs:61
 
-entity @reg_combo_example (i1$ %a, i1$ %b) -&gt; (i1$ %y) {
-    inst %reg_combo_example.always.66.0 (i1$ %a, i1$ %b) -&gt; (i1$ %y)
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #21)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

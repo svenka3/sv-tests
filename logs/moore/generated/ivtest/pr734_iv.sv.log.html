@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v</a>
-time_elapsed: 0.008s
-ram usage: 10076 KB
+time_elapsed: 0.004s
+ram usage: 10464 KB
 </pre>
 <pre class="log">
 
@@ -35,87 +35,15 @@ warning: `$display` not supported; ignored
    |             $display(&#34;PASSED&#34;);
    |             ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:10</a>:20-21:
+error: cannot cast a value of type `reg [69119:0]` to `logic [69119:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:11</a>:13-16:
    | 
-   |         mem[idx] = 1;
-   |                    ^ 
-   = note: Casts `1` from `bit [0:0]` to `logic [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:10</a>:20-21:
-   | 
-   |         mem[idx] = 1;
-   |                    ^ 
+   |         r = mem &gt;&gt; idx;
+   |             ^^^        
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:10</a>:20-21:
-   | 
-   |         mem[idx] = 1;
-   |                    ^ 
-   = note: Casts `1` from `bit signed [0:0]` to `bit [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:10</a>:20-21:
-   | 
-   |         mem[idx] = 1;
-   |                    ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:10</a>:20-21:
-   | 
-   |         mem[idx] = 1;
-   |                    ^ 
-   = note: Casts `1` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:10</a>:20-21:
-   | 
-   |         mem[idx] = 1;
-   |                    ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:12</a>:19-20:
-   | 
-   |         if (r !== 1)
-   |                   ^ 
-   = note: Casts `1` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:12</a>:19-20:
-   | 
-   |         if (r !== 1)
-   |                   ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:12</a>:19-20:
-   | 
-   |         if (r !== 1)
-   |                   ^ 
-   = note: Casts `1` from `int` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr734.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr734.v:12</a>:19-20:
-   | 
-   |         if (r !== 1)
-   |                   ^ 
-
-proc %test.initial.90.0 () -&gt; (i69120$ %mem, i1$ %r) {
-0:
-    %1 = const i32 3584
-    %2 = const i69120 0
-    %3 = sig i69120 %2
-    %4 = shr i69120$ %mem, i69120$ %3, i32 %1
-    %5 = exts i1$, i69120$ %4, 0, 1
-    %6 = const i1 1
-    %7 = const time 0s 1e
-    drv i1$ %5, %6, %7
-    %mem1 = prb i69120$ %mem
-    %8 = exts i65536, i69120 %mem1, 3584, 65536
-    %9 = inss i69120 %2, i65536 %8, 0, 65536
-    %10 = exts i1, i69120 %9, 0, 1
-    drv i1$ %r, %10, %7
-    halt
-}
-
-entity @test () -&gt; () {
-    %0 = const i69120 0
-    %mem = sig i69120 %0
-    %1 = const i1 0
-    %r = sig i1 %1
-    inst %test.initial.90.0 () -&gt; (i69120$ %mem, i1$ %r)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([69119:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([69119:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [69119:0]
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,70 +17,23 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v</a>
-time_elapsed: 0.008s
-ram usage: 10104 KB
+time_elapsed: 0.000s
+ram usage: 10148 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v</a>
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `longint unsigned` to `reg signed [63:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:2</a>:25-45:
    | 
    |   reg signed [63:0] a = 64&#39;h12345678abcdabcd;
    |                         ^^^^^^^^^^^^^^^^^^^^ 
-   = note: Casts `64&#39;h12345678abcdabcd` from `longint unsigned` to `logic [63:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-2" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:2</a>:25-45:
-   | 
-   |   reg signed [63:0] a = 64&#39;h12345678abcdabcd;
-   |                         ^^^^^^^^^^^^^^^^^^^^ 
+   = note: `longint unsigned` can be cast to an intermediate `logic signed [63:0]`, but
+   = note: `logic signed [63:0]` cannot be cast to the final `reg signed [63:0]`
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:3</a>:25-33:
-   | 
-   |   reg signed [63:0] b = 64&#39;h1234;
-   |                         ^^^^^^^^ 
-   = note: Casts `64&#39;h1234` from `longint unsigned` to `logic [63:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:3</a>:25-33:
-   | 
-   |   reg signed [63:0] b = 64&#39;h1234;
-   |                         ^^^^^^^^ 
-
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:7</a>:7-70:
-   | 
-   |       $display(&#34;FAILED: expected 64&#39;h10004c017896b, got 64&#39;h%h&#34;, a/b);
-   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:8</a>:10-28:
-   | 
-   |     else $display(&#34;PASSED&#34;);
-   |          ^^^^^^^^^^^^^^^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:6</a>:17-34:
-   | 
-   |     if (a/b !== 64&#39;h10004c017806b)
-   |                 ^^^^^^^^^^^^^^^^^ 
-   = note: Casts `64&#39;h10004c017806b` from `longint unsigned` to `logic [63:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2030767.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr2030767.v:6</a>:17-34:
-   | 
-   |     if (a/b !== 64&#39;h10004c017806b)
-   |                 ^^^^^^^^^^^^^^^^^ 
-
-proc %top.initial.54.0 (i64$ %a, i64$ %b) -&gt; () {
-0:
-    halt
-}
-
-entity @top () -&gt; () {
-    %0 = const i64 1311768467750104013
-    %a = sig i64 %0
-    %1 = const i64 4660
-    %b = sig i64 %1
-    inst %top.initial.54.0 (i64$ %a, i64$ %b) -&gt; ()
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(LongInt), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: signed, sign_explicit: true, dims: [Range([63:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: longint unsigned -&gt; PackSBVT bit [63:0] -&gt; Sign(signed) bit signed [63:0] -&gt; Domain(FourValued) logic signed [63:0]
 
 </pre>
 </body>

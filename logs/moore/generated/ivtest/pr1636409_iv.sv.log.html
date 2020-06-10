@@ -18,52 +18,32 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1636409.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1636409.v</a>
 time_elapsed: 0.004s
-ram usage: 10508 KB
+ram usage: 10928 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr1636409.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1636409.v</a>
-compiler bug: no ast node for n11 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: no ast node for n4 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: no ast node for n5 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-error: cannot concatenate a value of type `&lt;error&gt;`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1636409.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1636409.v:10</a>:20-28:
+error: cannot cast a value of type `reg [2:0]` to `logic [2:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1636409.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1636409.v:9</a>:29-31:
    | 
-   |   assign #1 good = {4{eni}} &amp; {rg,in};
-   |                    ^^^^^^^^           
-   = note: `&lt;error&gt;` has no simple bit-vector type representation
+   |   assign #1 fail = (eni) ? {rg,in} : &#39;b0;
+   |                             ^^           
 
-error: cannot concatenate a value of type `&lt;error&gt;`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1636409.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1636409.v:10</a>:20-28:
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [2:0]
+compiler bug: assertion failed: value.ty.coalesces_to_llhd_scalar()
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1636409.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1636409.v:9</a>:29-31:
    | 
-   |   assign #1 good = {4{eni}} &amp; {rg,in};
-   |                    ^^^^^^^^           
-   = note: `&lt;error&gt;` has no simple bit-vector type representation
-
-compiler bug: assertion failed: value.ty.is_simple_bit_vector()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1636409.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1636409.v:10</a>:23-26:
-   | 
-   |   assign #1 good = {4{eni}} &amp; {rg,in};
-   |                       ^^^             
-   = note: Assertion failed: value.ty.is_simple_bit_vector()
-   = note: Encountered at src/svlog/mir/lower/rvalue.rs:293
+   |   assign #1 fail = (eni) ? {rg,in} : &#39;b0;
+   |                             ^^           
+   = note: Assertion failed: value.ty.coalesces_to_llhd_scalar()
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:254
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.is_simple_bit_vector()&#39;, &lt;::std::macros::panic macros&gt;:5:6
+thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.coalesces_to_llhd_scalar()&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

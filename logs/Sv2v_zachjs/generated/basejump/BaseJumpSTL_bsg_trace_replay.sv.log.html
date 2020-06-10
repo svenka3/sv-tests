@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_trace_replay.v</a>
-time_elapsed: 0.268s
-ram usage: 17176 KB
+time_elapsed: 0.516s
+ram usage: 16676 KB
 </pre>
 <pre class="log">
 
@@ -38,13 +38,6 @@ module bsg_trace_replay (
 	done_o,
 	error_o
 );
-	localparam [opcode_width_lp - 1:0] eNop = 4&#39;d0;
-	localparam [opcode_width_lp - 1:0] eSend = 4&#39;d1;
-	localparam [opcode_width_lp - 1:0] eReceive = 4&#39;d2;
-	localparam [opcode_width_lp - 1:0] eDone = 4&#39;d3;
-	localparam [opcode_width_lp - 1:0] eFinish = 4&#39;d4;
-	localparam [opcode_width_lp - 1:0] eCycleDec = 4&#39;d5;
-	localparam [opcode_width_lp - 1:0] eCycleInit = 4&#39;d6;
 	parameter payload_width_p = 80;
 	parameter rom_addr_width_p = 6;
 	parameter counter_width_p = (payload_width_p &lt; 16 ? payload_width_p : 16);
@@ -61,7 +54,7 @@ module bsg_trace_replay (
 	output wire [payload_width_p - 1:0] data_o;
 	input yumi_i;
 	output [rom_addr_width_p - 1:0] rom_addr_o;
-	input [(payload_width_p + 4) - 1:0] rom_data_i;
+	input [payload_width_p + 3:0] rom_data_i;
 	output wire done_o;
 	output wire error_o;
 	reg [counter_width_p - 1:0] cycle_ctr_r;
@@ -93,6 +86,9 @@ module bsg_trace_replay (
 	assign op = rom_data_i[payload_width_p+:4];
 	reg instr_completed;
 	assign addr_n = (instr_completed ? addr_r + 1&#39;b1 : addr_r);
+	localparam [opcode_width_lp - 1:0] eDone = 4&#39;d3;
+	localparam [opcode_width_lp - 1:0] eReceive = 4&#39;d2;
+	localparam [opcode_width_lp - 1:0] eSend = 4&#39;d1;
 	always @(*) begin
 		v_o = 1&#39;b0;
 		ready_o = done_r;
@@ -106,6 +102,10 @@ module bsg_trace_replay (
 					;
 			endcase
 	end
+	localparam [opcode_width_lp - 1:0] eCycleDec = 4&#39;d5;
+	localparam [opcode_width_lp - 1:0] eCycleInit = 4&#39;d6;
+	localparam [opcode_width_lp - 1:0] eFinish = 4&#39;d4;
+	localparam [opcode_width_lp - 1:0] eNop = 4&#39;d0;
 	always @(*) begin
 		instr_completed = 1&#39;b0;
 		error_n = error_r;

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,45 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/multireg.v.html" target="file-frame">third_party/tests/ivtest/ivltests/multireg.v</a>
 time_elapsed: 0.004s
-ram usage: 10400 KB
+ram usage: 11068 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e basicreg <a href="../../../../third_party/tests/ivtest/ivltests/multireg.v.html" target="file-frame">third_party/tests/ivtest/ivltests/multireg.v</a>
-proc %basicreg.always.99.0 (i1$ %clk, i1$ %d) -&gt; (i3$ %q) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %3 = exts i1$, i3$ %q, 0, 1
-    %d1 = prb i1$ %d
-    %4 = const time 0s 1d
-    drv i1$ %3, %d1, %4
-    %5 = const i32 1
-    %6 = const i3 0
-    %7 = sig i3 %6
-    %8 = shr i3$ %q, i3$ %7, i32 %5
-    %9 = exts i1$, i3$ %8, 0, 1
-    drv i1$ %9, %d1, %4
-    %10 = const i32 2
-    %11 = sig i3 %6
-    %12 = shr i3$ %q, i3$ %11, i32 %10
-    %13 = exts i1$, i3$ %12, 0, 1
-    drv i1$ %13, %d1, %4
-    br %init
-}
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #21)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/multireg.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/multireg.v:23</a>:7-10:
+   | 
+   | input clk, d;
+   |       ^^^    
+   = note: Encountered at src/svlog/typeck.rs:61
 
-entity @basicreg (i1$ %clk, i1$ %d) -&gt; (i3$ %q) {
-    inst %basicreg.always.99.0 (i1$ %clk, i1$ %d) -&gt; (i3$ %q)
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #21)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

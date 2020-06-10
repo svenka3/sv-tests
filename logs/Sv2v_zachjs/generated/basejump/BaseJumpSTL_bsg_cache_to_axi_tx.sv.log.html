@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi_tx.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi_tx.v</a>
-time_elapsed: 0.420s
-ram usage: 16336 KB
+time_elapsed: 0.744s
+ram usage: 14556 KB
 </pre>
 <pre class="log">
 
@@ -70,7 +70,7 @@ module bsg_cache_to_axi_tx (
 	output wire yumi_o;
 	input [lg_num_cache_lp - 1:0] tag_i;
 	input [axi_addr_width_p - 1:0] axi_addr_i;
-	input [((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
+	input [(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
 	input [num_cache_p - 1:0] dma_data_v_i;
 	output wire [num_cache_p - 1:0] dma_data_yumi_o;
 	output wire [axi_id_width_p - 1:0] axi_awid_o;
@@ -117,7 +117,15 @@ module bsg_cache_to_axi_tx (
 	assign tag_fifo_v_li = v_i &amp; axi_awready_i;
 	assign axi_awid_o = {axi_id_width_p {1&#39;b0}};
 	assign axi_awaddr_o = axi_addr_i;
+	function automatic [7:0] sv2v_cast_8;
+		input reg [7:0] inp;
+		sv2v_cast_8 = inp;
+	endfunction
 	assign axi_awlen_o = sv2v_cast_8(axi_burst_len_p - 1);
+	function automatic [2:0] sv2v_cast_3;
+		input reg [2:0] inp;
+		sv2v_cast_3 = inp;
+	endfunction
 	assign axi_awsize_o = sv2v_cast_3(((axi_data_width_p &gt;&gt; 3) == 1 ? 1 : $clog2(axi_data_width_p &gt;&gt; 3)));
 	assign axi_awburst_o = 2&#39;b01;
 	assign axi_awcache_o = 4&#39;b0000;
@@ -135,7 +143,7 @@ module bsg_cache_to_axi_tx (
 		.v_i(tag_fifo_v_lo),
 		.o(cache_sel)
 	);
-	assign sipo_data_li = dma_data_i[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((num_cache_p - 1) &gt;= 0 ? tag_lo : 0 - (tag_lo - (num_cache_p - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)];
+	assign sipo_data_li = dma_data_i[(data_width_p &gt;= 1 ? 0 : data_width_p - 1) + ((num_cache_p &gt;= 1 ? tag_lo : 0 - (tag_lo - (num_cache_p - 1))) * (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p))+:(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)];
 	assign dma_data_yumi_o = (cache_sel &amp; dma_data_v_i) &amp; {num_cache_p {sipo_ready_lo}};
 	bsg_serial_in_parallel_out #(
 		.width_p(data_width_p),
@@ -152,7 +160,15 @@ module bsg_cache_to_axi_tx (
 	);
 	assign axi_wvalid_o = &amp;sipo_v_lo;
 	assign sipo_v_li = tag_fifo_v_lo &amp; dma_data_v_i[tag_lo];
-	assign sipo_yumi_cnt_li = (axi_wvalid_o &amp; axi_wready_i ? sv2v_cast_8E8C9(data_width_ratio_lp) : 1&#39;sb0);
+	function automatic [$clog2(data_width_ratio_lp + 1) - 1:0] sv2v_cast_8E8C9;
+		input reg [$clog2(data_width_ratio_lp + 1) - 1:0] inp;
+		sv2v_cast_8E8C9 = inp;
+	endfunction
+	function automatic [($clog2(data_width_ratio_lp + 1) &gt;= 1 ? $clog2(data_width_ratio_lp + 1) : 2 - $clog2(data_width_ratio_lp + 1)) - 1:0] sv2v_cast_8ABF0;
+		input reg [($clog2(data_width_ratio_lp + 1) &gt;= 1 ? $clog2(data_width_ratio_lp + 1) : 2 - $clog2(data_width_ratio_lp + 1)) - 1:0] inp;
+		sv2v_cast_8ABF0 = inp;
+	endfunction
+	assign sipo_yumi_cnt_li = (axi_wvalid_o &amp; axi_wready_i ? sv2v_cast_8E8C9(data_width_ratio_lp) : sv2v_cast_8ABF0(1&#39;sb0));
 	assign axi_wstrb_o = {axi_strb_width_lp {1&#39;b1}};
 	wire [(block_size_in_words_p == 1 ? 1 : $clog2(block_size_in_words_p)) - 1:0] word_count_lo;
 	reg word_up_li;
@@ -205,18 +221,6 @@ module bsg_cache_to_axi_tx (
 			axi_wlast_o = 1&#39;b0;
 		end
 	assign axi_bready_o = 1&#39;b1;
-	function automatic [2:0] sv2v_cast_3;
-		input reg [2:0] inp;
-		sv2v_cast_3 = inp;
-	endfunction
-	function automatic [7:0] sv2v_cast_8;
-		input reg [7:0] inp;
-		sv2v_cast_8 = inp;
-	endfunction
-	function automatic [$clog2(data_width_ratio_lp + 1) - 1:0] sv2v_cast_8E8C9;
-		input reg [$clog2(data_width_ratio_lp + 1) - 1:0] inp;
-		sv2v_cast_8E8C9 = inp;
-	endfunction
 endmodule
 
 </pre>

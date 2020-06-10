@@ -18,33 +18,32 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1478988.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1478988.v</a>
 time_elapsed: 0.004s
-ram usage: 10532 KB
+ram usage: 10976 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/pr1478988.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1478988.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1478988.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1478988.v:4</a>:23-55:
-   | 
-   |    wire [3:0]  test = {foo[22:20] == 3&#39;d0, foo[22:20]};
-   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-   = note: Casts `{foo[22:20] == 3&#39;d0, foo[22:20]}` from `logic [3:0]` to `bit [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1478988.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1478988.v:4</a>:23-55:
-   | 
-   |    wire [3:0]  test = {foo[22:20] == 3&#39;d0, foo[22:20]};
-   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-compiler bug: constant folding of slices not implemented
+error: cannot cast a value of type `reg [2:0]` to `logic [2:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1478988.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1478988.v:4</a>:24-34:
    | 
    |    wire [3:0]  test = {foo[22:20] == 3&#39;d0, foo[22:20]};
    |                        ^^^^^^^^^^                      
-   = note: Encountered at src/svlog/value.rs:531
+
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [2:0]
+compiler bug: assertion failed: value.ty.coalesces_to_llhd_scalar()
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1478988.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1478988.v:4</a>:24-42:
+   | 
+   |    wire [3:0]  test = {foo[22:20] == 3&#39;d0, foo[22:20]};
+   |                        ^^^^^^^^^^^^^^^^^^              
+   = note: Assertion failed: value.ty.coalesces_to_llhd_scalar()
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:254
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;constant folding of slices not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.coalesces_to_llhd_scalar()&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

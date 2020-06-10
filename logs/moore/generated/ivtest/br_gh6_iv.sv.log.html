@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,60 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v</a>
 time_elapsed: 0.004s
-ram usage: 10520 KB
+ram usage: 10560 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bug <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-   = note: Casts `0` from `bit` to `logic`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-   = note: Casts `0` from `bit signed` to `bit`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-   = note: Casts `0` from `bit signed [0:0]` to `bit signed`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-   = note: Casts `0` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:10</a>:14-15:
-   | 
-   | reg failed = 0;
-   |              ^ 
-
-compiler bug: no ast node for n9 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:14</a>:6-37:
    | 
@@ -96,63 +47,60 @@ warning: `$display` not supported; ignored
    |     $display(&#34;PASSED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
-   = note: Casts `0` from `bit` to `logic`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
+proc %bug.initial.141.0 (i1$ %y) -&gt; (i1$ %a, i1$ %failed) {
+0:
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %a, %1, %2
+    %3 = const i32 1
+    wait %4 for %3
+4:
+    %5 = const i32 0
+    %y1 = prb i1$ %y
+    %zext = inss i32 %5, i1 %y1, 0, 1
+    %6 = neq i32 %zext, %5
+    %7 = const i1 0
+    %8 = neq i1 %6, %7
+    %9 = const i1 1
+    %10 = const time 0s 1e
+    br %8, %if_exit, %if_true
+if_true:
+    drv i1$ %failed, %9, %10
+    br %if_exit
+if_exit:
+    drv i1$ %a, %9, %10
+    %11 = const i32 1
+    wait %12 for %11
+12:
+    %13 = const i32 0
+    %y2 = prb i1$ %y
+    %zext1 = inss i32 %13, i1 %y2, 0, 1
+    %14 = const i32 1
+    %15 = neq i32 %zext1, %14
+    %16 = const i1 0
+    %17 = neq i1 %15, %16
+    br %17, %if_exit1, %if_true1
+if_true1:
+    %18 = const i1 1
+    %19 = const time 0s 1e
+    drv i1$ %failed, %18, %19
+    br %if_exit1
+if_exit1:
+    halt
+}
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
-   = note: Casts `0` from `bit signed` to `bit`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
-   = note: Casts `0` from `bit signed [0:0]` to `bit signed`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
-   = note: Casts `0` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:13</a>:7-8:
-   | 
-   |   a = 0;
-   |       ^ 
-
-compiler bug: assertion failed: mir.ty.is_bool()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh6.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/br_gh6.v:15</a>:7-14:
-   | 
-   |   if (y !== 0) failed = 1;
-   |       ^^^^^^^             
-   = note: Assertion failed: mir.ty.is_bool()
-   = note: Encountered at src/svlog/codegen.rs:1236
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @bug () -&gt; () {
+    %0 = const i1 0
+    %a = sig i1 %0
+    %y = sig i1 %0
+    %failed = sig i1 %0
+    %a1 = prb i1$ %a
+    %1 = neg i1 %a1
+    %2 = const time 0s 1e
+    drv i1$ %y, %1, %2
+    inst %bug.initial.141.0 (i1$ %y) -&gt; (i1$ %a, i1$ %failed)
+    halt
+}
 
 </pre>
 </body>

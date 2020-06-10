@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/constfunc10.v.html" target="file-frame">third_party/tests/ivtest/ivltests/constfunc10.v</a>
 time_elapsed: 0.004s
-ram usage: 10536 KB
+ram usage: 10748 KB
 </pre>
 <pre class="log">
 
@@ -41,17 +41,26 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: lowering of expression `pow2(8)` to mir not yet supported
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constfunc10.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/constfunc10.v:19</a>:18-25:
+error: cannot infer implicit type
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constfunc10.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/constfunc10.v:4</a>:10-16:
    | 
-   | localparam val = pow2(8);
-   |                  ^^^^^^^ 
-   = note: Encountered at src/svlog/mir/lower/rvalue.rs:450
+   | function [31:0] pow2(input [5:0] x);
+   |          ^^^^^^                     
+   = note: This usually indicates that a declaration is missing a default value.
+
+ ERROR moore_svlog::typeck &gt; offending implicit type is TypeKind #0 (#13 in Type #3) ImplicitType
+compiler bug: value of type `&lt;error&gt;` should be a bool
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constfunc10.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/constfunc10.v:23</a>:7-18:
+   | 
+   |   if (val === 256)
+   |       ^^^^^^^^^^^ 
+   = note: Assertion failed: mir.ty.get_simple_bit_vector().map(|sbv| sbv.size == 1).unwrap_or(false)
+   = note: Encountered at src/svlog/codegen.rs:1235
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;lowering of expression `pow2(8)` to mir not yet supported&#39;, &lt;::std::macros::panic macros&gt;:5:6
+thread &#39;main&#39; panicked at &#39;value of type `&lt;error&gt;` should be a bool&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

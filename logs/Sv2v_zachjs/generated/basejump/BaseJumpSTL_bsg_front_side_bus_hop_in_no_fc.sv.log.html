@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_front_side_bus_hop_in_no_fc.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_front_side_bus_hop_in_no_fc.v</a>
-time_elapsed: 0.264s
-ram usage: 15104 KB
+time_elapsed: 0.244s
+ram usage: 14900 KB
 </pre>
 <pre class="log">
 
@@ -37,14 +37,14 @@ module bsg_front_side_bus_hop_in_no_fc (
 	input reset_i;
 	input [width_p - 1:0] data_i;
 	input v_i;
-	output [((width_p - 1) &gt;= 0 ? (2 * width_p) + -1 : (2 * (2 - width_p)) + ((width_p - 1) - 1)):((width_p - 1) &gt;= 0 ? 0 : width_p - 1)] data_o;
+	output [(width_p &gt;= 1 ? (2 * width_p) + -1 : (2 * (2 - width_p)) + ((width_p - 1) - 1)):(width_p &gt;= 1 ? 0 : width_p - 1)] data_o;
 	output [1:0] v_o;
 	input local_accept_i;
 	wire [width_p - 1:0] data_r;
 	wire v_r;
-	assign data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1)+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)] = data_r;
+	assign data_o[(width_p &gt;= 1 ? 0 : width_p - 1)+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = data_r;
 	assign v_o[0] = v_r;
-	assign data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)] = data_r;
+	assign data_o[(width_p &gt;= 1 ? 0 : width_p - 1) + (width_p &gt;= 1 ? width_p : 2 - width_p)+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = data_r;
 	assign v_o[1] = v_r &amp; local_accept_i;
 	bsg_dff_reset #(.width_p(1)) v_reg(
 		.clk_i(clk_i),
@@ -52,7 +52,7 @@ module bsg_front_side_bus_hop_in_no_fc (
 		.data_i(v_i),
 		.data_o(v_r)
 	);
-	bsg_dff #(.width_p(((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))) data_reg(
+	bsg_dff #(.width_p((width_p &gt;= 1 ? width_p : 2 - width_p))) data_reg(
 		.clk_i(clk_i),
 		.data_i(data_i),
 		.data_o(data_r)

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from utd-sv
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: utd-sv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/utd-sv
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/spu_ma_mon.v.html" target="file-frame">third_party/tests/utd-sv/spu_ma_mon.v</a>
 time_elapsed: 0.004s
-ram usage: 10212 KB
+ram usage: 10884 KB
 </pre>
 <pre class="log">
 
@@ -47,25 +47,18 @@ warning: `$info` not supported; ignored
    |    $info(0,&#34;SPU_MON_M[&#34;,iminus_lenminus1,&#34;] = %h&#34;,mul_data);
    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-proc %spu_ma_mon.always.215.0 (i1$ %clk, i1$ %wrmi_mamul_1sthalf, i1$ %wrmi_mamul_2ndhalf, i1$ %wrmi_maaeqb_1sthalf, i1$ %wrmi_maaeqb_2ndhalf) -&gt; () {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = neq i1 %clk1, %0
-    %2 = eq i1 %clk2, %0
-    %negedge = and i1 %2, %1
-    br %negedge, %init, %event
-event:
-    br %init
-}
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #45)
+  --&gt; <a href="../../../../third_party/tests/utd-sv/spu_ma_mon.v.html#l-30" target="file-frame">third_party/tests/utd-sv/spu_ma_mon.v:30</a>:7-10:
+   | 
+   | input clk;
+   |       ^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-entity @spu_ma_mon (i1$ %clk, i1$ %wrmi_mamul_1sthalf, i1$ %wrmi_mamul_2ndhalf, i1$ %wrmi_maaeqb_1sthalf, i1$ %wrmi_maaeqb_2ndhalf, i7$ %iptr, i7$ %iminus_lenminus1, i64$ %mul_data) -&gt; () {
-    inst %spu_ma_mon.always.215.0 (i1$ %clk, i1$ %wrmi_mamul_1sthalf, i1$ %wrmi_mamul_2ndhalf, i1$ %wrmi_maaeqb_1sthalf, i1$ %wrmi_maaeqb_2ndhalf) -&gt; ()
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #45)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

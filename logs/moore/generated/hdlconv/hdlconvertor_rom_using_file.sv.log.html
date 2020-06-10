@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from hdlconv
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog
@@ -18,55 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v</a>
 time_elapsed: 0.004s
-ram usage: 10312 KB
+ram usage: 11092 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog -e rom_using_file <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v.html#l-21" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v:21</a>:48-52:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #32)
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v.html#l-15" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v:15</a>:14-18:
    | 
-   | assign data = (ce &amp;&amp; read_en) ? mem[address] : 8&#39;b0;
-   |                                                ^^^^ 
-   = note: Casts `8&#39;b0` from `byte unsigned` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v.html#l-21" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v:21</a>:48-52:
-   | 
-   | assign data = (ce &amp;&amp; read_en) ? mem[address] : 8&#39;b0;
-   |                                                ^^^^ 
+   | output [7:0] data;
+   |              ^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-warning: `$readmemb` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v.html#l-24" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/rom_using_file.v:24</a>:3-32:
-   | 
-   |   $readmemb(&#34;memory.list&#34;, mem); // memory_list is memory file
-   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                               
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-proc %rom_using_file.initial.95.0 () -&gt; () {
-0:
-    halt
-}
-
-entity @rom_using_file (i8$ %address, i1$ %read_en, i1$ %ce) -&gt; (i8$ %data) {
-    %0 = const i8 0
-    %mem = sig i8 %0
-    %ce1 = prb i1$ %ce
-    %1 = const i1 0
-    %2 = neq i1 %ce1, %1
-    %read_en1 = prb i1$ %read_en
-    %3 = neq i1 %read_en1, %1
-    %4 = and i1 %2, %3
-    %5 = neq i1 %4, %1
-    %mem1 = prb i8$ %mem
-    %address1 = prb i8$ %address
-    %6 = shr i8 %mem1, i8 %0, i8 %address1
-    %7 = exts i1, i8 %6, 0, 1
-    %8 = inss i8 %0, i1 %7, 0, 1
-    %9 = [i8 %0, %8]
-    %10 = mux [2 x i8] %9, i1 %5
-    %11 = const time 0s 1e
-    drv i8$ %data, %10, %11
-    inst %rom_using_file.initial.95.0 () -&gt; ()
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #32)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

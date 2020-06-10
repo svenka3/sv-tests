@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/fx68k/fx68k.sv.html" target="file-frame">third_party/cores/fx68k/fx68k.sv</a> <a href="../../../../third_party/cores/fx68k/fx68kAlu.sv.html" target="file-frame">third_party/cores/fx68k/fx68kAlu.sv</a> <a href="../../../../third_party/cores/fx68k/uaddrPla.sv.html" target="file-frame">third_party/cores/fx68k/uaddrPla.sv</a>
-time_elapsed: 11.684s
-ram usage: 99684 KB
+time_elapsed: 10.604s
+ram usage: 99864 KB
 </pre>
 <pre class="log">
 
@@ -54,19 +54,6 @@ module fx68k (
 	oEdb,
 	eab
 );
-	localparam T0 = 0;
-	localparam T1 = 1;
-	localparam T2 = 2;
-	localparam T3 = 3;
-	localparam T4 = 4;
-	localparam NADDR_WIDTH = 9;
-	localparam NANO_WIDTH = 68;
-	localparam RSTP0_NMA = &#39;h002;
-	localparam TVN_AUTOVEC = 13;
-	localparam TVN_INTERRUPT = 15;
-	localparam TVN_SPURIOUS = 12;
-	localparam UADDR_WIDTH = 10;
-	localparam UROM_WIDTH = 17;
 	input clk;
 	input HALTn;
 	input extReset;
@@ -104,9 +91,14 @@ module fx68k (
 	assign Clks[0] = enPhi2;
 	wire wClk;
 	reg [31:0] tState;
+	localparam [31:0] T4 = 4;
 	wire enT1 = (Clks[1] &amp; (tState == T4)) &amp; ~wClk;
+	localparam [31:0] T1 = 1;
 	wire enT2 = Clks[0] &amp; (tState == T1);
+	localparam [31:0] T2 = 2;
 	wire enT3 = Clks[1] &amp; (tState == T2);
+	localparam [31:0] T0 = 0;
+	localparam [31:0] T3 = 3;
 	wire enT4 = Clks[0] &amp; ((tState == T0) | (tState == T3));
 	always @(posedge Clks[4])
 		if (Clks[2])
@@ -159,12 +151,16 @@ module fx68k (
 			BRi &lt;= BRn;
 			Halti &lt;= HALTn;
 		end
+	localparam NANO_WIDTH = 68;
 	reg [NANO_WIDTH - 1:0] nanoLatch;
 	wire [NANO_WIDTH - 1:0] nanoOutput;
+	localparam UROM_WIDTH = 17;
 	reg [UROM_WIDTH - 1:0] microLatch;
 	wire [UROM_WIDTH - 1:0] microOutput;
+	localparam UADDR_WIDTH = 10;
 	reg [UADDR_WIDTH - 1:0] microAddr;
 	wire [UADDR_WIDTH - 1:0] nma;
+	localparam NADDR_WIDTH = 9;
 	reg [NADDR_WIDTH - 1:0] nanoAddr;
 	wire [NADDR_WIDTH - 1:0] orgAddr;
 	wire rstUrom;
@@ -182,6 +178,7 @@ module fx68k (
 		.microAddr(microAddr),
 		.microOutput(microOutput)
 	);
+	localparam RSTP0_NMA = &#39;h002;
 	always @(posedge Clks[4]) begin
 		if (Clks[2]) begin
 			microAddr &lt;= RSTP0_NMA;
@@ -546,6 +543,9 @@ module fx68k (
 				default: ftu &lt;= ftu;
 			endcase
 	end
+	localparam TVN_AUTOVEC = 13;
+	localparam TVN_INTERRUPT = 15;
+	localparam TVN_SPURIOUS = 12;
 	always @(*)
 		if (inExcept01) begin
 			if (tvnLatch == TVN_SPURIOUS)
@@ -569,14 +569,14 @@ module nDecoder3 (
 	microLatch,
 	nanoLatch
 );
-	localparam NANO_WIDTH = 68;
-	localparam UROM_WIDTH = 17;
 	input wire [4:0] Clks;
 	input wire [41:0] Irdecod;
 	output reg [104:0] Nanod;
 	input enT2;
 	input enT4;
+	localparam UROM_WIDTH = 17;
 	input [UROM_WIDTH - 1:0] microLatch;
+	localparam NANO_WIDTH = 68;
 	input [NANO_WIDTH - 1:0] nanoLatch;
 	localparam NANO_IR2IRD = 67;
 	localparam NANO_TOIRC = 66;
@@ -885,9 +885,6 @@ module excUnit (
 	oEdb,
 	eab
 );
-	localparam NANO_DOB_ADB = 2&#39;b10;
-	localparam NANO_DOB_ALU = 2&#39;b11;
-	localparam NANO_DOB_DBD = 2&#39;b01;
 	input wire [4:0] Clks;
 	input enT1;
 	input enT2;
@@ -1290,6 +1287,9 @@ module excUnit (
 	wire alueClkEn = enT3 &amp; Nanod[17];
 	reg [15:0] dobInput;
 	wire dobIdle = ~|Nanod[60-:2];
+	localparam NANO_DOB_ADB = 2&#39;b10;
+	localparam NANO_DOB_ALU = 2&#39;b11;
+	localparam NANO_DOB_DBD = 2&#39;b01;
 	always @(*)
 		case (Nanod[60-:2])
 			NANO_DOB_ADB: dobInput = Abd;
@@ -1422,8 +1422,8 @@ module uaddrDecode (
 	isLineF,
 	lineBmap
 );
-	localparam UADDR_WIDTH = 10;
 	input [15:0] opcode;
+	localparam UADDR_WIDTH = 10;
 	output [UADDR_WIDTH - 1:0] a1;
 	output [UADDR_WIDTH - 1:0] a2;
 	output [UADDR_WIDTH - 1:0] a3;
@@ -1555,23 +1555,9 @@ module sequencer (
 	tvn,
 	nma
 );
-	localparam BSER1_NMA = &#39;h003;
-	localparam CF = 0;
-	localparam HALT1_NMA = &#39;h001;
-	localparam ITLX1_NMA = &#39;h1C4;
-	localparam NF = 3;
-	localparam RSTP0_NMA = &#39;h002;
-	localparam SF = 13;
-	localparam TRAC1_NMA = &#39;h1C0;
-	localparam TVN_AUTOVEC = 13;
-	localparam TVN_INTERRUPT = 15;
-	localparam TVN_SPURIOUS = 12;
-	localparam UADDR_WIDTH = 10;
-	localparam UROM_WIDTH = 17;
-	localparam VF = 1;
-	localparam ZF = 2;
 	input wire [4:0] Clks;
 	input enT3;
+	localparam UROM_WIDTH = 17;
 	input [UROM_WIDTH - 1:0] microLatch;
 	input A0Err;
 	input BerrA;
@@ -1593,6 +1579,7 @@ module sequencer (
 	input i11;
 	input [1:0] alue01;
 	input [15:0] Ird;
+	localparam UADDR_WIDTH = 10;
 	input [UADDR_WIDTH - 1:0] a1;
 	input [UADDR_WIDTH - 1:0] a2;
 	input [UADDR_WIDTH - 1:0] a3;
@@ -1605,6 +1592,9 @@ module sequencer (
 	wire A0Sel;
 	wire inGrp0Exc;
 	wire [UADDR_WIDTH - 1:0] dbNma = {microLatch[14:13], microLatch[6:5], microLatch[10:7], microLatch[12:11]};
+	localparam BSER1_NMA = &#39;h003;
+	localparam HALT1_NMA = &#39;h001;
+	localparam RSTP0_NMA = &#39;h002;
 	always @(*)
 		if (A0Err) begin
 			if (a0Rst)
@@ -1629,10 +1619,14 @@ module sequencer (
 	wire [1:0] enl = {Ird[6], prenEmpty};
 	wire [1:0] ms0 = {Ird[8], alue01[0]};
 	wire [3:0] m01 = {au05z, Ird[8], alue01};
+	localparam NF = 3;
+	localparam ZF = 2;
 	wire [1:0] nz1 = {psw[NF], psw[ZF]};
+	localparam VF = 1;
 	wire [1:0] nv = {psw[NF], psw[VF]};
 	reg ccTest;
 	wire [4:0] cbc = microLatch[6:2];
+	localparam CF = 0;
 	always @(*)
 		case (cbc)
 			&#39;h0: c0c1 = {i11, i11};
@@ -1713,6 +1707,7 @@ module sequencer (
 	assign grp1LatchEn = microLatch[0] &amp; (microLatch[1] | !microLatch[4]);
 	assign grp0LatchEn = microLatch[4] &amp; !microLatch[1];
 	assign inGrp0Exc = (rExcRst | rExcBusErr) | rExcAdrErr;
+	localparam SF = 13;
 	always @(posedge Clks[4]) begin
 		if (grp0LatchEn &amp; enT3) begin
 			rExcRst &lt;= excRst;
@@ -1730,6 +1725,11 @@ module sequencer (
 			rPriv &lt;= isPriv &amp; !psw[SF];
 		end
 	end
+	localparam ITLX1_NMA = &#39;h1C4;
+	localparam TRAC1_NMA = &#39;h1C0;
+	localparam TVN_AUTOVEC = 13;
+	localparam TVN_INTERRUPT = 15;
+	localparam TVN_SPURIOUS = 12;
 	always @(*) begin
 		grp1Nma = TRAC1_NMA;
 		if (rExcRst)
@@ -1769,14 +1769,6 @@ module busArbiter (
 	busAvail,
 	BGn
 );
-	localparam DRESET = 0;
-	localparam DIDLE = 1;
-	localparam D1 = 2;
-	localparam D_BR = 3;
-	localparam D_BA = 4;
-	localparam D_BRA = 5;
-	localparam D3 = 6;
-	localparam D2 = 7;
 	input wire [4:0] Clks;
 	input BRi;
 	input BgackI;
@@ -1786,6 +1778,14 @@ module busArbiter (
 	output reg BGn;
 	reg [31:0] dmaPhase;
 	reg [31:0] next;
+	localparam [31:0] D1 = 2;
+	localparam [31:0] D2 = 7;
+	localparam [31:0] D3 = 6;
+	localparam [31:0] DIDLE = 1;
+	localparam [31:0] DRESET = 0;
+	localparam [31:0] D_BA = 4;
+	localparam [31:0] D_BR = 3;
+	localparam [31:0] D_BRA = 5;
 	always @(*)
 		case (dmaPhase)
 			DRESET: next = DIDLE;
@@ -1867,13 +1867,6 @@ module busControl (
 	UDSn,
 	eRWn
 );
-	localparam SRESET = 0;
-	localparam SIDLE = 1;
-	localparam S0 = 2;
-	localparam S2 = 3;
-	localparam S4 = 4;
-	localparam S6 = 5;
-	localparam SRMC_RES = 6;
 	input wire [4:0] Clks;
 	input enT1;
 	input enT4;
@@ -1924,11 +1917,18 @@ module busControl (
 	wire busRetry = ~busAddrErr &amp; 1&#39;b0;
 	reg [31:0] busPhase;
 	reg [31:0] next;
+	localparam [31:0] SRESET = 0;
 	always @(posedge Clks[4])
 		if (Clks[3])
 			busPhase &lt;= SRESET;
 		else if (Clks[1])
 			busPhase &lt;= next;
+	localparam [31:0] S0 = 2;
+	localparam [31:0] S2 = 3;
+	localparam [31:0] S4 = 4;
+	localparam [31:0] S6 = 5;
+	localparam [31:0] SIDLE = 1;
+	localparam [31:0] SRMC_RES = 6;
 	always @(*)
 		case (busPhase)
 			SRESET: next = SIDLE;
@@ -2032,13 +2032,13 @@ module uRom (
 	microAddr,
 	microOutput
 );
-	localparam UADDR_WIDTH = 10;
-	localparam UROM_DEPTH = 1024;
-	localparam UROM_WIDTH = 17;
 	input clk;
+	localparam UADDR_WIDTH = 10;
 	input [UADDR_WIDTH - 1:0] microAddr;
+	localparam UROM_WIDTH = 17;
 	output reg [UROM_WIDTH - 1:0] microOutput;
-	reg [UROM_WIDTH - 1:0] uRam [0:UROM_DEPTH - 1];
+	localparam UROM_DEPTH = 1024;
+	wire [UROM_WIDTH - 1:0] uRam [0:UROM_DEPTH - 1];
 	initial $readmemb(&#34;microrom.mem&#34;, uRam);
 	always @(posedge clk) microOutput &lt;= uRam[microAddr];
 endmodule
@@ -2047,13 +2047,13 @@ module nanoRom (
 	nanoAddr,
 	nanoOutput
 );
-	localparam NADDR_WIDTH = 9;
-	localparam NANO_DEPTH = 336;
-	localparam NANO_WIDTH = 68;
 	input clk;
+	localparam NADDR_WIDTH = 9;
 	input [NADDR_WIDTH - 1:0] nanoAddr;
+	localparam NANO_WIDTH = 68;
 	output reg [NANO_WIDTH - 1:0] nanoOutput;
-	reg [NANO_WIDTH - 1:0] nRam [0:NANO_DEPTH - 1];
+	localparam NANO_DEPTH = 336;
+	wire [NANO_WIDTH - 1:0] nRam [0:NANO_DEPTH - 1];
 	initial $readmemb(&#34;nanorom.mem&#34;, nRam);
 	always @(posedge clk) nanoOutput &lt;= nRam[nanoAddr];
 endmodule
@@ -2061,9 +2061,9 @@ module microToNanoAddr (
 	uAddr,
 	orgAddr
 );
-	localparam NADDR_WIDTH = 9;
 	localparam UADDR_WIDTH = 10;
 	input [UADDR_WIDTH - 1:0] uAddr;
+	localparam NADDR_WIDTH = 9;
 	output [NADDR_WIDTH - 1:0] orgAddr;
 	wire [UADDR_WIDTH - 1:2] baseAddr = uAddr[UADDR_WIDTH - 1:2];
 	reg [NADDR_WIDTH - 1:2] orgBase;
@@ -2233,28 +2233,6 @@ module fx68kAlu (
 	ccr,
 	aluOut
 );
-	localparam OP_ABCD = 22;
-	localparam OP_ADD = 4;
-	localparam OP_ADDC = 11;
-	localparam OP_ADDX = 12;
-	localparam OP_AND = 1;
-	localparam OP_ASL = 13;
-	localparam OP_ASR = 14;
-	localparam OP_EOR = 9;
-	localparam OP_EXT = 5;
-	localparam OP_LSL = 15;
-	localparam OP_LSR = 16;
-	localparam OP_OR = 8;
-	localparam OP_ROL = 17;
-	localparam OP_ROR = 18;
-	localparam OP_ROXL = 19;
-	localparam OP_ROXR = 20;
-	localparam OP_SBCD = 6;
-	localparam OP_SLAA = 21;
-	localparam OP_SUB = 2;
-	localparam OP_SUB0 = 7;
-	localparam OP_SUBC = 10;
-	localparam OP_SUBX = 3;
 	input clk;
 	input pwrUp;
 	input enT1;
@@ -2374,6 +2352,7 @@ module fx68kAlu (
 	wire [7:0] bcdResult;
 	wire bcdC;
 	wire bcdV;
+	localparam OP_SBCD = 6;
 	aluCorf aluCorf(
 		.binResult(aluLatch[7:0]),
 		.hCarry(coreH),
@@ -2389,6 +2368,13 @@ module fx68kAlu (
 			bcdCarry &lt;= bcdC;
 			bcdOverf &lt;= bcdV;
 		end
+	localparam OP_ADD = 4;
+	localparam OP_ADDC = 11;
+	localparam OP_ADDX = 12;
+	localparam OP_SUB = 2;
+	localparam OP_SUB0 = 7;
+	localparam OP_SUBC = 10;
+	localparam OP_SUBX = 3;
 	always @(*)
 		case (oper)
 			OP_ADD, OP_SUB: addCin = 1&#39;b0;
@@ -2397,6 +2383,15 @@ module fx68kAlu (
 			OP_ADDX, OP_SUBX: addCin = pswCcr[XF];
 			default: addCin = 1&#39;bX;
 		endcase
+	localparam OP_ASL = 13;
+	localparam OP_ASR = 14;
+	localparam OP_LSL = 15;
+	localparam OP_LSR = 16;
+	localparam OP_ROL = 17;
+	localparam OP_ROR = 18;
+	localparam OP_ROXL = 19;
+	localparam OP_ROXR = 20;
+	localparam OP_SLAA = 21;
 	always @(*) begin
 		case (oper)
 			OP_LSL, OP_ASL, OP_ROL, OP_ROXL, OP_SLAA: shftRight = 1&#39;b0;
@@ -2416,6 +2411,11 @@ module fx68kAlu (
 			default: shftCin = 1&#39;sbX;
 		endcase
 	end
+	localparam OP_ABCD = 22;
+	localparam OP_AND = 1;
+	localparam OP_EOR = 9;
+	localparam OP_EXT = 5;
+	localparam OP_OR = 8;
 	always @(*) begin
 		mySubber(aOperand, dOperand, addCin, ((oper == OP_ADD) | (oper == OP_ADDC)) | (oper == OP_ADDX), isByte, subResult, subCout, subOv);
 		isShift = 1&#39;b0;
@@ -2631,6 +2631,10 @@ module aluGetOp (
 	isCorf,
 	aluOp
 );
+	input [15:0] row;
+	input [2:0] col;
+	input isCorf;
+	output reg [4:0] aluOp;
 	localparam OP_ABCD = 22;
 	localparam OP_ADD = 4;
 	localparam OP_ADDC = 11;
@@ -2653,10 +2657,6 @@ module aluGetOp (
 	localparam OP_SUB0 = 7;
 	localparam OP_SUBC = 10;
 	localparam OP_SUBX = 3;
-	input [15:0] row;
-	input [2:0] col;
-	input isCorf;
-	output reg [4:0] aluOp;
 	always @(*) begin
 		aluOp = 1&#39;sbX;
 		case (col)
@@ -2838,10 +2838,10 @@ module ccrTable (
 	finish,
 	ccrMask
 );
-	localparam MASK_NBITS = 5;
 	input [2:0] col;
 	input [15:0] row;
 	input finish;
+	localparam MASK_NBITS = 5;
 	output reg [MASK_NBITS - 1:0] ccrMask;
 	localparam KNZ00 = 5&#39;b01111;
 	localparam KKZKK = 5&#39;b00100;

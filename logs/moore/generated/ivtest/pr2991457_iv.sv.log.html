@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v</a>
 time_elapsed: 0.004s
-ram usage: 10152 KB
+ram usage: 10336 KB
 </pre>
 <pre class="log">
 
@@ -35,53 +35,17 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `bit [3:0]` to `reg [3:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:5</a>:11-18:
    | 
    |     val = 4&#39;b1111;
    |           ^^^^^^^ 
-   = note: Casts `4&#39;b1111` from `bit [3:0]` to `logic [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:5</a>:11-18:
-   | 
-   |     val = 4&#39;b1111;
-   |           ^^^^^^^ 
+   = note: `bit [3:0]` can be cast to an intermediate `logic [3:0]`, but
+   = note: `logic [3:0]` cannot be cast to the final `reg [3:0]`
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
-   | 
-   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
-   |                 ^^^                      
-   = note: Casts `&#39;b0` from `bit [3:0]` to `logic [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
-   | 
-   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
-   |                 ^^^                      
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
-   | 
-   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
-   |                 ^^^                      
-   = note: Casts `&#39;b0` from `bit [-1:0]` to `bit [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2991457.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2991457.v:10</a>:17-20:
-   | 
-   |     if (~val == &#39;b0) $display(&#34;Failed.&#34;);
-   |                 ^^^                      
-
-proc %top.initial.39.0 () -&gt; (i4$ %val) {
-0:
-    %1 = const i4 15
-    %2 = const time 0s 1e
-    drv i4$ %val, %1, %2
-    halt
-}
-
-entity @top () -&gt; () {
-    %0 = const i4 0
-    %val = sig i4 %0
-    inst %top.initial.39.0 () -&gt; (i4$ %val)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [3:0] -&gt; Domain(FourValued) logic [3:0]
 
 </pre>
 </body>

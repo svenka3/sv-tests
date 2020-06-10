@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,54 +18,29 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1662508.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1662508.v</a>
 time_elapsed: 0.004s
-ram usage: 10400 KB
+ram usage: 10748 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e ram <a href="../../../../third_party/tests/ivtest/ivltests/pr1662508.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1662508.v</a>
-proc %ram.always.128.0 (i1$ %clk, i1$ %we, i10$ %addr, i16$ %data) -&gt; (i16$ %ram) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %we1 = prb i1$ %we
-    %3 = neq i1 %we1, %0
-    br %3, %init, %if_true
-if_true:
-    %addr1 = prb i10$ %addr
-    %4 = exts i4, i10 %addr1, 0, 4
-    %5 = const i16 0
-    %6 = sig i16 %5
-    %7 = shr i16$ %ram, i16$ %6, i4 %4
-    %8 = exts i1$, i16$ %7, 0, 1
-    %data1 = prb i16$ %data
-    %9 = exts i1, i16 %data1, 0, 1
-    %10 = const time 0s 1d
-    drv i1$ %8, %9, %10
-    br %init
-}
+error: cannot cast a value of type `reg [15:0]` to `logic [15:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1662508.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1662508.v:14</a>:19-33:
+   | 
+   | assign read_bus = ram[addr[3:0]];
+   |                   ^^^^^^^^^^^^^^ 
 
-entity @ram (i1$ %clk, i1$ %we, i10$ %addr, i16$ %data) -&gt; (i16$ %read_bus) {
-    %0 = const i16 0
-    %ram = sig i16 %0
-    %ram1 = prb i16$ %ram
-    %addr1 = prb i10$ %addr
-    %1 = exts i4, i10 %addr1, 0, 4
-    %2 = shr i16 %ram1, i16 %0, i4 %1
-    %3 = exts i1, i16 %2, 0, 1
-    %4 = inss i16 %0, i1 %3, 0, 1
-    %5 = const time 0s 1e
-    drv i16$ %read_bus, %4, %5
-    inst %ram.always.128.0 (i1$ %clk, i1$ %we, i10$ %addr, i16$ %data) -&gt; (i16$ %ram)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [15:0]
+error: cannot cast a value of type `logic [15:0]` to `reg [15:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1662508.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr1662508.v:16</a>:20-24:
+   | 
+   |     ram[addr[3:0]] &lt;= data;
+   |                       ^^^^ 
+
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [15:0]
 
 </pre>
 </body>

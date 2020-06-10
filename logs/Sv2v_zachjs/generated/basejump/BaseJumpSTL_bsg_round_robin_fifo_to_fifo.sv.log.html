@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_round_robin_fifo_to_fifo.v</a>
-time_elapsed: 1.108s
-ram usage: 18884 KB
+time_elapsed: 0.668s
+ram usage: 18768 KB
 </pre>
 <pre class="log">
 
@@ -42,8 +42,8 @@ module bsg_rr_f2f_input (
 	input clk;
 	input reset;
 	input [num_in_p - 1:0] valid_i;
-	input [((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] data_i;
-	output [((middle_meet_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (middle_meet_p * width_p) + -1 : (middle_meet_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - middle_meet_p) * width_p) + (((middle_meet_p - 1) * width_p) - 1) : ((2 - middle_meet_p) * (2 - width_p)) + (((width_p - 1) + ((middle_meet_p - 1) * (2 - width_p))) - 1))):((middle_meet_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (middle_meet_p - 1) * width_p : (width_p - 1) + ((middle_meet_p - 1) * (2 - width_p))))] data_head_o;
+	input [(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] data_i;
+	output [(middle_meet_p &gt;= 1 ? (width_p &gt;= 1 ? (middle_meet_p * width_p) + -1 : (middle_meet_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - middle_meet_p) * width_p) + (((middle_meet_p - 1) * width_p) - 1) : ((2 - middle_meet_p) * (2 - width_p)) + (((width_p - 1) + ((middle_meet_p - 1) * (2 - width_p))) - 1))):(middle_meet_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (middle_meet_p - 1) * width_p : (width_p - 1) + ((middle_meet_p - 1) * (2 - width_p))))] data_head_o;
 	output [middle_meet_p - 1:0] valid_head_o;
 	input [min_in_middle_meet_p - 1:0] go_channels_i;
 	input [$clog2(min_in_middle_meet_p + 1) - 1:0] go_cnt_i;
@@ -67,6 +67,18 @@ module bsg_rr_f2f_input (
 	);
 	wire [((2 * width_p) * num_in_p) - 1:0] data_head_o_flat_pretrunc = {2 {data_i_flat}} &gt;&gt; (iptr_r_data * width_p);
 	wire [(num_in_p * 2) - 1:0] yumi_intermediate;
+	function automatic [num_in_p - 1:0] sv2v_cast_1A36E;
+		input reg [num_in_p - 1:0] inp;
+		sv2v_cast_1A36E = inp;
+	endfunction
+	function automatic [middle_meet_p - 1:0] sv2v_cast_1EE3E;
+		input reg [middle_meet_p - 1:0] inp;
+		sv2v_cast_1EE3E = inp;
+	endfunction
+	function automatic [middle_meet_data_lp - 1:0] sv2v_cast_B4F12;
+		input reg [middle_meet_data_lp - 1:0] inp;
+		sv2v_cast_B4F12 = inp;
+	endfunction
 	generate
 		if (num_in_p &gt;= middle_meet_p) begin
 			assign valid_head_o = valid_head_o_pretrunc[0+:middle_meet_p];
@@ -100,18 +112,6 @@ module bsg_rr_f2f_input (
 		.o(iptr_r_data),
 		.n_o()
 	);
-	function automatic [num_in_p - 1:0] sv2v_cast_1A36E;
-		input reg [num_in_p - 1:0] inp;
-		sv2v_cast_1A36E = inp;
-	endfunction
-	function automatic [middle_meet_p - 1:0] sv2v_cast_1EE3E;
-		input reg [middle_meet_p - 1:0] inp;
-		sv2v_cast_1EE3E = inp;
-	endfunction
-	function automatic [middle_meet_data_lp - 1:0] sv2v_cast_B4F12;
-		input reg [middle_meet_data_lp - 1:0] inp;
-		sv2v_cast_B4F12 = inp;
-	endfunction
 endmodule
 module bsg_rr_f2f_output (
 	clk,
@@ -134,9 +134,9 @@ module bsg_rr_f2f_output (
 	output [middle_meet_p - 1:0] ready_head_o;
 	input [min_out_middle_meet_lp - 1:0] go_channels_i;
 	input [$clog2(min_out_middle_meet_lp + 1) - 1:0] go_cnt_i;
-	input [((min_out_middle_meet_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (min_out_middle_meet_lp * width_p) + -1 : (min_out_middle_meet_lp * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - min_out_middle_meet_lp) * width_p) + (((min_out_middle_meet_lp - 1) * width_p) - 1) : ((2 - min_out_middle_meet_lp) * (2 - width_p)) + (((width_p - 1) + ((min_out_middle_meet_lp - 1) * (2 - width_p))) - 1))):((min_out_middle_meet_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (min_out_middle_meet_lp - 1) * width_p : (width_p - 1) + ((min_out_middle_meet_lp - 1) * (2 - width_p))))] data_head_i;
+	input [(min_out_middle_meet_lp &gt;= 1 ? (width_p &gt;= 1 ? (min_out_middle_meet_lp * width_p) + -1 : (min_out_middle_meet_lp * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - min_out_middle_meet_lp) * width_p) + (((min_out_middle_meet_lp - 1) * width_p) - 1) : ((2 - min_out_middle_meet_lp) * (2 - width_p)) + (((width_p - 1) + ((min_out_middle_meet_lp - 1) * (2 - width_p))) - 1))):(min_out_middle_meet_lp &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (min_out_middle_meet_lp - 1) * width_p : (width_p - 1) + ((min_out_middle_meet_lp - 1) * (2 - width_p))))] data_head_i;
 	output [num_out_p - 1:0] valid_o;
-	output [((num_out_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (num_out_p * width_p) + -1 : (num_out_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):((num_out_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o;
+	output [(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? (num_out_p * width_p) + -1 : (num_out_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o;
 	wire [(num_out_p == 1 ? 1 : $clog2(num_out_p)) - 1:0] optr_r;
 	wire [(num_out_p == 1 ? 1 : $clog2(num_out_p)) - 1:0] optr_r_data;
 	wire [num_out_p - 1:0] ready_head_o_pretr;
@@ -146,6 +146,14 @@ module bsg_rr_f2f_output (
 		.o(ready_head_o_pretr)
 	);
 	wire [(num_out_p * 2) - 1:0] valid_pretr;
+	function automatic [middle_meet_p - 1:0] sv2v_cast_1EE3E;
+		input reg [middle_meet_p - 1:0] inp;
+		sv2v_cast_1EE3E = inp;
+	endfunction
+	function automatic [num_out_p - 1:0] sv2v_cast_4BA5D;
+		input reg [num_out_p - 1:0] inp;
+		sv2v_cast_4BA5D = inp;
+	endfunction
 	generate
 		if (num_out_p &gt;= middle_meet_p) begin
 			assign ready_head_o = ready_head_o_pretr[0+:middle_meet_p];
@@ -159,17 +167,21 @@ module bsg_rr_f2f_output (
 	assign valid_o = valid_pretr[num_out_p+:num_out_p];
 	genvar i;
 	wire [width_p - 1:0] data_head_double [(num_out_p * 2) - 1:0];
+	function automatic [width_p - 1:0] sv2v_cast_89401;
+		input reg [width_p - 1:0] inp;
+		sv2v_cast_89401 = inp;
+	endfunction
 	generate
 		for (i = 0; i &lt; num_out_p; i = i + 1) begin
 			if (i &lt; middle_meet_p) begin
-				assign data_head_double[i] = data_head_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((min_out_middle_meet_lp - 1) &gt;= 0 ? i : 0 - (i - (min_out_middle_meet_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)];
-				assign data_head_double[i + num_out_p] = data_head_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((min_out_middle_meet_lp - 1) &gt;= 0 ? i : 0 - (i - (min_out_middle_meet_lp - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)];
+				assign data_head_double[i] = data_head_i[(width_p &gt;= 1 ? 0 : width_p - 1) + ((min_out_middle_meet_lp &gt;= 1 ? i : 0 - (i - (min_out_middle_meet_lp - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)];
+				assign data_head_double[i + num_out_p] = data_head_i[(width_p &gt;= 1 ? 0 : width_p - 1) + ((min_out_middle_meet_lp &gt;= 1 ? i : 0 - (i - (min_out_middle_meet_lp - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)];
 			end
 			else begin
 				assign data_head_double[i] = sv2v_cast_89401(0);
 				assign data_head_double[i + num_out_p] = sv2v_cast_89401(0);
 			end
-			assign data_o[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((num_out_p - 1) &gt;= 0 ? i : 0 - (i - (num_out_p - 1))) * ((width_p - 1) &gt;= 0 ? width_p : 2 - width_p))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p)] = data_head_double[(i + num_out_p) - optr_r_data];
+			assign data_o[(width_p &gt;= 1 ? 0 : width_p - 1) + ((num_out_p &gt;= 1 ? i : 0 - (i - (num_out_p - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = data_head_double[(i + num_out_p) - optr_r_data];
 		end
 	endgenerate
 	bsg_circular_ptr #(
@@ -192,18 +204,6 @@ module bsg_rr_f2f_output (
 		.o(optr_r_data),
 		.n_o()
 	);
-	function automatic [middle_meet_p - 1:0] sv2v_cast_1EE3E;
-		input reg [middle_meet_p - 1:0] inp;
-		sv2v_cast_1EE3E = inp;
-	endfunction
-	function automatic [num_out_p - 1:0] sv2v_cast_4BA5D;
-		input reg [num_out_p - 1:0] inp;
-		sv2v_cast_4BA5D = inp;
-	endfunction
-	function automatic [width_p - 1:0] sv2v_cast_89401;
-		input reg [width_p - 1:0] inp;
-		sv2v_cast_89401 = inp;
-	endfunction
 endmodule
 module bsg_rr_f2f_middle (
 	valid_head_i,
@@ -260,12 +260,12 @@ module bsg_round_robin_fifo_to_fifo (
 	input clk;
 	input reset;
 	input [num_in_p - 1:0] valid_i;
-	input [((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):((num_in_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] data_i;
+	input [(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] data_i;
 	output [num_in_p - 1:0] yumi_o;
 	input [(($clog2(num_in_p) - 1) &gt; 0 ? $clog2(num_in_p) - 1 : 0):0] in_top_channel_i;
 	input [(($clog2(num_out_p) - 1) &gt; 0 ? $clog2(num_out_p) - 1 : 0):0] out_top_channel_i;
 	output [num_out_p - 1:0] valid_o;
-	output [((num_out_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (num_out_p * width_p) + -1 : (num_out_p * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):((num_out_p - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o;
+	output [(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? (num_out_p * width_p) + -1 : (num_out_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o;
 	input [num_out_p - 1:0] ready_i;
 	localparam middle_meet_lp = (num_in_p &lt; num_out_p ? num_in_p : num_out_p);
 	wire [middle_meet_lp - 1:0] go_channels;
@@ -280,7 +280,11 @@ module bsg_round_robin_fifo_to_fifo (
 	wire [(width_p * num_out_p) - 1:0] data_o_flat = data_int_o[out_top_channel_i];
 	wire [(width_p * num_out_p) - 1:0] zero_flat;
 	wire [$clog2((num_in_p &lt; num_out_p ? num_in_p : num_out_p) + 1) - 1:0] go_cnt;
-	assign zero_flat = sv2v_cast_EABC8(0);
+	function automatic [((width_p * num_out_p) &gt;= 1 ? width_p * num_out_p : 2 - (width_p * num_out_p)) - 1:0] sv2v_cast_A7858;
+		input reg [((width_p * num_out_p) &gt;= 1 ? width_p * num_out_p : 2 - (width_p * num_out_p)) - 1:0] inp;
+		sv2v_cast_A7858 = inp;
+	endfunction
+	assign zero_flat = sv2v_cast_A7858(0);
 	bsg_make_2D_array #(
 		.width_p(width_p),
 		.items_p(num_out_p)
@@ -293,7 +297,7 @@ module bsg_round_robin_fifo_to_fifo (
 	generate
 		for (i = 0; i &lt; num_in_p; i = i + 1) begin : ic
 			if (in_channel_count_mask_p[i]) begin : in_chan
-				wire [((middle_meet_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (middle_meet_lp * width_p) + -1 : (middle_meet_lp * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - middle_meet_lp) * width_p) + (((middle_meet_lp - 1) * width_p) - 1) : ((2 - middle_meet_lp) * (2 - width_p)) + (((width_p - 1) + ((middle_meet_lp - 1) * (2 - width_p))) - 1))):((middle_meet_lp - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (middle_meet_lp - 1) * width_p : (width_p - 1) + ((middle_meet_lp - 1) * (2 - width_p))))] data_head_tmp;
+				wire [(middle_meet_lp &gt;= 1 ? (width_p &gt;= 1 ? (middle_meet_lp * width_p) + -1 : (middle_meet_lp * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - middle_meet_lp) * width_p) + (((middle_meet_lp - 1) * width_p) - 1) : ((2 - middle_meet_lp) * (2 - width_p)) + (((width_p - 1) + ((middle_meet_lp - 1) * (2 - width_p))) - 1))):(middle_meet_lp &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (middle_meet_lp - 1) * width_p : (width_p - 1) + ((middle_meet_lp - 1) * (2 - width_p))))] data_head_tmp;
 				assign data_head[i] = {&gt;&gt; 1{data_head_tmp}};
 				bsg_rr_f2f_input #(
 					.width_p(width_p),
@@ -303,7 +307,7 @@ module bsg_round_robin_fifo_to_fifo (
 					.clk(clk),
 					.reset(reset | (in_top_channel_i != i)),
 					.valid_i(valid_i[i:0]),
-					.data_i(data_i[((width_p - 1) &gt;= 0 ? 0 : width_p - 1) + (((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) * ((num_in_p - 1) &gt;= 0 ? ((num_in_p - 1) &gt;= 0 ? (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1) - ((i &gt;= 0 ? i + 1 : 1 - i) - 1) : (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1)) : 0 - (((num_in_p - 1) &gt;= 0 ? (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1) - ((i &gt;= 0 ? i + 1 : 1 - i) - 1) : (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1)) - (num_in_p - 1))))+:((width_p - 1) &gt;= 0 ? width_p : 2 - width_p) * (i &gt;= 0 ? i + 1 : 1 - i)]),
+					.data_i(data_i[(width_p &gt;= 1 ? 0 : width_p - 1) + ((width_p &gt;= 1 ? width_p : 2 - width_p) * (num_in_p &gt;= 1 ? (num_in_p &gt;= 1 ? (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1) - ((i &gt;= 0 ? i + 1 : 1 - i) - 1) : (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1)) : 0 - ((num_in_p &gt;= 1 ? (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1) - ((i &gt;= 0 ? i + 1 : 1 - i) - 1) : (i &gt;= 0 ? i : (i + (i &gt;= 0 ? i + 1 : 1 - i)) - 1)) - (num_in_p - 1))))+:(width_p &gt;= 1 ? width_p : 2 - width_p) * (i &gt;= 0 ? i + 1 : 1 - i)]),
 					.data_head_o(data_head_tmp),
 					.valid_head_o(valid_head[i]),
 					.go_channels_i(go_channels[((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1:0]),
@@ -326,8 +330,8 @@ module bsg_round_robin_fifo_to_fifo (
 	generate
 		for (i = 0; i &lt; num_out_p; i = i + 1) begin : oc
 			if (out_channel_count_mask_p[i]) begin : out_chan
-				wire [((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? (((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) * width_p) + -1 : (((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((2 - ((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp)) * width_p) + (((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * width_p) - 1) : ((2 - ((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp)) * (2 - width_p)) + (((width_p - 1) + ((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * (2 - width_p))) - 1))):((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? (((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * width_p : (width_p - 1) + ((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * (2 - width_p))))] data_head_array;
-				wire [(i &gt;= 0 ? ((width_p - 1) &gt;= 0 ? ((i + 1) * width_p) + -1 : ((i + 1) * (2 - width_p)) + ((width_p - 1) - 1)) : ((width_p - 1) &gt;= 0 ? ((1 - i) * width_p) + ((i * width_p) - 1) : ((1 - i) * (2 - width_p)) + (((width_p - 1) + (i * (2 - width_p))) - 1))):(i &gt;= 0 ? ((width_p - 1) &gt;= 0 ? 0 : width_p - 1) : ((width_p - 1) &gt;= 0 ? i * width_p : (width_p - 1) + (i * (2 - width_p))))] data_o_array;
+				wire [(((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) &gt;= 1 ? (width_p &gt;= 1 ? (((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) * width_p) + -1 : (((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - ((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp)) * width_p) + (((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * width_p) - 1) : ((2 - ((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp)) * (2 - width_p)) + (((width_p - 1) + ((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * (2 - width_p))) - 1))):(((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * width_p : (width_p - 1) + ((((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp) - 1) * (2 - width_p))))] data_head_array;
+				wire [(i &gt;= 0 ? (width_p &gt;= 1 ? ((i + 1) * width_p) + -1 : ((i + 1) * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((1 - i) * width_p) + ((i * width_p) - 1) : ((1 - i) * (2 - width_p)) + (((width_p - 1) + (i * (2 - width_p))) - 1))):(i &gt;= 0 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? i * width_p : (width_p - 1) + (i * (2 - width_p))))] data_o_array;
 				bsg_make_2D_array #(
 					.width_p(width_p),
 					.items_p(((i + 1) &lt; middle_meet_lp ? i + 1 : middle_meet_lp))
@@ -356,10 +360,6 @@ module bsg_round_robin_fifo_to_fifo (
 			end
 		end
 	endgenerate
-	function automatic [(((width_p * num_out_p) - 1) &gt;= 0 ? width_p * num_out_p : 2 - (width_p * num_out_p)) - 1:0] sv2v_cast_EABC8;
-		input reg [(((width_p * num_out_p) - 1) &gt;= 0 ? width_p * num_out_p : 2 - (width_p * num_out_p)) - 1:0] inp;
-		sv2v_cast_EABC8 = inp;
-	endfunction
 endmodule
 
 </pre>

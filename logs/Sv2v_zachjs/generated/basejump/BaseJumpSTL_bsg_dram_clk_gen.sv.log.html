@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_clk_gen/bsg_dram_clk_gen.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_clk_gen/bsg_dram_clk_gen.v</a>
-time_elapsed: 0.576s
-ram usage: 14616 KB
+time_elapsed: 0.280s
+ram usage: 14368 KB
 </pre>
 <pre class="log">
 
@@ -54,10 +54,10 @@ module bsg_dram_clk_gen (
 		.async_reset_i(async_osc_reset_i),
 		.clk_o(osc_clk_o)
 	);
-	wire [(((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1) - 1:0] ds_tag_payload_r;
+	wire [(downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p):0] ds_tag_payload_r;
 	wire ds_tag_payload_new_r;
 	bsg_tag_client #(
-		.width_p((((((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1) - 1) &gt;= 0 ? ((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1 : 2 - (((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) + 1))),
+		.width_p(((downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p) &gt;= 0 ? (downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p) + 1 : 1 - (downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p))),
 		.default_p(0),
 		.harden_p(1)
 	) btc_ds(
@@ -78,7 +78,7 @@ module bsg_dram_clk_gen (
 	) clk_gen_ds_inst(
 		.clk_i(osc_clk_o),
 		.reset_i(ds_tag_payload_r[0]),
-		.val_i(ds_tag_payload_r[((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p)-:(((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) &gt;= 1 ? ((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p) : 2 - ((downsample_width_p - 1) &gt;= 0 ? downsample_width_p : 2 - downsample_width_p))]),
+		.val_i(ds_tag_payload_r[(downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p)-:((downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p) &gt;= 1 ? (downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p) : 2 - (downsample_width_p &gt;= 1 ? downsample_width_p : 2 - downsample_width_p))]),
 		.clk_r_o(div_clk_o)
 	);
 	generate

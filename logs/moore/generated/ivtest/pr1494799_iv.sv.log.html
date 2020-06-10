@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,27 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1494799.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1494799.v</a>
 time_elapsed: 0.004s
-ram usage: 10176 KB
+ram usage: 10992 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e math <a href="../../../../third_party/tests/ivtest/ivltests/pr1494799.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1494799.v</a>
-entity @math (i20$ %a, i20$ %b, i25$ %c) -&gt; (i25$ %z) {
-    %0 = const i25 0
-    %a1 = prb i20$ %a
-    %1 = inss i25 %0, i20 %a1, 0, 20
-    %b1 = prb i20$ %b
-    %2 = inss i25 %0, i20 %b1, 0, 20
-    %3 = add i25 %1, %2
-    %c1 = prb i25$ %c
-    %4 = add i25 %3, %c1
-    %5 = exts i24, i25 %c1, 1, 24
-    %6 = inss i25 %0, i24 %5, 0, 24
-    %7 = sub i25 %4, %6
-    %8 = const time 0s 1e
-    drv i25$ %z, %7, %8
-    halt
-}
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #40)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1494799.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1494799.v:4</a>:23-24:
+   | 
+   |  output signed [24:0] z;
+   |                       ^ 
+   = note: Encountered at src/svlog/typeck.rs:61
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #40)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

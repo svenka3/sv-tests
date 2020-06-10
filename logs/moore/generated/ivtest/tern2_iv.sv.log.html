@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,48 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/tern2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/tern2.v</a>
 time_elapsed: 0.004s
-ram usage: 10088 KB
+ram usage: 10380 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main2 <a href="../../../../third_party/tests/ivtest/ivltests/tern2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/tern2.v</a>
-proc %main2.always.76.0 (i1$ %sel, i14$ %a, i14$ %b) -&gt; (i14$ %out) {
-init:
-    %sel1 = prb i1$ %sel
-    %a1 = prb i14$ %a
-    %b1 = prb i14$ %b
-    wait %check, %sel, %a, %b
-check:
-    %sel2 = prb i1$ %sel
-    %impledge = neq i1 %sel1, %sel2
-    %a2 = prb i14$ %a
-    %impledge1 = neq i14 %a1, %a2
-    %event_or = or i1 %impledge, %impledge1
-    %b2 = prb i14$ %b
-    %impledge2 = neq i14 %b1, %b2
-    %event_or1 = or i1 %event_or, %impledge2
-    br %event_or1, %init, %event
-event:
-    %0 = exts i14$, i14$ %out, 0, 14
-    %1 = const i1 0
-    %2 = neq i1 %sel2, %1
-    %3 = [i14 %b2, %a2]
-    %4 = mux [2 x i14] %3, i1 %2
-    %5 = const time 0s 1e
-    drv i14$ %0, %4, %5
-    br %init
-}
+error: cannot cast a value of type `logic [13:0]` to `reg [13:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern2.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/tern2.v:21</a>:16-39:
+   | 
+   |     out[13:0] = ( sel ? a[13:0] : b[13:0] );
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^   
 
-entity @main2 () -&gt; () {
-    %0 = const i1 0
-    %sel = sig i1 %0
-    %1 = const i14 0
-    %out = sig i14 %1
-    %a = sig i14 %1
-    %b = sig i14 %1
-    inst %main2.always.76.0 (i1$ %sel, i14$ %a, i14$ %b) -&gt; (i14$ %out)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([13:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([13:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [13:0]
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,76 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v</a>
 time_elapsed: 0.004s
-ram usage: 10384 KB
+ram usage: 11168 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e bar <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html#l-9" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v:9</a>:21-22:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #30)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html#l-2" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v:2</a>:15-18:
    | 
-   |     if (rst) out &lt;= 0;
-   |                     ^ 
-   = note: Casts `0` from `byte unsigned` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html#l-9" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v:9</a>:21-22:
-   | 
-   |     if (rst) out &lt;= 0;
-   |                     ^ 
+   |   input  wire clk;
+   |               ^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html#l-9" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v:9</a>:21-22:
-   | 
-   |     if (rst) out &lt;= 0;
-   |                     ^ 
-   = note: Casts `0` from `byte` to `byte unsigned`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html#l-9" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v:9</a>:21-22:
-   | 
-   |     if (rst) out &lt;= 0;
-   |                     ^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html#l-9" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v:9</a>:21-22:
-   | 
-   |     if (rst) out &lt;= 0;
-   |                     ^ 
-   = note: Casts `0` from `int` to `byte`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v.html#l-9" target="file-frame">third_party/tools/yosys/tests/simple/attrib06_operator_suffix.v:9</a>:21-22:
-   | 
-   |     if (rst) out &lt;= 0;
-   |                     ^ 
-
-proc %bar.always.96.0 (i1$ %clk, i1$ %rst, i8$ %inp_a, i8$ %inp_b) -&gt; (i8$ %out) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %rst1 = prb i1$ %rst
-    %3 = neq i1 %rst1, %0
-    %4 = const time 0s 1d
-    br %3, %if_false, %if_true
-if_true:
-    %5 = const i8 0
-    drv i8$ %out, %5, %4
-    br %init
-if_false:
-    %inp_a1 = prb i8$ %inp_a
-    %inp_b1 = prb i8$ %inp_b
-    %6 = add i8 %inp_a1, %inp_b1
-    drv i8$ %out, %6, %4
-    br %init
-}
-
-entity @bar (i1$ %clk, i1$ %rst, i8$ %inp_a, i8$ %inp_b) -&gt; (i8$ %out) {
-    inst %bar.always.96.0 (i1$ %clk, i1$ %rst, i8$ %inp_a, i8$ %inp_b) -&gt; (i8$ %out)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #30)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

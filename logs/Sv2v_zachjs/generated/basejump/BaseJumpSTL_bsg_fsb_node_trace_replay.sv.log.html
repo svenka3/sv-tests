@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_trace_replay.v</a>
-time_elapsed: 0.632s
-ram usage: 16228 KB
+time_elapsed: 0.272s
+ram usage: 16592 KB
 </pre>
 <pre class="log">
 
@@ -38,13 +38,6 @@ module bsg_fsb_node_trace_replay (
 	done_o,
 	error_o
 );
-	localparam [3:0] eNop = 4&#39;d0;
-	localparam [3:0] eSend = 4&#39;d1;
-	localparam [3:0] eReceive = 4&#39;d2;
-	localparam [3:0] eDone = 4&#39;d3;
-	localparam [3:0] eFinish = 4&#39;d4;
-	localparam [3:0] eCycleDec = 4&#39;d5;
-	localparam [3:0] eCycleInit = 4&#39;d6;
 	parameter ring_width_p = 80;
 	parameter rom_addr_width_p = 6;
 	parameter counter_width_p = (ring_width_p &lt; 16 ? ring_width_p : 16);
@@ -58,7 +51,7 @@ module bsg_fsb_node_trace_replay (
 	output wire [ring_width_p - 1:0] data_o;
 	input yumi_i;
 	output [rom_addr_width_p - 1:0] rom_addr_o;
-	input [(ring_width_p + 4) - 1:0] rom_data_i;
+	input [ring_width_p + 3:0] rom_data_i;
 	output wire done_o;
 	output wire error_o;
 	reg [counter_width_p - 1:0] cycle_ctr_r;
@@ -90,6 +83,9 @@ module bsg_fsb_node_trace_replay (
 	assign op = rom_data_i[ring_width_p+:4];
 	reg instr_completed;
 	assign addr_n = (instr_completed ? addr_r + 1&#39;b1 : addr_r);
+	localparam [3:0] eDone = 4&#39;d3;
+	localparam [3:0] eReceive = 4&#39;d2;
+	localparam [3:0] eSend = 4&#39;d1;
 	always @(*) begin
 		v_o = 1&#39;b0;
 		ready_o = done_r;
@@ -103,6 +99,10 @@ module bsg_fsb_node_trace_replay (
 					;
 			endcase
 	end
+	localparam [3:0] eCycleDec = 4&#39;d5;
+	localparam [3:0] eCycleInit = 4&#39;d6;
+	localparam [3:0] eFinish = 4&#39;d4;
+	localparam [3:0] eNop = 4&#39;d0;
 	always @(*) begin
 		instr_completed = 1&#39;b0;
 		error_n = error_r;

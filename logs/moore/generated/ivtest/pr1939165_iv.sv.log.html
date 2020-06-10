@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,67 +18,18 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v</a>
 time_elapsed: 0.004s
-ram usage: 10256 KB
+ram usage: 10596 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e fpu_li_s1 <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v</a>
-compiler bug: no ast node for n91 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:23</a>:29-33:
-   | 
-   | parameter [eh - 1:0] alap = 1023;
-   |                             ^^^^ 
-   = note: Casts `1023` from `bit signed [10:0]` to `bit [10:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:23</a>:29-33:
-   | 
-   | parameter [eh - 1:0] alap = 1023;
-   |                             ^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:23</a>:29-33:
-   | 
-   | parameter [eh - 1:0] alap = 1023;
-   |                             ^^^^ 
-   = note: Casts `1023` from `int` to `bit signed [10:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:23</a>:29-33:
-   | 
-   | parameter [eh - 1:0] alap = 1023;
-   |                             ^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:28</a>:30-32:
-   | 
-   | parameter [fh - 1:0] falap = 63;
-   |                              ^^ 
-   = note: Casts `63` from `bit signed [6:0]` to `bit [6:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:28</a>:30-32:
-   | 
-   | parameter [fh - 1:0] falap = 63;
-   |                              ^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:28</a>:30-32:
-   | 
-   | parameter [fh - 1:0] falap = 63;
-   |                              ^^ 
-   = note: Casts `63` from `int` to `bit signed [6:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:28</a>:30-32:
-   | 
-   | parameter [fh - 1:0] falap = 63;
-   |                              ^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1939165.v.html#l-59" target="file-frame">third_party/tests/ivtest/ivltests/pr1939165.v:59</a>:5-23:
    | 
    |     #1 $display(&#34;PASSED&#34;);
    |        ^^^^^^^^^^^^^^^^^^ 
 
-proc %fpu_li_s1.initial.119.0 () -&gt; () {
+proc %fpu_li_s1.initial.120.0 () -&gt; () {
 0:
     %1 = const i32 1
     wait %2 for %1
@@ -87,7 +38,12 @@ proc %fpu_li_s1.initial.119.0 () -&gt; () {
 }
 
 entity @fpu_li_s1 () -&gt; () {
-    inst %fpu_li_s1.initial.119.0 () -&gt; ()
+    %0 = const i12 0
+    %exp_norm = sig i12 %0
+    %1 = const i12 1024
+    %2 = const time 0s 1e
+    drv i12$ %exp_norm, %1, %2
+    inst %fpu_li_s1.initial.120.0 () -&gt; ()
     halt
 }
 

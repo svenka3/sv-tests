@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,87 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v</a>
 time_elapsed: 0.004s
-ram usage: 10240 KB
+ram usage: 11148 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e one_hot_cnt <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v.html#l-25" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v:25</a>:10-22:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #34)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v.html#l-17" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v:17</a>:7-13:
    | 
-   |   out &lt;= 8&#39;b0000_0001 ;
-   |          ^^^^^^^^^^^^  
-   = note: Casts `8&#39;b0000_0001` from `byte unsigned` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v.html#l-25" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_one_hot_cnt.v:25</a>:10-22:
-   | 
-   |   out &lt;= 8&#39;b0000_0001 ;
-   |          ^^^^^^^^^^^^  
+   | input enable, clk, reset;
+   |       ^^^^^^             
+   = note: Encountered at src/svlog/typeck.rs:61
 
-proc %one_hot_cnt.always.125.0 (i1$ %enable, i1$ %clk, i1$ %reset) -&gt; (i8$ %out) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %reset1 = prb i1$ %reset
-    %3 = neq i1 %reset1, %0
-    %4 = const time 0s 1d
-    br %3, %if_false, %if_true
-if_true:
-    %5 = const i8 1
-    drv i8$ %out, %5, %4
-    br %init
-if_false:
-    %enable1 = prb i1$ %enable
-    %6 = neq i1 %enable1, %0
-    br %6, %init, %if_true1
-if_true1:
-    %7 = const i8 0
-    %out1 = prb i8$ %out
-    %8 = exts i1, i8 %out1, 7, 1
-    %9 = inss i8 %7, i1 %8, 0, 1
-    %10 = exts i1, i8 %9, 0, 1
-    %11 = inss i8 %7, i1 %10, 0, 1
-    %12 = exts i1, i8 %out1, 0, 1
-    %13 = inss i8 %11, i1 %12, 1, 1
-    %14 = exts i7, i8 %out1, 1, 7
-    %15 = inss i8 %7, i7 %14, 0, 7
-    %16 = exts i1, i8 %15, 0, 1
-    %17 = inss i8 %13, i1 %16, 2, 1
-    %18 = exts i6, i8 %out1, 2, 6
-    %19 = inss i8 %7, i6 %18, 0, 6
-    %20 = exts i1, i8 %19, 0, 1
-    %21 = inss i8 %17, i1 %20, 3, 1
-    %22 = exts i5, i8 %out1, 3, 5
-    %23 = inss i8 %7, i5 %22, 0, 5
-    %24 = exts i1, i8 %23, 0, 1
-    %25 = inss i8 %21, i1 %24, 4, 1
-    %26 = exts i4, i8 %out1, 4, 4
-    %27 = inss i8 %7, i4 %26, 0, 4
-    %28 = exts i1, i8 %27, 0, 1
-    %29 = inss i8 %25, i1 %28, 5, 1
-    %30 = exts i3, i8 %out1, 5, 3
-    %31 = inss i8 %7, i3 %30, 0, 3
-    %32 = exts i1, i8 %31, 0, 1
-    %33 = inss i8 %29, i1 %32, 6, 1
-    %34 = exts i2, i8 %out1, 6, 2
-    %35 = inss i8 %7, i2 %34, 0, 2
-    %36 = exts i1, i8 %35, 0, 1
-    %37 = inss i8 %33, i1 %36, 7, 1
-    drv i8$ %out, %37, %4
-    br %init
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-entity @one_hot_cnt (i1$ %enable, i1$ %clk, i1$ %reset) -&gt; (i8$ %out) {
-    inst %one_hot_cnt.always.125.0 (i1$ %enable, i1$ %clk, i1$ %reset) -&gt; (i8$ %out)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #34)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

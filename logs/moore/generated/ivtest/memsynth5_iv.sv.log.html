@@ -18,44 +18,119 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v</a>
 time_elapsed: 0.004s
-ram usage: 10452 KB
+ram usage: 11084 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v</a>
-warning: cast ignored during constant evaluation
+ ERROR moore_svlog::value &gt; Offending MIR of the following diagnostic: Rvalue {
+    id: n673,
+    origin: n202,
+    env: p0,
+    span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v</a>&#34;):463-472,
+    ty: UnpackedType {
+        core: Packed(
+            PackedType {
+                core: IntVec(
+                    Reg,
+                ),
+                sign: unsigned,
+                sign_explicit: false,
+                dims: [
+                    Range(
+                        [7:0],
+                    ),
+                ],
+                resolved: None,
+                resolved_full: None,
+            },
+        ),
+        dims: [],
+        resolved: None,
+        resolved_full: None,
+    },
+    kind: Index {
+        value: Rvalue {
+            id: n672,
+            origin: n198,
+            env: p0,
+            span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v</a>&#34;):463-466,
+            ty: UnpackedType {
+                core: Packed(
+                    PackedType {
+                        core: IntVec(
+                            Reg,
+                        ),
+                        sign: unsigned,
+                        sign_explicit: false,
+                        dims: [
+                            Range(
+                                [7:0],
+                            ),
+                        ],
+                        resolved: None,
+                        resolved_full: None,
+                    },
+                ),
+                dims: [
+                    Range(
+                        [7:0],
+                    ),
+                ],
+                resolved: None,
+                resolved_full: None,
+            },
+            kind: Var(
+                n6,
+            ),
+            konst: false,
+        },
+        base: Rvalue {
+            id: n671,
+            origin: n201,
+            env: p0,
+            span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v</a>&#34;):467-471,
+            ty: UnpackedType {
+                core: Packed(
+                    PackedType {
+                        core: IntVec(
+                            Reg,
+                        ),
+                        sign: unsigned,
+                        sign_explicit: false,
+                        dims: [
+                            Range(
+                                [2:0],
+                            ),
+                        ],
+                        resolved: None,
+                        resolved_full: None,
+                    },
+                ),
+                dims: [],
+                resolved: None,
+                resolved_full: None,
+            },
+            kind: Var(
+                n14,
+            ),
+            konst: false,
+        },
+        length: 0,
+    },
+    konst: false,
+}
+compiler bug: constant folding of slices not implemented: `reg [7:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v:26</a>:18-27:
    | 
    |    wire[7:0] Q = mem[radr];
    |                  ^^^^^^^^^ 
-   = note: Casts `mem[radr]` from `logic [7:0]` to `bit [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v:26</a>:18-27:
-   | 
-   |    wire[7:0] Q = mem[radr];
-   |                  ^^^^^^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v:26</a>:18-27:
-   | 
-   |    wire[7:0] Q = mem[radr];
-   |                  ^^^^^^^^^ 
-   = note: Casts `mem[radr]` from `logic [0:0]` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v:26</a>:18-27:
-   | 
-   |    wire[7:0] Q = mem[radr];
-   |                  ^^^^^^^^^ 
-
-compiler bug: constant folding of slices not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/memsynth5.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/memsynth5.v:26</a>:18-27:
-   | 
-   |    wire[7:0] Q = mem[radr];
-   |                  ^^^^^^^^^ 
-   = note: Encountered at src/svlog/value.rs:531
+   = note: Encountered at src/svlog/value.rs:523
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;constant folding of slices not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+thread &#39;main&#39; panicked at &#39;constant folding of slices not implemented: `reg [7:0]`&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,89 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v</a>
 time_elapsed: 0.004s
-ram usage: 10240 KB
+ram usage: 11004 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test_mod <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #20)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:26</a>:7-12:
    | 
-   |      out = 0;
-   |            ^ 
-   = note: Casts `0` from `bit` to `logic`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
-   | 
-   |      out = 0;
-   |            ^ 
+   | input reset;
+   |       ^^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
-   | 
-   |      out = 0;
-   |            ^ 
-   = note: Casts `0` from `bit signed` to `bit`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
-   | 
-   |      out = 0;
-   |            ^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
-   | 
-   |      out = 0;
-   |            ^ 
-   = note: Casts `0` from `bit signed [0:0]` to `bit signed`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
-   | 
-   |      out = 0;
-   |            ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
-   | 
-   |      out = 0;
-   |            ^ 
-   = note: Casts `0` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_instmod2.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/sdw_instmod2.v:34</a>:12-13:
-   | 
-   |      out = 0;
-   |            ^ 
-
-proc %test_mod.always.75.0 (i1$ %reset, i1$ %clka) -&gt; (i1$ %out) {
-init:
-    %clka1 = prb i1$ %clka
-    %reset1 = prb i1$ %reset
-    wait %check, %clka, %reset
-check:
-    %clka2 = prb i1$ %clka
-    %0 = const i1 0
-    %1 = eq i1 %clka1, %0
-    %2 = neq i1 %clka2, %0
-    %posedge = and i1 %1, %2
-    %reset2 = prb i1$ %reset
-    %3 = eq i1 %reset1, %0
-    %4 = neq i1 %reset2, %0
-    %posedge1 = and i1 %3, %4
-    %event_or = or i1 %posedge, %posedge1
-    br %event_or, %init, %event
-event:
-    %5 = const time 0s 1e
-    br %4, %if_false, %if_true
-if_true:
-    drv i1$ %out, %0, %5
-    br %init
-if_false:
-    %out1 = prb i1$ %out
-    %6 = not i1 %out1
-    drv i1$ %out, %6, %5
-    br %init
-}
-
-entity @test_mod (i1$ %reset, i1$ %clka) -&gt; (i1$ %out) {
-    inst %test_mod.always.75.0 (i1$ %reset, i1$ %clka) -&gt; (i1$ %out)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #20)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

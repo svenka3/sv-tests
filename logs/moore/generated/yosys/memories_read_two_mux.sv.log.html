@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories
@@ -18,70 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/read_two_mux.v.html" target="file-frame">third_party/tools/yosys/tests/memories/read_two_mux.v</a>
 time_elapsed: 0.004s
-ram usage: 10532 KB
+ram usage: 10480 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories -e top <a href="../../../../third_party/tools/yosys/tests/memories/read_two_mux.v.html" target="file-frame">third_party/tools/yosys/tests/memories/read_two_mux.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/read_two_mux.v.html#l-11" target="file-frame">third_party/tools/yosys/tests/memories/read_two_mux.v:11</a>:25-29:
+error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/read_two_mux.v.html#l-11" target="file-frame">third_party/tools/yosys/tests/memories/read_two_mux.v:11</a>:11-51:
    | 
    |     rdata &lt;= re ? (reset ? 8&#39;b0 : bram[addr]) : rdata;
-   |                            ^^^^                       
-   = note: Casts `8&#39;b0` from `byte unsigned` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/read_two_mux.v.html#l-11" target="file-frame">third_party/tools/yosys/tests/memories/read_two_mux.v:11</a>:25-29:
-   | 
-   |     rdata &lt;= re ? (reset ? 8&#39;b0 : bram[addr]) : rdata;
-   |                            ^^^^                       
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-proc %top.always.120.0 (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %bram, i8$ %rdata) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %re1 = prb i1$ %re
-    %3 = neq i1 %re1, %0
-    %reset1 = prb i1$ %reset
-    %4 = neq i1 %reset1, %0
-    %5 = const i8 0
-    %bram1 = prb i8$ %bram
-    %addr1 = prb i8$ %addr
-    %6 = shr i8 %bram1, i8 %5, i8 %addr1
-    %7 = exts i1, i8 %6, 0, 1
-    %8 = inss i8 %5, i1 %7, 0, 1
-    %9 = [i8 %8, %5]
-    %10 = mux [2 x i8] %9, i1 %4
-    %rdata1 = prb i8$ %rdata
-    %11 = [i8 %rdata1, %10]
-    %12 = mux [2 x i8] %11, i1 %3
-    %13 = const time 0s 1d
-    drv i8$ %rdata, %12, %13
-    %we1 = prb i1$ %we
-    %14 = neq i1 %we1, %0
-    br %14, %init, %if_true
-if_true:
-    %15 = sig i8 %5
-    %16 = shr i8$ %bram, i8$ %15, i8 %addr1
-    %17 = exts i1$, i8$ %16, 0, 1
-    %wdata1 = prb i8$ %wdata
-    %18 = exts i1, i8 %wdata1, 0, 1
-    drv i1$ %17, %18, %13
-    br %init
-}
-
-entity @top (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %rdata) {
-    %0 = const i8 0
-    %bram = sig i8 %0
-    inst %top.always.120.0 (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %bram, i8$ %rdata)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
 
 </pre>
 </body>

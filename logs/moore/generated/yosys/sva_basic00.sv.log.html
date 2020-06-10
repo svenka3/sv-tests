@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv</a>
 time_elapsed: 0.004s
-ram usage: 10156 KB
+ram usage: 10524 KB
 </pre>
 <pre class="log">
 
@@ -28,28 +28,6 @@ warning: unsupported: concurrent assertion; ignored
    | 
    |     test_assert: assert property ( @(posedge clk) disable iff (reset) antecedent |=&gt; consequent )
    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html#l-3" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv:3</a>:25-26:
-   | 
-   |         consequent &lt;= reset ? 0 : antecedent;
-   |                               ^              
-   = note: Casts `0` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html#l-3" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv:3</a>:25-26:
-   | 
-   |         consequent &lt;= reset ? 0 : antecedent;
-   |                               ^              
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html#l-3" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv:3</a>:25-26:
-   | 
-   |         consequent &lt;= reset ? 0 : antecedent;
-   |                               ^              
-   = note: Casts `0` from `int` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/basic00.sv.html#l-3" target="file-frame">third_party/tools/yosys/tests/sva/basic00.sv:3</a>:25-26:
-   | 
-   |         consequent &lt;= reset ? 0 : antecedent;
-   |                               ^              
 
 proc %top.always.41.0 (i1$ %clk, i1$ %reset, i1$ %antecedent) -&gt; (i1$ %consequent) {
 init:
@@ -67,12 +45,12 @@ event:
     %3 = neq i1 %reset1, %0
     %4 = const i32 0
     %antecedent1 = prb i1$ %antecedent
-    %5 = inss i32 %4, i1 %antecedent1, 0, 1
-    %6 = [i32 %5, %4]
-    %7 = mux [2 x i32] %6, i1 %3
-    %8 = exts i1, i32 %7, 0, 1
-    %9 = const time 0s 1d
-    drv i1$ %consequent, %8, %9
+    %zext = inss i32 %4, i1 %antecedent1, 0, 1
+    %5 = [i32 %zext, %4]
+    %6 = mux [2 x i32] %5, i1 %3
+    %7 = exts i1, i32 %6, 0, 1
+    %8 = const time 0s 1d
+    drv i1$ %consequent, %7, %8
     br %init
 }
 

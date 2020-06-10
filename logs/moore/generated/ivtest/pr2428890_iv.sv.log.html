@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2428890.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2428890.v</a>
 time_elapsed: 0.004s
-ram usage: 10496 KB
+ram usage: 10468 KB
 </pre>
 <pre class="log">
 
@@ -35,13 +35,20 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;Internal error, cycle detected:
-- __SalsaQueryDescriptor { kind: type_of((n19, p1)) }
+proc %lower.param1.initial.93.1 () -&gt; () {
+0:
+    halt
+}
 
-- __SalsaQueryDescriptor { kind: type_of((n0, p0)) }
+entity @lower.param1 () -&gt; () {
+    inst %lower.param1.initial.93.1 () -&gt; ()
+    halt
+}
 
-&#39;, &lt;::std::macros::panic macros&gt;:2:4
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @top () -&gt; () {
+    inst @lower.param1 () -&gt; ()
+    halt
+}
 
 </pre>
 </body>

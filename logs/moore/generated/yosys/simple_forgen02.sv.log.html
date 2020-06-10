@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,24 +18,34 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/forgen02.v.html" target="file-frame">third_party/tools/yosys/tests/simple/forgen02.v</a>
 time_elapsed: 0.004s
-ram usage: 10188 KB
+ram usage: 11308 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e uut_forgen02 <a href="../../../../third_party/tools/yosys/tests/simple/forgen02.v.html" target="file-frame">third_party/tools/yosys/tests/simple/forgen02.v</a>
-compiler bug: no ast node for n80 in the map
+error: `chain` is defined multiple times
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/forgen02.v.html#l-20" target="file-frame">third_party/tools/yosys/tests/simple/forgen02.v:20</a>:18-23:
+   | 
+   |         end else begin:chain
+   |                        ^^^^^
+   = note: Previous definition of `chain` was here:
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/forgen02.v.html#l-18" target="file-frame">third_party/tools/yosys/tests/simple/forgen02.v:18</a>:21-26:
+   | 
+   |         if (i == 0) begin:chain
+   |                           ^^^^^
+
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #68)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/forgen02.v.html#l-9" target="file-frame">third_party/tools/yosys/tests/simple/forgen02.v:9</a>:8-12:
+   | 
+   | output cout;
+   |        ^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-entity @uut_forgen02 (i8$ %a, i8$ %b, i1$ %cin) -&gt; (i8$ %y, i1$ %cout) {
-    %0 = const i8 0
-    %1 = const time 0s
-    drv i8$ %y, %0, %1
-    %2 = const i1 0
-    drv i1$ %cout, %2, %1
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #68)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

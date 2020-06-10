@@ -18,34 +18,49 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/delayed_comp_reduct.v.html" target="file-frame">third_party/tests/ivtest/ivltests/delayed_comp_reduct.v</a>
 time_elapsed: 0.004s
-ram usage: 9892 KB
+ram usage: 10376 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/delayed_comp_reduct.v.html" target="file-frame">third_party/tests/ivtest/ivltests/delayed_comp_reduct.v</a>
-compiler bug: no ast node for n11 in the map
+error: cannot cast a value of type `reg [4:0]` to `logic [4:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delayed_comp_reduct.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/delayed_comp_reduct.v:8</a>:20-24:
+   | 
+   |   assign #1 done = cntr == &#39;d7;
+   |                    ^^^^        
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: no ast node for n17 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([4:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([4:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [4:0]
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delayed_comp_reduct.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/delayed_comp_reduct.v:12</a>:11-29:
    | 
    |   initial $display(&#34;PASSED&#34;);
    |           ^^^^^^^^^^^^^^^^^^ 
 
-proc %top.initial.47.0 () -&gt; () {
+proc %top.initial.49.0 () -&gt; () {
 0:
     halt
 }
 
 entity @top () -&gt; () {
-    inst %top.initial.47.0 () -&gt; ()
+    %0 = const i5 0
+    %cntr = sig i5 %0
+    %1 = const i1 0
+    %allone = sig i1 %1
+    %cntr1 = prb i5$ %cntr
+    %2 = exts i1, i5 %cntr1, 0, 1
+    %3 = exts i1, i5 %cntr1, 1, 1
+    %4 = and i1 %2, %3
+    %5 = exts i1, i5 %cntr1, 2, 1
+    %6 = and i1 %4, %5
+    %7 = exts i1, i5 %cntr1, 3, 1
+    %8 = and i1 %6, %7
+    %9 = exts i1, i5 %cntr1, 4, 1
+    %10 = and i1 %8, %9
+    %11 = const time 0s 1e
+    drv i1$ %allone, %10, %11
+    inst %top.initial.49.0 () -&gt; ()
     halt
 }
 

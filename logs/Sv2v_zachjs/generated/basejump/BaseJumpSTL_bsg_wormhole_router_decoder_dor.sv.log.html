@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v</a>
-time_elapsed: 0.392s
-ram usage: 15732 KB
+time_elapsed: 0.312s
+ram usage: 14504 KB
 </pre>
 <pre class="log">
 
@@ -31,6 +31,10 @@ module bsg_wormhole_router_decoder_dor (
 	parameter dims_p = 2;
 	parameter cord_dims_p = dims_p;
 	parameter reverse_order_p = 0;
+	function automatic signed [31:0] sv2v_cast_32_signed;
+		input reg signed [31:0] inp;
+		sv2v_cast_32_signed = inp;
+	endfunction
 	parameter signed [(cord_dims_p &gt;= 0 ? ((cord_dims_p + 1) * 32) + -1 : ((1 - cord_dims_p) * 32) + ((cord_dims_p * 32) - 1)):(cord_dims_p &gt;= 0 ? 0 : cord_dims_p * 32)] cord_markers_pos_p = {sv2v_cast_32_signed(5), sv2v_cast_32_signed(4), sv2v_cast_32_signed(0)};
 	parameter output_dirs_lp = (2 * dims_p) + 1;
 	input [cord_markers_pos_p[(cord_dims_p &gt;= 0 ? dims_p : 0 - (dims_p - cord_dims_p)) * 32+:32] - 1:0] target_cord_i;
@@ -73,11 +77,6 @@ module bsg_wormhole_router_decoder_dor (
 			end
 		end
 	endgenerate
-	initial ;
-	function automatic signed [31:0] sv2v_cast_32_signed;
-		input reg signed [31:0] inp;
-		sv2v_cast_32_signed = inp;
-	endfunction
 endmodule
 
 </pre>

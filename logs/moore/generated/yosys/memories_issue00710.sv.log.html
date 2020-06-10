@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories
@@ -18,87 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v</a>
 time_elapsed: 0.004s
-ram usage: 10220 KB
+ram usage: 10692 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories -e top <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v:12</a>:12-16:
+error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html#l-16" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v:16</a>:17-22:
    | 
-   |         dummy &lt;= 1&#39;b0;
-   |                  ^^^^ 
-   = note: Casts `1&#39;b0` from `bit` to `logic`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v:12</a>:12-16:
-   | 
-   |         dummy &lt;= 1&#39;b0;
-   |                  ^^^^ 
+   |         bram[addr] &lt;= wdata;
+   |                       ^^^^^ 
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v:12</a>:12-16:
-   | 
-   |         dummy &lt;= 1&#39;b0;
-   |                  ^^^^ 
-   = note: Casts `1&#39;b0` from `bit [0:0]` to `bit`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/issue00710.v.html#l-12" target="file-frame">third_party/tools/yosys/tests/memories/issue00710.v:12</a>:12-16:
-   | 
-   |         dummy &lt;= 1&#39;b0;
-   |                  ^^^^ 
-
-proc %top.always.125.0 (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %bram, i1$ %dummy, i8$ %rdata) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %reset1 = prb i1$ %reset
-    %3 = neq i1 %reset1, %0
-    %4 = const time 0s 1d
-    br %3, %if_false, %if_true
-if_true:
-    drv i1$ %dummy, %0, %4
-    br %init
-if_false:
-    %re1 = prb i1$ %re
-    %5 = neq i1 %re1, %0
-    %addr1 = prb i8$ %addr
-    %6 = const i8 0
-    br %5, %if_false1, %if_true1
-if_true1:
-    %bram1 = prb i8$ %bram
-    %7 = shr i8 %bram1, i8 %6, i8 %addr1
-    %8 = exts i1, i8 %7, 0, 1
-    %9 = inss i8 %6, i1 %8, 0, 1
-    drv i8$ %rdata, %9, %4
-    br %init
-if_false1:
-    %we1 = prb i1$ %we
-    %10 = neq i1 %we1, %0
-    br %10, %init, %if_true2
-if_true2:
-    %11 = sig i8 %6
-    %12 = shr i8$ %bram, i8$ %11, i8 %addr1
-    %13 = exts i1$, i8$ %12, 0, 1
-    %wdata1 = prb i8$ %wdata
-    %14 = exts i1, i8 %wdata1, 0, 1
-    drv i1$ %13, %14, %4
-    br %init
-}
-
-entity @top (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %rdata) {
-    %0 = const i8 0
-    %bram = sig i8 %0
-    %1 = const i1 0
-    %dummy = sig i1 %1
-    inst %top.always.125.0 (i1$ %clk, i1$ %we, i1$ %re, i1$ %reset, i8$ %addr, i8$ %wdata) -&gt; (i8$ %bram, i1$ %dummy, i8$ %rdata)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
 
 </pre>
 </body>

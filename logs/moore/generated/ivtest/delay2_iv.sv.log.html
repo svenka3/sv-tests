@@ -18,34 +18,38 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/delay2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/delay2.v</a>
 time_elapsed: 0.004s
-ram usage: 10720 KB
+ram usage: 11120 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e verilog_test <a href="../../../../third_party/tests/ivtest/ivltests/delay2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/delay2.v</a>
-compiler bug: no ast node for n11 in the map
+error: cannot cast a value of type `reg [24:0]` to `logic [24:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay2.v.html#l-72" target="file-frame">third_party/tests/ivtest/ivltests/delay2.v:72</a>:17-21:
+   | 
+   | assign #20 AIN= APAD;
+   |                 ^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([24:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([24:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [24:0]
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay2.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/delay2.v:17</a>:6-71:
    | 
    |      $display(&#34;FAILED -- APAD=%b, AIN=%b, time=%0t&#34;, APAD, AIN, $time);
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::hir::lowering &gt; Expr #53
+ ERROR moore_svlog::hir::lowering &gt; Expr #54
 compiler bug: lowering of expression to hir not implemented
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay2.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/delay2.v:18</a>:6-13:
    | 
    |      $finish;
    |      ^^^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1368
+   = note: Encountered at src/svlog/hir/lowering.rs:1363
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

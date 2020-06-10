@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,84 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v</a>
 time_elapsed: 0.004s
-ram usage: 10300 KB
+ram usage: 11256 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e COUNTER <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:14</a>:15-19:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #28)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:6</a>:7-14:
    | 
-   |   if(nARST_I==1&#39;b0)
-   |               ^^^^ 
-   = note: Casts `1&#39;b0` from `bit [0:0]` to `logic [0:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:14</a>:15-19:
-   | 
-   |   if(nARST_I==1&#39;b0)
-   |               ^^^^ 
+   | input    CLOCK_I;
+   |          ^^^^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
-   | 
-   |     COUNT_O    &lt;= COUNT_O + 1;
-   |                             ^ 
-   = note: Casts `1` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
-   | 
-   |     COUNT_O    &lt;= COUNT_O + 1;
-   |                             ^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
-   | 
-   |     COUNT_O    &lt;= COUNT_O + 1;
-   |                             ^ 
-   = note: Casts `1` from `int` to `int unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1087.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1087.v:17</a>:26-27:
-   | 
-   |     COUNT_O    &lt;= COUNT_O + 1;
-   |                             ^ 
-
-proc %COUNTER.always.100.0 (i1$ %CLOCK_I, i1$ %nARST_I) -&gt; (i3$ %COUNT_O) {
-init:
-    %CLOCK_I1 = prb i1$ %CLOCK_I
-    %nARST_I1 = prb i1$ %nARST_I
-    wait %check, %CLOCK_I, %nARST_I
-check:
-    %CLOCK_I2 = prb i1$ %CLOCK_I
-    %0 = const i1 0
-    %1 = eq i1 %CLOCK_I1, %0
-    %2 = neq i1 %CLOCK_I2, %0
-    %posedge = and i1 %1, %2
-    %nARST_I2 = prb i1$ %nARST_I
-    %3 = neq i1 %nARST_I1, %0
-    %4 = eq i1 %nARST_I2, %0
-    %negedge = and i1 %4, %3
-    %event_or = or i1 %posedge, %negedge
-    br %event_or, %init, %event
-event:
-    %5 = neq i1 %4, %0
-    %6 = const time 0s 1d
-    br %5, %if_false, %if_true
-if_true:
-    %7 = const i3 0
-    drv i3$ %COUNT_O, %7, %6
-    br %init
-if_false:
-    %8 = const i32 0
-    %COUNT_O1 = prb i3$ %COUNT_O
-    %9 = inss i32 %8, i3 %COUNT_O1, 0, 3
-    %10 = const i32 1
-    %11 = add i32 %9, %10
-    %12 = exts i3, i32 %11, 0, 3
-    drv i3$ %COUNT_O, %12, %6
-    br %init
-}
-
-entity @COUNTER (i1$ %CLOCK_I, i1$ %nARST_I) -&gt; (i3$ %COUNT_O) {
-    inst %COUNTER.always.100.0 (i1$ %CLOCK_I, i1$ %nARST_I) -&gt; (i3$ %COUNT_O)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #28)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

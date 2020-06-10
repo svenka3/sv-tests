@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Tests imported from hdlconv
-rc: 101 (means success: 0)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017
@@ -18,49 +18,28 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv</a>
 time_elapsed: 0.004s
-ram usage: 9840 KB
+ram usage: 10252 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017 -e memMod <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv</a>
-error: `sb_intf1` not found
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html#l-23" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv:23</a>:16-24:
+error: `simple_bus` is not a type
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html#l-11" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv:11</a>:15-25:
    | 
-   | memMod mem1(.a(sb_intf1)); // Reference simple_bus 1 to memory 1
-   |                ^^^^^^^^                                         
-
-error: `sb_intf1` not found
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html#l-24" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv:24</a>:16-24:
-   | 
-   | cpuMod cpu1(.b(sb_intf1));
-   |                ^^^^^^^^   
-
-error: `sb_intf2` not found
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html#l-25" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv:25</a>:16-24:
-   | 
-   | memMod mem2(.a(sb_intf2)); // Reference simple_bus 2 to memory 2
-   |                ^^^^^^^^                                         
-
-error: `sb_intf2` not found
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html#l-26" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv:26</a>:16-24:
-   | 
-   | cpuMod cpu2(.b(sb_intf2));
-   |                ^^^^^^^^   
-
- ERROR moore_svlog::hir::lowering &gt; Interface(
-    Interface #55,
-)
-compiler bug: lowering of interface `simple_bus` not implemented
+   | module memMod(simple_bus a); // Uses just the interface
+   |               ^^^^^^^^^^                               
+   = note: `simple_bus` was declared here:
   --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html#l-5" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv:5</a>:1-140:
    | 
    | interface simple_bus (input logic clk); // Define the interface
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+error: value of type `&lt;error&gt;` is not a struct
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html#l-13" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv:13</a>:18-23:
+   | 
+   | always @(posedge a.clk) // the clk signal from the interface
+   |                  ^^^^^                                      
 
-thread &#39;main&#39; panicked at &#39;not implemented: emit type Error&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

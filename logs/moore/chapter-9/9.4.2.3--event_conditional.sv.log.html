@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: event conditional
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 9.4.2.3
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-9
@@ -18,26 +18,45 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-9/9.4.2.3--event_conditional.sv.html" target="file-frame">tests/chapter-9/9.4.2.3--event_conditional.sv</a>
 time_elapsed: 0.004s
-ram usage: 9704 KB
+ram usage: 10380 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-9 -e block_tb <a href="../../../tests/chapter-9/9.4.2.3--event_conditional.sv.html" target="file-frame">tests/chapter-9/9.4.2.3--event_conditional.sv</a>
-compiler bug: no ast node for n5 in the map
+proc %block_tb.always.50.0 (i1$ %clk, i1$ %en, i1$ %a) -&gt; (i1$ %y) {
+init:
+    %clk1 = prb i1$ %clk
+    wait %check, %clk
+check:
+    %clk2 = prb i1$ %clk
+    %0 = const i1 0
+    %1 = eq i1 %clk1, %0
+    %2 = neq i1 %clk2, %0
+    %posedge = and i1 %1, %2
+    %3 = const i32 0
+    %en1 = prb i1$ %en
+    %zext = inss i32 %3, i1 %en1, 0, 1
+    %4 = const i32 1
+    %5 = eq i32 %zext, %4
+    %iff = and i1 %posedge, %5
+    br %iff, %init, %event
+event:
+    %a1 = prb i1$ %a
+    %6 = const time 0s 1d
+    drv i1$ %y, %a1, %6
+    br %init
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: no ast node for n12 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-compiler bug: no ast node for n19 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
+entity @block_tb () -&gt; () {
+    %0 = const i32 0
+    %clk = sig i32 %0
+    %en = sig i32 %0
+    %a = sig i32 %0
+    %1 = const i1 0
+    %y = sig i1 %1
+    inst %block_tb.always.50.0 (i32$ %clk, i32$ %en, i32$ %a) -&gt; (i1$ %y)
+    halt
+}
 
 </pre>
 </body>

@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_master.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_master.v</a>
-time_elapsed: 0.868s
-ram usage: 14576 KB
+time_elapsed: 0.972s
+ram usage: 16844 KB
 </pre>
 <pre class="log">
 
@@ -29,10 +29,6 @@ module bsg_tag_master (
 	data_i,
 	clients_r_o
 );
-	localparam [1:0] eStart = 0;
-	localparam [1:0] eHeader = 1;
-	localparam [1:0] eTransfer = 2;
-	localparam [1:0] eStuck = 3;
 	import bsg_tag_pkg::bsg_tag_s;
 	parameter els_p = &#34;inv&#34;;
 	parameter lg_width_p = &#34;inv&#34;;
@@ -41,9 +37,9 @@ module bsg_tag_master (
 	input en_i;
 	input data_i;
 	output bsg_tag_s [els_p - 1:0] clients_r_o;
-	localparam max_packet_len_lp = ((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)));
-	localparam reset_len_lp = (1 &lt;&lt; (((((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)))) + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)))) + 1))) + 1;
-	localparam lg_max_packet_len_lp = ((max_packet_len_lp + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)))) + 1));
+	localparam max_packet_len_lp = ((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)));
+	localparam reset_len_lp = (1 &lt;&lt; (((((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)))) + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)))) + 1))) + 1;
+	localparam lg_max_packet_len_lp = ((max_packet_len_lp + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)))) + 1));
 	generate
 		if (debug_level_lp &gt; 2) always @(negedge clk_i)
 			$display(&#34;## bsg_tag_master clients=%b (%m)&#34;, clients_r_o);
@@ -66,12 +62,13 @@ module bsg_tag_master (
 	initial $display(&#34;## %m instantiating bsg_tag_master with els_p=%d, lg_width_p=%d, max_packet_len_lp=%d, reset_zero_len=%d&#34;, els_p, lg_width_p, max_packet_len_lp, reset_len_lp);
 	reg [lg_max_packet_len_lp - 1:0] hdr_ptr_r;
 	reg [lg_max_packet_len_lp - 1:0] hdr_ptr_n;
-	reg [(((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1:0] hdr_r;
-	reg [(((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1:0] hdr_n;
+	reg [((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) - 1:0] hdr_r;
+	reg [((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) - 1:0] hdr_n;
 	reg v_n;
 	bsg_tag_s bsg_tag_n;
 	reg [1:0] state_r;
 	reg [1:0] state_n;
+	localparam [1:0] eStart = 0;
 	always @(posedge clk_i)
 		if (tag_reset_req &amp; ~data_i_r) begin
 			if (debug_level_lp &gt; 2)
@@ -88,6 +85,17 @@ module bsg_tag_master (
 		if (state_n != state_r)
 			if (debug_level_lp &gt; 1)
 				$display(&#34;## bsg_tag_master STATE CHANGE  # %s --&gt; %s #&#34;, state_r.name(), state_n.name());
+	localparam [1:0] eHeader = 1;
+	localparam [1:0] eStuck = 3;
+	localparam [1:0] eTransfer = 2;
+	function automatic [lg_width_p - 1:0] sv2v_cast_755DA;
+		input reg [lg_width_p - 1:0] inp;
+		sv2v_cast_755DA = inp;
+	endfunction
+	function automatic [(((((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)))) + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)))) + 1)) - 1:0] sv2v_cast_B11B4;
+		input reg [(((((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)))) + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)))) + 1)) - 1:0] inp;
+		sv2v_cast_B11B4 = inp;
+	endfunction
 	always @(*) begin
 		state_n = state_r;
 		hdr_ptr_n = hdr_ptr_r;
@@ -105,31 +113,31 @@ module bsg_tag_master (
 			eHeader: begin
 				if (debug_level_lp &gt; 1)
 					$display(&#34;## bsg_tag_master RECEIVING HEADER (%m) (%d) = %b&#34;, hdr_ptr_r, data_i_r);
-				hdr_n = {data_i_r, hdr_r[1+:(((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p))) - 1]};
+				hdr_n = {data_i_r, hdr_r[1+:(((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p))) - 1]};
 				hdr_ptr_n = hdr_ptr_r + 1&#39;b1;
-				if (hdr_ptr_r == sv2v_cast_C78C0((((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p))) - 1))
-					if (hdr_n[((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1-:((((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 1 - (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))] == 0) begin
+				if (hdr_ptr_r == sv2v_cast_B11B4((((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) &gt;= 1 ? (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 2 - ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p))) - 1))
+					if (hdr_n[(lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1-:(((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 1 - ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))] == 0) begin
 						state_n = eStart;
 						$display(&#34;## bsg_tag_master NULL PACKET, len=0 (%m)&#34;);
 					end
 					else begin
 						if (debug_level_lp &gt; 1)
-							$display(&#34;## bsg_tag_master PACKET HEADER RECEIVED (length=%b,data_not_reset=%b,nodeID=%b) (%m) &#34;, hdr_n[((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1-:((((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 1 - (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))], hdr_n[1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1)], hdr_n[(((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))-:(((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))) &gt;= (1 + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) ? (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))) - (1 + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p))) + 1 : ((1 + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1)))) + 1)]);
+							$display(&#34;## bsg_tag_master PACKET HEADER RECEIVED (length=%b,data_not_reset=%b,nodeID=%b) (%m) &#34;, hdr_n[(lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1-:(((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 1 - ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))], hdr_n[1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1)], hdr_n[((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))-:((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))) &gt;= (1 + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) ? ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))) - (1 + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p))) + 1 : ((1 + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) - (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1)))) + 1)]);
 						state_n = eTransfer;
 					end
 			end
 			eTransfer: begin
 				v_n = 1&#39;b1;
-				bsg_tag_n.op = hdr_r[1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1)];
+				bsg_tag_n.op = hdr_r[1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1)];
 				bsg_tag_n.param = data_i_r;
 				if (debug_level_lp &gt; 2)
 					$display(&#34;## bsg_tag_master PACKET TRANSFER op,param=&lt;%b,%b&gt; (%m)&#34;, bsg_tag_n.op, bsg_tag_n.param);
-				if (hdr_r[((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1-:((((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 1 - (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))] == sv2v_cast_755DA(1)) begin
+				if (hdr_r[(lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1-:(((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 1 - ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))] == sv2v_cast_755DA(1)) begin
 					state_n = eStart;
 					if (debug_level_lp &gt; 1)
 						$display(&#34;## bsg_tag_master PACKET END (%m)&#34;);
 				end
-				hdr_n[((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1-:((((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 1 - (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))] = hdr_r[((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1-:((((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 1 - (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))] - 1;
+				hdr_n[(lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1-:(((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 1 - ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))] = hdr_r[(lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1-:(((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1) &gt;= 0 ? (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) : 1 - ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))] - 1;
 			end
 			eStuck: state_n = eStuck;
 			default: begin
@@ -139,7 +147,7 @@ module bsg_tag_master (
 		endcase
 	end
 	genvar i;
-	wire [els_p - 1:0] clients_decode = v_n &lt;&lt; hdr_r[(((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))-:(((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))) &gt;= (1 + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) ? (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1))) - (1 + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p))) + 1 : ((1 + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + (((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) + -1)))) + 1)];
+	wire [els_p - 1:0] clients_decode = v_n &lt;&lt; hdr_r[((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))-:((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))) &gt;= (1 + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) ? ((((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1))) - (1 + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p))) + 1 : ((1 + (lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p)) - (((els_p == 1 ? 1 : $clog2(els_p)) &gt;= 1 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + (1 + ((lg_width_p &gt;= 1 ? lg_width_p : 2 - lg_width_p) + -1)))) + 1)];
 	generate
 		for (i = 0; i &lt; els_p; i = i + 1) begin : rof
 			always @(posedge clk_i) begin
@@ -150,14 +158,6 @@ module bsg_tag_master (
 			always @(*) clients_r_o[i].en = en_i;
 		end
 	endgenerate
-	function automatic [lg_width_p - 1:0] sv2v_cast_755DA;
-		input reg [lg_width_p - 1:0] inp;
-		sv2v_cast_755DA = inp;
-	endfunction
-	function automatic [(((((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)))) + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)))) + 1)) - 1:0] sv2v_cast_C78C0;
-		input reg [(((((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)))) + 1) == 1 ? 1 : $clog2((((1 &lt;&lt; lg_width_p) - 1) + (((((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)) - 1) &gt;= 0 ? ((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p) : 2 - (((((els_p == 1 ? 1 : $clog2(els_p)) - 1) &gt;= 0 ? (els_p == 1 ? 1 : $clog2(els_p)) : 2 - (els_p == 1 ? 1 : $clog2(els_p))) + 1) + ((lg_width_p - 1) &gt;= 0 ? lg_width_p : 2 - lg_width_p)))) + 1)) - 1:0] inp;
-		sv2v_cast_C78C0 = inp;
-	endfunction
 endmodule
 
 </pre>

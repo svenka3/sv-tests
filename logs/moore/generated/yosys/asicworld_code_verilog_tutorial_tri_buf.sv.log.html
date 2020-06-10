@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,33 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v</a>
 time_elapsed: 0.004s
-ram usage: 9876 KB
+ram usage: 10640 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e tri_buf <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html#l-7" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v:7</a>:27-31:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #27)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html#l-3" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v:3</a>:9-10:
    | 
-   | assign b = (enable) ? a : 1&#39;bz;
-   |                           ^^^^ 
-   = note: Casts `1&#39;bz` from `bit [0:0]` to `logic [0:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v.html#l-7" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_tri_buf.v:7</a>:27-31:
-   | 
-   | assign b = (enable) ? a : 1&#39;bz;
-   |                           ^^^^ 
+   |  output b;
+   |         ^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-entity @tri_buf (i1$ %a, i1$ %enable) -&gt; (i1$ %b) {
-    %enable1 = prb i1$ %enable
-    %0 = const i1 0
-    %1 = neq i1 %enable1, %0
-    %a1 = prb i1$ %a
-    %2 = [i1 %0, %a1]
-    %3 = mux [2 x i1] %2, i1 %1
-    %4 = const time 0s 1e
-    drv i1$ %b, %3, %4
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #27)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

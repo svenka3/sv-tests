@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_banked_crossbar.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_banked_crossbar.v</a>
-time_elapsed: 0.928s
-ram usage: 17868 KB
+time_elapsed: 0.704s
+ram usage: 18060 KB
 </pre>
 <pre class="log">
 
@@ -42,17 +42,21 @@ module bsg_crossbar_control_o_by_i (
 	input reset_i;
 	input reverse_pr_i;
 	input [i_els_p - 1:0] valid_i;
-	input [((i_els_p - 1) &gt;= 0 ? ((lg_o_els_lp - 1) &gt;= 0 ? (i_els_p * lg_o_els_lp) + -1 : (i_els_p * (2 - lg_o_els_lp)) + ((lg_o_els_lp - 1) - 1)) : ((lg_o_els_lp - 1) &gt;= 0 ? ((2 - i_els_p) * lg_o_els_lp) + (((i_els_p - 1) * lg_o_els_lp) - 1) : ((2 - i_els_p) * (2 - lg_o_els_lp)) + (((lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))) - 1))):((i_els_p - 1) &gt;= 0 ? ((lg_o_els_lp - 1) &gt;= 0 ? 0 : lg_o_els_lp - 1) : ((lg_o_els_lp - 1) &gt;= 0 ? (i_els_p - 1) * lg_o_els_lp : (lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))))] sel_io_i;
+	input [(i_els_p &gt;= 1 ? (lg_o_els_lp &gt;= 1 ? (i_els_p * lg_o_els_lp) + -1 : (i_els_p * (2 - lg_o_els_lp)) + ((lg_o_els_lp - 1) - 1)) : (lg_o_els_lp &gt;= 1 ? ((2 - i_els_p) * lg_o_els_lp) + (((i_els_p - 1) * lg_o_els_lp) - 1) : ((2 - i_els_p) * (2 - lg_o_els_lp)) + (((lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))) - 1))):(i_els_p &gt;= 1 ? (lg_o_els_lp &gt;= 1 ? 0 : lg_o_els_lp - 1) : (lg_o_els_lp &gt;= 1 ? (i_els_p - 1) * lg_o_els_lp : (lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))))] sel_io_i;
 	output [i_els_p - 1:0] yumi_o;
 	input [o_els_p - 1:0] ready_i;
 	output [o_els_p - 1:0] valid_o;
-	output [((o_els_p - 1) &gt;= 0 ? ((i_els_p - 1) &gt;= 0 ? (o_els_p * i_els_p) + -1 : (o_els_p * (2 - i_els_p)) + ((i_els_p - 1) - 1)) : ((i_els_p - 1) &gt;= 0 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):((o_els_p - 1) &gt;= 0 ? ((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) : ((i_els_p - 1) &gt;= 0 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] grants_oi_one_hot_o;
-	wire [((i_els_p - 1) &gt;= 0 ? ((o_els_p - 1) &gt;= 0 ? (i_els_p * o_els_p) + -1 : (i_els_p * (2 - o_els_p)) + ((o_els_p - 1) - 1)) : ((o_els_p - 1) &gt;= 0 ? ((2 - i_els_p) * o_els_p) + (((i_els_p - 1) * o_els_p) - 1) : ((2 - i_els_p) * (2 - o_els_p)) + (((o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))) - 1))):((i_els_p - 1) &gt;= 0 ? ((o_els_p - 1) &gt;= 0 ? 0 : o_els_p - 1) : ((o_els_p - 1) &gt;= 0 ? (i_els_p - 1) * o_els_p : (o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))))] sel_io_one_hot;
-	wire [((i_els_p - 1) &gt;= 0 ? ((o_els_p - 1) &gt;= 0 ? (i_els_p * o_els_p) + -1 : (i_els_p * (2 - o_els_p)) + ((o_els_p - 1) - 1)) : ((o_els_p - 1) &gt;= 0 ? ((2 - i_els_p) * o_els_p) + (((i_els_p - 1) * o_els_p) - 1) : ((2 - i_els_p) * (2 - o_els_p)) + (((o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))) - 1))):((i_els_p - 1) &gt;= 0 ? ((o_els_p - 1) &gt;= 0 ? 0 : o_els_p - 1) : ((o_els_p - 1) &gt;= 0 ? (i_els_p - 1) * o_els_p : (o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))))] grants_io_one_hot;
-	wire [((o_els_p - 1) &gt;= 0 ? ((i_els_p - 1) &gt;= 0 ? (o_els_p * i_els_p) + -1 : (o_els_p * (2 - i_els_p)) + ((i_els_p - 1) - 1)) : ((i_els_p - 1) &gt;= 0 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):((o_els_p - 1) &gt;= 0 ? ((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) : ((i_els_p - 1) &gt;= 0 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] sel_oi_one_hot;
+	output [(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? (o_els_p * i_els_p) + -1 : (o_els_p * (2 - i_els_p)) + ((i_els_p - 1) - 1)) : (i_els_p &gt;= 1 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? 0 : i_els_p - 1) : (i_els_p &gt;= 1 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] grants_oi_one_hot_o;
+	wire [(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? (i_els_p * o_els_p) + -1 : (i_els_p * (2 - o_els_p)) + ((o_els_p - 1) - 1)) : (o_els_p &gt;= 1 ? ((2 - i_els_p) * o_els_p) + (((i_els_p - 1) * o_els_p) - 1) : ((2 - i_els_p) * (2 - o_els_p)) + (((o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))) - 1))):(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? 0 : o_els_p - 1) : (o_els_p &gt;= 1 ? (i_els_p - 1) * o_els_p : (o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))))] sel_io_one_hot;
+	wire [(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? (i_els_p * o_els_p) + -1 : (i_els_p * (2 - o_els_p)) + ((o_els_p - 1) - 1)) : (o_els_p &gt;= 1 ? ((2 - i_els_p) * o_els_p) + (((i_els_p - 1) * o_els_p) - 1) : ((2 - i_els_p) * (2 - o_els_p)) + (((o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))) - 1))):(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? 0 : o_els_p - 1) : (o_els_p &gt;= 1 ? (i_els_p - 1) * o_els_p : (o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))))] grants_io_one_hot;
+	wire [(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? (o_els_p * i_els_p) + -1 : (o_els_p * (2 - i_els_p)) + ((i_els_p - 1) - 1)) : (i_els_p &gt;= 1 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? 0 : i_els_p - 1) : (i_els_p &gt;= 1 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] sel_oi_one_hot;
 	genvar i;
+	function automatic [o_els_p - 1:0] sv2v_cast_FE339;
+		input reg [o_els_p - 1:0] inp;
+		sv2v_cast_FE339 = inp;
+	endfunction
 	generate
-		for (i = 0; i &lt; i_els_p; i = i + 1) assign sel_io_one_hot[((o_els_p - 1) &gt;= 0 ? 0 : o_els_p - 1) + (((i_els_p - 1) &gt;= 0 ? i : 0 - (i - (i_els_p - 1))) * ((o_els_p - 1) &gt;= 0 ? o_els_p : 2 - o_els_p))+:((o_els_p - 1) &gt;= 0 ? o_els_p : 2 - o_els_p)] = (valid_i[i] ? sv2v_cast_FE339(1 &lt;&lt; sel_io_i[((lg_o_els_lp - 1) &gt;= 0 ? 0 : lg_o_els_lp - 1) + (((i_els_p - 1) &gt;= 0 ? i : 0 - (i - (i_els_p - 1))) * ((lg_o_els_lp - 1) &gt;= 0 ? lg_o_els_lp : 2 - lg_o_els_lp))+:((lg_o_els_lp - 1) &gt;= 0 ? lg_o_els_lp : 2 - lg_o_els_lp)]) : sv2v_cast_FE339(0));
+		for (i = 0; i &lt; i_els_p; i = i + 1) assign sel_io_one_hot[(o_els_p &gt;= 1 ? 0 : o_els_p - 1) + ((i_els_p &gt;= 1 ? i : 0 - (i - (i_els_p - 1))) * (o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p))+:(o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p)] = (valid_i[i] ? sv2v_cast_FE339(1 &lt;&lt; sel_io_i[(lg_o_els_lp &gt;= 1 ? 0 : lg_o_els_lp - 1) + ((i_els_p &gt;= 1 ? i : 0 - (i - (i_els_p - 1))) * (lg_o_els_lp &gt;= 1 ? lg_o_els_lp : 2 - lg_o_els_lp))+:(lg_o_els_lp &gt;= 1 ? lg_o_els_lp : 2 - lg_o_els_lp)]) : sv2v_cast_FE339(0));
 	endgenerate
 	bsg_transpose #(
 		.width_p(o_els_p),
@@ -72,8 +76,8 @@ module bsg_crossbar_control_o_by_i (
 					.clk_i(clk_i),
 					.reset_i(reset_i),
 					.grants_en_i(ready_i[i]),
-					.reqs_i(sel_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)]),
-					.grants_o(grants_oi_one_hot_o[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)]),
+					.reqs_i(sel_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
+					.grants_o(grants_oi_one_hot_o[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
 					.sel_one_hot_o(),
 					.v_o(valid_o[i]),
 					.tag_o(),
@@ -81,25 +85,25 @@ module bsg_crossbar_control_o_by_i (
 				);
 			end
 			else if (rr_lo_hi_p == 5) begin : dynamic
-				wire [((i_els_p - 1) &gt;= 0 ? (2 * i_els_p) + -1 : (2 * (2 - i_els_p)) + ((i_els_p - 1) - 1)):((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1)] grants_oi_one_hot;
+				wire [(i_els_p &gt;= 1 ? (2 * i_els_p) + -1 : (2 * (2 - i_els_p)) + ((i_els_p - 1) - 1)):(i_els_p &gt;= 1 ? 0 : i_els_p - 1)] grants_oi_one_hot;
 				bsg_arb_fixed #(
 					.inputs_p(i_els_p),
 					.lo_to_hi_p(1&#39;b0)
 				) fixed_arb_low(
 					.ready_i(ready_i[i]),
-					.reqs_i(sel_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)]),
-					.grants_o(grants_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1)+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)])
+					.reqs_i(sel_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
+					.grants_o(grants_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1)+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)])
 				);
 				bsg_arb_fixed #(
 					.inputs_p(i_els_p),
 					.lo_to_hi_p(1&#39;b1)
 				) fixed_arb_high(
 					.ready_i(ready_i[i]),
-					.reqs_i(sel_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)]),
-					.grants_o(grants_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)])
+					.reqs_i(sel_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
+					.grants_o(grants_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)])
 				);
-				assign grants_oi_one_hot_o[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)] = (reverse_pr_i ? grants_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)] : grants_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1)+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)]);
-				assign valid_o[i] = |grants_oi_one_hot_o[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)];
+				assign grants_oi_one_hot_o[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)] = (reverse_pr_i ? grants_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)] : grants_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1)+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]);
+				assign valid_o[i] = |grants_oi_one_hot_o[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)];
 			end
 			else begin : fixed
 				bsg_arb_fixed #(
@@ -107,10 +111,10 @@ module bsg_crossbar_control_o_by_i (
 					.lo_to_hi_p(rr_lo_hi_p &amp; 1&#39;b1)
 				) fixed_arb(
 					.ready_i(ready_i[i]),
-					.reqs_i(sel_oi_one_hot[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)]),
-					.grants_o(grants_oi_one_hot_o[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)])
+					.reqs_i(sel_oi_one_hot[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
+					.grants_o(grants_oi_one_hot_o[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)])
 				);
-				assign valid_o[i] = |grants_oi_one_hot_o[((i_els_p - 1) &gt;= 0 ? 0 : i_els_p - 1) + (((o_els_p - 1) &gt;= 0 ? i : 0 - (i - (o_els_p - 1))) * ((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p))+:((i_els_p - 1) &gt;= 0 ? i_els_p : 2 - i_els_p)];
+				assign valid_o[i] = |grants_oi_one_hot_o[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : 0 - (i - (o_els_p - 1))) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)];
 			end
 		end
 	endgenerate
@@ -122,12 +126,8 @@ module bsg_crossbar_control_o_by_i (
 		.o(grants_io_one_hot)
 	);
 	generate
-		for (i = 0; i &lt; i_els_p; i = i + 1) assign yumi_o[i] = valid_i[i] &amp; |grants_io_one_hot[((o_els_p - 1) &gt;= 0 ? 0 : o_els_p - 1) + (((i_els_p - 1) &gt;= 0 ? i : 0 - (i - (i_els_p - 1))) * ((o_els_p - 1) &gt;= 0 ? o_els_p : 2 - o_els_p))+:((o_els_p - 1) &gt;= 0 ? o_els_p : 2 - o_els_p)];
+		for (i = 0; i &lt; i_els_p; i = i + 1) assign yumi_o[i] = valid_i[i] &amp; |grants_io_one_hot[(o_els_p &gt;= 1 ? 0 : o_els_p - 1) + ((i_els_p &gt;= 1 ? i : 0 - (i - (i_els_p - 1))) * (o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p))+:(o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p)];
 	endgenerate
-	function automatic [o_els_p - 1:0] sv2v_cast_FE339;
-		input reg [o_els_p - 1:0] inp;
-		sv2v_cast_FE339 = inp;
-	endfunction
 endmodule
 module bsg_mem_banked_crossbar (
 	clk_i,
@@ -158,36 +158,35 @@ module bsg_mem_banked_crossbar (
 	input reverse_pr_i;
 	input [num_ports_p - 1:0] v_i;
 	input [num_ports_p - 1:0] w_i;
-	input [((num_ports_p - 1) &gt;= 0 ? ((addr_width_lp - 1) &gt;= 0 ? (num_ports_p * addr_width_lp) + -1 : (num_ports_p * (2 - addr_width_lp)) + ((addr_width_lp - 1) - 1)) : ((addr_width_lp - 1) &gt;= 0 ? ((2 - num_ports_p) * addr_width_lp) + (((num_ports_p - 1) * addr_width_lp) - 1) : ((2 - num_ports_p) * (2 - addr_width_lp)) + (((addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((addr_width_lp - 1) &gt;= 0 ? 0 : addr_width_lp - 1) : ((addr_width_lp - 1) &gt;= 0 ? (num_ports_p - 1) * addr_width_lp : (addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))))] addr_i;
-	input [((num_ports_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_ports_p * data_width_p) + -1 : (num_ports_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_ports_p) * data_width_p) + (((num_ports_p - 1) * data_width_p) - 1) : ((2 - num_ports_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_ports_p - 1) * data_width_p : (data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))))] data_i;
-	input [((num_ports_p - 1) &gt;= 0 ? ((mask_width_lp - 1) &gt;= 0 ? (num_ports_p * mask_width_lp) + -1 : (num_ports_p * (2 - mask_width_lp)) + ((mask_width_lp - 1) - 1)) : ((mask_width_lp - 1) &gt;= 0 ? ((2 - num_ports_p) * mask_width_lp) + (((num_ports_p - 1) * mask_width_lp) - 1) : ((2 - num_ports_p) * (2 - mask_width_lp)) + (((mask_width_lp - 1) + ((num_ports_p - 1) * (2 - mask_width_lp))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((mask_width_lp - 1) &gt;= 0 ? 0 : mask_width_lp - 1) : ((mask_width_lp - 1) &gt;= 0 ? (num_ports_p - 1) * mask_width_lp : (mask_width_lp - 1) + ((num_ports_p - 1) * (2 - mask_width_lp))))] mask_i;
+	input [(num_ports_p &gt;= 1 ? (addr_width_lp &gt;= 1 ? (num_ports_p * addr_width_lp) + -1 : (num_ports_p * (2 - addr_width_lp)) + ((addr_width_lp - 1) - 1)) : (addr_width_lp &gt;= 1 ? ((2 - num_ports_p) * addr_width_lp) + (((num_ports_p - 1) * addr_width_lp) - 1) : ((2 - num_ports_p) * (2 - addr_width_lp)) + (((addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))) - 1))):(num_ports_p &gt;= 1 ? (addr_width_lp &gt;= 1 ? 0 : addr_width_lp - 1) : (addr_width_lp &gt;= 1 ? (num_ports_p - 1) * addr_width_lp : (addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))))] addr_i;
+	input [(num_ports_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_ports_p * data_width_p) + -1 : (num_ports_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_ports_p) * data_width_p) + (((num_ports_p - 1) * data_width_p) - 1) : ((2 - num_ports_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))) - 1))):(num_ports_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_ports_p - 1) * data_width_p : (data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))))] data_i;
+	input [(num_ports_p &gt;= 1 ? (mask_width_lp &gt;= 1 ? (num_ports_p * mask_width_lp) + -1 : (num_ports_p * (2 - mask_width_lp)) + ((mask_width_lp - 1) - 1)) : (mask_width_lp &gt;= 1 ? ((2 - num_ports_p) * mask_width_lp) + (((num_ports_p - 1) * mask_width_lp) - 1) : ((2 - num_ports_p) * (2 - mask_width_lp)) + (((mask_width_lp - 1) + ((num_ports_p - 1) * (2 - mask_width_lp))) - 1))):(num_ports_p &gt;= 1 ? (mask_width_lp &gt;= 1 ? 0 : mask_width_lp - 1) : (mask_width_lp &gt;= 1 ? (num_ports_p - 1) * mask_width_lp : (mask_width_lp - 1) + ((num_ports_p - 1) * (2 - mask_width_lp))))] mask_i;
 	output [num_ports_p - 1:0] yumi_o;
 	output [num_ports_p - 1:0] v_o;
-	output [((num_ports_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_ports_p * data_width_p) + -1 : (num_ports_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_ports_p) * data_width_p) + (((num_ports_p - 1) * data_width_p) - 1) : ((2 - num_ports_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_ports_p - 1) * data_width_p : (data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))))] data_o;
+	output [(num_ports_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_ports_p * data_width_p) + -1 : (num_ports_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_ports_p) * data_width_p) + (((num_ports_p - 1) * data_width_p) - 1) : ((2 - num_ports_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))) - 1))):(num_ports_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_ports_p - 1) * data_width_p : (data_width_p - 1) + ((num_ports_p - 1) * (2 - data_width_p))))] data_o;
 	localparam debug_lp = debug_p;
 	localparam debug_reads_lp = debug_reads_p;
-	initial ;
-	wire [((num_ports_p - 1) &gt;= 0 ? ((addr_hash_width_lp - 1) &gt;= 0 ? (num_ports_p * addr_hash_width_lp) + -1 : (num_ports_p * (2 - addr_hash_width_lp)) + ((addr_hash_width_lp - 1) - 1)) : ((addr_hash_width_lp - 1) &gt;= 0 ? ((2 - num_ports_p) * addr_hash_width_lp) + (((num_ports_p - 1) * addr_hash_width_lp) - 1) : ((2 - num_ports_p) * (2 - addr_hash_width_lp)) + (((addr_hash_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_hash_width_lp))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((addr_hash_width_lp - 1) &gt;= 0 ? 0 : addr_hash_width_lp - 1) : ((addr_hash_width_lp - 1) &gt;= 0 ? (num_ports_p - 1) * addr_hash_width_lp : (addr_hash_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_hash_width_lp))))] bank_reqs;
+	wire [(num_ports_p &gt;= 1 ? (addr_hash_width_lp &gt;= 1 ? (num_ports_p * addr_hash_width_lp) + -1 : (num_ports_p * (2 - addr_hash_width_lp)) + ((addr_hash_width_lp - 1) - 1)) : (addr_hash_width_lp &gt;= 1 ? ((2 - num_ports_p) * addr_hash_width_lp) + (((num_ports_p - 1) * addr_hash_width_lp) - 1) : ((2 - num_ports_p) * (2 - addr_hash_width_lp)) + (((addr_hash_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_hash_width_lp))) - 1))):(num_ports_p &gt;= 1 ? (addr_hash_width_lp &gt;= 1 ? 0 : addr_hash_width_lp - 1) : (addr_hash_width_lp &gt;= 1 ? (num_ports_p - 1) * addr_hash_width_lp : (addr_hash_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_hash_width_lp))))] bank_reqs;
 	genvar i;
-	reg [((num_ports_p - 1) &gt;= 0 ? ((addr_width_lp - 1) &gt;= 0 ? (num_ports_p * addr_width_lp) + -1 : (num_ports_p * (2 - addr_width_lp)) + ((addr_width_lp - 1) - 1)) : ((addr_width_lp - 1) &gt;= 0 ? ((2 - num_ports_p) * addr_width_lp) + (((num_ports_p - 1) * addr_width_lp) - 1) : ((2 - num_ports_p) * (2 - addr_width_lp)) + (((addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((addr_width_lp - 1) &gt;= 0 ? 0 : addr_width_lp - 1) : ((addr_width_lp - 1) &gt;= 0 ? (num_ports_p - 1) * addr_width_lp : (addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))))] addr_r;
+	reg [(num_ports_p &gt;= 1 ? (addr_width_lp &gt;= 1 ? (num_ports_p * addr_width_lp) + -1 : (num_ports_p * (2 - addr_width_lp)) + ((addr_width_lp - 1) - 1)) : (addr_width_lp &gt;= 1 ? ((2 - num_ports_p) * addr_width_lp) + (((num_ports_p - 1) * addr_width_lp) - 1) : ((2 - num_ports_p) * (2 - addr_width_lp)) + (((addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))) - 1))):(num_ports_p &gt;= 1 ? (addr_width_lp &gt;= 1 ? 0 : addr_width_lp - 1) : (addr_width_lp &gt;= 1 ? (num_ports_p - 1) * addr_width_lp : (addr_width_lp - 1) + ((num_ports_p - 1) * (2 - addr_width_lp))))] addr_r;
 	always @(posedge clk_i) addr_r &lt;= addr_i;
 	generate
 		for (i = 0; i &lt; num_ports_p; i = i + 1) if (debug_lp &gt; 1) always @(negedge clk_i) begin
 			if (v_i[i] &amp; yumi_o[i])
 				if (w_i[i])
-					$display(&#34;%m port %d [%x]=%x (mask_i=%b)&#34;, i, addr_i[((addr_width_lp - 1) &gt;= 0 ? 0 : addr_width_lp - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp))+:((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp)] * debug_lp, data_i[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)], mask_i[((mask_width_lp - 1) &gt;= 0 ? 0 : mask_width_lp - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((mask_width_lp - 1) &gt;= 0 ? mask_width_lp : 2 - mask_width_lp))+:((mask_width_lp - 1) &gt;= 0 ? mask_width_lp : 2 - mask_width_lp)]);
+					$display(&#34;%m port %d [%x]=%x (mask_i=%b)&#34;, i, addr_i[(addr_width_lp &gt;= 1 ? 0 : addr_width_lp - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp))+:(addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp)] * debug_lp, data_i[(data_width_p &gt;= 1 ? 0 : data_width_p - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p))+:(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)], mask_i[(mask_width_lp &gt;= 1 ? 0 : mask_width_lp - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (mask_width_lp &gt;= 1 ? mask_width_lp : 2 - mask_width_lp))+:(mask_width_lp &gt;= 1 ? mask_width_lp : 2 - mask_width_lp)]);
 				else if (debug_reads_lp)
-					$display(&#34;%m port %d           = [%x]&#34;, i, addr_i[((addr_width_lp - 1) &gt;= 0 ? 0 : addr_width_lp - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp))+:((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp)] * debug_lp);
+					$display(&#34;%m port %d           = [%x]&#34;, i, addr_i[(addr_width_lp &gt;= 1 ? 0 : addr_width_lp - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp))+:(addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp)] * debug_lp);
 			if (v_o[i] &amp;&amp; debug_reads_lp)
-				$display(&#34;%m port %d  %x = [%x]&#34;, i, data_o[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)], addr_r[((addr_width_lp - 1) &gt;= 0 ? 0 : addr_width_lp - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp))+:((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp)] * debug_lp);
+				$display(&#34;%m port %d  %x = [%x]&#34;, i, data_o[(data_width_p &gt;= 1 ? 0 : data_width_p - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p))+:(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)], addr_r[(addr_width_lp &gt;= 1 ? 0 : addr_width_lp - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp))+:(addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp)] * debug_lp);
 		end
 	endgenerate
 	generate
-		if (num_banks_p &gt; 1) for (i = 0; i &lt; num_ports_p; i = i + 1) assign bank_reqs[((addr_hash_width_lp - 1) &gt;= 0 ? 0 : addr_hash_width_lp - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_hash_width_lp - 1) &gt;= 0 ? addr_hash_width_lp : 2 - addr_hash_width_lp))+:((addr_hash_width_lp - 1) &gt;= 0 ? addr_hash_width_lp : 2 - addr_hash_width_lp)] = addr_i[((addr_width_lp - 1) &gt;= 0 ? (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp)) + ((addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 0 - (bank_addr_width_lp - (addr_width_lp - 1))) : (((((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp)) + ((addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 0 - (bank_addr_width_lp - (addr_width_lp - 1)))) - addr_hash_width_lp) + 1)+:addr_hash_width_lp];
+		if (num_banks_p &gt; 1) for (i = 0; i &lt; num_ports_p; i = i + 1) assign bank_reqs[(addr_hash_width_lp &gt;= 1 ? 0 : addr_hash_width_lp - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_hash_width_lp &gt;= 1 ? addr_hash_width_lp : 2 - addr_hash_width_lp))+:(addr_hash_width_lp &gt;= 1 ? addr_hash_width_lp : 2 - addr_hash_width_lp)] = addr_i[(addr_width_lp &gt;= 1 ? ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp)) + (addr_width_lp &gt;= 1 ? bank_addr_width_lp : 0 - (bank_addr_width_lp - (addr_width_lp - 1))) : ((((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp)) + (addr_width_lp &gt;= 1 ? bank_addr_width_lp : 0 - (bank_addr_width_lp - (addr_width_lp - 1)))) - addr_hash_width_lp) + 1)+:addr_hash_width_lp];
 		else assign bank_reqs = 1&#39;b0;
 	endgenerate
-	wire [((num_banks_p - 1) &gt;= 0 ? ((num_ports_p - 1) &gt;= 0 ? (num_banks_p * num_ports_p) + -1 : (num_banks_p * (2 - num_ports_p)) + ((num_ports_p - 1) - 1)) : ((num_ports_p - 1) &gt;= 0 ? ((2 - num_banks_p) * num_ports_p) + (((num_banks_p - 1) * num_ports_p) - 1) : ((2 - num_banks_p) * (2 - num_ports_p)) + (((num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))) - 1))):((num_banks_p - 1) &gt;= 0 ? ((num_ports_p - 1) &gt;= 0 ? 0 : num_ports_p - 1) : ((num_ports_p - 1) &gt;= 0 ? (num_banks_p - 1) * num_ports_p : (num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))))] bank_port_grants_one_hot;
-	reg [((num_banks_p - 1) &gt;= 0 ? ((num_ports_p - 1) &gt;= 0 ? (num_banks_p * num_ports_p) + -1 : (num_banks_p * (2 - num_ports_p)) + ((num_ports_p - 1) - 1)) : ((num_ports_p - 1) &gt;= 0 ? ((2 - num_banks_p) * num_ports_p) + (((num_banks_p - 1) * num_ports_p) - 1) : ((2 - num_banks_p) * (2 - num_ports_p)) + (((num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))) - 1))):((num_banks_p - 1) &gt;= 0 ? ((num_ports_p - 1) &gt;= 0 ? 0 : num_ports_p - 1) : ((num_ports_p - 1) &gt;= 0 ? (num_banks_p - 1) * num_ports_p : (num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))))] bank_port_grants_one_hot_r;
+	wire [(num_banks_p &gt;= 1 ? (num_ports_p &gt;= 1 ? (num_banks_p * num_ports_p) + -1 : (num_banks_p * (2 - num_ports_p)) + ((num_ports_p - 1) - 1)) : (num_ports_p &gt;= 1 ? ((2 - num_banks_p) * num_ports_p) + (((num_banks_p - 1) * num_ports_p) - 1) : ((2 - num_banks_p) * (2 - num_ports_p)) + (((num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))) - 1))):(num_banks_p &gt;= 1 ? (num_ports_p &gt;= 1 ? 0 : num_ports_p - 1) : (num_ports_p &gt;= 1 ? (num_banks_p - 1) * num_ports_p : (num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))))] bank_port_grants_one_hot;
+	reg [(num_banks_p &gt;= 1 ? (num_ports_p &gt;= 1 ? (num_banks_p * num_ports_p) + -1 : (num_banks_p * (2 - num_ports_p)) + ((num_ports_p - 1) - 1)) : (num_ports_p &gt;= 1 ? ((2 - num_banks_p) * num_ports_p) + (((num_banks_p - 1) * num_ports_p) - 1) : ((2 - num_banks_p) * (2 - num_ports_p)) + (((num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))) - 1))):(num_banks_p &gt;= 1 ? (num_ports_p &gt;= 1 ? 0 : num_ports_p - 1) : (num_ports_p &gt;= 1 ? (num_banks_p - 1) * num_ports_p : (num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))))] bank_port_grants_one_hot_r;
 	wire [num_banks_p - 1:0] bank_v;
 	reg [num_banks_p - 1:0] bank_v_r;
 	bsg_crossbar_control_o_by_i #(
@@ -205,8 +204,8 @@ module bsg_mem_banked_crossbar (
 		.valid_o(bank_v),
 		.grants_oi_one_hot_o(bank_port_grants_one_hot)
 	);
-	wire [((num_banks_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_banks_p * data_width_p) + -1 : (num_banks_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_banks_p) * data_width_p) + (((num_banks_p - 1) * data_width_p) - 1) : ((2 - num_banks_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))) - 1))):((num_banks_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_banks_p - 1) * data_width_p : (data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))))] bank_data;
-	wire [((num_banks_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_banks_p * data_width_p) + -1 : (num_banks_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_banks_p) * data_width_p) + (((num_banks_p - 1) * data_width_p) - 1) : ((2 - num_banks_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))) - 1))):((num_banks_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_banks_p - 1) * data_width_p : (data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))))] bank_data_out;
+	wire [(num_banks_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_banks_p * data_width_p) + -1 : (num_banks_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_banks_p) * data_width_p) + (((num_banks_p - 1) * data_width_p) - 1) : ((2 - num_banks_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))) - 1))):(num_banks_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_banks_p - 1) * data_width_p : (data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))))] bank_data;
+	wire [(num_banks_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_banks_p * data_width_p) + -1 : (num_banks_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_banks_p) * data_width_p) + (((num_banks_p - 1) * data_width_p) - 1) : ((2 - num_banks_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))) - 1))):(num_banks_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_banks_p - 1) * data_width_p : (data_width_p - 1) + ((num_banks_p - 1) * (2 - data_width_p))))] bank_data_out;
 	bsg_crossbar_o_by_i #(
 		.i_els_p(num_ports_p),
 		.o_els_p(num_banks_p),
@@ -216,11 +215,11 @@ module bsg_mem_banked_crossbar (
 		.sel_oi_one_hot_i(bank_port_grants_one_hot),
 		.o(bank_data)
 	);
-	wire [((num_ports_p - 1) &gt;= 0 ? ((bank_addr_width_lp - 1) &gt;= 0 ? (num_ports_p * bank_addr_width_lp) + -1 : (num_ports_p * (2 - bank_addr_width_lp)) + ((bank_addr_width_lp - 1) - 1)) : ((bank_addr_width_lp - 1) &gt;= 0 ? ((2 - num_ports_p) * bank_addr_width_lp) + (((num_ports_p - 1) * bank_addr_width_lp) - 1) : ((2 - num_ports_p) * (2 - bank_addr_width_lp)) + (((bank_addr_width_lp - 1) + ((num_ports_p - 1) * (2 - bank_addr_width_lp))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((bank_addr_width_lp - 1) &gt;= 0 ? 0 : bank_addr_width_lp - 1) : ((bank_addr_width_lp - 1) &gt;= 0 ? (num_ports_p - 1) * bank_addr_width_lp : (bank_addr_width_lp - 1) + ((num_ports_p - 1) * (2 - bank_addr_width_lp))))] bank_req_addr;
+	wire [(num_ports_p &gt;= 1 ? (bank_addr_width_lp &gt;= 1 ? (num_ports_p * bank_addr_width_lp) + -1 : (num_ports_p * (2 - bank_addr_width_lp)) + ((bank_addr_width_lp - 1) - 1)) : (bank_addr_width_lp &gt;= 1 ? ((2 - num_ports_p) * bank_addr_width_lp) + (((num_ports_p - 1) * bank_addr_width_lp) - 1) : ((2 - num_ports_p) * (2 - bank_addr_width_lp)) + (((bank_addr_width_lp - 1) + ((num_ports_p - 1) * (2 - bank_addr_width_lp))) - 1))):(num_ports_p &gt;= 1 ? (bank_addr_width_lp &gt;= 1 ? 0 : bank_addr_width_lp - 1) : (bank_addr_width_lp &gt;= 1 ? (num_ports_p - 1) * bank_addr_width_lp : (bank_addr_width_lp - 1) + ((num_ports_p - 1) * (2 - bank_addr_width_lp))))] bank_req_addr;
 	generate
-		for (i = 0; i &lt; num_ports_p; i = i + 1) assign bank_req_addr[((bank_addr_width_lp - 1) &gt;= 0 ? 0 : bank_addr_width_lp - 1) + (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp)] = addr_i[((addr_width_lp - 1) &gt;= 0 ? (((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp)) + ((addr_width_lp - 1) &gt;= 0 ? 0 : addr_width_lp - 1) : (((((num_ports_p - 1) &gt;= 0 ? i : 0 - (i - (num_ports_p - 1))) * ((addr_width_lp - 1) &gt;= 0 ? addr_width_lp : 2 - addr_width_lp)) + ((addr_width_lp - 1) &gt;= 0 ? 0 : addr_width_lp - 1)) - bank_addr_width_lp) + 1)+:bank_addr_width_lp];
+		for (i = 0; i &lt; num_ports_p; i = i + 1) assign bank_req_addr[(bank_addr_width_lp &gt;= 1 ? 0 : bank_addr_width_lp - 1) + ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:(bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp)] = addr_i[(addr_width_lp &gt;= 1 ? ((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp)) + (addr_width_lp &gt;= 1 ? 0 : addr_width_lp - 1) : ((((num_ports_p &gt;= 1 ? i : 0 - (i - (num_ports_p - 1))) * (addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp)) + (addr_width_lp &gt;= 1 ? 0 : addr_width_lp - 1)) - bank_addr_width_lp) + 1)+:bank_addr_width_lp];
 	endgenerate
-	wire [((num_banks_p - 1) &gt;= 0 ? ((bank_addr_width_lp - 1) &gt;= 0 ? (num_banks_p * bank_addr_width_lp) + -1 : (num_banks_p * (2 - bank_addr_width_lp)) + ((bank_addr_width_lp - 1) - 1)) : ((bank_addr_width_lp - 1) &gt;= 0 ? ((2 - num_banks_p) * bank_addr_width_lp) + (((num_banks_p - 1) * bank_addr_width_lp) - 1) : ((2 - num_banks_p) * (2 - bank_addr_width_lp)) + (((bank_addr_width_lp - 1) + ((num_banks_p - 1) * (2 - bank_addr_width_lp))) - 1))):((num_banks_p - 1) &gt;= 0 ? ((bank_addr_width_lp - 1) &gt;= 0 ? 0 : bank_addr_width_lp - 1) : ((bank_addr_width_lp - 1) &gt;= 0 ? (num_banks_p - 1) * bank_addr_width_lp : (bank_addr_width_lp - 1) + ((num_banks_p - 1) * (2 - bank_addr_width_lp))))] bank_addr;
+	wire [(num_banks_p &gt;= 1 ? (bank_addr_width_lp &gt;= 1 ? (num_banks_p * bank_addr_width_lp) + -1 : (num_banks_p * (2 - bank_addr_width_lp)) + ((bank_addr_width_lp - 1) - 1)) : (bank_addr_width_lp &gt;= 1 ? ((2 - num_banks_p) * bank_addr_width_lp) + (((num_banks_p - 1) * bank_addr_width_lp) - 1) : ((2 - num_banks_p) * (2 - bank_addr_width_lp)) + (((bank_addr_width_lp - 1) + ((num_banks_p - 1) * (2 - bank_addr_width_lp))) - 1))):(num_banks_p &gt;= 1 ? (bank_addr_width_lp &gt;= 1 ? 0 : bank_addr_width_lp - 1) : (bank_addr_width_lp &gt;= 1 ? (num_banks_p - 1) * bank_addr_width_lp : (bank_addr_width_lp - 1) + ((num_banks_p - 1) * (2 - bank_addr_width_lp))))] bank_addr;
 	bsg_crossbar_o_by_i #(
 		.i_els_p(num_ports_p),
 		.o_els_p(num_banks_p),
@@ -241,7 +240,7 @@ module bsg_mem_banked_crossbar (
 		.sel_oi_one_hot_i(bank_port_grants_one_hot),
 		.o(bank_w)
 	);
-	wire [((num_banks_p - 1) &gt;= 0 ? ((mask_width_lp - 1) &gt;= 0 ? (num_banks_p * mask_width_lp) + -1 : (num_banks_p * (2 - mask_width_lp)) + ((mask_width_lp - 1) - 1)) : ((mask_width_lp - 1) &gt;= 0 ? ((2 - num_banks_p) * mask_width_lp) + (((num_banks_p - 1) * mask_width_lp) - 1) : ((2 - num_banks_p) * (2 - mask_width_lp)) + (((mask_width_lp - 1) + ((num_banks_p - 1) * (2 - mask_width_lp))) - 1))):((num_banks_p - 1) &gt;= 0 ? ((mask_width_lp - 1) &gt;= 0 ? 0 : mask_width_lp - 1) : ((mask_width_lp - 1) &gt;= 0 ? (num_banks_p - 1) * mask_width_lp : (mask_width_lp - 1) + ((num_banks_p - 1) * (2 - mask_width_lp))))] bank_mask;
+	wire [(num_banks_p &gt;= 1 ? (mask_width_lp &gt;= 1 ? (num_banks_p * mask_width_lp) + -1 : (num_banks_p * (2 - mask_width_lp)) + ((mask_width_lp - 1) - 1)) : (mask_width_lp &gt;= 1 ? ((2 - num_banks_p) * mask_width_lp) + (((num_banks_p - 1) * mask_width_lp) - 1) : ((2 - num_banks_p) * (2 - mask_width_lp)) + (((mask_width_lp - 1) + ((num_banks_p - 1) * (2 - mask_width_lp))) - 1))):(num_banks_p &gt;= 1 ? (mask_width_lp &gt;= 1 ? 0 : mask_width_lp - 1) : (mask_width_lp &gt;= 1 ? (num_banks_p - 1) * mask_width_lp : (mask_width_lp - 1) + ((num_banks_p - 1) * (2 - mask_width_lp))))] bank_mask;
 	bsg_crossbar_o_by_i #(
 		.i_els_p(num_ports_p),
 		.o_els_p(num_banks_p),
@@ -256,21 +255,21 @@ module bsg_mem_banked_crossbar (
 			if (debug_lp &gt; 1) always @(negedge clk_i)
 				if (bank_v[i])
 					if (bank_w[i])
-						$display(&#34;%m [%x] &lt;= %d&#34;, bank_addr[((bank_addr_width_lp - 1) &gt;= 0 ? 0 : bank_addr_width_lp - 1) + (((num_banks_p - 1) &gt;= 0 ? i : 0 - (i - (num_banks_p - 1))) * ((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp)] * debug_p, bank_data[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((num_banks_p - 1) &gt;= 0 ? i : 0 - (i - (num_banks_p - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)]);
+						$display(&#34;%m [%x] &lt;= %d&#34;, bank_addr[(bank_addr_width_lp &gt;= 1 ? 0 : bank_addr_width_lp - 1) + ((num_banks_p &gt;= 1 ? i : 0 - (i - (num_banks_p - 1))) * (bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:(bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp)] * debug_p, bank_data[(data_width_p &gt;= 1 ? 0 : data_width_p - 1) + ((num_banks_p &gt;= 1 ? i : 0 - (i - (num_banks_p - 1))) * (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p))+:(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)]);
 					else
-						$display(&#34;%m &lt;= [%x]&#34;, bank_addr[((bank_addr_width_lp - 1) &gt;= 0 ? 0 : bank_addr_width_lp - 1) + (((num_banks_p - 1) &gt;= 0 ? i : 0 - (i - (num_banks_p - 1))) * ((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp)] * debug_p);
+						$display(&#34;%m &lt;= [%x]&#34;, bank_addr[(bank_addr_width_lp &gt;= 1 ? 0 : bank_addr_width_lp - 1) + ((num_banks_p &gt;= 1 ? i : 0 - (i - (num_banks_p - 1))) * (bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:(bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp)] * debug_p);
 			bsg_mem_1rw_sync_mask_write_byte #(
 				.data_width_p(data_width_p),
 				.els_p(bank_size_p)
 			) m1rw_mask(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
-				.data_i(bank_data[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((num_banks_p - 1) &gt;= 0 ? i : 0 - (i - (num_banks_p - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)]),
-				.addr_i(bank_addr[((bank_addr_width_lp - 1) &gt;= 0 ? 0 : bank_addr_width_lp - 1) + (((num_banks_p - 1) &gt;= 0 ? i : 0 - (i - (num_banks_p - 1))) * ((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:((bank_addr_width_lp - 1) &gt;= 0 ? bank_addr_width_lp : 2 - bank_addr_width_lp)]),
+				.data_i(bank_data[(data_width_p &gt;= 1 ? 0 : data_width_p - 1) + ((num_banks_p &gt;= 1 ? i : 0 - (i - (num_banks_p - 1))) * (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p))+:(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)]),
+				.addr_i(bank_addr[(bank_addr_width_lp &gt;= 1 ? 0 : bank_addr_width_lp - 1) + ((num_banks_p &gt;= 1 ? i : 0 - (i - (num_banks_p - 1))) * (bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp))+:(bank_addr_width_lp &gt;= 1 ? bank_addr_width_lp : 2 - bank_addr_width_lp)]),
 				.v_i(bank_v[i]),
 				.w_i(bank_w[i]),
-				.write_mask_i(bank_mask[((mask_width_lp - 1) &gt;= 0 ? 0 : mask_width_lp - 1) + (((num_banks_p - 1) &gt;= 0 ? i : 0 - (i - (num_banks_p - 1))) * ((mask_width_lp - 1) &gt;= 0 ? mask_width_lp : 2 - mask_width_lp))+:((mask_width_lp - 1) &gt;= 0 ? mask_width_lp : 2 - mask_width_lp)]),
-				.data_o(bank_data_out[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((num_banks_p - 1) &gt;= 0 ? i : 0 - (i - (num_banks_p - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)])
+				.write_mask_i(bank_mask[(mask_width_lp &gt;= 1 ? 0 : mask_width_lp - 1) + ((num_banks_p &gt;= 1 ? i : 0 - (i - (num_banks_p - 1))) * (mask_width_lp &gt;= 1 ? mask_width_lp : 2 - mask_width_lp))+:(mask_width_lp &gt;= 1 ? mask_width_lp : 2 - mask_width_lp)]),
+				.data_o(bank_data_out[(data_width_p &gt;= 1 ? 0 : data_width_p - 1) + ((num_banks_p &gt;= 1 ? i : 0 - (i - (num_banks_p - 1))) * (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p))+:(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)])
 			);
 		end
 	endgenerate
@@ -279,7 +278,7 @@ module bsg_mem_banked_crossbar (
 		bank_w_r &lt;= bank_w;
 		bank_v_r &lt;= bank_v;
 	end
-	wire [((num_ports_p - 1) &gt;= 0 ? ((num_banks_p - 1) &gt;= 0 ? (num_ports_p * num_banks_p) + -1 : (num_ports_p * (2 - num_banks_p)) + ((num_banks_p - 1) - 1)) : ((num_banks_p - 1) &gt;= 0 ? ((2 - num_ports_p) * num_banks_p) + (((num_ports_p - 1) * num_banks_p) - 1) : ((2 - num_ports_p) * (2 - num_banks_p)) + (((num_banks_p - 1) + ((num_ports_p - 1) * (2 - num_banks_p))) - 1))):((num_ports_p - 1) &gt;= 0 ? ((num_banks_p - 1) &gt;= 0 ? 0 : num_banks_p - 1) : ((num_banks_p - 1) &gt;= 0 ? (num_ports_p - 1) * num_banks_p : (num_banks_p - 1) + ((num_ports_p - 1) * (2 - num_banks_p))))] port_bank_grants_one_hot;
+	wire [(num_ports_p &gt;= 1 ? (num_banks_p &gt;= 1 ? (num_ports_p * num_banks_p) + -1 : (num_ports_p * (2 - num_banks_p)) + ((num_banks_p - 1) - 1)) : (num_banks_p &gt;= 1 ? ((2 - num_ports_p) * num_banks_p) + (((num_ports_p - 1) * num_banks_p) - 1) : ((2 - num_ports_p) * (2 - num_banks_p)) + (((num_banks_p - 1) + ((num_ports_p - 1) * (2 - num_banks_p))) - 1))):(num_ports_p &gt;= 1 ? (num_banks_p &gt;= 1 ? 0 : num_banks_p - 1) : (num_banks_p &gt;= 1 ? (num_ports_p - 1) * num_banks_p : (num_banks_p - 1) + ((num_ports_p - 1) * (2 - num_banks_p))))] port_bank_grants_one_hot;
 	bsg_transpose #(
 		.width_p(num_ports_p),
 		.els_p(num_banks_p)

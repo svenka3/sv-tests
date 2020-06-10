@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_axi.v</a>
-time_elapsed: 0.664s
-ram usage: 17924 KB
+time_elapsed: 0.820s
+ram usage: 15852 KB
 </pre>
 <pre class="log">
 
@@ -131,13 +131,13 @@ module bsg_cache_to_axi (
 	parameter axi_strb_width_lp = axi_data_width_p &gt;&gt; 3;
 	input clk_i;
 	input reset_i;
-	input [((num_cache_p - 1) &gt;= 0 ? ((dma_pkt_width_lp - 1) &gt;= 0 ? (num_cache_p * dma_pkt_width_lp) + -1 : (num_cache_p * (2 - dma_pkt_width_lp)) + ((dma_pkt_width_lp - 1) - 1)) : ((dma_pkt_width_lp - 1) &gt;= 0 ? ((2 - num_cache_p) * dma_pkt_width_lp) + (((num_cache_p - 1) * dma_pkt_width_lp) - 1) : ((2 - num_cache_p) * (2 - dma_pkt_width_lp)) + (((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((dma_pkt_width_lp - 1) &gt;= 0 ? 0 : dma_pkt_width_lp - 1) : ((dma_pkt_width_lp - 1) &gt;= 0 ? (num_cache_p - 1) * dma_pkt_width_lp : (dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))))] dma_pkt_i;
+	input [(num_cache_p &gt;= 1 ? (dma_pkt_width_lp &gt;= 1 ? (num_cache_p * dma_pkt_width_lp) + -1 : (num_cache_p * (2 - dma_pkt_width_lp)) + ((dma_pkt_width_lp - 1) - 1)) : (dma_pkt_width_lp &gt;= 1 ? ((2 - num_cache_p) * dma_pkt_width_lp) + (((num_cache_p - 1) * dma_pkt_width_lp) - 1) : ((2 - num_cache_p) * (2 - dma_pkt_width_lp)) + (((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))) - 1))):(num_cache_p &gt;= 1 ? (dma_pkt_width_lp &gt;= 1 ? 0 : dma_pkt_width_lp - 1) : (dma_pkt_width_lp &gt;= 1 ? (num_cache_p - 1) * dma_pkt_width_lp : (dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))))] dma_pkt_i;
 	input [num_cache_p - 1:0] dma_pkt_v_i;
 	output wire [num_cache_p - 1:0] dma_pkt_yumi_o;
-	output wire [((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_o;
+	output wire [(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_o;
 	output wire [num_cache_p - 1:0] dma_data_v_o;
 	input [num_cache_p - 1:0] dma_data_ready_i;
-	input [((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
+	input [(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
 	input [num_cache_p - 1:0] dma_data_v_i;
 	output wire [num_cache_p - 1:0] dma_data_yumi_o;
 	output wire [axi_id_width_p - 1:0] axi_awid_o;
@@ -175,17 +175,17 @@ module bsg_cache_to_axi (
 	input axi_rlast_i;
 	input axi_rvalid_i;
 	output wire axi_rready_o;
-	wire [((num_cache_p - 1) &gt;= 0 ? (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? (num_cache_p * (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p))) + -1 : (num_cache_p * (2 - (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)))) + (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) - 1)) : (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? ((2 - num_cache_p) * (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p))) + (((num_cache_p - 1) * (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p))) - 1) : ((2 - num_cache_p) * (2 - (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)))) + ((((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) + ((num_cache_p - 1) * (2 - (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p))))) - 1))):((num_cache_p - 1) &gt;= 0 ? (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? 0 : (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) : (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? (num_cache_p - 1) * (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) : ((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) + ((num_cache_p - 1) * (2 - (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p))))))] dma_pkt;
-	assign dma_pkt = {((num_cache_p - 1) &gt;= 0 ? num_cache_p : 2 - num_cache_p) {dma_pkt_i}};
+	wire [(num_cache_p &gt;= 1 ? ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? (num_cache_p * (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p))) + -1 : (num_cache_p * (2 - (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)))) + (((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1) - 1)) : ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? ((2 - num_cache_p) * (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p))) + (((num_cache_p - 1) * (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p))) - 1) : ((2 - num_cache_p) * (2 - (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)))) + ((((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1) + ((num_cache_p - 1) * (2 - (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p))))) - 1))):(num_cache_p &gt;= 1 ? ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? 0 : (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1) : ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? (num_cache_p - 1) * (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) : ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1) + ((num_cache_p - 1) * (2 - (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p))))))] dma_pkt;
+	assign dma_pkt = {(num_cache_p &gt;= 1 ? num_cache_p : 2 - num_cache_p) {dma_pkt_i}};
 	wire [num_cache_p - 1:0] read_rr_v_li;
 	wire [num_cache_p - 1:0] read_rr_yumi_lo;
 	wire read_rr_v_lo;
-	wire [(1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1:0] read_rr_dma_pkt;
+	wire [(1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1:0] read_rr_dma_pkt;
 	wire [lg_num_cache_lp - 1:0] read_rr_tag_lo;
 	wire read_rr_yumi_li;
 	generate
 		genvar i;
-		for (i = 0; i &lt; num_cache_p; i = i + 1) assign read_rr_v_li[i] = dma_pkt_v_i[i] &amp; ~dma_pkt[(((num_cache_p - 1) &gt;= 0 ? i : 0 - (i - (num_cache_p - 1))) * (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? 1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) : 2 - (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)))) + (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? 1 + (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1) : 0 - ((1 + (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1)) - ((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1)))];
+		for (i = 0; i &lt; num_cache_p; i = i + 1) assign read_rr_v_li[i] = dma_pkt_v_i[i] &amp; ~dma_pkt[((num_cache_p &gt;= 1 ? i : 0 - (i - (num_cache_p - 1))) * ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? 1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) : 2 - (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)))) + ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? 1 + ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1) : 0 - ((1 + ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1)) - ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1)))];
 	endgenerate
 	bsg_round_robin_n_to_1 #(
 		.width_p(dma_pkt_width_lp),
@@ -205,11 +205,11 @@ module bsg_cache_to_axi (
 	wire [num_cache_p - 1:0] write_rr_v_li;
 	wire [num_cache_p - 1:0] write_rr_yumi_lo;
 	wire write_rr_v_lo;
-	wire [(1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1:0] write_rr_dma_pkt;
+	wire [(1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1:0] write_rr_dma_pkt;
 	wire [lg_num_cache_lp - 1:0] write_rr_tag_lo;
 	wire write_rr_yumi_li;
 	generate
-		for (i = 0; i &lt; num_cache_p; i = i + 1) assign write_rr_v_li[i] = dma_pkt_v_i[i] &amp; dma_pkt[(((num_cache_p - 1) &gt;= 0 ? i : 0 - (i - (num_cache_p - 1))) * (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? 1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) : 2 - (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)))) + (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? 1 + (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1) : 0 - ((1 + (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1)) - ((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1)))];
+		for (i = 0; i &lt; num_cache_p; i = i + 1) assign write_rr_v_li[i] = dma_pkt_v_i[i] &amp; dma_pkt[((num_cache_p &gt;= 1 ? i : 0 - (i - (num_cache_p - 1))) * ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? 1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) : 2 - (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)))) + ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? 1 + ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1) : 0 - ((1 + ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1)) - ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1)))];
 	endgenerate
 	bsg_round_robin_n_to_1 #(
 		.width_p(dma_pkt_width_lp),
@@ -228,10 +228,10 @@ module bsg_cache_to_axi (
 	);
 	wire [axi_addr_width_p - 1:0] rx_axi_addr;
 	wire [axi_addr_width_p - 1:0] tx_axi_addr;
-	assign rx_axi_addr = {{(axi_addr_width_p - lg_num_cache_lp) - addr_width_p {1&#39;b0}}, read_rr_tag_lo, read_rr_dma_pkt[((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1-:((((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1) &gt;= 0 ? ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) : 1 - (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1))]};
-	assign tx_axi_addr = {{(axi_addr_width_p - lg_num_cache_lp) - addr_width_p {1&#39;b0}}, write_rr_tag_lo, write_rr_dma_pkt[((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1-:((((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1) &gt;= 0 ? ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) : 1 - (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1))]};
+	assign rx_axi_addr = {{(axi_addr_width_p - lg_num_cache_lp) - addr_width_p {1&#39;b0}}, read_rr_tag_lo, read_rr_dma_pkt[(addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1-:(((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1) &gt;= 0 ? (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) : 1 - ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1))]};
+	assign tx_axi_addr = {{(axi_addr_width_p - lg_num_cache_lp) - addr_width_p {1&#39;b0}}, write_rr_tag_lo, write_rr_dma_pkt[(addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1-:(((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1) &gt;= 0 ? (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) : 1 - ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1))]};
 	generate
-		for (i = 0; i &lt; num_cache_p; i = i + 1) assign dma_pkt_yumi_o[i] = (dma_pkt[(((num_cache_p - 1) &gt;= 0 ? i : 0 - (i - (num_cache_p - 1))) * (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? 1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) : 2 - (1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)))) + (((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1) &gt;= 0 ? 1 + (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1) : 0 - ((1 + (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1)) - ((1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1)))] ? write_rr_yumi_lo[i] : read_rr_yumi_lo[i]);
+		for (i = 0; i &lt; num_cache_p; i = i + 1) assign dma_pkt_yumi_o[i] = (dma_pkt[((num_cache_p &gt;= 1 ? i : 0 - (i - (num_cache_p - 1))) * ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? 1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) : 2 - (1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)))) + ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) &gt;= 1 ? 1 + ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1) : 0 - ((1 + ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1)) - ((1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1)))] ? write_rr_yumi_lo[i] : read_rr_yumi_lo[i]);
 	endgenerate
 	bsg_cache_to_axi_rx #(
 		.num_cache_p(num_cache_p),
@@ -308,7 +308,6 @@ module bsg_cache_to_axi (
 		.axi_bvalid_i(axi_bvalid_i),
 		.axi_bready_o(axi_bready_o)
 	);
-	initial ;
 endmodule
 
 </pre>

@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,63 +18,22 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v</a>
 time_elapsed: 0.004s
-ram usage: 10352 KB
+ram usage: 10172 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v</a>
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `int` to `reg [7:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:27</a>:22-23:
    | 
    |    reg [7:0] delay = 0;
    |                      ^ 
-   = note: Casts `0` from `byte unsigned` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:27</a>:22-23:
-   | 
-   |    reg [7:0] delay = 0;
-   |                      ^ 
+   = note: `int` can be cast to an intermediate `logic unsigned [7:0]`, but
+   = note: `logic unsigned [7:0]` cannot be cast to the final `reg [7:0]`
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:27</a>:22-23:
-   | 
-   |    reg [7:0] delay = 0;
-   |                      ^ 
-   = note: Casts `0` from `byte` to `byte unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:27</a>:22-23:
-   | 
-   |    reg [7:0] delay = 0;
-   |                      ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:27</a>:22-23:
-   | 
-   |    reg [7:0] delay = 0;
-   |                      ^ 
-   = note: Casts `0` from `int` to `byte`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:27</a>:22-23:
-   | 
-   |    reg [7:0] delay = 0;
-   |                      ^ 
-
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:36</a>:3-48:
-   | 
-   |      $display(&#34;FAILED -- step=%b at time=1&#34;, step);
-   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
- ERROR moore_svlog::hir::lowering &gt; Expr #66
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/delay_assign_nb2.v.html#l-37" target="file-frame">third_party/tests/ivtest/ivltests/delay_assign_nb2.v:37</a>:3-10:
-   | 
-   |      $finish;
-   |      ^^^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1368
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([7:0], true) bit signed [7:0] -&gt; Sign(unsigned) bit unsigned [7:0] -&gt; Domain(FourValued) logic unsigned [7:0]
 
 </pre>
 </body>

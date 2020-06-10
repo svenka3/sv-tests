@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v</a>
 time_elapsed: 0.004s
-ram usage: 12208 KB
+ram usage: 10360 KB
 </pre>
 <pre class="log">
 
@@ -53,79 +53,17 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `integer unsigned` to `reg [31:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:8</a>:10-49:
    | 
    |     in = 32&#39;b000x100z_001z000x_101xxxzz_100z111x;
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-   = note: Casts `32&#39;b000x100z_001z000x_101xxxzz_100z111x` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:8</a>:10-49:
-   | 
-   |     in = 32&#39;b000x100z_001z000x_101xxxzz_100z111x;
-   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: `integer unsigned` can be cast to an intermediate `logic [31:0]`, but
+   = note: `logic [31:0]` cannot be cast to the final `reg [31:0]`
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:9</a>:10-49:
-   | 
-   |     ck = 32&#39;b00001000_00100000_10100000_10001110;
-   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-   = note: Casts `32&#39;b00001000_00100000_10100000_10001110` from `int unsigned` to `integer unsigned`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:9</a>:10-49:
-   | 
-   |     ck = 32&#39;b00001000_00100000_10100000_10001110;
-   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:11</a>:11-34:
-   | 
-   |     res = $sscanf(str, &#34;%u&#34;, out);
-   |           ^^^^^^^^^^^^^^^^^^^^^^^ 
-   = note: Casts `$sscanf(str, &#34;%u&#34;, out)` from `int` to `integer`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:11</a>:11-34:
-   | 
-   |     res = $sscanf(str, &#34;%u&#34;, out);
-   |           ^^^^^^^^^^^^^^^^^^^^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:12</a>:17-18:
-   | 
-   |     if (res !== 1) $display(&#34;FAILED: $sscanf() returned %d&#34;, res);
-   |                 ^                                                 
-   = note: Casts `1` from `int` to `integer`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sscanf_u.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/sscanf_u.v:12</a>:17-18:
-   | 
-   |     if (res !== 1) $display(&#34;FAILED: $sscanf() returned %d&#34;, res);
-   |                 ^                                                 
-
-proc %top.initial.132.0 (i32$ %out) -&gt; (i32$ %in, i32$ %ck, i32$ %res) {
-0:
-    %1 = const i32 136355982
-    %2 = const time 0s 1e
-    drv i32$ %in, %1, %2
-    drv i32$ %ck, %1, %2
-    %3 = const i32 0
-    drv i32$ %res, %3, %2
-    %res1 = prb i32$ %res
-    %4 = const i32 1
-    %5 = neq i32 %res1, %4
-    %6 = const i1 0
-    %7 = neq i1 %5, %6
-    br %7, %if_false, %if_exit
-if_false:
-    br %if_exit
-if_exit:
-    halt
-}
-
-entity @top () -&gt; () {
-    %0 = const i32 0
-    %in = sig i32 %0
-    %ck = sig i32 %0
-    %out = sig i32 %0
-    %res = sig i32 %0
-    inst %top.initial.132.0 (i32$ %out) -&gt; (i32$ %in, i32$ %ck, i32$ %res)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Integer), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([31:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: integer unsigned -&gt; PackSBVT logic [31:0]
 
 </pre>
 </body>

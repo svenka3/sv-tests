@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,42 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/dynslice.v.html" target="file-frame">third_party/tools/yosys/tests/simple/dynslice.v</a>
 time_elapsed: 0.004s
-ram usage: 10400 KB
+ram usage: 10484 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e dynslice <a href="../../../../third_party/tools/yosys/tests/simple/dynslice.v.html" target="file-frame">third_party/tools/yosys/tests/simple/dynslice.v</a>
-proc %dynslice.always.88.0 (i1$ %clk, i10$ %ctrl, i16$ %din, i4$ %sel) -&gt; (i128$ %dout) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %ctrl1 = prb i10$ %ctrl
-    %3 = const i10 0
-    %sel1 = prb i4$ %sel
-    %4 = inss i10 %3, i4 %sel1, 0, 4
-    %5 = umul i10 %ctrl1, %4
-    %6 = const i128 0
-    %7 = sig i128 %6
-    %8 = shr i128$ %dout, i128$ %7, i10 %5
-    %9 = exts i16$, i128$ %8, 0, 16
-    %din1 = prb i16$ %din
-    %10 = const time 0s 1d
-    drv i16$ %9, %din1, %10
-    br %init
-}
+error: cannot cast a value of type `logic [15:0]` to `reg [15:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dynslice.v.html#l-10" target="file-frame">third_party/tools/yosys/tests/simple/dynslice.v:10</a>:27-30:
+   | 
+   |     dout[ctrl*sel+:16] &lt;= din ;
+   |                           ^^^  
 
-entity @dynslice (i1$ %clk, i10$ %ctrl, i16$ %din, i4$ %sel) -&gt; (i128$ %dout) {
-    inst %dynslice.always.88.0 (i1$ %clk, i10$ %ctrl, i16$ %din, i4$ %sel) -&gt; (i128$ %dout)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [15:0]
 
 </pre>
 </body>

@@ -18,28 +18,32 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v</a>
 time_elapsed: 0.004s
-ram usage: 10708 KB
+ram usage: 11048 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e array_assign <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v</a>
-compiler bug: no ast node for n28 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
- ERROR moore_svlog::hir::lowering &gt; Expr #83
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:12</a>:27-34:
+error: cannot cast a value of type `reg signed [2:0]` to `logic signed [2:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:9</a>:37-46:
    | 
-   |     for(ii=0; ii&lt;(MSB+1); ii=ii+1)
-   |                           ^^^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1368
+   |   assign as_wr = {{2{ar_reg[0][2]}},ar_reg[1]};
+   |                                     ^^^^^^^^^  
+
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: signed, sign_explicit: true, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: signed, sign_explicit: true, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg signed [2:0]
+compiler bug: assertion failed: value.ty.coalesces_to_llhd_scalar()
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:9</a>:37-46:
+   | 
+   |   assign as_wr = {{2{ar_reg[0][2]}},ar_reg[1]};
+   |                                     ^^^^^^^^^  
+   = note: Assertion failed: value.ty.coalesces_to_llhd_scalar()
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:254
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.coalesces_to_llhd_scalar()&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

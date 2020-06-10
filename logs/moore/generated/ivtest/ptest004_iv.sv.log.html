@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,16 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v</a>
 time_elapsed: 0.004s
-ram usage: 10440 KB
+ram usage: 10260 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v</a>
-compiler bug: no ast node for n4 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:33</a>:7-25:
    | 
@@ -40,52 +35,17 @@ warning: `$display` not supported; ignored
    |       $display(&#34;FAILED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:29</a>:9-13:
-   | 
-   |     c = 1&#39;b1;
-   |         ^^^^ 
-   = note: Casts `1&#39;b1` from `bit` to `logic`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:29</a>:9-13:
-   | 
-   |     c = 1&#39;b1;
-   |         ^^^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:29</a>:9-13:
-   | 
-   |     c = 1&#39;b1;
-   |         ^^^^ 
-   = note: Casts `1&#39;b1` from `bit [0:0]` to `bit`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:29</a>:9-13:
-   | 
-   |     c = 1&#39;b1;
-   |         ^^^^ 
-
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `bit [1:0]` to `reg [1:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:30</a>:9-13:
    | 
    |     a = 2&#39;d2;
    |         ^^^^ 
-   = note: Casts `2&#39;d2` from `bit [1:0]` to `logic [1:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:30</a>:9-13:
-   | 
-   |     a = 2&#39;d2;
-   |         ^^^^ 
+   = note: `bit [1:0]` can be cast to an intermediate `logic [1:0]`, but
+   = note: `logic [1:0]` cannot be cast to the final `reg [1:0]`
 
-compiler bug: assertion failed: mir.ty.is_bool()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/ptest004.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/ptest004.v:32</a>:9-20:
-   | 
-   |     if (b===4&#39;b0100)
-   |         ^^^^^^^^^^^ 
-   = note: Assertion failed: mir.ty.is_bool()
-   = note: Encountered at src/svlog/codegen.rs:1236
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [1:0] -&gt; Domain(FourValued) logic [1:0]
 
 </pre>
 </body>

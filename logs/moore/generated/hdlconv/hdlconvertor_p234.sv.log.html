@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Tests imported from hdlconv
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017
@@ -18,36 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv</a>
 time_elapsed: 0.004s
-ram usage: 10360 KB
+ram usage: 11012 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017 -e adder <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv</a>
- ERROR moore_svlog::mir::lower::lvalue &gt; Expr {
-    id: n75,
-    span: Source(1; &#34;<a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv</a>&#34;):196-216,
-    kind: Concat(
-        None,
-        [
-            n71,
-            n74,
-        ],
-    ),
-}
-error: expression `{carry_out, sum_out}` cannot be assigned to
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv.html#l-8" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv:8</a>:8-28:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #37)
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv.html#l-3" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p234.sv:3</a>:8-17:
    | 
-   | assign {carry_out, sum_out} = ina + inb + carry_in;
-   |        ^^^^^^^^^^^^^^^^^^^^                        
+   | output carry_out;
+   |        ^^^^^^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-entity @adder (i4$ %ina, i4$ %inb, i1$ %carry_in) -&gt; (i4$ %sum_out, i1$ %carry_out) {
-    %0 = const i4 0
-    %1 = const time 0s
-    drv i4$ %sum_out, %0, %1
-    %2 = const i1 0
-    drv i1$ %carry_out, %2, %1
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #37)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

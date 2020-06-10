@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_i2f.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_i2f.v</a>
-time_elapsed: 0.352s
-ram usage: 16448 KB
+time_elapsed: 0.376s
+ram usage: 16048 KB
 </pre>
 <pre class="log">
 
@@ -87,6 +87,10 @@ module bsg_fpu_i2f (
 			end
 		end
 	wire [e_p - 1:0] exp;
+	function automatic [e_p - 1:0] sv2v_cast_C56CD;
+		input reg [e_p - 1:0] inp;
+		sv2v_cast_C56CD = inp;
+	endfunction
 	assign exp = sv2v_cast_C56CD(((bias_lp + e_p) + m_p) - shamt_1_r);
 	wire [width_lp - 1:0] shifted;
 	assign shifted = chosen_abs_1_r &lt;&lt; shamt_1_r;
@@ -101,10 +105,6 @@ module bsg_fpu_i2f (
 	wire [width_lp - 2:0] rounded;
 	assign rounded = {exp, mantissa} + round_up;
 	assign z_o = (all_zero_1_r ? {width_lp {1&#39;b0}} : {sign_1_r, rounded});
-	function automatic [e_p - 1:0] sv2v_cast_C56CD;
-		input reg [e_p - 1:0] inp;
-		sv2v_cast_C56CD = inp;
-	endfunction
 endmodule
 
 </pre>

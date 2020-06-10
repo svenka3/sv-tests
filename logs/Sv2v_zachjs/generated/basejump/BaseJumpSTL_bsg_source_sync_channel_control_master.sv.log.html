@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_master.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_master.v</a>
-time_elapsed: 0.848s
-ram usage: 15992 KB
+time_elapsed: 0.672s
+ram usage: 15908 KB
 </pre>
 <pre class="log">
 
@@ -51,25 +51,25 @@ module bsg_source_sync_channel_control_master (
 	input out_calib_prepare_i;
 	input out_channel_blessed_i;
 	output out_override_en_o;
-	output [(width_p + 1) - 1:0] out_override_valid_data_o;
+	output [width_p:0] out_override_valid_data_o;
 	input out_override_is_posedge_i;
-	output [(tests_lp + 1) - 1:0] out_test_pass_r_o;
+	output [tests_lp:0] out_test_pass_r_o;
 	input in_clk_i;
 	input in_reset_i;
-	input [(width_p + 1) - 1:0] in_snoop_valid_data_neg_i;
-	input [(width_p + 1) - 1:0] in_snoop_valid_data_pos_i;
+	input [width_p:0] in_snoop_valid_data_neg_i;
+	input [width_p:0] in_snoop_valid_data_pos_i;
 	output out_infinite_credits_o;
 	localparam counter_min_bits_lp = 24;
 	localparam counter_bits_lp = (counter_min_bits_lp &gt; (((width_p + 1) * 2) + 1) ? counter_min_bits_lp : ((width_p + 1) * 2) + 1);
 	reg [counter_bits_lp - 1:0] out_ctr_r;
 	reg [counter_bits_lp - 1:0] out_ctr_n;
-	reg [(width_p + 1) - 1:0] out_override_valid_data_r;
-	reg [(width_p + 1) - 1:0] out_override_valid_data_n;
+	reg [width_p:0] out_override_valid_data_r;
+	reg [width_p:0] out_override_valid_data_n;
 	reg out_override_en_r;
 	reg out_override_en_n;
 	reg out_calib_prepare_i_r;
-	reg [(tests_lp + 1) - 1:0] out_test_pass_r;
-	reg [(tests_lp + 1) - 1:0] out_test_pass_n;
+	reg [tests_lp:0] out_test_pass_r;
+	reg [tests_lp:0] out_test_pass_n;
 	wire [(((width_p + 1) &gt;&gt; 1) &lt;&lt; 1) - 1:0] inactive_pattern = {(width_p + 1) &gt;&gt; 1 {2&#39;b01}};
 	assign out_override_valid_data_o = out_override_valid_data_r;
 	assign out_override_en_o = out_override_en_r;
@@ -91,13 +91,17 @@ module bsg_source_sync_channel_control_master (
 			default: out_calib_code = 5&#39;b0_000_1;
 		endcase
 	end
-	wire [(width_p + 1) - 1:0] out_calib_code_padded;
+	wire [width_p:0] out_calib_code_padded;
 	generate
 		if (width_p &lt;= 4) assign out_calib_code_padded = out_calib_code[4-:1 + width_p];
-		else assign out_calib_code_padded = {out_calib_code, inactive_pattern[((width_p + 1) - 5) - 1:0] ^ {(width_p + 1) - 5 {out_activating}}};
+		else assign out_calib_code_padded = {out_calib_code, inactive_pattern[width_p + -5:0] ^ {width_p + -4 {out_activating}}};
 	endgenerate
 	reg out_finish_prepare_r;
 	reg out_finish_prepare_n;
+	function automatic [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] sv2v_cast_E3772;
+		input reg [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] inp;
+		sv2v_cast_E3772 = inp;
+	endfunction
 	always @(posedge out_clk_i) begin
 		out_calib_prepare_i_r &lt;= out_calib_prepare_i;
 		if (out_reset_i)
@@ -116,7 +120,11 @@ module bsg_source_sync_channel_control_master (
 				$display(&#34;## Master %m:  %s prepare part for Phase %1d (out_calib_prepare_i = %b, out_calib_prepare_i_r = %b)&#34;, (out_calib_prepare_i ? &#34;entering&#34; : &#34;exiting&#34;), out_calibration_state_i, out_calib_prepare_i, out_calib_prepare_i_r);
 	end
 	wire [counter_bits_lp - 1:0] out_ctr_r_p1 = out_ctr_r + 1&#39;b1;
-	wire [(tests_lp + 1) - 1:0] out_phase_X_good;
+	wire [tests_lp:0] out_phase_X_good;
+	function automatic [width_p - 1:0] sv2v_cast_89401;
+		input reg [width_p - 1:0] inp;
+		sv2v_cast_89401 = inp;
+	endfunction
 	always @(*) begin
 		out_finish_prepare_n = (out_reset_i ? 0 : out_finish_prepare_r);
 		out_ctr_n = (out_reset_i ? 0 : out_ctr_r);
@@ -153,7 +161,7 @@ module bsg_source_sync_channel_control_master (
 			endcase
 		end
 	end
-	wire [(tests_lp + 1) - 1:0] in_phase_X_good;
+	wire [tests_lp:0] in_phase_X_good;
 	bsg_launch_sync_sync #(.width_p(tests_lp + 1)) in_to_out(
 		.iclk_i(in_clk_i),
 		.iclk_reset_i(1&#39;b0),
@@ -163,6 +171,10 @@ module bsg_source_sync_channel_control_master (
 		.oclk_data_o(out_phase_X_good)
 	);
 	wire [tests_lp - 1:0] in_test_enables;
+	function automatic [tests_lp - 1:0] sv2v_cast_5646B;
+		input reg [tests_lp - 1:0] inp;
+		sv2v_cast_5646B = inp;
+	endfunction
 	wire [tests_lp - 1:0] out_test_enables = sv2v_cast_5646B((1 &lt;&lt; out_calibration_state_i) &amp; {tests_lp {~out_calib_prepare_i}});
 	bsg_launch_sync_sync #(.width_p(tests_lp)) out_to_in(
 		.iclk_i(out_clk_i),
@@ -172,9 +184,9 @@ module bsg_source_sync_channel_control_master (
 		.iclk_data_o(),
 		.oclk_data_o(in_test_enables)
 	);
-	reg [(width_p + 1) - 1:0] in_last_pos_r;
-	reg [(width_p + 1) - 1:0] in_last_neg_r;
-	reg [(width_p + 1) - 1:0] in_last_last_pos_r;
+	reg [width_p:0] in_last_pos_r;
+	reg [width_p:0] in_last_neg_r;
+	reg [width_p:0] in_last_last_pos_r;
 	reg [(2 * (width_p + 1)) - 1:0] in_consec_pos_neg_match_r;
 	reg [(2 * (width_p + 1)) - 1:0] in_consec_neg_pos_match_r;
 	wire in_pos_neg_match = ({in_last_pos_r, in_last_neg_r} + 1&#39;b1) == {in_snoop_valid_data_pos_i, in_snoop_valid_data_neg_i};
@@ -216,18 +228,6 @@ module bsg_source_sync_channel_control_master (
 	assign in_phase_X_good[2] = (&amp;in_consec_neg_pos_match_r | &amp;in_consec_pos_neg_match_r) | bypass_test_p[2];
 	assign in_phase_X_good[tests_lp - 1:3] = bypass_test_p[tests_lp - 1:3];
 	assign in_phase_X_good[tests_lp] = 1&#39;b1;
-	function automatic [tests_lp - 1:0] sv2v_cast_5646B;
-		input reg [tests_lp - 1:0] inp;
-		sv2v_cast_5646B = inp;
-	endfunction
-	function automatic [width_p - 1:0] sv2v_cast_89401;
-		input reg [width_p - 1:0] inp;
-		sv2v_cast_89401 = inp;
-	endfunction
-	function automatic [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] sv2v_cast_E3772;
-		input reg [(24 &gt; (((width_p + 1) * 2) + 1) ? 24 : ((width_p + 1) * 2) + 1) - 1:0] inp;
-		sv2v_cast_E3772 = inp;
-	endfunction
 endmodule
 
 </pre>

@@ -18,55 +18,21 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v</a>
 time_elapsed: 0.004s
-ram usage: 10728 KB
+ram usage: 10928 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v:9</a>:6-16:
-   | 
-   |      6&#39;b01_??10           : result = 1;
-   |      ^^^^^^^^^^                        
-   = note: Casts `6&#39;b01_??10` from `bit [5:0]` to `logic [5:0]`
+error: cannot cast a value of type `logic [5:0]` to `reg [5:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v:9</a>:6-16:
    | 
    |      6&#39;b01_??10           : result = 1;
    |      ^^^^^^^^^^                        
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v:9</a>:38-39:
-   | 
-   |      6&#39;b01_??10           : result = 1;
-   |                                      ^ 
-   = note: Casts `1` from `int` to `integer`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v:9</a>:38-39:
-   | 
-   |      6&#39;b01_??10           : result = 1;
-   |                                      ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v:10</a>:38-39:
-   | 
-   |      {2&#39;b10, 4&#39;b??10}     : result = 2;
-   |                                      ^ 
-   = note: Casts `2` from `int` to `integer`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v:10</a>:38-39:
-   | 
-   |      {2&#39;b10, 4&#39;b??10}     : result = 2;
-   |                                      ^ 
-
-compiler bug: constant folding of slices not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v:11</a>:7-16:
-   | 
-   |      {expr[1:0], 4&#39;b??01} : result = 3;
-   |       ^^^^^^^^^                        
-   = note: Encountered at src/svlog/value.rs:531
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;constant folding of slices not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([5:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([5:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [5:0]
+thread &#39;main&#39; panicked at &#39;case constant evaluates to non-integer&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:13:23
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

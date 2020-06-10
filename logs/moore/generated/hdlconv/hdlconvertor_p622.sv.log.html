@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from hdlconv
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p622.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p622.sv</a>
 time_elapsed: 0.004s
-ram usage: 10416 KB
+ram usage: 10960 KB
 </pre>
 <pre class="log">
 
@@ -35,20 +35,18 @@ warning: `$async$and$array` not supported; ignored
    | $async$and$array(mem,{a1,a2,a3,a4,a5,a6,a7},{b1,b2,b3});
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-proc %sync_array.initial.188.0 (i1$ %clk) -&gt; () {
-check:
-    wait %check, %clk
-}
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #67)
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p622.sv.html#l-2" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p622.sv:2</a>:35-38:
+   | 
+   | input a1, a2, a3, a4, a5, a6, a7, clk;
+   |                                   ^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-entity @sync_array (i1$ %a1, i1$ %a2, i1$ %a3, i1$ %a4, i1$ %a5, i1$ %a6, i1$ %a7, i1$ %clk) -&gt; (i1$ %b1, i1$ %b2, i1$ %b3) {
-    inst %sync_array.initial.188.0 (i1$ %clk) -&gt; ()
-    %0 = const i1 0
-    %1 = const time 0s
-    drv i1$ %b1, %0, %1
-    drv i1$ %b2, %0, %1
-    drv i1$ %b3, %0, %1
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #67)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

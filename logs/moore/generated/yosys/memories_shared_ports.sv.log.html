@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories
@@ -18,83 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/shared_ports.v.html" target="file-frame">third_party/tools/yosys/tests/memories/shared_ports.v</a>
 time_elapsed: 0.004s
-ram usage: 10412 KB
+ram usage: 10604 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories -e test <a href="../../../../third_party/tools/yosys/tests/memories/shared_ports.v.html" target="file-frame">third_party/tools/yosys/tests/memories/shared_ports.v</a>
-proc %test.always.226.0 (i1$ %clk, i1$ %wr_en1, i1$ %wr_en2, i1$ %wr_en3, i4$ %wr_addr1, i4$ %wr_addr2, i4$ %wr_addr3, i16$ %wr_data, i4$ %rd_addr) -&gt; (i32$ %mem, i32$ %rd_data) {
-init:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %wr_en11 = prb i1$ %wr_en1
-    %3 = neq i1 %wr_en11, %0
-    %4 = const i32 0
-    %5 = const time 0s 1d
-    %wr_data1 = prb i16$ %wr_data
-    br %3, %if_false, %if_true
-if_true:
-    %wr_addr11 = prb i4$ %wr_addr1
-    %6 = sig i32 %4
-    %7 = shr i32$ %mem, i32$ %6, i4 %wr_addr11
-    %8 = exts i1$, i32$ %7, 0, 1
-    %9 = exts i16$, i1$ %8, 0, 16
-    drv i16$ %9, %wr_data1, %5
-    br %if_exit
-if_false:
-    %wr_en21 = prb i1$ %wr_en2
-    %10 = neq i1 %wr_en21, %0
-    br %10, %if_false1, %if_true1
-if_exit:
-    %mem1 = prb i32$ %mem
-    %rd_addr1 = prb i4$ %rd_addr
-    %11 = shr i32 %mem1, i32 %4, i4 %rd_addr1
-    %12 = exts i1, i32 %11, 0, 1
-    %13 = inss i32 %4, i1 %12, 0, 1
-    drv i32$ %rd_data, %13, %5
-    br %init
-if_true1:
-    %wr_addr21 = prb i4$ %wr_addr2
-    %14 = sig i32 %4
-    %15 = shr i32$ %mem, i32$ %14, i4 %wr_addr21
-    %16 = exts i1$, i32$ %15, 0, 1
-    %17 = const i4 8
-    %18 = sig i1 %0
-    %19 = shr i1$ %16, i1$ %18, i4 %17
-    %20 = exts i16$, i1$ %19, 0, 16
-    drv i16$ %20, %wr_data1, %5
-    br %if_exit
-if_false1:
-    %wr_en31 = prb i1$ %wr_en3
-    %21 = neq i1 %wr_en31, %0
-    br %21, %if_exit, %if_true2
-if_true2:
-    %wr_addr31 = prb i4$ %wr_addr3
-    %22 = sig i32 %4
-    %23 = shr i32$ %mem, i32$ %22, i4 %wr_addr31
-    %24 = exts i1$, i32$ %23, 0, 1
-    %25 = const i5 16
-    %26 = sig i1 %0
-    %27 = shr i1$ %24, i1$ %26, i5 %25
-    %28 = exts i16$, i1$ %27, 0, 16
-    drv i16$ %28, %wr_data1, %5
-    br %if_exit
-}
+error: cannot cast a value of type `logic [15:0]` to `reg [15:0]`
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/shared_ports.v.html#l-17" target="file-frame">third_party/tools/yosys/tests/memories/shared_ports.v:17</a>:26-33:
+   | 
+   |         mem[wr_addr1][15:0] &lt;= wr_data;
+   |                                ^^^^^^^ 
 
-entity @test (i1$ %clk, i1$ %wr_en1, i1$ %wr_en2, i1$ %wr_en3, i4$ %wr_addr1, i4$ %wr_addr2, i4$ %wr_addr3, i16$ %wr_data, i4$ %rd_addr) -&gt; (i32$ %rd_data) {
-    %0 = const i32 0
-    %mem = sig i32 %0
-    inst %test.always.226.0 (i1$ %clk, i1$ %wr_en1, i1$ %wr_en2, i1$ %wr_en3, i4$ %wr_addr1, i4$ %wr_addr2, i4$ %wr_addr3, i16$ %wr_data, i4$ %rd_addr) -&gt; (i32$ %mem, i32$ %rd_data)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [15:0]
 
 </pre>
 </body>

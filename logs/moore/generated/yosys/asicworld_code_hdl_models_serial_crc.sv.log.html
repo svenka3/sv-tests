@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -17,209 +17,24 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v</a>
-time_elapsed: 0.008s
-ram usage: 10892 KB
+time_elapsed: 0.004s
+ram usage: 11120 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e serial_crc_ccitt <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-30" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:30</a>:11-19:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #70)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-22" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:22</a>:15-22:
    | 
-   |   lfsr &lt;= 16&#39;hFFFF;
-   |           ^^^^^^^^ 
-   = note: Casts `16&#39;hFFFF` from `shortint unsigned` to `logic [15:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-30" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:30</a>:11-19:
-   | 
-   |   lfsr &lt;= 16&#39;hFFFF;
-   |           ^^^^^^^^ 
+   | output [15:0] crc_out;
+   |               ^^^^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-33" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:33</a>:14-22:
-   | 
-   |     lfsr &lt;=  16&#39;hFFFF;
-   |              ^^^^^^^^ 
-   = note: Casts `16&#39;hFFFF` from `shortint unsigned` to `logic [15:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v.html#l-33" target="file-frame">third_party/tools/yosys/tests/asicworld/code_hdl_models_serial_crc.v:33</a>:14-22:
-   | 
-   |     lfsr &lt;=  16&#39;hFFFF;
-   |              ^^^^^^^^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-proc %serial_crc_ccitt.always.505.0 (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i1$ %data_in) -&gt; (i16$ %lfsr) {
-init1:
-    %clk1 = prb i1$ %clk
-    wait %check, %clk
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init1, %event
-event:
-    %reset1 = prb i1$ %reset
-    %3 = neq i1 %reset1, %0
-    %4 = const i16 65535
-    %5 = const time 0s 1d
-    br %3, %if_false, %if_true
-if_true:
-    drv i16$ %lfsr, %4, %5
-    br %init1
-if_false:
-    %enable1 = prb i1$ %enable
-    %6 = neq i1 %enable1, %0
-    br %6, %init1, %if_true1
-if_true1:
-    %init2 = prb i1$ %init
-    %7 = neq i1 %init2, %0
-    br %7, %if_false1, %if_true2
-if_true2:
-    drv i16$ %lfsr, %4, %5
-    br %init1
-if_false1:
-    %8 = exts i1$, i16$ %lfsr, 0, 1
-    %data_in1 = prb i1$ %data_in
-    %lfsr1 = prb i16$ %lfsr
-    %9 = exts i1, i16 %lfsr1, 15, 1
-    %10 = const i16 0
-    %11 = inss i16 %10, i1 %9, 0, 1
-    %12 = exts i1, i16 %11, 0, 1
-    %13 = xor i1 %data_in1, %12
-    drv i1$ %8, %13, %5
-    %14 = const i32 1
-    %15 = sig i16 %10
-    %16 = shr i16$ %lfsr, i16$ %15, i32 %14
-    %17 = exts i1$, i16$ %16, 0, 1
-    %18 = exts i1, i16 %lfsr1, 0, 1
-    drv i1$ %17, %18, %5
-    %19 = const i32 2
-    %20 = sig i16 %10
-    %21 = shr i16$ %lfsr, i16$ %20, i32 %19
-    %22 = exts i1$, i16$ %21, 0, 1
-    %23 = exts i15, i16 %lfsr1, 1, 15
-    %24 = inss i16 %10, i15 %23, 0, 15
-    %25 = exts i1, i16 %24, 0, 1
-    drv i1$ %22, %25, %5
-    %26 = const i32 3
-    %27 = sig i16 %10
-    %28 = shr i16$ %lfsr, i16$ %27, i32 %26
-    %29 = exts i1$, i16$ %28, 0, 1
-    %30 = exts i14, i16 %lfsr1, 2, 14
-    %31 = inss i16 %10, i14 %30, 0, 14
-    %32 = exts i1, i16 %31, 0, 1
-    drv i1$ %29, %32, %5
-    %33 = const i32 4
-    %34 = sig i16 %10
-    %35 = shr i16$ %lfsr, i16$ %34, i32 %33
-    %36 = exts i1$, i16$ %35, 0, 1
-    %37 = exts i13, i16 %lfsr1, 3, 13
-    %38 = inss i16 %10, i13 %37, 0, 13
-    %39 = exts i1, i16 %38, 0, 1
-    drv i1$ %36, %39, %5
-    %40 = const i32 5
-    %41 = sig i16 %10
-    %42 = shr i16$ %lfsr, i16$ %41, i32 %40
-    %43 = exts i1$, i16$ %42, 0, 1
-    %44 = exts i12, i16 %lfsr1, 4, 12
-    %45 = inss i16 %10, i12 %44, 0, 12
-    %46 = exts i1, i16 %45, 0, 1
-    %47 = xor i1 %46, %data_in1
-    %48 = xor i1 %47, %12
-    drv i1$ %43, %48, %5
-    %49 = const i32 6
-    %50 = sig i16 %10
-    %51 = shr i16$ %lfsr, i16$ %50, i32 %49
-    %52 = exts i1$, i16$ %51, 0, 1
-    %53 = exts i11, i16 %lfsr1, 5, 11
-    %54 = inss i16 %10, i11 %53, 0, 11
-    %55 = exts i1, i16 %54, 0, 1
-    drv i1$ %52, %55, %5
-    %56 = const i32 7
-    %57 = sig i16 %10
-    %58 = shr i16$ %lfsr, i16$ %57, i32 %56
-    %59 = exts i1$, i16$ %58, 0, 1
-    %60 = exts i10, i16 %lfsr1, 6, 10
-    %61 = inss i16 %10, i10 %60, 0, 10
-    %62 = exts i1, i16 %61, 0, 1
-    drv i1$ %59, %62, %5
-    %63 = const i32 8
-    %64 = sig i16 %10
-    %65 = shr i16$ %lfsr, i16$ %64, i32 %63
-    %66 = exts i1$, i16$ %65, 0, 1
-    %67 = exts i9, i16 %lfsr1, 7, 9
-    %68 = inss i16 %10, i9 %67, 0, 9
-    %69 = exts i1, i16 %68, 0, 1
-    drv i1$ %66, %69, %5
-    %70 = const i32 9
-    %71 = sig i16 %10
-    %72 = shr i16$ %lfsr, i16$ %71, i32 %70
-    %73 = exts i1$, i16$ %72, 0, 1
-    %74 = exts i8, i16 %lfsr1, 8, 8
-    %75 = inss i16 %10, i8 %74, 0, 8
-    %76 = exts i1, i16 %75, 0, 1
-    drv i1$ %73, %76, %5
-    %77 = const i32 10
-    %78 = sig i16 %10
-    %79 = shr i16$ %lfsr, i16$ %78, i32 %77
-    %80 = exts i1$, i16$ %79, 0, 1
-    %81 = exts i7, i16 %lfsr1, 9, 7
-    %82 = inss i16 %10, i7 %81, 0, 7
-    %83 = exts i1, i16 %82, 0, 1
-    drv i1$ %80, %83, %5
-    %84 = const i32 11
-    %85 = sig i16 %10
-    %86 = shr i16$ %lfsr, i16$ %85, i32 %84
-    %87 = exts i1$, i16$ %86, 0, 1
-    %88 = exts i6, i16 %lfsr1, 10, 6
-    %89 = inss i16 %10, i6 %88, 0, 6
-    %90 = exts i1, i16 %89, 0, 1
-    drv i1$ %87, %90, %5
-    %91 = const i32 12
-    %92 = sig i16 %10
-    %93 = shr i16$ %lfsr, i16$ %92, i32 %91
-    %94 = exts i1$, i16$ %93, 0, 1
-    %95 = exts i5, i16 %lfsr1, 11, 5
-    %96 = inss i16 %10, i5 %95, 0, 5
-    %97 = exts i1, i16 %96, 0, 1
-    %98 = xor i1 %97, %data_in1
-    %99 = xor i1 %98, %12
-    drv i1$ %94, %99, %5
-    %100 = const i32 13
-    %101 = sig i16 %10
-    %102 = shr i16$ %lfsr, i16$ %101, i32 %100
-    %103 = exts i1$, i16$ %102, 0, 1
-    %104 = exts i4, i16 %lfsr1, 12, 4
-    %105 = inss i16 %10, i4 %104, 0, 4
-    %106 = exts i1, i16 %105, 0, 1
-    drv i1$ %103, %106, %5
-    %107 = const i32 14
-    %108 = sig i16 %10
-    %109 = shr i16$ %lfsr, i16$ %108, i32 %107
-    %110 = exts i1$, i16$ %109, 0, 1
-    %111 = exts i3, i16 %lfsr1, 13, 3
-    %112 = inss i16 %10, i3 %111, 0, 3
-    %113 = exts i1, i16 %112, 0, 1
-    drv i1$ %110, %113, %5
-    %114 = const i32 15
-    %115 = sig i16 %10
-    %116 = shr i16$ %lfsr, i16$ %115, i32 %114
-    %117 = exts i1$, i16$ %116, 0, 1
-    %118 = exts i2, i16 %lfsr1, 14, 2
-    %119 = inss i16 %10, i2 %118, 0, 2
-    %120 = exts i1, i16 %119, 0, 1
-    drv i1$ %117, %120, %5
-    br %init1
-}
-
-entity @serial_crc_ccitt (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i1$ %data_in) -&gt; (i16$ %crc_out) {
-    %0 = const i16 0
-    %lfsr = sig i16 %0
-    %lfsr1 = prb i16$ %lfsr
-    %1 = const time 0s 1e
-    drv i16$ %crc_out, %lfsr1, %1
-    inst %serial_crc_ccitt.always.505.0 (i1$ %clk, i1$ %reset, i1$ %enable, i1$ %init, i1$ %data_in) -&gt; (i16$ %lfsr)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #70)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

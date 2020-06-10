@@ -18,72 +18,28 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v</a>
 time_elapsed: 0.004s
-ram usage: 10136 KB
+ram usage: 10364 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e shift <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v</a>
-compiler bug: no ast node for n11 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v:13</a>:6-37:
    | 
    |   #1 $display(&#34;1 &lt;&lt; %0d = %b&#34;, S, Y);
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `int` to `reg [5:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v:12</a>:7-9:
    | 
    |   S = 32;
    |       ^^ 
-   = note: Casts `32` from `bit [5:0]` to `logic [5:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v:12</a>:7-9:
-   | 
-   |   S = 32;
-   |       ^^ 
+   = note: `int` can be cast to an intermediate `logic unsigned [5:0]`, but
+   = note: `logic unsigned [5:0]` cannot be cast to the final `reg [5:0]`
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v:12</a>:7-9:
-   | 
-   |   S = 32;
-   |       ^^ 
-   = note: Casts `32` from `bit signed [5:0]` to `bit [5:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v:12</a>:7-9:
-   | 
-   |   S = 32;
-   |       ^^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v:12</a>:7-9:
-   | 
-   |   S = 32;
-   |       ^^ 
-   = note: Casts `32` from `int` to `bit signed [5:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2119622.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2119622.v:12</a>:7-9:
-   | 
-   |   S = 32;
-   |       ^^ 
-
-proc %shift.initial.55.0 () -&gt; (i6$ %S) {
-0:
-    %1 = const i6 32
-    %2 = const time 0s 1e
-    drv i6$ %S, %1, %2
-    %3 = const i32 1
-    wait %4 for %3
-4:
-    halt
-}
-
-entity @shift () -&gt; () {
-    %0 = const i6 0
-    %S = sig i6 %0
-    inst %shift.initial.55.0 () -&gt; (i6$ %S)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([5:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([5:0], true) bit signed [5:0] -&gt; Sign(unsigned) bit unsigned [5:0] -&gt; Domain(FourValued) logic unsigned [5:0]
 
 </pre>
 </body>

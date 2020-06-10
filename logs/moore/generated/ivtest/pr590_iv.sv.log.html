@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v</a>
 time_elapsed: 0.004s
-ram usage: 10328 KB
+ram usage: 11084 KB
 </pre>
 <pre class="log">
 
@@ -29,39 +29,18 @@ warning: `$display` not supported; ignored
    |         $display(&#34;out: %b, in: %b&#34;,outsig,insig);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v:17</a>:20-24:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #39)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v:10</a>:13-18:
    | 
-   |         outsig = ~(4&#39;hf &lt;&lt; insig);
-   |                    ^^^^           
-   = note: Casts `4&#39;hf` from `bit [3:0]` to `logic [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr590.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr590.v:17</a>:20-24:
-   | 
-   |         outsig = ~(4&#39;hf &lt;&lt; insig);
-   |                    ^^^^           
+   | input [3:0] insig;
+   |             ^^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
 
-proc %ex1.always.94.0 (i4$ %insig) -&gt; (i4$ %outsig) {
-init:
-    %insig1 = prb i4$ %insig
-    wait %check, %insig
-check:
-    %insig2 = prb i4$ %insig
-    %impledge = neq i4 %insig1, %insig2
-    br %impledge, %init, %event
-event:
-    %0 = const i4 15
-    %1 = const i4 0
-    %2 = shl i4 %0, i4 %1, i4 %insig2
-    %3 = not i4 %2
-    %4 = const time 0s 1e
-    drv i4$ %outsig, %3, %4
-    br %init
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-entity @ex1 (i1$ %clk, i1$ %reset, i4$ %insig) -&gt; (i4$ %outsig) {
-    inst %ex1.always.94.0 (i4$ %insig) -&gt; (i4$ %outsig)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #39)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

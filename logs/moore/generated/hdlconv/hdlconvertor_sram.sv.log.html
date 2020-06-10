@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from hdlconv
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog
@@ -18,52 +18,20 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v</a>
 time_elapsed: 0.004s
-ram usage: 10272 KB
+ram usage: 10504 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog -e sram <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v</a>
-proc %sram.always.136.0 (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %memory_array, i8$ %o_data) {
-init:
-    %i_clk1 = prb i1$ %i_clk
-    wait %check, %i_clk
-check:
-    %i_clk2 = prb i1$ %i_clk
-    %0 = const i1 0
-    %1 = eq i1 %i_clk1, %0
-    %2 = neq i1 %i_clk2, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %i_write1 = prb i8$ %i_write
-    %3 = const i8 0
-    %4 = neq i8 %i_write1, %3
-    %i_addr1 = prb i8$ %i_addr
-    %5 = const time 0s 1d
-    br %4, %if_false, %if_true
-if_true:
-    %6 = sig i8 %3
-    %7 = shr i8$ %memory_array, i8$ %6, i8 %i_addr1
-    %8 = exts i1$, i8$ %7, 0, 1
-    %i_data1 = prb i8$ %i_data
-    %9 = exts i1, i8 %i_data1, 0, 1
-    drv i1$ %8, %9, %5
-    br %init
-if_false:
-    %memory_array1 = prb i8$ %memory_array
-    %10 = shr i8 %memory_array1, i8 %3, i8 %i_addr1
-    %11 = exts i1, i8 %10, 0, 1
-    %12 = inss i8 %3, i1 %11, 0, 1
-    drv i8$ %o_data, %12, %5
-    br %init
-}
+error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
+  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html#l-35" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v:35</a>:37-43:
+   | 
+   |             memory_array[i_addr] &lt;= i_data;
+   |                                     ^^^^^^ 
 
-entity @sram (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %o_data) {
-    %0 = const i8 0
-    %memory_array = sig i8 %0
-    inst %sram.always.136.0 (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %memory_array, i8$ %o_data)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
 
 </pre>
 </body>

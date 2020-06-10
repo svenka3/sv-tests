@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_dram_ctrl.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_dram_ctrl.v</a>
-time_elapsed: 0.556s
-ram usage: 15500 KB
+time_elapsed: 0.744s
+ram usage: 16964 KB
 </pre>
 <pre class="log">
 
@@ -49,8 +49,6 @@ module bsg_cache_to_dram_ctrl (
 	app_rd_data_i,
 	app_rd_data_end_i
 );
-	localparam [0:0] WAIT = 0;
-	localparam [0:0] SEND_REQ = 1;
 	localparam [3:0] e_dma_nop = 4&#39;b0000;
 	localparam [3:0] e_dma_send_fill_addr = 4&#39;b0001;
 	localparam [3:0] e_dma_send_evict_addr = 4&#39;b0010;
@@ -110,13 +108,13 @@ module bsg_cache_to_dram_ctrl (
 	input clk_i;
 	input reset_i;
 	input [2:0] dram_size_i;
-	input [((num_cache_p - 1) &gt;= 0 ? ((dma_pkt_width_lp - 1) &gt;= 0 ? (num_cache_p * dma_pkt_width_lp) + -1 : (num_cache_p * (2 - dma_pkt_width_lp)) + ((dma_pkt_width_lp - 1) - 1)) : ((dma_pkt_width_lp - 1) &gt;= 0 ? ((2 - num_cache_p) * dma_pkt_width_lp) + (((num_cache_p - 1) * dma_pkt_width_lp) - 1) : ((2 - num_cache_p) * (2 - dma_pkt_width_lp)) + (((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((dma_pkt_width_lp - 1) &gt;= 0 ? 0 : dma_pkt_width_lp - 1) : ((dma_pkt_width_lp - 1) &gt;= 0 ? (num_cache_p - 1) * dma_pkt_width_lp : (dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))))] dma_pkt_i;
+	input [(num_cache_p &gt;= 1 ? (dma_pkt_width_lp &gt;= 1 ? (num_cache_p * dma_pkt_width_lp) + -1 : (num_cache_p * (2 - dma_pkt_width_lp)) + ((dma_pkt_width_lp - 1) - 1)) : (dma_pkt_width_lp &gt;= 1 ? ((2 - num_cache_p) * dma_pkt_width_lp) + (((num_cache_p - 1) * dma_pkt_width_lp) - 1) : ((2 - num_cache_p) * (2 - dma_pkt_width_lp)) + (((dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))) - 1))):(num_cache_p &gt;= 1 ? (dma_pkt_width_lp &gt;= 1 ? 0 : dma_pkt_width_lp - 1) : (dma_pkt_width_lp &gt;= 1 ? (num_cache_p - 1) * dma_pkt_width_lp : (dma_pkt_width_lp - 1) + ((num_cache_p - 1) * (2 - dma_pkt_width_lp))))] dma_pkt_i;
 	input [num_cache_p - 1:0] dma_pkt_v_i;
 	output wire [num_cache_p - 1:0] dma_pkt_yumi_o;
-	output wire [((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_o;
+	output wire [(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_o;
 	output wire [num_cache_p - 1:0] dma_data_v_o;
 	input [num_cache_p - 1:0] dma_data_ready_i;
-	input [((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
+	input [(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
 	input [num_cache_p - 1:0] dma_data_v_i;
 	output wire [num_cache_p - 1:0] dma_data_yumi_o;
 	output reg app_en_o;
@@ -131,7 +129,7 @@ module bsg_cache_to_dram_ctrl (
 	input app_rd_data_valid_i;
 	input [data_width_p - 1:0] app_rd_data_i;
 	input app_rd_data_end_i;
-	wire [(1 + ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p)) - 1:0] dma_pkt;
+	wire [(1 + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) - 1:0] dma_pkt;
 	wire rr_v_lo;
 	wire [lg_num_cache_lp - 1:0] rr_tag_lo;
 	reg rr_yumi_li;
@@ -194,14 +192,16 @@ module bsg_cache_to_dram_ctrl (
 		.app_wdf_mask_o(app_wdf_mask_o),
 		.app_wdf_end_o(app_wdf_end_o)
 	);
-	reg [0:0] req_state_r;
-	reg [0:0] req_state_n;
+	reg req_state_r;
+	reg req_state_n;
 	reg [addr_width_p - 1:0] addr_r;
 	reg [addr_width_p - 1:0] addr_n;
 	reg write_not_read_r;
 	reg write_not_read_n;
 	reg [(num_req_lp == 1 ? 1 : $clog2(block_size_in_words_p / dram_ctrl_burst_len_p)) - 1:0] req_cnt_r;
 	reg [(num_req_lp == 1 ? 1 : $clog2(block_size_in_words_p / dram_ctrl_burst_len_p)) - 1:0] req_cnt_n;
+	localparam [0:0] SEND_REQ = 1;
+	localparam [0:0] WAIT = 0;
 	always @(*) begin
 		app_en_o = 1&#39;b0;
 		app_cmd_o = 3&#39;b000;
@@ -218,8 +218,8 @@ module bsg_cache_to_dram_ctrl (
 				if (rr_v_lo) begin
 					rr_yumi_li = 1&#39;b1;
 					tag_n = rr_tag_lo;
-					addr_n = dma_pkt[((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1-:((((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1) &gt;= 0 ? ((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) : 1 - (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1))];
-					write_not_read_n = dma_pkt[1 + (((addr_width_p - 1) &gt;= 0 ? addr_width_p : 2 - addr_width_p) + -1)];
+					addr_n = dma_pkt[(addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1-:(((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1) &gt;= 0 ? (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) : 1 - ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1))];
+					write_not_read_n = dma_pkt[1 + ((addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p) + -1)];
 					req_cnt_n = 1&#39;sb0;
 					req_state_n = SEND_REQ;
 				end
@@ -234,6 +234,10 @@ module bsg_cache_to_dram_ctrl (
 			end
 		endcase
 	end
+	function automatic [dram_ctrl_addr_width_p - 1:0] sv2v_cast_85D4E;
+		input reg [dram_ctrl_addr_width_p - 1:0] inp;
+		sv2v_cast_85D4E = inp;
+	endfunction
 	always @(*)
 		case (dram_size_i)
 			0: app_addr_o = sv2v_cast_85D4E({tag_r, addr_r[(25 - $clog2(num_cache_p)) - 1:0]});
@@ -258,10 +262,6 @@ module bsg_cache_to_dram_ctrl (
 			req_cnt_r &lt;= req_cnt_n;
 			write_not_read_r &lt;= write_not_read_n;
 		end
-	function automatic [dram_ctrl_addr_width_p - 1:0] sv2v_cast_85D4E;
-		input reg [dram_ctrl_addr_width_p - 1:0] inp;
-		sv2v_cast_85D4E = inp;
-	endfunction
 endmodule
 
 </pre>

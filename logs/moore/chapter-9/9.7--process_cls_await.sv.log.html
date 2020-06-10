@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: process class await method
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: 9.7 uvm-req
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-9
@@ -17,19 +17,42 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-9/9.7--process_cls_await.sv.html" target="file-frame">tests/chapter-9/9.7--process_cls_await.sv</a>
-time_elapsed: 0.000s
-ram usage: 9772 KB
+time_elapsed: 0.004s
+ram usage: 10600 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-9 -e process_tb <a href="../../../tests/chapter-9/9.7--process_cls_await.sv.html" target="file-frame">tests/chapter-9/9.7--process_cls_await.sv</a>
-
-error: expected expression, found `null` instead
-  --&gt; <a href="../../../tests/chapter-9/9.7--process_cls_await.sv.html#l-20" target="file-frame">tests/chapter-9/9.7--process_cls_await.sv:20</a>:19-23:
+error: `process` not found
+  --&gt; <a href="../../../tests/chapter-9/9.7--process_cls_await.sv.html#l-8" target="file-frame">tests/chapter-9/9.7--process_cls_await.sv:8</a>:3-10:
    | 
-   |             wait(job[i] != null);
-   |                            ^^^^  
+   |         process job[] = new [N];
+   |         ^^^^^^^                 
 
+error: `j` not found
+  --&gt; <a href="../../../tests/chapter-9/9.7--process_cls_await.sv.html#l-12" target="file-frame">tests/chapter-9/9.7--process_cls_await.sv:12</a>:23-24:
+   | 
+   |                 automatic int k = j;
+   |                                   ^ 
+
+error: `process` not found
+  --&gt; <a href="../../../tests/chapter-9/9.7--process_cls_await.sv.html#l-14" target="file-frame">tests/chapter-9/9.7--process_cls_await.sv:14</a>:15-22:
+   | 
+   |                     job[k] = process::self();
+   |                              ^^^^^^^         
+
+compiler bug: lowering of expression `test(8)` to mir not yet supported
+  --&gt; <a href="../../../tests/chapter-9/9.7--process_cls_await.sv.html#l-26" target="file-frame">tests/chapter-9/9.7--process_cls_await.sv:26</a>:3-10:
+   | 
+   |         test(8);
+   |         ^^^^^^^ 
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:395
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of expression `test(8)` to mir not yet supported&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

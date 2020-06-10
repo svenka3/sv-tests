@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v</a>
-time_elapsed: 0.400s
-ram usage: 15440 KB
+time_elapsed: 0.376s
+ram usage: 14104 KB
 </pre>
 <pre class="log">
 
@@ -60,10 +60,14 @@ module bsg_tag_trace_replay (
 	output error_o;
 	localparam trace_ring_width_lp = rom_data_width_p - 4;
 	localparam lg_max_payload_width_lp = ((max_payload_width_p + 1) == 1 ? 1 : $clog2(max_payload_width_p + 1));
-	localparam bsg_tag_header_width_lp = (((((((num_clients_p == 1 ? 1 : $clog2(num_clients_p)) - 1) &gt;= 0 ? (num_clients_p == 1 ? 1 : $clog2(num_clients_p)) : 2 - (num_clients_p == 1 ? 1 : $clog2(num_clients_p))) + 1) + ((lg_max_payload_width_lp - 1) &gt;= 0 ? lg_max_payload_width_lp : 2 - lg_max_payload_width_lp)) - 1) &gt;= 0 ? ((((num_clients_p == 1 ? 1 : $clog2(num_clients_p)) - 1) &gt;= 0 ? (num_clients_p == 1 ? 1 : $clog2(num_clients_p)) : 2 - (num_clients_p == 1 ? 1 : $clog2(num_clients_p))) + 1) + ((lg_max_payload_width_lp - 1) &gt;= 0 ? lg_max_payload_width_lp : 2 - lg_max_payload_width_lp) : 2 - (((((num_clients_p == 1 ? 1 : $clog2(num_clients_p)) - 1) &gt;= 0 ? (num_clients_p == 1 ? 1 : $clog2(num_clients_p)) : 2 - (num_clients_p == 1 ? 1 : $clog2(num_clients_p))) + 1) + ((lg_max_payload_width_lp - 1) &gt;= 0 ? lg_max_payload_width_lp : 2 - lg_max_payload_width_lp)));
+	localparam bsg_tag_header_width_lp = (((((num_clients_p == 1 ? 1 : $clog2(num_clients_p)) &gt;= 1 ? (num_clients_p == 1 ? 1 : $clog2(num_clients_p)) : 2 - (num_clients_p == 1 ? 1 : $clog2(num_clients_p))) + 1) + (lg_max_payload_width_lp &gt;= 1 ? lg_max_payload_width_lp : 2 - lg_max_payload_width_lp)) &gt;= 1 ? (((num_clients_p == 1 ? 1 : $clog2(num_clients_p)) &gt;= 1 ? (num_clients_p == 1 ? 1 : $clog2(num_clients_p)) : 2 - (num_clients_p == 1 ? 1 : $clog2(num_clients_p))) + 1) + (lg_max_payload_width_lp &gt;= 1 ? lg_max_payload_width_lp : 2 - lg_max_payload_width_lp) : 2 - ((((num_clients_p == 1 ? 1 : $clog2(num_clients_p)) &gt;= 1 ? (num_clients_p == 1 ? 1 : $clog2(num_clients_p)) : 2 - (num_clients_p == 1 ? 1 : $clog2(num_clients_p))) + 1) + (lg_max_payload_width_lp &gt;= 1 ? lg_max_payload_width_lp : 2 - lg_max_payload_width_lp)));
 	wire tr_valid_lo;
 	wire [trace_ring_width_lp - 1:0] tr_data_lo;
 	wire tr_yumi_li;
+	function automatic [(rom_data_width_p - 4) - 1:0] sv2v_cast_DFAF6;
+		input reg [(rom_data_width_p - 4) - 1:0] inp;
+		sv2v_cast_DFAF6 = inp;
+	endfunction
 	bsg_fsb_node_trace_replay #(
 		.ring_width_p(trace_ring_width_lp),
 		.rom_addr_width_p(rom_addr_width_p)
@@ -84,7 +88,7 @@ module bsg_tag_trace_replay (
 	);
 	wire [bsg_tag_header_width_lp - 1:0] header_n = tr_data_lo[max_payload_width_p+:bsg_tag_header_width_lp];
 	wire [max_payload_width_p - 1:0] payload_n = tr_data_lo[0+:max_payload_width_p];
-	wire [(trace_ring_width_lp + 2) - 1:0] data_n = {1&#39;b0, payload_n, header_n, 1&#39;b1};
+	wire [trace_ring_width_lp + 1:0] data_n = {1&#39;b0, payload_n, header_n, 1&#39;b1};
 	wire piso_ready_lo;
 	assign tr_yumi_li = piso_ready_lo &amp; tr_valid_lo;
 	bsg_parallel_in_serial_out #(
@@ -109,10 +113,6 @@ module bsg_tag_trace_replay (
 			.data_o(en_r_o)
 		);
 	endgenerate
-	function automatic [(rom_data_width_p - 4) - 1:0] sv2v_cast_DFAF6;
-		input reg [(rom_data_width_p - 4) - 1:0] inp;
-		sv2v_cast_DFAF6 = inp;
-	endfunction
 endmodule
 
 </pre>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test unpacked arrays operations support (equality)
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 7.4.3
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-7/arrays/unpacked
@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/unpacked/equality.sv.html" target="file-frame">tests/chapter-7/arrays/unpacked/equality.sv</a>
 time_elapsed: 0.004s
-ram usage: 10032 KB
+ram usage: 10452 KB
 </pre>
 <pre class="log">
 
@@ -47,12 +47,25 @@ warning: `$display` not supported; ignored
    |     $display(&#34;:assert: (%d == 0)&#34;, (arr_a != arr_b));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: pattern has 8 fields, but type `bit` requires 1
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/equality.sv.html#l-13" target="file-frame">tests/chapter-7/arrays/unpacked/equality.sv:13</a>:10-35:
-   | 
-   |     arr_a = &#39;{1, 1, 1, 0, 0, 1, 1, 1};
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^ 
+proc %top.initial.331.0 () -&gt; ([8 x i1]$ %arr_a, [8 x i1]$ %arr_b) {
+0:
+    %1 = const i1 1
+    %2 = const i1 0
+    %3 = [i1 %1, %1, %1, %2, %2, %1, %1, %1]
+    %4 = const time 0s 1e
+    drv [8 x i1]$ %arr_a, %3, %4
+    drv [8 x i1]$ %arr_b, %3, %4
+    halt
+}
 
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %1 = [i1 %0, %0, %0, %0, %0, %0, %0, %0]
+    %arr_a = sig [8 x i1] %1
+    %arr_b = sig [8 x i1] %1
+    inst %top.initial.331.0 () -&gt; ([8 x i1]$ %arr_a, [8 x i1]$ %arr_b)
+    halt
+}
 
 </pre>
 </body>

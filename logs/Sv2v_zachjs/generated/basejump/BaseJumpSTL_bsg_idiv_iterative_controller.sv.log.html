@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_idiv_iterative_controller.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_idiv_iterative_controller.v</a>
-time_elapsed: 0.432s
-ram usage: 17956 KB
+time_elapsed: 0.396s
+ram usage: 16276 KB
 </pre>
 <pre class="log">
 
@@ -48,16 +48,6 @@ module bsg_idiv_iterative_controller (
 	v_o,
 	yumi_i
 );
-	localparam [5:0] WAIT = 0;
-	localparam [5:0] START = 1;
-	localparam [5:0] NEG0 = 2;
-	localparam [5:0] NEG1 = 3;
-	localparam [5:0] SHIFT = 4;
-	localparam [5:0] CALC = 5;
-	localparam [5:0] REPAIR = 6;
-	localparam [5:0] REMAIN = 7;
-	localparam [5:0] QUOT = 8;
-	localparam [5:0] DONE = 9;
 	parameter width_p = 32;
 	input clk_i;
 	input reset_i;
@@ -96,6 +86,7 @@ module bsg_idiv_iterative_controller (
 		end
 	end
 	wire [((width_p + 1) == 1 ? 1 : $clog2(width_p + 1)) - 1:0] calc_cnt;
+	localparam [5:0] CALC = 5;
 	wire calc_up_li = (state == CALC) &amp;&amp; (calc_cnt &lt; width_p);
 	wire calc_done = calc_cnt == width_p;
 	bsg_counter_clear_up #(
@@ -109,11 +100,20 @@ module bsg_idiv_iterative_controller (
 		.up_i(calc_up_li),
 		.count_o(calc_cnt)
 	);
+	localparam [5:0] WAIT = 0;
 	always @(posedge clk_i)
 		if (reset_i)
 			state &lt;= WAIT;
 		else
 			state &lt;= next_state;
+	localparam [5:0] DONE = 9;
+	localparam [5:0] NEG0 = 2;
+	localparam [5:0] NEG1 = 3;
+	localparam [5:0] QUOT = 8;
+	localparam [5:0] REMAIN = 7;
+	localparam [5:0] REPAIR = 6;
+	localparam [5:0] SHIFT = 4;
+	localparam [5:0] START = 1;
 	always @(*) begin
 		opA_sel_o = 1&#39;b0;
 		opA_ld_o = 1&#39;b0;

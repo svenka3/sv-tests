@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from yosys
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld
@@ -18,66 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v</a>
 time_elapsed: 0.004s
-ram usage: 10128 KB
+ram usage: 10600 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e reg_seq_example <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v</a>
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v.html#l-10" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v:10</a>:8-12:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #27)
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v.html#l-2" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v:2</a>:7-10:
    | 
-   |   q &lt;= 1&#39;b0;
-   |        ^^^^ 
-   = note: Casts `1&#39;b0` from `bit` to `logic`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v.html#l-10" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v:10</a>:8-12:
-   | 
-   |   q &lt;= 1&#39;b0;
-   |        ^^^^ 
+   | input clk, reset, d;
+   |       ^^^           
+   = note: Encountered at src/svlog/typeck.rs:61
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v.html#l-10" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v:10</a>:8-12:
-   | 
-   |   q &lt;= 1&#39;b0;
-   |        ^^^^ 
-   = note: Casts `1&#39;b0` from `bit [0:0]` to `bit`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v.html#l-10" target="file-frame">third_party/tools/yosys/tests/asicworld/code_tidbits_reg_seq_example.v:10</a>:8-12:
-   | 
-   |   q &lt;= 1&#39;b0;
-   |        ^^^^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-proc %reg_seq_example.always.84.0 (i1$ %clk, i1$ %reset, i1$ %d) -&gt; (i1$ %q) {
-init:
-    %clk1 = prb i1$ %clk
-    %reset1 = prb i1$ %reset
-    wait %check, %clk, %reset
-check:
-    %clk2 = prb i1$ %clk
-    %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
-    %posedge = and i1 %1, %2
-    %reset2 = prb i1$ %reset
-    %3 = eq i1 %reset1, %0
-    %4 = neq i1 %reset2, %0
-    %posedge1 = and i1 %3, %4
-    %event_or = or i1 %posedge, %posedge1
-    br %event_or, %init, %event
-event:
-    %5 = const time 0s 1d
-    br %4, %if_false, %if_true
-if_true:
-    drv i1$ %q, %0, %5
-    br %init
-if_false:
-    %d1 = prb i1$ %d
-    drv i1$ %q, %d1, %5
-    br %init
-}
-
-entity @reg_seq_example (i1$ %clk, i1$ %reset, i1$ %d) -&gt; (i1$ %q) {
-    inst %reg_seq_example.always.84.0 (i1$ %clk, i1$ %reset, i1$ %d) -&gt; (i1$ %q)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #27)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

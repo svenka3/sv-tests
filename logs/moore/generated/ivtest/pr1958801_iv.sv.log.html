@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,19 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1958801.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1958801.v</a>
 time_elapsed: 0.004s
-ram usage: 10360 KB
+ram usage: 10948 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e s_cmpGe <a href="../../../../third_party/tests/ivtest/ivltests/pr1958801.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1958801.v</a>
-entity @s_cmpGe (i32$ %in00, i32$ %in01) -&gt; (i1$ %out00) {
-    %in001 = prb i32$ %in00
-    %in011 = prb i32$ %in01
-    %0 = uge i32 %in001, %in011
-    %1 = const time 0s 1e
-    drv i1$ %out00, %0, %1
-    halt
-}
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #58)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1958801.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1958801.v:10</a>:12-17:
+   | 
+   |     output out00;
+   |            ^^^^^ 
+   = note: Encountered at src/svlog/typeck.rs:61
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #58)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

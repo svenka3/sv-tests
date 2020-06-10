@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,16 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v</a>
 time_elapsed: 0.004s
-ram usage: 10448 KB
+ram usage: 10360 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v</a>
-compiler bug: no ast node for n4 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v:31</a>:9-27:
    | 
@@ -40,19 +35,23 @@ warning: `$display` not supported; ignored
    |         $display(&#34;FAILED - {2{4&#39;b1011}} s/b 8&#39;b10111011 - is %b&#34;,result);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-compiler bug: assertion failed: mir.ty.is_bool()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/rptconcat.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/rptconcat.v:30</a>:9-31:
-   | 
-   |      if(result === 8&#39;b10111011)
-   |         ^^^^^^^^^^^^^^^^^^^^^^ 
-   = note: Assertion failed: mir.ty.is_bool()
-   = note: Encountered at src/svlog/codegen.rs:1236
+proc %test.initial.45.0 (i8$ %result) -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    halt
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;assertion failed: mir.ty.is_bool()&#39;, &lt;::std::macros::panic macros&gt;:5:6
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @test () -&gt; () {
+    %0 = const i8 0
+    %result = sig i8 %0
+    %1 = const i8 187
+    %2 = const time 0s 1e
+    drv i8$ %result, %1, %2
+    inst %test.initial.45.0 (i8$ %result) -&gt; ()
+    halt
+}
 
 </pre>
 </body>

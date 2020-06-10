@@ -18,34 +18,34 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/mem1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/mem1.v</a>
 time_elapsed: 0.004s
-ram usage: 10592 KB
+ram usage: 11020 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/mem1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/mem1.v</a>
-compiler bug: no ast node for n30 in the map
+error: cannot cast a value of type `reg [23:0]` to `logic [23:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mem1.v.html#l-55" target="file-frame">third_party/tests/ivtest/ivltests/mem1.v:55</a>:29-45:
+   | 
+   |     assign data = (write) ? testvec[counter] : 24&#39;bz;
+   |                             ^^^^^^^^^^^^^^^^         
+
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([23:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([23:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [23:0]
+compiler bug: type assertion failed: `&lt;error&gt;` != `logic [23:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mem1.v.html#l-55" target="file-frame">third_party/tests/ivtest/ivltests/mem1.v:55</a>:29-45:
+   | 
+   |     assign data = (write) ? testvec[counter] : 24&#39;bz;
+   |                             ^^^^^^^^^^^^^^^^         
+   = note: Type mismatch:
+   = note:     Left-hand side:  `&lt;error&gt;`
+   = note:     Right-hand side: `logic [23:0]`
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:231
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-warning: `$readmemb` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mem1.v.html#l-42" target="file-frame">third_party/tests/ivtest/ivltests/mem1.v:42</a>:9-51:
-   | 
-   |         $readmemb(&#34;ivltests/mem1.dat&#34;, testvec, 0);
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
- ERROR moore_svlog::hir::lowering &gt; Expr #105
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mem1.v.html#l-44" target="file-frame">third_party/tests/ivtest/ivltests/mem1.v:44</a>:29-38:
-   | 
-   |         for (i = 0; i &lt; 16; i = i + 1)
-   |                             ^^^^^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1368
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, &lt;::std::macros::panic macros&gt;:5:6
+thread &#39;main&#39; panicked at &#39;type assertion failed: `&lt;error&gt;` != `logic [23:0]`&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

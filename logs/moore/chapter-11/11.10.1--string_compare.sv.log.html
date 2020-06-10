@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: string comparison test
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: 11.10.1
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-11
@@ -17,8 +17,8 @@ top_module:
 type: simulation parsing
 mode: parsing
 files: <a href="../../../tests/chapter-11/11.10.1--string_compare.sv.html" target="file-frame">tests/chapter-11/11.10.1--string_compare.sv</a>
-time_elapsed: 0.004s
-ram usage: 10184 KB
+time_elapsed: 0.000s
+ram usage: 10256 KB
 </pre>
 <pre class="log">
 
@@ -29,22 +29,17 @@ warning: `$display` not supported; ignored
    |     $display(&#34;:assert:(&#39;%s&#39; == &#39;%s&#39;)&#34;, a, b);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-proc %top.initial.58.0 () -&gt; (i112$ %a, i112$ %b) {
-0:
-    %1 = const i112 0
-    %2 = const time 0s 1e
-    drv i112$ %a, %1, %2
-    drv i112$ %b, %1, %2
-    halt
-}
+error: cannot cast a value of type `byte [0:0]` to `bit [112:1]`
+  --&gt; <a href="../../../tests/chapter-11/11.10.1--string_compare.sv.html#l-13" target="file-frame">tests/chapter-11/11.10.1--string_compare.sv:13</a>:6-12:
+   | 
+   |     a = &#34;Test&#34;;
+   |         ^^^^^^ 
+   = note: `byte [0:0]` can be cast to an intermediate `bit unsigned [111:0]`, but
+   = note: `bit unsigned [111:0]` cannot be cast to the final `bit [112:1]`
 
-entity @top () -&gt; () {
-    %0 = const i112 0
-    %a = sig i112 %0
-    %b = sig i112 %0
-    inst %top.initial.58.0 () -&gt; (i112$ %a, i112$ %b)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Byte), sign: signed, sign_explicit: false, dims: [Range([0:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([112:1])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: byte [0:0] -&gt; PackSBVT bit signed [7:0] -&gt; Range([111:0], true) bit signed [111:0] -&gt; Sign(unsigned) bit unsigned [111:0]
 
 </pre>
 </body>

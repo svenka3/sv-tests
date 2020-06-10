@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test unpacked arrays assignments
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: 7.6 7.4.2
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-7/arrays/unpacked
@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv</a>
 time_elapsed: 0.004s
-ram usage: 10228 KB
+ram usage: 10204 KB
 </pre>
 <pre class="log">
 
@@ -29,85 +29,14 @@ warning: `$display` not supported; ignored
    |     $display(&#34;:assert: ((%d == 0) and (%d == 1) and (%d == 2) and (%d == 3))&#34;,
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-13" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:13</a>:9-10:
+error: cannot cast a value of type `int $ [3:0]` to `int $ [0:3]`
+  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-18" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:18</a>:6-7:
    | 
-   |     A[0] = 0;
-   |            ^ 
-   = note: Casts `0` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-13" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:13</a>:9-10:
-   | 
-   |     A[0] = 0;
-   |            ^ 
+   |     B = A;
+   |         ^ 
+   = note: `int $ [3:0]` has no simple bit-vector type representation
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-14" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:14</a>:9-10:
-   | 
-   |     A[1] = 1;
-   |            ^ 
-   = note: Casts `1` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-14" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:14</a>:9-10:
-   | 
-   |     A[1] = 1;
-   |            ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-15" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:15</a>:9-10:
-   | 
-   |     A[2] = 2;
-   |            ^ 
-   = note: Casts `2` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-15" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:15</a>:9-10:
-   | 
-   |     A[2] = 2;
-   |            ^ 
-
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-16" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:16</a>:9-10:
-   | 
-   |     A[3] = 3;
-   |            ^ 
-   = note: Casts `3` from `int` to `bit signed [0:0]`
-  --&gt; <a href="../../../../../tests/chapter-7/arrays/unpacked/assignments.sv.html#l-16" target="file-frame">tests/chapter-7/arrays/unpacked/assignments.sv:16</a>:9-10:
-   | 
-   |     A[3] = 3;
-   |            ^ 
-
-proc %top.initial.150.0 () -&gt; (i32$ %A, i32$ %B) {
-0:
-    %1 = exts i1$, i32$ %A, 0, 1
-    %2 = const i1 0
-    %3 = const time 0s 1e
-    drv i1$ %1, %2, %3
-    %4 = const i32 1
-    %5 = const i32 0
-    %6 = sig i32 %5
-    %7 = shr i32$ %A, i32$ %6, i32 %4
-    %8 = exts i1$, i32$ %7, 0, 1
-    %9 = const i1 1
-    drv i1$ %8, %9, %3
-    %10 = const i32 2
-    %11 = sig i32 %5
-    %12 = shr i32$ %A, i32$ %11, i32 %10
-    %13 = exts i1$, i32$ %12, 0, 1
-    drv i1$ %13, %2, %3
-    %14 = const i32 3
-    %15 = sig i32 %5
-    %16 = shr i32$ %A, i32$ %15, i32 %14
-    %17 = exts i1$, i32$ %16, 0, 1
-    drv i1$ %17, %9, %3
-    %A1 = prb i32$ %A
-    drv i32$ %B, %A1, %3
-    halt
-}
-
-entity @top () -&gt; () {
-    %0 = const i32 0
-    %A = sig i32 %0
-    %B = sig i32 %0
-    inst %top.initial.150.0 () -&gt; (i32$ %A, i32$ %B)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: int $ [3:0]
 
 </pre>
 </body>

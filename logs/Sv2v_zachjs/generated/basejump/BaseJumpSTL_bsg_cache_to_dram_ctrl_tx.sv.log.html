@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_dram_ctrl_tx.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_dram_ctrl_tx.v</a>
-time_elapsed: 0.580s
-ram usage: 16020 KB
+time_elapsed: 0.264s
+ram usage: 16336 KB
 </pre>
 <pre class="log">
 
@@ -51,7 +51,7 @@ module bsg_cache_to_dram_ctrl_tx (
 	input v_i;
 	input [lg_num_cache_lp - 1:0] tag_i;
 	output wire ready_o;
-	input [((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : ((data_width_p - 1) &gt;= 0 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):((num_cache_p - 1) &gt;= 0 ? ((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) : ((data_width_p - 1) &gt;= 0 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
+	input [(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? (num_cache_p * data_width_p) + -1 : (num_cache_p * (2 - data_width_p)) + ((data_width_p - 1) - 1)) : (data_width_p &gt;= 1 ? ((2 - num_cache_p) * data_width_p) + (((num_cache_p - 1) * data_width_p) - 1) : ((2 - num_cache_p) * (2 - data_width_p)) + (((data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))) - 1))):(num_cache_p &gt;= 1 ? (data_width_p &gt;= 1 ? 0 : data_width_p - 1) : (data_width_p &gt;= 1 ? (num_cache_p - 1) * data_width_p : (data_width_p - 1) + ((num_cache_p - 1) * (2 - data_width_p))))] dma_data_i;
 	input [num_cache_p - 1:0] dma_data_v_i;
 	output wire [num_cache_p - 1:0] dma_data_yumi_o;
 	output wire app_wdf_wren_o;
@@ -111,7 +111,7 @@ module bsg_cache_to_dram_ctrl_tx (
 			app_wdf_end_o = 1&#39;b0;
 			tag_fifo_yumi_li = 1&#39;b0;
 		end
-	assign app_wdf_data_o = dma_data_i[((data_width_p - 1) &gt;= 0 ? 0 : data_width_p - 1) + (((num_cache_p - 1) &gt;= 0 ? tag_fifo_data_lo : 0 - (tag_fifo_data_lo - (num_cache_p - 1))) * ((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p))+:((data_width_p - 1) &gt;= 0 ? data_width_p : 2 - data_width_p)];
+	assign app_wdf_data_o = dma_data_i[(data_width_p &gt;= 1 ? 0 : data_width_p - 1) + ((num_cache_p &gt;= 1 ? tag_fifo_data_lo : 0 - (tag_fifo_data_lo - (num_cache_p - 1))) * (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p))+:(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)];
 	assign app_wdf_mask_o = 1&#39;sb0;
 endmodule
 

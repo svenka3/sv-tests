@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v</a>
-time_elapsed: 0.956s
-ram usage: 20876 KB
+time_elapsed: 1.012s
+ram usage: 16768 KB
 </pre>
 <pre class="log">
 
@@ -530,8 +530,8 @@ module bsg_dmc_phy (
 	assign ck_n_o = clk_1x_180;
 	assign dqs_p_ie_n_o = ~{dq_group_lp {rddata_en[0+:1] | dqs_select}};
 	assign dqs_n_ie_n_o = ~{dq_group_lp {rddata_en[0+:1] | dqs_select}};
-	wire [((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) + -1 : ((2 - ((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)) * 8) + (((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8) - 1)):((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? 0 : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8)] dfi_wrdata_array;
-	wire [((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) + -1 : ((2 - ((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)) * 8) + (((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8) - 1)):((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? 0 : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8)] dfi_rddata_array;
+	wire [(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) + -1 : ((2 - ((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)) * 8) + (((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8) - 1)):(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? 0 : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8)] dfi_wrdata_array;
+	wire [(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) + -1 : ((2 - ((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)) * 8) + (((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8) - 1)):(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? 0 : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8)] dfi_rddata_array;
 	bsg_make_2D_array #(
 		.width_p(8),
 		.items_p((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)
@@ -554,7 +554,7 @@ module bsg_dmc_phy (
 				.clk_2x(clk_2x_0),
 				.clk_2x_n(clk_2x_180),
 				.wrdata_en(dfi_wrdata_en_i),
-				.wrdata({dfi_wrdata_array[((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? dq_group_lp + i : 0 - ((dq_group_lp + i) - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8], dfi_wrdata_array[((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? i : 0 - (i - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8]}),
+				.wrdata({dfi_wrdata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? dq_group_lp + i : 0 - ((dq_group_lp + i) - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8], dfi_wrdata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? i : 0 - (i - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8]}),
 				.wrdata_mask({dfi_wrdata_mask_i[dq_group_lp + i], dfi_wrdata_mask_i[i]}),
 				.dm_oe_n(dm_oe_n_o[i]),
 				.dm_o(dm_o[i]),
@@ -566,7 +566,7 @@ module bsg_dmc_phy (
 				.dqs_n_o(dqs_n_o[i]),
 				.dqs_select(dqs_select),
 				.rp_inc(rp_inc),
-				.rddata({dfi_rddata_array[((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? dq_group_lp + i : 0 - ((dq_group_lp + i) - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8], dfi_rddata_array[((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) &gt;= 0 ? i : 0 - (i - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8]}),
+				.rddata({dfi_rddata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? dq_group_lp + i : 0 - ((dq_group_lp + i) - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8], dfi_rddata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? i : 0 - (i - (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1))) * 8+:8]}),
 				.dq_i(dq_i[8 * i+:8]),
 				.dqs_p_i(dqs_p_i[i]),
 				.dqs_n_i(dqs_n_i[i])

@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: A module testing while loop
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: 12.7.4
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-12
@@ -18,17 +18,34 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-12/12.7.4--while.sv.html" target="file-frame">tests/chapter-12/12.7.4--while.sv</a>
 time_elapsed: 0.004s
-ram usage: 9588 KB
+ram usage: 10884 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-12 -e while_tb <a href="../../../tests/chapter-12/12.7.4--while.sv.html" target="file-frame">tests/chapter-12/12.7.4--while.sv</a>
-error: pattern has 4 fields, but type `byte [0:0]` requires 1
-  --&gt; <a href="../../../tests/chapter-12/12.7.4--while.sv.html#l-7" target="file-frame">tests/chapter-12/12.7.4--while.sv:7</a>:20-49:
+error: cannot cast to a value of type `string`
+  --&gt; <a href="../../../tests/chapter-12/12.7.4--while.sv.html#l-7" target="file-frame">tests/chapter-12/12.7.4--while.sv:7</a>:22-27:
    | 
    |     string test [4] = &#39;{&#34;111&#34;, &#34;222&#34;, &#34;333&#34;, &#34;444&#34;};
-   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   |                         ^^^^^                       
+   = note: `string` has no simple bit-vector type representation
 
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: byte [0:0] -&gt; PackSBVT bit signed [7:0]
+compiler bug: type assertion failed: `&lt;error&gt;` != `string`
+  --&gt; <a href="../../../tests/chapter-12/12.7.4--while.sv.html#l-7" target="file-frame">tests/chapter-12/12.7.4--while.sv:7</a>:22-27:
+   | 
+   |     string test [4] = &#39;{&#34;111&#34;, &#34;222&#34;, &#34;333&#34;, &#34;444&#34;};
+   |                         ^^^^^                       
+   = note: Type mismatch:
+   = note:     Left-hand side:  `&lt;error&gt;`
+   = note:     Right-hand side: `string`
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:802
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;type assertion failed: `&lt;error&gt;` != `string`&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

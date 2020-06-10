@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v</a>
-time_elapsed: 1.940s
-ram usage: 26420 KB
+time_elapsed: 1.364s
+ram usage: 24040 KB
 </pre>
 <pre class="log">
 
@@ -64,10 +64,6 @@ module bsg_dmc_controller (
 	dfi_rddata_valid_i,
 	dmc_p_i
 );
-	localparam [1:0] IDLE = 0;
-	localparam [1:0] INIT = 1;
-	localparam [1:0] REFR = 2;
-	localparam [1:0] LDST = 3;
 	import bsg_dmc_pkg::bsg_dmc_s;
 	parameter ui_addr_width_p = &#34;inv&#34;;
 	parameter ui_data_width_p = &#34;inv&#34;;
@@ -167,16 +163,16 @@ module bsg_dmc_controller (
 	wire [(ui_mask_width_lp + ui_data_width_p) - 1:0] tx_sipo_data_li;
 	wire tx_sipo_ready_lo;
 	wire [ui_burst_length_lp - 1:0] tx_sipo_valid_lo;
-	wire [((ui_burst_length_lp - 1) &gt;= 0 ? (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? (ui_burst_length_lp * (ui_mask_width_lp + ui_data_width_p)) + -1 : (ui_burst_length_lp * (2 - (ui_mask_width_lp + ui_data_width_p))) + (((ui_mask_width_lp + ui_data_width_p) - 1) - 1)) : (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? ((2 - ui_burst_length_lp) * (ui_mask_width_lp + ui_data_width_p)) + (((ui_burst_length_lp - 1) * (ui_mask_width_lp + ui_data_width_p)) - 1) : ((2 - ui_burst_length_lp) * (2 - (ui_mask_width_lp + ui_data_width_p))) + ((((ui_mask_width_lp + ui_data_width_p) - 1) + ((ui_burst_length_lp - 1) * (2 - (ui_mask_width_lp + ui_data_width_p)))) - 1))):((ui_burst_length_lp - 1) &gt;= 0 ? (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? 0 : (ui_mask_width_lp + ui_data_width_p) - 1) : (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? (ui_burst_length_lp - 1) * (ui_mask_width_lp + ui_data_width_p) : ((ui_mask_width_lp + ui_data_width_p) - 1) + ((ui_burst_length_lp - 1) * (2 - (ui_mask_width_lp + ui_data_width_p)))))] tx_sipo_data_lo;
+	wire [(ui_burst_length_lp &gt;= 1 ? ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? (ui_burst_length_lp * (ui_mask_width_lp + ui_data_width_p)) + -1 : (ui_burst_length_lp * (2 - (ui_mask_width_lp + ui_data_width_p))) + (((ui_mask_width_lp + ui_data_width_p) - 1) - 1)) : ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ((2 - ui_burst_length_lp) * (ui_mask_width_lp + ui_data_width_p)) + (((ui_burst_length_lp - 1) * (ui_mask_width_lp + ui_data_width_p)) - 1) : ((2 - ui_burst_length_lp) * (2 - (ui_mask_width_lp + ui_data_width_p))) + ((((ui_mask_width_lp + ui_data_width_p) - 1) + ((ui_burst_length_lp - 1) * (2 - (ui_mask_width_lp + ui_data_width_p)))) - 1))):(ui_burst_length_lp &gt;= 1 ? ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? 0 : (ui_mask_width_lp + ui_data_width_p) - 1) : ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? (ui_burst_length_lp - 1) * (ui_mask_width_lp + ui_data_width_p) : ((ui_mask_width_lp + ui_data_width_p) - 1) + ((ui_burst_length_lp - 1) * (2 - (ui_mask_width_lp + ui_data_width_p)))))] tx_sipo_data_lo;
 	wire [$clog2(ui_burst_length_lp):0] tx_sipo_yumi_cnt_li;
 	wire tx_data_piso_valid_li;
-	reg [((dfi_burst_length_lp - 1) &gt;= 0 ? ((dfi_data_width_p - 1) &gt;= 0 ? (dfi_burst_length_lp * dfi_data_width_p) + -1 : (dfi_burst_length_lp * (2 - dfi_data_width_p)) + ((dfi_data_width_p - 1) - 1)) : ((dfi_data_width_p - 1) &gt;= 0 ? ((2 - dfi_burst_length_lp) * dfi_data_width_p) + (((dfi_burst_length_lp - 1) * dfi_data_width_p) - 1) : ((2 - dfi_burst_length_lp) * (2 - dfi_data_width_p)) + (((dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))) - 1))):((dfi_burst_length_lp - 1) &gt;= 0 ? ((dfi_data_width_p - 1) &gt;= 0 ? 0 : dfi_data_width_p - 1) : ((dfi_data_width_p - 1) &gt;= 0 ? (dfi_burst_length_lp - 1) * dfi_data_width_p : (dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))))] tx_data_piso_data_li;
+	reg [(dfi_burst_length_lp &gt;= 1 ? (dfi_data_width_p &gt;= 1 ? (dfi_burst_length_lp * dfi_data_width_p) + -1 : (dfi_burst_length_lp * (2 - dfi_data_width_p)) + ((dfi_data_width_p - 1) - 1)) : (dfi_data_width_p &gt;= 1 ? ((2 - dfi_burst_length_lp) * dfi_data_width_p) + (((dfi_burst_length_lp - 1) * dfi_data_width_p) - 1) : ((2 - dfi_burst_length_lp) * (2 - dfi_data_width_p)) + (((dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))) - 1))):(dfi_burst_length_lp &gt;= 1 ? (dfi_data_width_p &gt;= 1 ? 0 : dfi_data_width_p - 1) : (dfi_data_width_p &gt;= 1 ? (dfi_burst_length_lp - 1) * dfi_data_width_p : (dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))))] tx_data_piso_data_li;
 	wire tx_data_piso_ready_lo;
 	wire tx_data_piso_valid_lo;
 	wire [dfi_data_width_p - 1:0] tx_data_piso_data_lo;
 	wire tx_data_piso_yumi_li;
 	wire tx_mask_piso_valid_li;
-	reg [((dfi_burst_length_lp - 1) &gt;= 0 ? ((dfi_mask_width_lp - 1) &gt;= 0 ? (dfi_burst_length_lp * dfi_mask_width_lp) + -1 : (dfi_burst_length_lp * (2 - dfi_mask_width_lp)) + ((dfi_mask_width_lp - 1) - 1)) : ((dfi_mask_width_lp - 1) &gt;= 0 ? ((2 - dfi_burst_length_lp) * dfi_mask_width_lp) + (((dfi_burst_length_lp - 1) * dfi_mask_width_lp) - 1) : ((2 - dfi_burst_length_lp) * (2 - dfi_mask_width_lp)) + (((dfi_mask_width_lp - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_mask_width_lp))) - 1))):((dfi_burst_length_lp - 1) &gt;= 0 ? ((dfi_mask_width_lp - 1) &gt;= 0 ? 0 : dfi_mask_width_lp - 1) : ((dfi_mask_width_lp - 1) &gt;= 0 ? (dfi_burst_length_lp - 1) * dfi_mask_width_lp : (dfi_mask_width_lp - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_mask_width_lp))))] tx_mask_piso_data_li;
+	reg [(dfi_burst_length_lp &gt;= 1 ? (dfi_mask_width_lp &gt;= 1 ? (dfi_burst_length_lp * dfi_mask_width_lp) + -1 : (dfi_burst_length_lp * (2 - dfi_mask_width_lp)) + ((dfi_mask_width_lp - 1) - 1)) : (dfi_mask_width_lp &gt;= 1 ? ((2 - dfi_burst_length_lp) * dfi_mask_width_lp) + (((dfi_burst_length_lp - 1) * dfi_mask_width_lp) - 1) : ((2 - dfi_burst_length_lp) * (2 - dfi_mask_width_lp)) + (((dfi_mask_width_lp - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_mask_width_lp))) - 1))):(dfi_burst_length_lp &gt;= 1 ? (dfi_mask_width_lp &gt;= 1 ? 0 : dfi_mask_width_lp - 1) : (dfi_mask_width_lp &gt;= 1 ? (dfi_burst_length_lp - 1) * dfi_mask_width_lp : (dfi_mask_width_lp - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_mask_width_lp))))] tx_mask_piso_data_li;
 	wire tx_mask_piso_ready_lo;
 	wire tx_mask_piso_valid_lo;
 	wire [dfi_mask_width_lp - 1:0] tx_mask_piso_data_lo;
@@ -185,7 +181,7 @@ module bsg_dmc_controller (
 	wire [(dfi_data_width_p * dfi_burst_length_lp) - 1:0] tx_data;
 	wire [(dfi_mask_width_lp * dfi_burst_length_lp) - 1:0] tx_mask;
 	wire rx_piso_valid_li;
-	wire [((ui_burst_length_lp - 1) &gt;= 0 ? ((ui_data_width_p - 1) &gt;= 0 ? (ui_burst_length_lp * ui_data_width_p) + -1 : (ui_burst_length_lp * (2 - ui_data_width_p)) + ((ui_data_width_p - 1) - 1)) : ((ui_data_width_p - 1) &gt;= 0 ? ((2 - ui_burst_length_lp) * ui_data_width_p) + (((ui_burst_length_lp - 1) * ui_data_width_p) - 1) : ((2 - ui_burst_length_lp) * (2 - ui_data_width_p)) + (((ui_data_width_p - 1) + ((ui_burst_length_lp - 1) * (2 - ui_data_width_p))) - 1))):((ui_burst_length_lp - 1) &gt;= 0 ? ((ui_data_width_p - 1) &gt;= 0 ? 0 : ui_data_width_p - 1) : ((ui_data_width_p - 1) &gt;= 0 ? (ui_burst_length_lp - 1) * ui_data_width_p : (ui_data_width_p - 1) + ((ui_burst_length_lp - 1) * (2 - ui_data_width_p))))] rx_piso_data_li;
+	wire [(ui_burst_length_lp &gt;= 1 ? (ui_data_width_p &gt;= 1 ? (ui_burst_length_lp * ui_data_width_p) + -1 : (ui_burst_length_lp * (2 - ui_data_width_p)) + ((ui_data_width_p - 1) - 1)) : (ui_data_width_p &gt;= 1 ? ((2 - ui_burst_length_lp) * ui_data_width_p) + (((ui_burst_length_lp - 1) * ui_data_width_p) - 1) : ((2 - ui_burst_length_lp) * (2 - ui_data_width_p)) + (((ui_data_width_p - 1) + ((ui_burst_length_lp - 1) * (2 - ui_data_width_p))) - 1))):(ui_burst_length_lp &gt;= 1 ? (ui_data_width_p &gt;= 1 ? 0 : ui_data_width_p - 1) : (ui_data_width_p &gt;= 1 ? (ui_burst_length_lp - 1) * ui_data_width_p : (ui_data_width_p - 1) + ((ui_burst_length_lp - 1) * (2 - ui_data_width_p))))] rx_piso_data_li;
 	wire rx_piso_ready_lo;
 	wire rx_piso_valid_lo;
 	wire [ui_data_width_p - 1:0] rx_piso_data_lo;
@@ -194,7 +190,7 @@ module bsg_dmc_controller (
 	wire [dfi_data_width_p - 1:0] rx_sipo_data_li;
 	wire rx_sipo_ready_lo;
 	wire [dfi_burst_length_lp - 1:0] rx_sipo_valid_lo;
-	wire [((dfi_burst_length_lp - 1) &gt;= 0 ? ((dfi_data_width_p - 1) &gt;= 0 ? (dfi_burst_length_lp * dfi_data_width_p) + -1 : (dfi_burst_length_lp * (2 - dfi_data_width_p)) + ((dfi_data_width_p - 1) - 1)) : ((dfi_data_width_p - 1) &gt;= 0 ? ((2 - dfi_burst_length_lp) * dfi_data_width_p) + (((dfi_burst_length_lp - 1) * dfi_data_width_p) - 1) : ((2 - dfi_burst_length_lp) * (2 - dfi_data_width_p)) + (((dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))) - 1))):((dfi_burst_length_lp - 1) &gt;= 0 ? ((dfi_data_width_p - 1) &gt;= 0 ? 0 : dfi_data_width_p - 1) : ((dfi_data_width_p - 1) &gt;= 0 ? (dfi_burst_length_lp - 1) * dfi_data_width_p : (dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))))] rx_sipo_data_lo;
+	wire [(dfi_burst_length_lp &gt;= 1 ? (dfi_data_width_p &gt;= 1 ? (dfi_burst_length_lp * dfi_data_width_p) + -1 : (dfi_burst_length_lp * (2 - dfi_data_width_p)) + ((dfi_data_width_p - 1) - 1)) : (dfi_data_width_p &gt;= 1 ? ((2 - dfi_burst_length_lp) * dfi_data_width_p) + (((dfi_burst_length_lp - 1) * dfi_data_width_p) - 1) : ((2 - dfi_burst_length_lp) * (2 - dfi_data_width_p)) + (((dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))) - 1))):(dfi_burst_length_lp &gt;= 1 ? (dfi_data_width_p &gt;= 1 ? 0 : dfi_data_width_p - 1) : (dfi_data_width_p &gt;= 1 ? (dfi_burst_length_lp - 1) * dfi_data_width_p : (dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))))] rx_sipo_data_lo;
 	wire [$clog2(burst_data_width_p / dfi_data_width_p):0] rx_sipo_yumi_cnt_li;
 	wire [(dfi_data_width_p * dfi_burst_length_lp) - 1:0] rx_data;
 	wire [15:0] row_addr;
@@ -236,6 +232,10 @@ module bsg_dmc_controller (
 	assign app_ref_ack_o = app_ref_req_i &amp; ~app_wdf_end_i;
 	assign app_zq_ack_o = app_zq_req_i;
 	assign app_sr_active_o = app_sr_req_i;
+	function automatic [3:0] sv2v_cast_4;
+		input reg [3:0] inp;
+		sv2v_cast_4 = inp;
+	endfunction
 	assign tbl = sv2v_cast_4($clog2((burst_data_width_p / dfi_data_width_p) &lt;&lt; 1));
 	assign app_rdy_o = ~cmd_afifo_wfull;
 	assign cmd_afifo_wclk = ui_clk_i;
@@ -244,6 +244,7 @@ module bsg_dmc_controller (
 	assign cmd_afifo_wdata = {app_cmd_i[0], app_addr_i};
 	assign cmd_afifo_rclk = dfi_clk_i;
 	assign cmd_afifo_rrst = dfi_clk_sync_rst_i;
+	localparam [1:0] LDST = 3;
 	assign cmd_afifo_rinc = (cmd_afifo_rvalid &amp; cmd_sfifo_ready) &amp; ((cstate == LDST) &amp;&amp; (ldst_tick == 0));
 	bsg_async_fifo #(
 		.width_p(ui_addr_width_p + 1),
@@ -285,6 +286,10 @@ module bsg_dmc_controller (
 	);
 	assign tx_sipo_valid_li = wrdata_afifo_rvalid;
 	assign tx_sipo_data_li = wrdata_afifo_rdata;
+	function automatic [$clog2(ui_burst_length_lp):0] sv2v_cast_F8E79;
+		input reg [$clog2(ui_burst_length_lp):0] inp;
+		sv2v_cast_F8E79 = inp;
+	endfunction
 	assign tx_sipo_yumi_cnt_li = sv2v_cast_F8E79((shoot &amp;&amp; (cmd_sfifo_rdata[23:20] == WRITE) ? ui_burst_length_lp : 0));
 	bsg_serial_in_parallel_out #(
 		.width_p(ui_data_width_p + ui_mask_width_lp),
@@ -299,14 +304,24 @@ module bsg_dmc_controller (
 		.data_o(tx_sipo_data_lo),
 		.yumi_cnt_i(tx_sipo_yumi_cnt_li)
 	);
+	function automatic [15:0] sv2v_cast_16;
+		input reg [15:0] inp;
+		sv2v_cast_16 = inp;
+	endfunction
 	assign col_addr = sv2v_cast_16(((1 &lt;&lt; dmc_p_i.col_width) - 1) &amp; cmd_afifo_rdata[ui_addr_width_p - 1:0]);
 	assign row_addr = sv2v_cast_16(((1 &lt;&lt; dmc_p_i.row_width) - 1) &amp; (cmd_afifo_rdata[ui_addr_width_p - 1:0] &gt;&gt; dmc_p_i.col_width));
+	function automatic [2:0] sv2v_cast_3;
+		input reg [2:0] inp;
+		sv2v_cast_3 = inp;
+	endfunction
 	assign bank_addr = sv2v_cast_3(((1 &lt;&lt; dmc_p_i.bank_width) - 1) &amp; (cmd_afifo_rdata[ui_addr_width_p - 1:0] &gt;&gt; ({1&#39;b0, dmc_p_i.col_width} + {1&#39;b0, dmc_p_i.row_width})));
 	always @(posedge dfi_clk_i)
 		if (dfi_clk_sync_rst_i)
 			init_calib_complete_o &lt;= 0;
 		else if (init_done)
 			init_calib_complete_o &lt;= 1;
+	localparam [1:0] IDLE = 0;
+	localparam [1:0] INIT = 1;
 	always @(posedge dfi_clk_i)
 		if (dfi_clk_sync_rst_i)
 			init_tick &lt;= 0;
@@ -371,6 +386,7 @@ module bsg_dmc_controller (
 				refr_req &lt;= 0;
 			else if (ref_tick == dmc_p_i.trefi)
 				refr_req &lt;= 1;
+	localparam [1:0] REFR = 2;
 	assign refr_ack = ((cstate == REFR) &amp; push_refr_cmd) &amp; (refr_tick == 0);
 	always @(posedge dfi_clk_i)
 		if (dfi_clk_sync_rst_i)
@@ -674,15 +690,15 @@ module bsg_dmc_controller (
 					open_bank[cmd_sfifo_wdata[18:16]] &lt;= 1&#39;b0;
 	generate
 		for (k = 0; k &lt; ui_burst_length_lp; k = k + 1) begin : tx_flatten
-			assign tx_data[k * ui_data_width_p+:ui_data_width_p] = tx_sipo_data_lo[(((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? (((ui_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (ui_burst_length_lp - 1))) * (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? 0 : (ui_mask_width_lp + ui_data_width_p) - 1) : (((((ui_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (ui_burst_length_lp - 1))) * (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? 0 : (ui_mask_width_lp + ui_data_width_p) - 1)) - ui_data_width_p) + 1)+:ui_data_width_p];
-			assign tx_mask[k * ui_mask_width_lp+:ui_mask_width_lp] = tx_sipo_data_lo[(((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? (((ui_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (ui_burst_length_lp - 1))) * (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? ui_data_width_p : 0 - (ui_data_width_p - ((ui_mask_width_lp + ui_data_width_p) - 1))) : (((((ui_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (ui_burst_length_lp - 1))) * (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + (((ui_mask_width_lp + ui_data_width_p) - 1) &gt;= 0 ? ui_data_width_p : 0 - (ui_data_width_p - ((ui_mask_width_lp + ui_data_width_p) - 1)))) - ui_mask_width_lp) + 1)+:ui_mask_width_lp];
+			assign tx_data[k * ui_data_width_p+:ui_data_width_p] = tx_sipo_data_lo[((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ((ui_burst_length_lp &gt;= 1 ? k : 0 - (k - (ui_burst_length_lp - 1))) * ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? 0 : (ui_mask_width_lp + ui_data_width_p) - 1) : ((((ui_burst_length_lp &gt;= 1 ? k : 0 - (k - (ui_burst_length_lp - 1))) * ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? 0 : (ui_mask_width_lp + ui_data_width_p) - 1)) - ui_data_width_p) + 1)+:ui_data_width_p];
+			assign tx_mask[k * ui_mask_width_lp+:ui_mask_width_lp] = tx_sipo_data_lo[((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ((ui_burst_length_lp &gt;= 1 ? k : 0 - (k - (ui_burst_length_lp - 1))) * ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ui_data_width_p : 0 - (ui_data_width_p - ((ui_mask_width_lp + ui_data_width_p) - 1))) : ((((ui_burst_length_lp &gt;= 1 ? k : 0 - (k - (ui_burst_length_lp - 1))) * ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ui_mask_width_lp + ui_data_width_p : 2 - (ui_mask_width_lp + ui_data_width_p))) + ((ui_mask_width_lp + ui_data_width_p) &gt;= 1 ? ui_data_width_p : 0 - (ui_data_width_p - ((ui_mask_width_lp + ui_data_width_p) - 1)))) - ui_mask_width_lp) + 1)+:ui_mask_width_lp];
 		end
 	endgenerate
 	generate
 		for (k = 0; k &lt; dfi_burst_length_lp; k = k + 1) begin : tx_make
 			always @(posedge dfi_clk_i) begin
-				tx_data_piso_data_li[((dfi_data_width_p - 1) &gt;= 0 ? 0 : dfi_data_width_p - 1) + (((dfi_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (dfi_burst_length_lp - 1))) * ((dfi_data_width_p - 1) &gt;= 0 ? dfi_data_width_p : 2 - dfi_data_width_p))+:((dfi_data_width_p - 1) &gt;= 0 ? dfi_data_width_p : 2 - dfi_data_width_p)] &lt;= tx_data[k * dfi_data_width_p+:dfi_data_width_p];
-				tx_mask_piso_data_li[((dfi_mask_width_lp - 1) &gt;= 0 ? 0 : dfi_mask_width_lp - 1) + (((dfi_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (dfi_burst_length_lp - 1))) * ((dfi_mask_width_lp - 1) &gt;= 0 ? dfi_mask_width_lp : 2 - dfi_mask_width_lp))+:((dfi_mask_width_lp - 1) &gt;= 0 ? dfi_mask_width_lp : 2 - dfi_mask_width_lp)] &lt;= tx_mask[k * dfi_mask_width_lp+:dfi_mask_width_lp];
+				tx_data_piso_data_li[(dfi_data_width_p &gt;= 1 ? 0 : dfi_data_width_p - 1) + ((dfi_burst_length_lp &gt;= 1 ? k : 0 - (k - (dfi_burst_length_lp - 1))) * (dfi_data_width_p &gt;= 1 ? dfi_data_width_p : 2 - dfi_data_width_p))+:(dfi_data_width_p &gt;= 1 ? dfi_data_width_p : 2 - dfi_data_width_p)] &lt;= tx_data[k * dfi_data_width_p+:dfi_data_width_p];
+				tx_mask_piso_data_li[(dfi_mask_width_lp &gt;= 1 ? 0 : dfi_mask_width_lp - 1) + ((dfi_burst_length_lp &gt;= 1 ? k : 0 - (k - (dfi_burst_length_lp - 1))) * (dfi_mask_width_lp &gt;= 1 ? dfi_mask_width_lp : 2 - dfi_mask_width_lp))+:(dfi_mask_width_lp &gt;= 1 ? dfi_mask_width_lp : 2 - dfi_mask_width_lp)] &lt;= tx_mask[k * dfi_mask_width_lp+:dfi_mask_width_lp];
 			end
 		end
 	endgenerate
@@ -743,6 +759,10 @@ module bsg_dmc_controller (
 	);
 	assign rx_sipo_valid_li = rddata_afifo_rvalid;
 	assign rx_sipo_data_li = rddata_afifo_rdata;
+	function automatic [$clog2(burst_data_width_p / dfi_data_width_p):0] sv2v_cast_3C922;
+		input reg [$clog2(burst_data_width_p / dfi_data_width_p):0] inp;
+		sv2v_cast_3C922 = inp;
+	endfunction
 	assign rx_sipo_yumi_cnt_li = sv2v_cast_3C922((&amp;rx_sipo_valid_lo ? dfi_burst_length_lp : 0));
 	bsg_serial_in_parallel_out #(
 		.width_p(dfi_data_width_p),
@@ -759,12 +779,12 @@ module bsg_dmc_controller (
 	);
 	generate
 		for (k = 0; k &lt; dfi_burst_length_lp; k = k + 1) begin : rx_flatten
-			assign rx_data[k * dfi_data_width_p+:dfi_data_width_p] = rx_sipo_data_lo[((dfi_data_width_p - 1) &gt;= 0 ? 0 : dfi_data_width_p - 1) + (((dfi_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (dfi_burst_length_lp - 1))) * ((dfi_data_width_p - 1) &gt;= 0 ? dfi_data_width_p : 2 - dfi_data_width_p))+:((dfi_data_width_p - 1) &gt;= 0 ? dfi_data_width_p : 2 - dfi_data_width_p)];
+			assign rx_data[k * dfi_data_width_p+:dfi_data_width_p] = rx_sipo_data_lo[(dfi_data_width_p &gt;= 1 ? 0 : dfi_data_width_p - 1) + ((dfi_burst_length_lp &gt;= 1 ? k : 0 - (k - (dfi_burst_length_lp - 1))) * (dfi_data_width_p &gt;= 1 ? dfi_data_width_p : 2 - dfi_data_width_p))+:(dfi_data_width_p &gt;= 1 ? dfi_data_width_p : 2 - dfi_data_width_p)];
 		end
 	endgenerate
 	generate
 		for (k = 0; k &lt; ui_burst_length_lp; k = k + 1) begin : rx_make
-			assign rx_piso_data_li[((ui_data_width_p - 1) &gt;= 0 ? 0 : ui_data_width_p - 1) + (((ui_burst_length_lp - 1) &gt;= 0 ? k : 0 - (k - (ui_burst_length_lp - 1))) * ((ui_data_width_p - 1) &gt;= 0 ? ui_data_width_p : 2 - ui_data_width_p))+:((ui_data_width_p - 1) &gt;= 0 ? ui_data_width_p : 2 - ui_data_width_p)] = rx_data[k * ui_data_width_p+:ui_data_width_p];
+			assign rx_piso_data_li[(ui_data_width_p &gt;= 1 ? 0 : ui_data_width_p - 1) + ((ui_burst_length_lp &gt;= 1 ? k : 0 - (k - (ui_burst_length_lp - 1))) * (ui_data_width_p &gt;= 1 ? ui_data_width_p : 2 - ui_data_width_p))+:(ui_data_width_p &gt;= 1 ? ui_data_width_p : 2 - ui_data_width_p)] = rx_data[k * ui_data_width_p+:ui_data_width_p];
 		end
 	endgenerate
 	assign rx_piso_valid_li = &amp;rx_sipo_valid_lo;
@@ -791,26 +811,6 @@ module bsg_dmc_controller (
 	assign app_rd_data_valid_o = rx_piso_valid_lo;
 	assign app_rd_data_o = rx_piso_data_lo;
 	assign app_rd_data_end_o = rd_cnt == (ui_burst_length_lp - 1);
-	function automatic [15:0] sv2v_cast_16;
-		input reg [15:0] inp;
-		sv2v_cast_16 = inp;
-	endfunction
-	function automatic [2:0] sv2v_cast_3;
-		input reg [2:0] inp;
-		sv2v_cast_3 = inp;
-	endfunction
-	function automatic [($clog2(burst_data_width_p / dfi_data_width_p) + 1) - 1:0] sv2v_cast_3C922;
-		input reg [($clog2(burst_data_width_p / dfi_data_width_p) + 1) - 1:0] inp;
-		sv2v_cast_3C922 = inp;
-	endfunction
-	function automatic [3:0] sv2v_cast_4;
-		input reg [3:0] inp;
-		sv2v_cast_4 = inp;
-	endfunction
-	function automatic [($clog2(ui_burst_length_lp) + 1) - 1:0] sv2v_cast_F8E79;
-		input reg [($clog2(ui_burst_length_lp) + 1) - 1:0] inp;
-		sv2v_cast_F8E79 = inp;
-	endfunction
 endmodule
 
 </pre>

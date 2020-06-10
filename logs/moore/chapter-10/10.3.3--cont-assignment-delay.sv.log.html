@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: continuous assignment with delay test
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 10.3.3
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-10
@@ -18,17 +18,19 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-10/10.3.3--cont-assignment-delay.sv.html" target="file-frame">tests/chapter-10/10.3.3--cont-assignment-delay.sv</a>
 time_elapsed: 0.004s
-ram usage: 9964 KB
+ram usage: 10336 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-10 -e top <a href="../../../tests/chapter-10/10.3.3--cont-assignment-delay.sv.html" target="file-frame">tests/chapter-10/10.3.3--cont-assignment-delay.sv</a>
-compiler bug: no ast node for n14 in the map
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
 entity @top (i1$ %a, i1$ %b) -&gt; () {
+    %0 = const i1 0
+    %w = sig i1 %0
+    %a1 = prb i1$ %a
+    %b1 = prb i1$ %b
+    %1 = and i1 %a1, %b1
+    %2 = const time 0s 1e
+    drv i1$ %w, %1, %2
     halt
 }
 

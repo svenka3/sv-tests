@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v</a>
 time_elapsed: 0.004s
-ram usage: 12160 KB
+ram usage: 10328 KB
 </pre>
 <pre class="log">
 
@@ -41,47 +41,17 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-warning: cast ignored during constant evaluation
+error: cannot cast a value of type `byte unsigned` to `reg [7:0]`
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:7</a>:11-16:
    | 
    |     val = 8&#39;hff;
    |           ^^^^^ 
-   = note: Casts `8&#39;hff` from `byte unsigned` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:7</a>:11-16:
-   | 
-   |     val = 8&#39;hff;
-   |           ^^^^^ 
+   = note: `byte unsigned` can be cast to an intermediate `logic [7:0]`, but
+   = note: `logic [7:0]` cannot be cast to the final `reg [7:0]`
 
-warning: cast ignored during constant evaluation
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:8</a>:11-15:
-   | 
-   |     idx = 4&#39;bx;
-   |           ^^^^ 
-   = note: Casts `4&#39;bx` from `bit [3:0]` to `logic [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pv_undef_sig_sel.v:8</a>:11-15:
-   | 
-   |     idx = 4&#39;bx;
-   |           ^^^^ 
-
-proc %top.initial.101.0 (i8$ %res) -&gt; (i8$ %val, i4$ %idx) {
-0:
-    %1 = const i8 255
-    %2 = const time 0s 1e
-    drv i8$ %val, %1, %2
-    %3 = const i4 0
-    drv i4$ %idx, %3, %2
-    halt
-}
-
-entity @top () -&gt; () {
-    %0 = const i8 0
-    %val = sig i8 %0
-    %1 = const i4 0
-    %idx = sig i4 %1
-    %res = sig i8 %0
-    inst %top.initial.101.0 (i8$ %res) -&gt; (i8$ %val, i4$ %idx)
-    halt
-}
+ ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Byte), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
+ ERROR moore_svlog::typeck &gt; Cast chain thus far: byte unsigned -&gt; PackSBVT bit [7:0] -&gt; Domain(FourValued) logic [7:0]
 
 </pre>
 </body>

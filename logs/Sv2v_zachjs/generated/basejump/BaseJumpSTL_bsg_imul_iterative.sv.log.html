@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_imul_iterative.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_imul_iterative.v</a>
-time_elapsed: 0.548s
-ram usage: 14460 KB
+time_elapsed: 0.404s
+ram usage: 14452 KB
 </pre>
 <pre class="log">
 
@@ -37,12 +37,6 @@ module bsg_imul_iterative (
 	result_o,
 	yumi_i
 );
-	localparam [2:0] IDLE = 0;
-	localparam [2:0] NEG_A = 1;
-	localparam [2:0] NEG_B = 2;
-	localparam [2:0] CALC = 3;
-	localparam [2:0] NEG_R = 4;
-	localparam [2:0] DONE = 5;
 	parameter width_p = 32;
 	input clk_i;
 	input reset_i;
@@ -62,11 +56,17 @@ module bsg_imul_iterative (
 	wire shift_counter_full = (gets_high_part_r ? shift_counter_r == (width_p - 1) : shift_counter_r == width_p);
 	reg [2:0] curr_state_r;
 	reg [2:0] next_state;
+	localparam [2:0] IDLE = 0;
 	always @(posedge clk_i)
 		if (reset_i)
 			curr_state_r &lt;= IDLE;
 		else
 			curr_state_r &lt;= next_state;
+	localparam [2:0] CALC = 3;
+	localparam [2:0] DONE = 5;
+	localparam [2:0] NEG_A = 1;
+	localparam [2:0] NEG_B = 2;
+	localparam [2:0] NEG_R = 4;
 	always @(*)
 		case (curr_state_r)
 			IDLE:
