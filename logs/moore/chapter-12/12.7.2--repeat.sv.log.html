@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: A module testing repeat loop
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 12.7.2
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-12
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-12/12.7.2--repeat.sv.html" target="file-frame">tests/chapter-12/12.7.2--repeat.sv</a>
 time_elapsed: 0.004s
-ram usage: 11016 KB
+ram usage: 10332 KB
 </pre>
 <pre class="log">
 
@@ -29,8 +29,27 @@ warning: `$display` not supported; ignored
    |             $display(&#34;repeat&#34;);
    |             ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;&lt;unnamed&gt;&#39; panicked at &#39;invalid value&#39;, /home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/llhd-0.13.0/src/ir/unit.rs:367:35
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %repeat_tb.initial.18.0 (i32$ %a) -&gt; () {
+0:
+    %a1 = prb i32$ %a
+    br %loop_body
+loop_body:
+    %1 = phi i32 [%1, %loop_continue], [%a1, %0]
+    %2 = const i32 0
+    %3 = neq i32 %1, %2
+    br %3, %loop_exit, %loop_continue
+loop_exit:
+    halt
+loop_continue:
+    br %loop_body
+}
+
+entity @repeat_tb () -&gt; () {
+    %0 = const i32 128
+    %a = sig i32 %0
+    inst %repeat_tb.initial.18.0 (i32$ %a) -&gt; ()
+    halt
+}
 
 </pre>
 </body>
