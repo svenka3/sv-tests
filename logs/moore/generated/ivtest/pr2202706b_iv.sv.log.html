@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706b.v</a>
 time_elapsed: 0.004s
-ram usage: 10492 KB
+ram usage: 10752 KB
 </pre>
 <pre class="log">
 
@@ -67,12 +67,17 @@ warning: `$display` not supported; ignored
 
 proc %top.initial.99.0 () -&gt; (i1$ %passed) {
 0:
-    %1 = const i1 1
-    %2 = const time 0s 1e
-    drv i1$ %passed, %1, %2
-    %3 = const i1 0
-    drv i1$ %passed, %3, %2
-    drv i1$ %passed, %3, %2
+    %1 = prb i1$ %passed
+    %passed.shadow = var i1 %1
+    %2 = const i1 1
+    %3 = const time 0s 1e
+    drv i1$ %passed, %2, %3
+    st i1* %passed.shadow, %2
+    %4 = const i1 0
+    drv i1$ %passed, %4, %3
+    st i1* %passed.shadow, %4
+    drv i1$ %passed, %4, %3
+    st i1* %passed.shadow, %4
     halt
 }
 

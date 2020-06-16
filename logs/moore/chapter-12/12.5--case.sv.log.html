@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: A module testing case statement
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 12.5 uvm-req
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-12
@@ -18,22 +18,53 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-12/12.5--case.sv.html" target="file-frame">tests/chapter-12/12.5--case.sv</a>
 time_elapsed: 0.004s
-ram usage: 10212 KB
+ram usage: 10636 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-12 -e case_tb <a href="../../../tests/chapter-12/12.5--case.sv.html" target="file-frame">tests/chapter-12/12.5--case.sv</a>
-error: cannot cast a value of type `int` to `reg [3:0]`
-  --&gt; <a href="../../../tests/chapter-12/12.5--case.sv.html#l-8" target="file-frame">tests/chapter-12/12.5--case.sv:8</a>:16-17:
-   | 
-   |     reg [3:0] b = 0;
-   |                   ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [3:0]`, but
-   = note: `logic unsigned [3:0]` cannot be cast to the final `reg [3:0]`
+proc %case_tb.always.65.0 (i4$ %a) -&gt; (i4$ %b) {
+0:
+    wait %trigger, %a
+trigger:
+    %a.prb = prb i4$ %a
+    %1 = const i4 0
+    %2 = eq i4 %a.prb, %1
+    %3 = const time 0s 1e
+    br %2, %4, %case_body
+case_body:
+    %5 = const i4 12
+    drv i4$ %b, %5, %3
+    br %0
+4:
+    %6 = const i4 3
+    %7 = eq i4 %a.prb, %6
+    br %7, %8, %case_body1
+case_body1:
+    %9 = const i4 4
+    drv i4$ %b, %9, %3
+    br %0
+8:
+    %10 = const i4 15
+    %11 = eq i4 %a.prb, %10
+    br %11, %12, %case_body2
+case_body2:
+    %13 = const i4 8
+    drv i4$ %b, %13, %3
+    br %0
+12:
+    drv i4$ %b, %1, %3
+    br %0
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([3:0], true) bit signed [3:0] -&gt; Sign(unsigned) bit unsigned [3:0] -&gt; Domain(FourValued) logic unsigned [3:0]
+entity @case_tb () -&gt; () {
+    %0 = const i32 0
+    %a = sig i32 %0
+    %1 = const i4 0
+    %b = sig i4 %1
+    inst %case_tb.always.65.0 (i32$ %a) -&gt; (i4$ %b)
+    halt
+}
 
 </pre>
 </body>

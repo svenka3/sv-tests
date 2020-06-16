@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/param-extend.v.html" target="file-frame">third_party/tests/ivtest/ivltests/param-extend.v</a>
-time_elapsed: 0.004s
-ram usage: 10312 KB
+time_elapsed: 0.008s
+ram usage: 10664 KB
 </pre>
 <pre class="log">
 
@@ -59,17 +59,74 @@ warning: `$display` not supported; ignored
    |     $display(&#34;PASSED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `int` to `reg [35:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/param-extend.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/param-extend.v:12</a>:12-22:
-   | 
-   |   Result = SizedValue;
-   |            ^^^^^^^^^^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [35:0]`, but
-   = note: `logic unsigned [35:0]` cannot be cast to the final `reg [35:0]`
+proc %top.initial.227.0 () -&gt; (i36$ %Result, i1$ %Failed) {
+0:
+    %1 = prb i1$ %Failed
+    %Failed.shadow = var i1 %1
+    %2 = prb i36$ %Result
+    %Result.shadow = var i36 %2
+    %3 = const i1 0
+    %4 = const time 0s 1e
+    drv i1$ %Failed, %3, %4
+    st i1* %Failed.shadow, %3
+    %5 = const i36 68719476735
+    drv i36$ %Result, %5, %4
+    st i36* %Result.shadow, %5
+    %Result.shadow.ld = ld i36* %Result.shadow
+    %6 = neq i36 %Result.shadow.ld, %5
+    %7 = neq i1 %6, %3
+    %8 = const i1 1
+    br %7, %if_exit, %if_true
+if_true:
+    drv i1$ %Failed, %8, %4
+    st i1* %Failed.shadow, %8
+    br %if_exit
+if_exit:
+    drv i36$ %Result, %5, %4
+    st i36* %Result.shadow, %5
+    %Result.shadow.ld1 = ld i36* %Result.shadow
+    %9 = neq i36 %Result.shadow.ld1, %5
+    %10 = neq i1 %9, %3
+    br %10, %if_exit1, %if_true1
+if_true1:
+    drv i1$ %Failed, %8, %4
+    st i1* %Failed.shadow, %8
+    br %if_exit1
+if_exit1:
+    drv i36$ %Result, %5, %4
+    st i36* %Result.shadow, %5
+    %Result.shadow.ld2 = ld i36* %Result.shadow
+    %11 = const i36 4294967295
+    %12 = neq i36 %Result.shadow.ld2, %11
+    %13 = neq i1 %12, %3
+    br %13, %if_exit2, %if_true2
+if_true2:
+    drv i1$ %Failed, %8, %4
+    st i1* %Failed.shadow, %8
+    br %if_exit2
+if_exit2:
+    drv i36$ %Result, %5, %4
+    st i36* %Result.shadow, %5
+    %Result.shadow.ld3 = ld i36* %Result.shadow
+    %14 = neq i36 %Result.shadow.ld3, %11
+    %15 = neq i1 %14, %3
+    br %15, %if_exit3, %if_true3
+if_true3:
+    drv i1$ %Failed, %8, %4
+    st i1* %Failed.shadow, %8
+    br %if_exit3
+if_exit3:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([35:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([35:0], true) bit signed [35:0] -&gt; Sign(unsigned) bit unsigned [35:0] -&gt; Domain(FourValued) logic unsigned [35:0]
+entity @top () -&gt; () {
+    %0 = const i36 0
+    %Result = sig i36 %0
+    %1 = const i1 0
+    %Failed = sig i1 %1
+    inst %top.initial.227.0 () -&gt; (i36$ %Result, i1$ %Failed)
+    halt
+}
 
 </pre>
 </body>

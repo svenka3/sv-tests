@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr3561350.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3561350.v</a>
-time_elapsed: 0.004s
-ram usage: 10400 KB
+time_elapsed: 0.008s
+ram usage: 10604 KB
 </pre>
 <pre class="log">
 
@@ -35,17 +35,36 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `int` to `reg [31:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3561350.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr3561350.v:7</a>:12-14:
-   | 
-   |   source = 10;
-   |            ^^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [31:0]`, but
-   = note: `logic unsigned [31:0]` cannot be cast to the final `reg [31:0]`
+proc %pr3561350.initial.65.0 () -&gt; (i32$ %source, i32$ %result) {
+0:
+    %1 = prb i32$ %source
+    %source.shadow = var i32 %1
+    %2 = prb i32$ %result
+    %result.shadow = var i32 %2
+    %3 = const i32 10
+    %4 = const time 0s 1e
+    drv i32$ %source, %3, %4
+    st i32* %source.shadow, %3
+    %source.shadow.ld = ld i32* %source.shadow
+    %5 = const i32 2
+    %6 = umul i32 %source.shadow.ld, %5
+    %7 = add i32 %6, %5
+    %8 = const i32 3
+    %9 = add i32 %7, %8
+    %10 = const i32 4
+    %11 = add i32 %9, %10
+    drv i32$ %result, %11, %4
+    st i32* %result.shadow, %11
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([31:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Sign(unsigned) bit unsigned [31:0] -&gt; Domain(FourValued) logic unsigned [31:0]
+entity @pr3561350 () -&gt; () {
+    %0 = const i32 0
+    %source = sig i32 %0
+    %result = sig i32 %0
+    inst %pr3561350.initial.65.0 () -&gt; (i32$ %source, i32$ %result)
+    halt
+}
 
 </pre>
 </body>

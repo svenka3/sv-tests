@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Test imported from ivtest
-rc: 0 (means success: 1)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1898983.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1898983.v</a>
 time_elapsed: 0.004s
-ram usage: 10660 KB
+ram usage: 10800 KB
 </pre>
 <pre class="log">
 
@@ -29,64 +29,18 @@ warning: `$display` not supported; ignored
    |   always @(posedge in) $display(&#34;In %m at %0t&#34;, $time);
    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-proc %subm.param1.always.116.1 (i1$ %in) -&gt; () {
-init:
-    wait %check, %in
-check:
-    br %init
-}
+compiler bug: instance arrays of modules not supported
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1898983.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/pr1898983.v:3</a>:8-20:
+   | 
+   |   subm sm [1:0](in);
+   |        ^^^^^^^^^^^^ 
+   = note: Encountered at src/svlog/codegen.rs:882
 
-entity @subm.param1 (i1$ %in) -&gt; () {
-    inst %subm.param1.always.116.1 (i1$ %in) -&gt; ()
-    halt
-}
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-proc %top.initial.94.0 () -&gt; (i2$ %in) {
-0:
-    %1 = exts i1$, i2$ %in, 0, 1
-    %2 = const i1 0
-    %3 = const time 0s 1e
-    drv i1$ %1, %2, %3
-    %4 = const i32 1
-    wait %5 for %4
-5:
-    %6 = exts i1$, i2$ %in, 0, 1
-    %7 = const i1 1
-    %8 = const time 0s 1e
-    drv i1$ %6, %7, %8
-    %9 = const i32 1
-    %10 = const i2 0
-    %11 = sig i2 %10
-    %12 = shr i2$ %in, i2$ %11, i32 %9
-    %13 = exts i1$, i2$ %12, 0, 1
-    %14 = const i1 0
-    drv i1$ %13, %14, %8
-    wait %15 for %9
-15:
-    %16 = const i32 1
-    %17 = const i2 0
-    %18 = sig i2 %17
-    %19 = shr i2$ %in, i2$ %18, i32 %16
-    %20 = exts i1$, i2$ %19, 0, 1
-    %21 = const i1 1
-    %22 = const time 0s 1e
-    drv i1$ %20, %21, %22
-    halt
-}
-
-entity @top () -&gt; () {
-    %0 = const i2 0
-    %in = sig i2 %0
-    %in1 = prb i2$ %in
-    %1 = exts i1, i2 %in1, 0, 1
-    %2 = const i1 0
-    %3 = sig i1 %2
-    %4 = const time 0s 1e
-    drv i1$ %3, %1, %4
-    inst @subm.param1 (i1$ %3) -&gt; ()
-    inst %top.initial.94.0 () -&gt; (i2$ %in)
-    halt
-}
+thread &#39;main&#39; panicked at &#39;instance arrays of modules not supported&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

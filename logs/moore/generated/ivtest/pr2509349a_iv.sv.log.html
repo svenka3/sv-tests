@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349a.v</a>
-time_elapsed: 0.004s
-ram usage: 10888 KB
+time_elapsed: 0.008s
+ram usage: 10632 KB
 </pre>
 <pre class="log">
 
@@ -35,19 +35,77 @@ warning: `$readmemh` not supported; ignored
    |     $readmemh(&#34;pr2509349.txt&#34;, mem);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::hir::lowering &gt; Expr #74
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349a.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349a.v:14</a>:28-41:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349a.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349a.v:16</a>:9-77:
    | 
-   |     for (idx = 0; idx &lt; 8; idx = idx + 1) begin
-   |                            ^^^^^^^^^^^^^       
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+   |         $display(&#34;Failed mem[%0d], expected %d, got %d&#34;, idx, idx, mem[idx]);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349a.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349a.v:21</a>:15-33:
+   | 
+   |     if (pass) $display(&#34;PASSED&#34;);
+   |               ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %top.initial.154.0 ([8 x i8]$ %mem) -&gt; (i1$ %pass, i8$ %idx) {
+0:
+    %1 = prb i8$ %idx
+    %idx.shadow = var i8 %1
+    %2 = prb i1$ %pass
+    %pass.shadow = var i1 %2
+    %3 = const i1 1
+    %4 = const time 0s 1e
+    drv i1$ %pass, %3, %4
+    st i1* %pass.shadow, %3
+    %5 = const i8 0
+    drv i8$ %idx, %5, %4
+    st i8* %idx.shadow, %5
+    br %loop_body
+loop_body:
+    %6 = const i32 0
+    %idx.shadow.ld = ld i8* %idx.shadow
+    %zext = inss i32 %6, i8 %idx.shadow.ld, 0, 8
+    %7 = const i32 8
+    %8 = ult i32 %zext, %7
+    %9 = const i1 0
+    br %8, %loop_exit, %loop_continue
+loop_exit:
+    halt
+loop_continue:
+    %mem.prb = prb [8 x i8]$ %mem
+    %idx.shadow.ld1 = ld i8* %idx.shadow
+    %10 = [8 x i8 %5]
+    %11 = shr [8 x i8] %mem.prb, [8 x i8] %10, i8 %idx.shadow.ld1
+    %12 = extf i8, [8 x i8] %11, 0
+    %idx.shadow.ld2 = ld i8* %idx.shadow
+    %13 = neq i8 %12, %idx.shadow.ld2
+    %14 = neq i1 %13, %9
+    br %14, %if_exit, %if_true
+if_true:
+    drv i1$ %pass, %9, %4
+    st i1* %pass.shadow, %9
+    br %if_exit
+if_exit:
+    %idx.shadow.ld3 = ld i8* %idx.shadow
+    %zext1 = inss i32 %6, i8 %idx.shadow.ld3, 0, 8
+    %15 = const i32 1
+    %16 = add i32 %zext1, %15
+    %17 = exts i8, i32 %16, 0, 8
+    drv i8$ %idx, %17, %4
+    st i8* %idx.shadow, %17
+    br %loop_body
+}
+
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i8 0
+    %idx = sig i8 %1
+    %2 = [i8 %1, %1, %1, %1, %1, %1, %1, %1]
+    %mem = sig [8 x i8] %2
+    inst %top.initial.154.0 ([8 x i8]$ %mem) -&gt; (i1$ %pass, i8$ %idx)
+    halt
+}
 
 </pre>
 </body>

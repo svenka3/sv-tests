@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1916261.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1916261.v</a>
 time_elapsed: 0.004s
-ram usage: 10596 KB
+ram usage: 10604 KB
 </pre>
 <pre class="log">
 
@@ -43,27 +43,33 @@ warning: `$display` not supported; ignored
 
 proc %top.initial.127.0 (i4$ %ca_tru, i4$ %ca_fal) -&gt; (i1$ %pass) {
 0:
-    %1 = const i32 1
-    wait %2 for %1
-2:
-    %ca_tru1 = prb i4$ %ca_tru
-    %3 = const i4 1
-    %4 = neq i4 %ca_tru1, %3
-    %5 = const i1 0
-    %6 = neq i1 %4, %5
-    %7 = const time 0s 1e
-    br %6, %if_exit, %if_true
+    %1 = prb i1$ %pass
+    %pass.shadow = var i1 %1
+    %2 = const i32 1
+    wait %3 for %2
+3:
+    %4 = prb i1$ %pass
+    st i1* %pass.shadow, %4
+    %ca_tru.prb = prb i4$ %ca_tru
+    %5 = const i4 1
+    %6 = neq i4 %ca_tru.prb, %5
+    %7 = const i1 0
+    %8 = neq i1 %6, %7
+    %9 = const time 0s 1e
+    br %8, %if_exit, %if_true
 if_true:
-    drv i1$ %pass, %5, %7
+    drv i1$ %pass, %7, %9
+    st i1* %pass.shadow, %7
     br %if_exit
 if_exit:
-    %ca_fal1 = prb i4$ %ca_fal
-    %8 = const i4 2
-    %9 = neq i4 %ca_fal1, %8
-    %10 = neq i1 %9, %5
-    br %10, %if_exit1, %if_true1
+    %ca_fal.prb = prb i4$ %ca_fal
+    %10 = const i4 2
+    %11 = neq i4 %ca_fal.prb, %10
+    %12 = neq i1 %11, %7
+    br %12, %if_exit1, %if_true1
 if_true1:
-    drv i1$ %pass, %5, %7
+    drv i1$ %pass, %7, %9
+    st i1* %pass.shadow, %7
     br %if_exit1
 if_exit1:
     halt

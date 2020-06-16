@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,42 +18,85 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v</a>
 time_elapsed: 0.004s
-ram usage: 10796 KB
+ram usage: 10492 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bug <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v</a>
-error: cannot cast a value of type `reg [1:0]` to `logic [1:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:9</a>:13-14:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:14</a>:6-23:
    | 
-   | assign y = {a &gt;&gt; {22{b}}, a &lt;&lt; (0 &lt;&lt;&lt; b)};
-   |             ^                             
+   |   #1 $display(&#34;%b&#34;, y);
+   |      ^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [1:0]
-error: cannot cast a value of type `reg [2:0]` to `logic [2:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:9</a>:22-23:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:16</a>:5-23:
    | 
-   | assign y = {a &gt;&gt; {22{b}}, a &lt;&lt; (0 &lt;&lt;&lt; b)};
-   |                      ^                    
+   |     $display(&#34;PASSED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [2:0]
-compiler bug: assertion failed: value.ty.coalesces_to_llhd_scalar()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:9</a>:22-23:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh22.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/br_gh22.v:18</a>:5-23:
    | 
-   | assign y = {a &gt;&gt; {22{b}}, a &lt;&lt; (0 &lt;&lt;&lt; b)};
-   |                      ^                    
-   = note: Assertion failed: value.ty.coalesces_to_llhd_scalar()
-   = note: Encountered at src/svlog/mir/lower/rvalue.rs:254
+   |     $display(&#34;FAILED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+proc %bug.initial.101.0 (i4$ %y) -&gt; (i2$ %a, i3$ %b) {
+0:
+    %1 = const i3 7
+    %2 = const time 0s 1e
+    drv i3$ %b, %1, %2
+    %3 = const i2 3
+    drv i2$ %a, %3, %2
+    %4 = const i32 1
+    wait %5 for %4
+5:
+    halt
+}
 
-thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.coalesces_to_llhd_scalar()&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @bug () -&gt; () {
+    %0 = const i2 0
+    %a = sig i2 %0
+    %1 = const i3 0
+    %b = sig i3 %1
+    %2 = const i4 0
+    %y = sig i4 %2
+    %a.prb = prb i2$ %a
+    %3 = const i32 0
+    %b.prb = prb i3$ %b
+    %4 = shl i32 %3, i32 %3, i3 %b.prb
+    %5 = shl i2 %a.prb, i2 %0, i32 %4
+    %6 = inss i4 %2, i2 %5, 0, 2
+    %7 = const i66 0
+    %8 = inss i66 %7, i3 %b.prb, 0, 3
+    %9 = inss i66 %8, i3 %b.prb, 3, 3
+    %10 = inss i66 %9, i3 %b.prb, 6, 3
+    %11 = inss i66 %10, i3 %b.prb, 9, 3
+    %12 = inss i66 %11, i3 %b.prb, 12, 3
+    %13 = inss i66 %12, i3 %b.prb, 15, 3
+    %14 = inss i66 %13, i3 %b.prb, 18, 3
+    %15 = inss i66 %14, i3 %b.prb, 21, 3
+    %16 = inss i66 %15, i3 %b.prb, 24, 3
+    %17 = inss i66 %16, i3 %b.prb, 27, 3
+    %18 = inss i66 %17, i3 %b.prb, 30, 3
+    %19 = inss i66 %18, i3 %b.prb, 33, 3
+    %20 = inss i66 %19, i3 %b.prb, 36, 3
+    %21 = inss i66 %20, i3 %b.prb, 39, 3
+    %22 = inss i66 %21, i3 %b.prb, 42, 3
+    %23 = inss i66 %22, i3 %b.prb, 45, 3
+    %24 = inss i66 %23, i3 %b.prb, 48, 3
+    %25 = inss i66 %24, i3 %b.prb, 51, 3
+    %26 = inss i66 %25, i3 %b.prb, 54, 3
+    %27 = inss i66 %26, i3 %b.prb, 57, 3
+    %28 = inss i66 %27, i3 %b.prb, 60, 3
+    %repeat = inss i66 %28, i3 %b.prb, 63, 3
+    %29 = shr i2 %a.prb, i2 %0, i66 %repeat
+    %concat = inss i4 %6, i2 %29, 2, 2
+    %30 = const time 0s 1e
+    drv i4$ %y, %concat, %30
+    inst %bug.initial.101.0 (i4$ %y) -&gt; (i2$ %a, i3$ %b)
+    halt
+}
 
 </pre>
 </body>

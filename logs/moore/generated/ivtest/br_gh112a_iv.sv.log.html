@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh112a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh112a.v</a>
-time_elapsed: 0.008s
-ram usage: 10640 KB
+time_elapsed: 0.012s
+ram usage: 11396 KB
 </pre>
 <pre class="log">
 
@@ -65,17 +65,361 @@ warning: `$display` not supported; ignored
    |     $display(&#34;PASSED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `logic signed [3:0]` to `reg [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh112a.v.html#l-25" target="file-frame">third_party/tests/ivtest/ivltests/br_gh112a.v:25</a>:13-19:
-   | 
-   |     index = i[3:0];
-   |             ^^^^^^ 
-   = note: `logic signed [3:0]` can be cast to an intermediate `logic unsigned [3:0]`, but
-   = note: `logic unsigned [3:0]` cannot be cast to the final `reg [3:0]`
+proc %bug.initial.494.0 () -&gt; ([2 x [16 x i8]]$ %array, i1$ %failed, i32$ %i, i4$ %index) {
+0:
+    %1 = prb i32$ %i
+    %i.shadow = var i32 %1
+    %2 = prb i1$ %failed
+    %failed.shadow = var i1 %2
+    %3 = prb i4$ %index
+    %index.shadow = var i4 %3
+    %4 = prb [2 x [16 x i8]]$ %array
+    %array.shadow = var [2 x [16 x i8]] %4
+    %5 = const i32 256
+    %6 = const time 0s 1e
+    drv i32$ %i, %5, %6
+    st i32* %i.shadow, %5
+    %i.shadow.ld = ld i32* %i.shadow
+    %7 = neq i32 %i.shadow.ld, %5
+    %8 = const i1 0
+    %9 = neq i1 %7, %8
+    %10 = const i1 1
+    br %9, %if_exit, %if_true
+if_true:
+    drv i1$ %failed, %10, %6
+    st i1* %failed.shadow, %10
+    br %if_exit
+if_exit:
+    %11 = const i32 128
+    drv i32$ %i, %11, %6
+    st i32* %i.shadow, %11
+    %i.shadow.ld1 = ld i32* %i.shadow
+    %12 = neq i32 %i.shadow.ld1, %11
+    %13 = neq i1 %12, %8
+    br %13, %if_exit1, %if_true1
+if_true1:
+    drv i1$ %failed, %10, %6
+    st i1* %failed.shadow, %10
+    br %if_exit1
+if_exit1:
+    %14 = const i32 8
+    drv i32$ %i, %14, %6
+    st i32* %i.shadow, %14
+    %i.shadow.ld2 = ld i32* %i.shadow
+    %15 = neq i32 %i.shadow.ld2, %14
+    %16 = neq i1 %15, %8
+    br %16, %if_exit2, %if_true2
+if_true2:
+    drv i1$ %failed, %10, %6
+    st i1* %failed.shadow, %10
+    br %if_exit2
+if_exit2:
+    %17 = const i32 0
+    drv i32$ %i, %17, %6
+    st i32* %i.shadow, %17
+    br %loop_body
+loop_body:
+    %i.shadow.ld3 = ld i32* %i.shadow
+    %18 = const i32 16
+    %19 = slt i32 %i.shadow.ld3, %18
+    %20 = const i8 0
+    %21 = [16 x i8 %20]
+    %22 = const i4 0
+    %23 = const i4 1
+    %24 = const i32 1
+    br %19, %loop_exit, %loop_continue
+loop_exit:
+    %25 = const i256 0
+    %26 = const i128 0
+    %array.shadow.ld = ld [2 x [16 x i8]]* %array.shadow
+    %27 = [16 x i8 %20]
+    %28 = [2 x [16 x i8] %27]
+    %29 = exts [1 x [16 x i8]], [2 x [16 x i8]] %28, 0, 1
+    %30 = exts [1 x [16 x i8]], [2 x [16 x i8]] %array.shadow.ld, 1, 1
+    %31 = inss [2 x [16 x i8]] %28, [1 x [16 x i8]] %29, 1, 1
+    %32 = inss [2 x [16 x i8]] %31, [1 x [16 x i8]] %30, 0, 1
+    %33 = extf [16 x i8], [2 x [16 x i8]] %32, 0
+    %34 = exts [15 x i8], [16 x i8] %27, 0, 15
+    %35 = exts [1 x i8], [16 x i8] %33, 15, 1
+    %36 = inss [16 x i8] %27, [15 x i8] %34, 1, 15
+    %37 = inss [16 x i8] %36, [1 x i8] %35, 0, 1
+    %38 = extf i8, [16 x i8] %37, 0
+    %39 = inss i128 %26, i8 %38, 0, 8
+    %40 = exts [14 x i8], [16 x i8] %27, 0, 14
+    %41 = exts [2 x i8], [16 x i8] %33, 14, 2
+    %42 = inss [16 x i8] %27, [14 x i8] %40, 2, 14
+    %43 = inss [16 x i8] %42, [2 x i8] %41, 0, 2
+    %44 = extf i8, [16 x i8] %43, 0
+    %45 = inss i128 %39, i8 %44, 8, 8
+    %46 = exts [13 x i8], [16 x i8] %27, 0, 13
+    %47 = exts [3 x i8], [16 x i8] %33, 13, 3
+    %48 = inss [16 x i8] %27, [13 x i8] %46, 3, 13
+    %49 = inss [16 x i8] %48, [3 x i8] %47, 0, 3
+    %50 = extf i8, [16 x i8] %49, 0
+    %51 = inss i128 %45, i8 %50, 16, 8
+    %52 = exts [12 x i8], [16 x i8] %27, 0, 12
+    %53 = exts [4 x i8], [16 x i8] %33, 12, 4
+    %54 = inss [16 x i8] %27, [12 x i8] %52, 4, 12
+    %55 = inss [16 x i8] %54, [4 x i8] %53, 0, 4
+    %56 = extf i8, [16 x i8] %55, 0
+    %57 = inss i128 %51, i8 %56, 24, 8
+    %58 = exts [11 x i8], [16 x i8] %27, 0, 11
+    %59 = exts [5 x i8], [16 x i8] %33, 11, 5
+    %60 = inss [16 x i8] %27, [11 x i8] %58, 5, 11
+    %61 = inss [16 x i8] %60, [5 x i8] %59, 0, 5
+    %62 = extf i8, [16 x i8] %61, 0
+    %63 = inss i128 %57, i8 %62, 32, 8
+    %64 = exts [10 x i8], [16 x i8] %27, 0, 10
+    %65 = exts [6 x i8], [16 x i8] %33, 10, 6
+    %66 = inss [16 x i8] %27, [10 x i8] %64, 6, 10
+    %67 = inss [16 x i8] %66, [6 x i8] %65, 0, 6
+    %68 = extf i8, [16 x i8] %67, 0
+    %69 = inss i128 %63, i8 %68, 40, 8
+    %70 = exts [9 x i8], [16 x i8] %27, 0, 9
+    %71 = exts [7 x i8], [16 x i8] %33, 9, 7
+    %72 = inss [16 x i8] %27, [9 x i8] %70, 7, 9
+    %73 = inss [16 x i8] %72, [7 x i8] %71, 0, 7
+    %74 = extf i8, [16 x i8] %73, 0
+    %75 = inss i128 %69, i8 %74, 48, 8
+    %76 = exts [8 x i8], [16 x i8] %27, 0, 8
+    %77 = exts [8 x i8], [16 x i8] %33, 8, 8
+    %78 = inss [16 x i8] %27, [8 x i8] %76, 8, 8
+    %79 = inss [16 x i8] %78, [8 x i8] %77, 0, 8
+    %80 = extf i8, [16 x i8] %79, 0
+    %81 = inss i128 %75, i8 %80, 56, 8
+    %82 = exts [7 x i8], [16 x i8] %27, 0, 7
+    %83 = exts [9 x i8], [16 x i8] %33, 7, 9
+    %84 = inss [16 x i8] %27, [7 x i8] %82, 9, 7
+    %85 = inss [16 x i8] %84, [9 x i8] %83, 0, 9
+    %86 = extf i8, [16 x i8] %85, 0
+    %87 = inss i128 %81, i8 %86, 64, 8
+    %88 = exts [6 x i8], [16 x i8] %27, 0, 6
+    %89 = exts [10 x i8], [16 x i8] %33, 6, 10
+    %90 = inss [16 x i8] %27, [6 x i8] %88, 10, 6
+    %91 = inss [16 x i8] %90, [10 x i8] %89, 0, 10
+    %92 = extf i8, [16 x i8] %91, 0
+    %93 = inss i128 %87, i8 %92, 72, 8
+    %94 = exts [5 x i8], [16 x i8] %27, 0, 5
+    %95 = exts [11 x i8], [16 x i8] %33, 5, 11
+    %96 = inss [16 x i8] %27, [5 x i8] %94, 11, 5
+    %97 = inss [16 x i8] %96, [11 x i8] %95, 0, 11
+    %98 = extf i8, [16 x i8] %97, 0
+    %99 = inss i128 %93, i8 %98, 80, 8
+    %100 = exts [4 x i8], [16 x i8] %27, 0, 4
+    %101 = exts [12 x i8], [16 x i8] %33, 4, 12
+    %102 = inss [16 x i8] %27, [4 x i8] %100, 12, 4
+    %103 = inss [16 x i8] %102, [12 x i8] %101, 0, 12
+    %104 = extf i8, [16 x i8] %103, 0
+    %105 = inss i128 %99, i8 %104, 88, 8
+    %106 = exts [3 x i8], [16 x i8] %27, 0, 3
+    %107 = exts [13 x i8], [16 x i8] %33, 3, 13
+    %108 = inss [16 x i8] %27, [3 x i8] %106, 13, 3
+    %109 = inss [16 x i8] %108, [13 x i8] %107, 0, 13
+    %110 = extf i8, [16 x i8] %109, 0
+    %111 = inss i128 %105, i8 %110, 96, 8
+    %112 = exts [2 x i8], [16 x i8] %27, 0, 2
+    %113 = exts [14 x i8], [16 x i8] %33, 2, 14
+    %114 = inss [16 x i8] %27, [2 x i8] %112, 14, 2
+    %115 = inss [16 x i8] %114, [14 x i8] %113, 0, 14
+    %116 = extf i8, [16 x i8] %115, 0
+    %117 = inss i128 %111, i8 %116, 104, 8
+    %118 = exts [1 x i8], [16 x i8] %27, 0, 1
+    %119 = exts [15 x i8], [16 x i8] %33, 1, 15
+    %120 = inss [16 x i8] %27, [1 x i8] %118, 15, 1
+    %121 = inss [16 x i8] %120, [15 x i8] %119, 0, 15
+    %122 = extf i8, [16 x i8] %121, 0
+    %123 = inss i128 %117, i8 %122, 112, 8
+    %124 = extf i8, [16 x i8] %33, 0
+    %concat = inss i128 %123, i8 %124, 120, 8
+    %125 = inss i256 %25, i128 %concat, 0, 128
+    %126 = extf [16 x i8], [2 x [16 x i8]] %array.shadow.ld, 0
+    %127 = exts [1 x i8], [16 x i8] %126, 15, 1
+    %128 = inss [16 x i8] %36, [1 x i8] %127, 0, 1
+    %129 = extf i8, [16 x i8] %128, 0
+    %130 = inss i128 %26, i8 %129, 0, 8
+    %131 = exts [2 x i8], [16 x i8] %126, 14, 2
+    %132 = inss [16 x i8] %42, [2 x i8] %131, 0, 2
+    %133 = extf i8, [16 x i8] %132, 0
+    %134 = inss i128 %130, i8 %133, 8, 8
+    %135 = exts [3 x i8], [16 x i8] %126, 13, 3
+    %136 = inss [16 x i8] %48, [3 x i8] %135, 0, 3
+    %137 = extf i8, [16 x i8] %136, 0
+    %138 = inss i128 %134, i8 %137, 16, 8
+    %139 = exts [4 x i8], [16 x i8] %126, 12, 4
+    %140 = inss [16 x i8] %54, [4 x i8] %139, 0, 4
+    %141 = extf i8, [16 x i8] %140, 0
+    %142 = inss i128 %138, i8 %141, 24, 8
+    %143 = exts [5 x i8], [16 x i8] %126, 11, 5
+    %144 = inss [16 x i8] %60, [5 x i8] %143, 0, 5
+    %145 = extf i8, [16 x i8] %144, 0
+    %146 = inss i128 %142, i8 %145, 32, 8
+    %147 = exts [6 x i8], [16 x i8] %126, 10, 6
+    %148 = inss [16 x i8] %66, [6 x i8] %147, 0, 6
+    %149 = extf i8, [16 x i8] %148, 0
+    %150 = inss i128 %146, i8 %149, 40, 8
+    %151 = exts [7 x i8], [16 x i8] %126, 9, 7
+    %152 = inss [16 x i8] %72, [7 x i8] %151, 0, 7
+    %153 = extf i8, [16 x i8] %152, 0
+    %154 = inss i128 %150, i8 %153, 48, 8
+    %155 = exts [8 x i8], [16 x i8] %126, 8, 8
+    %156 = inss [16 x i8] %78, [8 x i8] %155, 0, 8
+    %157 = extf i8, [16 x i8] %156, 0
+    %158 = inss i128 %154, i8 %157, 56, 8
+    %159 = exts [9 x i8], [16 x i8] %126, 7, 9
+    %160 = inss [16 x i8] %84, [9 x i8] %159, 0, 9
+    %161 = extf i8, [16 x i8] %160, 0
+    %162 = inss i128 %158, i8 %161, 64, 8
+    %163 = exts [10 x i8], [16 x i8] %126, 6, 10
+    %164 = inss [16 x i8] %90, [10 x i8] %163, 0, 10
+    %165 = extf i8, [16 x i8] %164, 0
+    %166 = inss i128 %162, i8 %165, 72, 8
+    %167 = exts [11 x i8], [16 x i8] %126, 5, 11
+    %168 = inss [16 x i8] %96, [11 x i8] %167, 0, 11
+    %169 = extf i8, [16 x i8] %168, 0
+    %170 = inss i128 %166, i8 %169, 80, 8
+    %171 = exts [12 x i8], [16 x i8] %126, 4, 12
+    %172 = inss [16 x i8] %102, [12 x i8] %171, 0, 12
+    %173 = extf i8, [16 x i8] %172, 0
+    %174 = inss i128 %170, i8 %173, 88, 8
+    %175 = exts [13 x i8], [16 x i8] %126, 3, 13
+    %176 = inss [16 x i8] %108, [13 x i8] %175, 0, 13
+    %177 = extf i8, [16 x i8] %176, 0
+    %178 = inss i128 %174, i8 %177, 96, 8
+    %179 = exts [14 x i8], [16 x i8] %126, 2, 14
+    %180 = inss [16 x i8] %114, [14 x i8] %179, 0, 14
+    %181 = extf i8, [16 x i8] %180, 0
+    %182 = inss i128 %178, i8 %181, 104, 8
+    %183 = exts [15 x i8], [16 x i8] %126, 1, 15
+    %184 = inss [16 x i8] %120, [15 x i8] %183, 0, 15
+    %185 = extf i8, [16 x i8] %184, 0
+    %186 = inss i128 %182, i8 %185, 112, 8
+    %187 = extf i8, [16 x i8] %126, 0
+    %concat1 = inss i128 %186, i8 %187, 120, 8
+    %concat2 = inss i256 %125, i128 %concat1, 128, 128
+    %188 = const i256 14074904626401341155369551180448584754667373453244490859944217516317499064576
+    %189 = neq i256 %concat2, %188
+    %190 = neq i1 %189, %8
+    br %190, %if_exit3, %if_true3
+loop_continue:
+    %i.shadow.ld4 = ld i32* %i.shadow
+    %191 = exts i4, i32 %i.shadow.ld4, 0, 4
+    drv i4$ %index, %191, %6
+    st i4* %index.shadow, %191
+    %192 = extf [16 x i8]$, [2 x [16 x i8]]$ %array, 0
+    %193 = extf [16 x i8]*, [2 x [16 x i8]]* %array.shadow, 0
+    %index.shadow.ld = ld i4* %index.shadow
+    %194 = sig [16 x i8] %21
+    %195 = shr [16 x i8]$ %192, [16 x i8]$ %194, i4 %index.shadow.ld
+    %196 = var [16 x i8] %21
+    %197 = shr [16 x i8]* %193, [16 x i8]* %196, i4 %index.shadow.ld
+    %198 = extf i8$, [16 x i8]$ %195, 0
+    %199 = extf i8*, [16 x i8]* %197, 0
+    %index.shadow.ld1 = ld i4* %index.shadow
+    %200 = inss i8 %20, i4 %index.shadow.ld1, 0, 4
+    %concat3 = inss i8 %200, i4 %22, 4, 4
+    drv i8$ %198, %concat3, %6
+    st i8* %199, %concat3
+    %201 = [2 x [16 x i8] %21]
+    %202 = sig [2 x [16 x i8]] %201
+    %203 = shr [2 x [16 x i8]]$ %array, [2 x [16 x i8]]$ %202, i32 %24
+    %204 = var [2 x [16 x i8]] %201
+    %205 = shr [2 x [16 x i8]]* %array.shadow, [2 x [16 x i8]]* %204, i32 %24
+    %206 = extf [16 x i8]$, [2 x [16 x i8]]$ %203, 0
+    %207 = extf [16 x i8]*, [2 x [16 x i8]]* %205, 0
+    %index.shadow.ld2 = ld i4* %index.shadow
+    %208 = sig [16 x i8] %21
+    %209 = shr [16 x i8]$ %206, [16 x i8]$ %208, i4 %index.shadow.ld2
+    %210 = var [16 x i8] %21
+    %211 = shr [16 x i8]* %207, [16 x i8]* %210, i4 %index.shadow.ld2
+    %212 = extf i8$, [16 x i8]$ %209, 0
+    %213 = extf i8*, [16 x i8]* %211, 0
+    %index.shadow.ld3 = ld i4* %index.shadow
+    %214 = inss i8 %20, i4 %index.shadow.ld3, 0, 4
+    %concat4 = inss i8 %214, i4 %23, 4, 4
+    drv i8$ %212, %concat4, %6
+    st i8* %213, %concat4
+    %i.shadow.ld5 = ld i32* %i.shadow
+    %215 = add i32 %i.shadow.ld5, %24
+    drv i32$ %i, %215, %6
+    st i32* %i.shadow, %215
+    br %loop_body
+if_true3:
+    drv i1$ %failed, %10, %6
+    st i1* %failed.shadow, %10
+    br %if_exit3
+if_exit3:
+    drv i32$ %i, %17, %6
+    st i32* %i.shadow, %17
+    br %loop_body1
+loop_body1:
+    %i.shadow.ld6 = ld i32* %i.shadow
+    %216 = slt i32 %i.shadow.ld6, %18
+    br %216, %loop_exit1, %loop_continue1
+loop_exit1:
+    halt
+loop_continue1:
+    %i.shadow.ld7 = ld i32* %i.shadow
+    %217 = exts i4, i32 %i.shadow.ld7, 0, 4
+    drv i4$ %index, %217, %6
+    st i4* %index.shadow, %217
+    %array.shadow.ld1 = ld [2 x [16 x i8]]* %array.shadow
+    %218 = extf [16 x i8], [2 x [16 x i8]] %array.shadow.ld1, 0
+    %index.shadow.ld4 = ld i4* %index.shadow
+    %219 = shr [16 x i8] %218, [16 x i8] %21, i4 %index.shadow.ld4
+    %220 = extf i8, [16 x i8] %219, 0
+    %index.shadow.ld5 = ld i4* %index.shadow
+    %221 = inss i8 %20, i4 %index.shadow.ld5, 0, 4
+    %concat5 = inss i8 %221, i4 %22, 4, 4
+    %222 = neq i8 %220, %concat5
+    %223 = neq i1 %222, %8
+    br %223, %if_exit4, %if_true4
+if_true4:
+    drv i1$ %failed, %10, %6
+    st i1* %failed.shadow, %10
+    br %if_exit4
+if_exit4:
+    %array.shadow.ld2 = ld [2 x [16 x i8]]* %array.shadow
+    %224 = [2 x [16 x i8] %21]
+    %225 = exts [1 x [16 x i8]], [2 x [16 x i8]] %224, 0, 1
+    %226 = exts [1 x [16 x i8]], [2 x [16 x i8]] %array.shadow.ld2, 1, 1
+    %227 = inss [2 x [16 x i8]] %224, [1 x [16 x i8]] %225, 1, 1
+    %228 = inss [2 x [16 x i8]] %227, [1 x [16 x i8]] %226, 0, 1
+    %229 = extf [16 x i8], [2 x [16 x i8]] %228, 0
+    %index.shadow.ld6 = ld i4* %index.shadow
+    %230 = shr [16 x i8] %229, [16 x i8] %21, i4 %index.shadow.ld6
+    %231 = extf i8, [16 x i8] %230, 0
+    %index.shadow.ld7 = ld i4* %index.shadow
+    %232 = inss i8 %20, i4 %index.shadow.ld7, 0, 4
+    %concat6 = inss i8 %232, i4 %23, 4, 4
+    %233 = neq i8 %231, %concat6
+    %234 = neq i1 %233, %8
+    br %234, %if_exit5, %if_true5
+if_true5:
+    drv i1$ %failed, %10, %6
+    st i1* %failed.shadow, %10
+    br %if_exit5
+if_exit5:
+    %i.shadow.ld8 = ld i32* %i.shadow
+    %235 = add i32 %i.shadow.ld8, %24
+    drv i32$ %i, %235, %6
+    st i32* %i.shadow, %235
+    br %loop_body1
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: signed, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic signed [3:0] -&gt; Sign(unsigned) logic unsigned [3:0]
+entity @bug () -&gt; () {
+    %0 = const i8 0
+    %1 = [i8 %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0]
+    %2 = [[16 x i8] %1, %1]
+    %array = sig [2 x [16 x i8]] %2
+    %3 = const i1 0
+    %failed = sig i1 %3
+    %4 = const i32 0
+    %i = sig i32 %4
+    %5 = const i4 0
+    %index = sig i4 %5
+    inst %bug.initial.494.0 () -&gt; ([2 x [16 x i8]]$ %array, i1$ %failed, i32$ %i, i4$ %index)
+    halt
+}
 
 </pre>
 </body>

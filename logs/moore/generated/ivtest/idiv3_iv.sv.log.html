@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/idiv3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/idiv3.v</a>
 time_elapsed: 0.004s
-ram usage: 10324 KB
+ram usage: 10600 KB
 </pre>
 <pre class="log">
 
@@ -31,13 +31,16 @@ warning: `$display` not supported; ignored
 
 proc %DivBug.initial.51.0 () -&gt; (i32$ %intX, i32$ %intY) {
 0:
-    %1 = const i32 4294967288
-    %2 = const time 0s 1e
-    drv i32$ %intX, %1, %2
-    %intX1 = prb i32$ %intX
-    %3 = const i32 8
-    %4 = sdiv i32 %intX1, %3
-    drv i32$ %intY, %4, %2
+    %1 = prb i32$ %intX
+    %intX.shadow = var i32 %1
+    %2 = const i32 4294967288
+    %3 = const time 0s 1e
+    drv i32$ %intX, %2, %3
+    st i32* %intX.shadow, %2
+    %intX.shadow.ld = ld i32* %intX.shadow
+    %4 = const i32 8
+    %5 = sdiv i32 %intX.shadow.ld, %4
+    drv i32$ %intY, %5, %3
     halt
 }
 

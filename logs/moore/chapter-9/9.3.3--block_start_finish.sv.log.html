@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: block start finish check
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: 9.3.3
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-9
@@ -18,22 +18,23 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-9/9.3.3--block_start_finish.sv.html" target="file-frame">tests/chapter-9/9.3.3--block_start_finish.sv</a>
 time_elapsed: 0.004s
-ram usage: 10196 KB
+ram usage: 10796 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-9 -e block_tb <a href="../../../tests/chapter-9/9.3.3--block_start_finish.sv.html" target="file-frame">tests/chapter-9/9.3.3--block_start_finish.sv</a>
-error: cannot cast a value of type `int` to `reg [3:0]`
-  --&gt; <a href="../../../tests/chapter-9/9.3.3--block_start_finish.sv.html#l-7" target="file-frame">tests/chapter-9/9.3.3--block_start_finish.sv:7</a>:16-17:
+compiler bug: lowering of Stmt #56 to hir not implemented
+  --&gt; <a href="../../../tests/chapter-9/9.3.3--block_start_finish.sv.html#l-9" target="file-frame">tests/chapter-9/9.3.3--block_start_finish.sv:9</a>:3-82:
    | 
-   |     reg [3:0] a = 0;
-   |                   ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [3:0]`, but
-   = note: `logic unsigned [3:0]` cannot be cast to the final `reg [3:0]`
+   |         fork
+   |         ^^^^
+   = note: Encountered at src/svlog/hir/lowering.rs:356
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([3:0], true) bit signed [3:0] -&gt; Sign(unsigned) bit unsigned [3:0] -&gt; Domain(FourValued) logic unsigned [3:0]
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of Stmt #56 to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

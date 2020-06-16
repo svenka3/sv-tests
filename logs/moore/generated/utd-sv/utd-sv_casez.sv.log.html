@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/casez.v.html" target="file-frame">third_party/tests/utd-sv/casez.v</a>
-time_elapsed: 0.004s
-ram usage: 10424 KB
+time_elapsed: 0.008s
+ram usage: 10804 KB
 </pre>
 <pre class="log">
 
@@ -55,25 +55,31 @@ warning: `$display` not supported; ignored
 
 proc %tb_casez.initial.95.0 () -&gt; (i32$ %shifter, i32$ %result) {
 0:
-    %1 = const i32 1
-    %2 = const time 0s 1e
-    drv i32$ %shifter, %1, %2
-    %shifter1 = prb i32$ %shifter
-    %3 = exts i28, i32 %shifter1, 0, 28
-    %4 = const i4 0
-    %5 = const i32 0
-    %6 = inss i32 %5, i28 %3, 4, 28
-    %7 = inss i32 %6, i4 %4, 0, 4
-    drv i32$ %result, %7, %2
-    %result1 = prb i32$ %result
-    %8 = const i32 31
-    %9 = and i32 %result1, %8
-    %10 = const i32 16
-    %11 = eq i32 %9, %10
-    br %11, %12, %case_exit
+    %1 = prb i32$ %shifter
+    %shifter.shadow = var i32 %1
+    %2 = prb i32$ %result
+    %result.shadow = var i32 %2
+    %3 = const i32 1
+    %4 = const time 0s 1e
+    drv i32$ %shifter, %3, %4
+    st i32* %shifter.shadow, %3
+    %shifter.shadow.ld = ld i32* %shifter.shadow
+    %5 = exts i28, i32 %shifter.shadow.ld, 0, 28
+    %6 = const i4 0
+    %7 = const i32 0
+    %8 = inss i32 %7, i28 %5, 4, 28
+    %9 = inss i32 %8, i4 %6, 0, 4
+    drv i32$ %result, %9, %4
+    st i32* %result.shadow, %9
+    %result.shadow.ld = ld i32* %result.shadow
+    %10 = const i32 31
+    %11 = and i32 %result.shadow.ld, %10
+    %12 = const i32 16
+    %13 = eq i32 %11, %12
+    br %13, %14, %case_exit
 case_exit:
     halt
-12:
+14:
     br %case_exit
 }
 

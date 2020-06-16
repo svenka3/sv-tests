@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1892959.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1892959.v</a>
-time_elapsed: 0.004s
-ram usage: 10440 KB
+time_elapsed: 0.008s
+ram usage: 10748 KB
 </pre>
 <pre class="log">
 
@@ -30,7 +30,6 @@ error: cannot infer implicit type
    |   ^^^^^^^^^            
    = note: This usually indicates that a declaration is missing a default value.
 
- ERROR moore_svlog::typeck &gt; offending implicit type is TypeKind #20 (#26 in Type #21) ImplicitType
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1892959.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/pr1892959.v:18</a>:7-41:
    | 
@@ -55,17 +54,80 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit [1:0]` to `reg [1:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1892959.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr1892959.v:16</a>:10-15:
-   | 
-   |     in = 2&#39;b00;
-   |          ^^^^^ 
-   = note: `bit [1:0]` can be cast to an intermediate `logic [1:0]`, but
-   = note: `logic [1:0]` cannot be cast to the final `reg [1:0]`
+proc %top.initial.180.0 (i1$ %out) -&gt; (i1$ %pass, i2$ %in) {
+0:
+    %1 = prb i1$ %pass
+    %pass.shadow = var i1 %1
+    %2 = const i2 0
+    %3 = const time 0s 1e
+    drv i2$ %in, %2, %3
+    %4 = const i32 1
+    wait %5 for %4
+5:
+    %6 = prb i1$ %pass
+    st i1* %pass.shadow, %6
+    %out.prb = prb i1$ %out
+    %7 = const i1 0
+    %8 = neq i1 %out.prb, %7
+    %9 = neq i1 %8, %7
+    %10 = const time 0s 1e
+    br %9, %if_exit, %if_true
+if_true:
+    drv i1$ %pass, %7, %10
+    st i1* %pass.shadow, %7
+    br %if_exit
+if_exit:
+    %11 = const i2 1
+    drv i2$ %in, %11, %10
+    %12 = const i32 1
+    wait %13 for %12
+13:
+    %14 = prb i1$ %pass
+    st i1* %pass.shadow, %14
+    %out.prb1 = prb i1$ %out
+    %15 = const i1 1
+    %16 = neq i1 %out.prb1, %15
+    %17 = const i1 0
+    %18 = neq i1 %16, %17
+    %19 = const time 0s 1e
+    br %18, %if_exit1, %if_true1
+if_true1:
+    drv i1$ %pass, %17, %19
+    st i1* %pass.shadow, %17
+    br %if_exit1
+if_exit1:
+    %20 = const i2 2
+    drv i2$ %in, %20, %19
+    %21 = const i32 1
+    wait %22 for %21
+22:
+    %23 = prb i1$ %pass
+    st i1* %pass.shadow, %23
+    %out.prb2 = prb i1$ %out
+    %24 = const i1 1
+    %25 = neq i1 %out.prb2, %24
+    %26 = const i1 0
+    %27 = neq i1 %25, %26
+    br %27, %if_exit2, %if_true2
+if_true2:
+    %28 = const time 0s 1e
+    drv i1$ %pass, %26, %28
+    st i1* %pass.shadow, %26
+    br %if_exit2
+if_exit2:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [1:0] -&gt; Domain(FourValued) logic [1:0]
+entity @top () -&gt; () {
+    %0 = const i1 1
+    %pass = sig i1 %0
+    %1 = const i2 0
+    %in = sig i2 %1
+    %2 = const i1 0
+    %out = sig i1 %2
+    inst %top.initial.180.0 (i1$ %out) -&gt; (i1$ %pass, i2$ %in)
+    halt
+}
 
 </pre>
 </body>

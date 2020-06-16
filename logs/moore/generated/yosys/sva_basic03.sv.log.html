@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/sva/basic03.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic03.sv</a>
 time_elapsed: 0.004s
-ram usage: 10108 KB
+ram usage: 10532 KB
 </pre>
 <pre class="log">
 
@@ -43,31 +43,30 @@ warning: unsupported: concurrent assertion; ignored
 
 proc %top.always.67.0 (i1$ %clk, i1$ %selA, i1$ %selB, i1$ %QA, i1$ %QB) -&gt; (i1$ %Q) {
 init:
-    %clk1 = prb i1$ %clk
+    %clk.prb = prb i1$ %clk
     wait %check, %clk
 check:
-    %clk2 = prb i1$ %clk
     %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
+    %1 = eq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
-    %selA1 = prb i1$ %selA
-    %3 = neq i1 %selA1, %0
+    %selA.prb = prb i1$ %selA
+    %3 = neq i1 %selA.prb, %0
     %4 = const time 0s 1d
     br %3, %if_exit, %if_true
 if_true:
-    %QA1 = prb i1$ %QA
-    drv i1$ %Q, %QA1, %4
+    %QA.prb = prb i1$ %QA
+    drv i1$ %Q, %QA.prb, %4
     br %if_exit
 if_exit:
-    %selB1 = prb i1$ %selB
-    %5 = neq i1 %selB1, %0
+    %selB.prb = prb i1$ %selB
+    %5 = neq i1 %selB.prb, %0
     br %5, %init, %if_true1
 if_true1:
-    %QB1 = prb i1$ %QB
-    drv i1$ %Q, %QB1, %4
+    %QB.prb = prb i1$ %QB
+    drv i1$ %Q, %QB.prb, %4
     br %init
 }
 

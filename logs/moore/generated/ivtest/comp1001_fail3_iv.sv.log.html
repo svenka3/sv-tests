@@ -18,11 +18,33 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v</a>
 time_elapsed: 0.004s
-ram usage: 10288 KB
+ram usage: 10456 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v</a>
+error: cannot cast a value of type `bit [9:0]` to `reg [119:110]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:13</a>:12-19:
+   | 
+   |     r163 = 10&#39;h17d;
+   |            ^^^^^^^ 
+   = note: `bit [9:0]` can be cast to an intermediate `logic [9:0]`, but
+   = note: `logic [9:0]` cannot be cast to the final `reg [119:110]`
+
+error: cannot cast a value of type `logic` to `reg [192:162]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:15</a>:13-59:
+   | 
+   |     r222 = (1&#39;b1 + (22&#39;h3a15 &amp;&amp; ((^r163) &lt; 4&#39;h8))) != 1&#39;bx;
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   = note: `logic` can be cast to an intermediate `logic [30:0]`, but
+   = note: `logic [30:0]` cannot be cast to the final `reg [192:162]`
+
+error: cannot cast a value of type `reg [192:162]` to `logic [30:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:30</a>:9-13:
+   | 
+   |     if (r222 !== 31&#39;b0x) $display(&#34;FAILED -- r222=%b&#34;, r222);
+   |         ^^^^                                                 
+
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:30</a>:26-61:
    | 
@@ -35,17 +57,6 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit [9:0]` to `reg [119:110]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/comp1001_fail3.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/comp1001_fail3.v:13</a>:12-19:
-   | 
-   |     r163 = 10&#39;h17d;
-   |            ^^^^^^^ 
-   = note: `bit [9:0]` can be cast to an intermediate `logic [9:0]`, but
-   = note: `logic [9:0]` cannot be cast to the final `reg [119:110]`
-
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([9:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([119:110])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [9:0] -&gt; Domain(FourValued) logic [9:0]
 
 </pre>
 </body>

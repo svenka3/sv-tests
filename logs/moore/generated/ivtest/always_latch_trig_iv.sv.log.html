@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/always_latch_trig.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_latch_trig.v</a>
-time_elapsed: 0.008s
-ram usage: 10824 KB
+time_elapsed: 0.012s
+ram usage: 10888 KB
 </pre>
 <pre class="log">
 
@@ -67,17 +67,17 @@ warning: `$display` not supported; ignored
 
 proc %top.always_latch.32.0 (i1$ %a, i1$ %enb) -&gt; (i1$ %q) {
 body:
-    %enb1 = prb i1$ %enb
+    %enb.prb = prb i1$ %enb
     %0 = const i1 1
-    %1 = neq i1 %enb1, %0
+    %1 = neq i1 %enb.prb, %0
     %2 = const i1 0
     %3 = neq i1 %1, %2
     br %3, %check, %if_true
 check:
     wait %body, %a, %enb
 if_true:
-    %a1 = prb i1$ %a
-    %4 = neq i1 %a1, %2
+    %a.prb = prb i1$ %a
+    %4 = neq i1 %a.prb, %2
     %5 = const time 0s 1d
     drv i1$ %q, %4, %5
     br %check
@@ -85,95 +85,116 @@ if_true:
 
 proc %top.initial.314.0 (i1$ %q) -&gt; (i1$ %a, i1$ %enb, i1$ %pass) {
 0:
-    %1 = const i1 1
-    %2 = const time 0s 1e
-    drv i1$ %pass, %1, %2
-    %3 = const i32 1
-    wait %4 for %3
-4:
-    %q1 = prb i1$ %q
-    %5 = const i1 0
-    %6 = neq i1 %q1, %5
-    %7 = neq i1 %6, %5
-    %8 = const time 0s 1e
-    br %7, %if_exit, %if_true
+    %1 = prb i1$ %pass
+    %pass.shadow = var i1 %1
+    %2 = const i1 1
+    %3 = const time 0s 1e
+    drv i1$ %pass, %2, %3
+    st i1* %pass.shadow, %2
+    %4 = const i32 1
+    wait %5 for %4
+5:
+    %6 = prb i1$ %pass
+    st i1* %pass.shadow, %6
+    %q.prb = prb i1$ %q
+    %7 = const i1 0
+    %8 = neq i1 %q.prb, %7
+    %9 = neq i1 %8, %7
+    %10 = const time 0s 1e
+    br %9, %if_exit, %if_true
 if_true:
-    drv i1$ %pass, %5, %8
+    drv i1$ %pass, %7, %10
+    st i1* %pass.shadow, %7
     br %if_exit
 if_exit:
-    drv i1$ %a, %5, %8
-    %9 = const i32 1
-    wait %10 for %9
-10:
-    %q2 = prb i1$ %q
-    %11 = const i1 1
-    %12 = neq i1 %q2, %11
-    %13 = const i1 0
-    %14 = neq i1 %12, %13
-    %15 = const time 0s 1e
-    br %14, %if_exit1, %if_true1
+    drv i1$ %a, %7, %10
+    %11 = const i32 1
+    wait %12 for %11
+12:
+    %13 = prb i1$ %pass
+    st i1* %pass.shadow, %13
+    %q.prb1 = prb i1$ %q
+    %14 = const i1 1
+    %15 = neq i1 %q.prb1, %14
+    %16 = const i1 0
+    %17 = neq i1 %15, %16
+    %18 = const time 0s 1e
+    br %17, %if_exit1, %if_true1
 if_true1:
-    drv i1$ %pass, %13, %15
+    drv i1$ %pass, %16, %18
+    st i1* %pass.shadow, %16
     br %if_exit1
 if_exit1:
-    drv i1$ %a, %11, %15
-    %16 = const i32 1
-    wait %17 for %16
-17:
-    %q3 = prb i1$ %q
-    %18 = const i1 1
-    %19 = neq i1 %q3, %18
-    %20 = const i1 0
-    %21 = neq i1 %19, %20
-    %22 = const time 0s 1e
-    br %21, %if_exit2, %if_true2
+    drv i1$ %a, %14, %18
+    %19 = const i32 1
+    wait %20 for %19
+20:
+    %21 = prb i1$ %pass
+    st i1* %pass.shadow, %21
+    %q.prb2 = prb i1$ %q
+    %22 = const i1 1
+    %23 = neq i1 %q.prb2, %22
+    %24 = const i1 0
+    %25 = neq i1 %23, %24
+    %26 = const time 0s 1e
+    br %25, %if_exit2, %if_true2
 if_true2:
-    drv i1$ %pass, %20, %22
+    drv i1$ %pass, %24, %26
+    st i1* %pass.shadow, %24
     br %if_exit2
 if_exit2:
-    drv i1$ %a, %20, %22
-    %23 = const i32 1
-    wait %24 for %23
-24:
-    %q4 = prb i1$ %q
-    %25 = const i1 1
-    %26 = neq i1 %q4, %25
-    %27 = const i1 0
-    %28 = neq i1 %26, %27
-    %29 = const time 0s 1e
-    br %28, %if_exit3, %if_true3
+    drv i1$ %a, %24, %26
+    %27 = const i32 1
+    wait %28 for %27
+28:
+    %29 = prb i1$ %pass
+    st i1* %pass.shadow, %29
+    %q.prb3 = prb i1$ %q
+    %30 = const i1 1
+    %31 = neq i1 %q.prb3, %30
+    %32 = const i1 0
+    %33 = neq i1 %31, %32
+    %34 = const time 0s 1e
+    br %33, %if_exit3, %if_true3
 if_true3:
-    drv i1$ %pass, %27, %29
+    drv i1$ %pass, %32, %34
+    st i1* %pass.shadow, %32
     br %if_exit3
 if_exit3:
-    drv i1$ %a, %27, %29
-    %30 = const i32 1
-    wait %31 for %30
-31:
-    %q5 = prb i1$ %q
-    %32 = const i1 0
-    %33 = neq i1 %q5, %32
-    %34 = neq i1 %33, %32
-    %35 = const time 0s 1e
-    br %34, %if_exit4, %if_true4
+    drv i1$ %a, %32, %34
+    %35 = const i32 1
+    wait %36 for %35
+36:
+    %37 = prb i1$ %pass
+    st i1* %pass.shadow, %37
+    %q.prb4 = prb i1$ %q
+    %38 = const i1 0
+    %39 = neq i1 %q.prb4, %38
+    %40 = neq i1 %39, %38
+    %41 = const time 0s 1e
+    br %40, %if_exit4, %if_true4
 if_true4:
-    drv i1$ %pass, %32, %35
+    drv i1$ %pass, %38, %41
+    st i1* %pass.shadow, %38
     br %if_exit4
 if_exit4:
-    %36 = const i1 1
-    drv i1$ %enb, %36, %35
-    drv i1$ %a, %32, %35
-    %37 = const i32 1
-    wait %38 for %37
-38:
-    %q6 = prb i1$ %q
-    %39 = const i1 0
-    %40 = neq i1 %q6, %39
-    %41 = neq i1 %40, %39
-    br %41, %if_exit5, %if_true5
+    %42 = const i1 1
+    drv i1$ %enb, %42, %41
+    drv i1$ %a, %38, %41
+    %43 = const i32 1
+    wait %44 for %43
+44:
+    %45 = prb i1$ %pass
+    st i1* %pass.shadow, %45
+    %q.prb5 = prb i1$ %q
+    %46 = const i1 0
+    %47 = neq i1 %q.prb5, %46
+    %48 = neq i1 %47, %46
+    br %48, %if_exit5, %if_true5
 if_true5:
-    %42 = const time 0s 1e
-    drv i1$ %pass, %39, %42
+    %49 = const time 0s 1e
+    drv i1$ %pass, %46, %49
+    st i1* %pass.shadow, %46
     br %if_exit5
 if_exit5:
     halt

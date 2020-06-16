@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,22 +18,45 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/port-test7.v.html" target="file-frame">third_party/tests/ivtest/ivltests/port-test7.v</a>
 time_elapsed: 0.004s
-ram usage: 10524 KB
+ram usage: 10732 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e ansireg <a href="../../../../third_party/tests/ivtest/ivltests/port-test7.v.html" target="file-frame">third_party/tests/ivtest/ivltests/port-test7.v</a>
-error: cannot cast a value of type `byte unsigned` to `reg [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/port-test7.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/port-test7.v:6</a>:25-30:
-   | 
-   |      q &lt;= #(`REG_DELAY) 8&#39;h00;
-   |                         ^^^^^ 
-   = note: `byte unsigned` can be cast to an intermediate `logic [7:0]`, but
-   = note: `logic [7:0]` cannot be cast to the final `reg [7:0]`
+proc %ansireg.always.57.0 (i1$ %clk, i1$ %reset, i8$ %d) -&gt; (i8$ %q) {
+init:
+    %clk.prb = prb i1$ %clk
+    %reset.prb = prb i1$ %reset
+    wait %check, %clk, %reset
+check:
+    %0 = const i1 0
+    %1 = eq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb, %0
+    %posedge = and i1 %1, %2
+    %3 = eq i1 %reset.prb, %0
+    %4 = neq i1 %reset.prb, %0
+    %posedge1 = and i1 %3, %4
+    %event_or = or i1 %posedge, %posedge1
+    br %event_or, %init, %event
+event:
+    %reset.prb1 = prb i1$ %reset
+    %5 = neq i1 %reset.prb1, %0
+    %6 = const i32 1
+    br %5, %if_false, %if_true
+if_true:
+    %7 = const i8 0
+    drv i8$ %q, %7, %6
+    br %init
+if_false:
+    %d.prb = prb i8$ %d
+    drv i8$ %q, %d.prb, %6
+    br %init
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Byte), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: byte unsigned -&gt; PackSBVT bit [7:0] -&gt; Domain(FourValued) logic [7:0]
+entity @ansireg (i1$ %clk, i1$ %reset, i8$ %d) -&gt; (i8$ %q) {
+    inst %ansireg.always.57.0 (i1$ %clk, i1$ %reset, i8$ %d) -&gt; (i8$ %q)
+    halt
+}
 
 </pre>
 </body>

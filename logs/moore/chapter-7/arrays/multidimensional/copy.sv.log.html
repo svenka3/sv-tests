@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/multidimensional/copy.sv.html" target="file-frame">tests/chapter-7/arrays/multidimensional/copy.sv</a>
 time_elapsed: 0.008s
-ram usage: 10620 KB
+ram usage: 10844 KB
 </pre>
 <pre class="log">
 
@@ -37,31 +37,37 @@ warning: `$display` not supported; ignored
 
 proc %top.initial.100.0 () -&gt; ([10 x [4 x i8]]$ %arr_a, [10 x [4 x i8]]$ %arr_b) {
 0:
-    %1 = const i32 1
-    %2 = const i8 0
-    %3 = [4 x i8 %2]
-    %4 = [10 x [4 x i8] %3]
-    %5 = sig [10 x [4 x i8]] %4
-    %6 = shr [10 x [4 x i8]]$ %arr_a, [10 x [4 x i8]]$ %5, i32 %1
-    %7 = extf [4 x i8]$, [10 x [4 x i8]]$ %6, 0
-    %8 = const i8 239
-    %9 = const i8 190
-    %10 = const i8 173
-    %11 = const i8 222
-    %12 = [i8 %8, %9, %10, %11]
-    %13 = const time 0s 1e
-    drv [4 x i8]$ %7, %12, %13
-    %14 = const i32 2
-    %15 = sig [10 x [4 x i8]] %4
-    %16 = shr [10 x [4 x i8]]$ %arr_b, [10 x [4 x i8]]$ %15, i32 %14
-    %17 = extf [4 x i8]$, [10 x [4 x i8]]$ %16, 0
-    %arr_a1 = prb [10 x [4 x i8]]$ %arr_a
-    %18 = exts [1 x [4 x i8]], [10 x [4 x i8]] %4, 0, 1
-    %19 = exts [9 x [4 x i8]], [10 x [4 x i8]] %arr_a1, 1, 9
-    %20 = inss [10 x [4 x i8]] %4, [1 x [4 x i8]] %18, 9, 1
-    %21 = inss [10 x [4 x i8]] %20, [9 x [4 x i8]] %19, 0, 9
-    %22 = extf [4 x i8], [10 x [4 x i8]] %21, 0
-    drv [4 x i8]$ %17, %22, %13
+    %1 = prb [10 x [4 x i8]]$ %arr_a
+    %arr_a.shadow = var [10 x [4 x i8]] %1
+    %2 = const i32 1
+    %3 = const i8 0
+    %4 = [4 x i8 %3]
+    %5 = [10 x [4 x i8] %4]
+    %6 = sig [10 x [4 x i8]] %5
+    %7 = shr [10 x [4 x i8]]$ %arr_a, [10 x [4 x i8]]$ %6, i32 %2
+    %8 = var [10 x [4 x i8]] %5
+    %9 = shr [10 x [4 x i8]]* %arr_a.shadow, [10 x [4 x i8]]* %8, i32 %2
+    %10 = extf [4 x i8]$, [10 x [4 x i8]]$ %7, 0
+    %11 = extf [4 x i8]*, [10 x [4 x i8]]* %9, 0
+    %12 = const i8 239
+    %13 = const i8 190
+    %14 = const i8 173
+    %15 = const i8 222
+    %16 = [i8 %12, %13, %14, %15]
+    %17 = const time 0s 1e
+    drv [4 x i8]$ %10, %16, %17
+    st [4 x i8]* %11, %16
+    %18 = const i32 2
+    %19 = sig [10 x [4 x i8]] %5
+    %20 = shr [10 x [4 x i8]]$ %arr_b, [10 x [4 x i8]]$ %19, i32 %18
+    %21 = extf [4 x i8]$, [10 x [4 x i8]]$ %20, 0
+    %arr_a.shadow.ld = ld [10 x [4 x i8]]* %arr_a.shadow
+    %22 = exts [1 x [4 x i8]], [10 x [4 x i8]] %5, 0, 1
+    %23 = exts [9 x [4 x i8]], [10 x [4 x i8]] %arr_a.shadow.ld, 1, 9
+    %24 = inss [10 x [4 x i8]] %5, [1 x [4 x i8]] %22, 9, 1
+    %25 = inss [10 x [4 x i8]] %24, [9 x [4 x i8]] %23, 0, 9
+    %26 = extf [4 x i8], [10 x [4 x i8]] %25, 0
+    drv [4 x i8]$ %21, %26, %17
     halt
 }
 

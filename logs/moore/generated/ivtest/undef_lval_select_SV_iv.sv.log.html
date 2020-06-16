@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/undef_lval_select_SV.v.html" target="file-frame">third_party/tests/ivtest/ivltests/undef_lval_select_SV.v</a>
-time_elapsed: 0.004s
-ram usage: 10444 KB
+time_elapsed: 0.008s
+ram usage: 10888 KB
 </pre>
 <pre class="log">
 
@@ -35,15 +35,83 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `logic [3:0]` to `reg [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/undef_lval_select_SV.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/undef_lval_select_SV.v:8</a>:14-21:
-   | 
-   |     vec[1] = 4&#39;bxxxx;
-   |              ^^^^^^^ 
+proc %top.initial.197.0 () -&gt; (i1$ %pass, [3 x i4]$ %vec) {
+0:
+    %1 = prb i1$ %pass
+    %pass.shadow = var i1 %1
+    %2 = prb [3 x i4]$ %vec
+    %vec.shadow = var [3 x i4] %2
+    %3 = const i1 1
+    %4 = const time 0s 1e
+    drv i1$ %pass, %3, %4
+    st i1* %pass.shadow, %3
+    %5 = const i32 1
+    %6 = const i4 0
+    %7 = [3 x i4 %6]
+    %8 = sig [3 x i4] %7
+    %9 = shr [3 x i4]$ %vec, [3 x i4]$ %8, i32 %5
+    %10 = var [3 x i4] %7
+    %11 = shr [3 x i4]* %vec.shadow, [3 x i4]* %10, i32 %5
+    %12 = extf i4$, [3 x i4]$ %9, 0
+    %13 = extf i4*, [3 x i4]* %11, 0
+    drv i4$ %12, %6, %4
+    st i4* %13, %6
+    %14 = extf i4$, [3 x i4]$ %vec, 0
+    %15 = extf i4*, [3 x i4]* %vec.shadow, 0
+    drv i4$ %14, %6, %4
+    st i4* %15, %6
+    %16 = const i32 4294967295
+    %17 = sig [3 x i4] %7
+    %18 = shr [3 x i4]$ %vec, [3 x i4]$ %17, i32 %16
+    %19 = var [3 x i4] %7
+    %20 = shr [3 x i4]* %vec.shadow, [3 x i4]* %19, i32 %16
+    %21 = extf i4$, [3 x i4]$ %18, 0
+    %22 = extf i4*, [3 x i4]* %20, 0
+    drv i4$ %21, %6, %4
+    st i4* %22, %6
+    %23 = const i4 9
+    drv i4$ %14, %23, %4
+    st i4* %15, %23
+    %vec.shadow.ld = ld [3 x i4]* %vec.shadow
+    %24 = exts [1 x i4], [3 x i4] %7, 0, 1
+    %25 = exts [2 x i4], [3 x i4] %vec.shadow.ld, 1, 2
+    %26 = inss [3 x i4] %7, [1 x i4] %24, 2, 1
+    %27 = inss [3 x i4] %26, [2 x i4] %25, 0, 2
+    %28 = extf i4, [3 x i4] %27, 0
+    %29 = neq i4 %28, %6
+    %30 = const i1 0
+    %31 = neq i1 %29, %30
+    %vec.shadow.ld1 = ld [3 x i4]* %vec.shadow
+    %32 = extf i4, [3 x i4] %vec.shadow.ld1, 0
+    %33 = neq i4 %32, %6
+    %34 = neq i1 %33, %30
+    %35 = and i1 %31, %34
+    %36 = neq i1 %35, %30
+    %vec.shadow.ld2 = ld [3 x i4]* %vec.shadow
+    %37 = shr [3 x i4] %vec.shadow.ld2, [3 x i4] %7, i32 %16
+    %38 = extf i4, [3 x i4] %37, 0
+    %39 = neq i4 %38, %6
+    %40 = neq i1 %39, %30
+    %41 = and i1 %36, %40
+    %42 = neq i1 %41, %30
+    br %42, %if_exit, %if_true
+if_true:
+    drv i1$ %pass, %30, %4
+    st i1* %pass.shadow, %30
+    br %if_exit
+if_exit:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [3:0]
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i4 0
+    %2 = [i4 %1, %1, %1]
+    %vec = sig [3 x i4] %2
+    inst %top.initial.197.0 () -&gt; (i1$ %pass, [3 x i4]$ %vec)
+    halt
+}
 
 </pre>
 </body>

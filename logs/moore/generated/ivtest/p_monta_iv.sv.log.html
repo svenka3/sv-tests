@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,40 +18,38 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v</a>
 time_elapsed: 0.004s
-ram usage: 10504 KB
+ram usage: 11292 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v</a>
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v:32</a>:5-21:
+error: cannot infer implicit type
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v:8</a>:10-15:
    | 
-   |     $display(&#34;%b&#34;,r);
-   |     ^^^^^^^^^^^^^^^^ 
-
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v:34</a>:8-26:
+   | function [7:0] f;
+   |          ^^^^^   
+   = note: This usually indicates that a declaration is missing a default value.
+   = note: Needed to compute the type of the expression:
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v:30</a>:13-38:
    | 
-   |        $display(&#34;PASSED&#34;);
-   |        ^^^^^^^^^^^^^^^^^^ 
+   |     r &lt;= #1 start_in ? 0 : f(data_in);
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v:36</a>:8-26:
+compiler bug: type assertion failed: `&lt;error&gt;` != `integer unsigned`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v:30</a>:28-38:
    | 
-   |        $display(&#34;FAILED&#34;);
-   |        ^^^^^^^^^^^^^^^^^^ 
+   |     r &lt;= #1 start_in ? 0 : f(data_in);
+   |                            ^^^^^^^^^^ 
+   = note: Type mismatch:
+   = note:     Left-hand side:  `&lt;error&gt;`
+   = note:     Right-hand side: `integer unsigned`
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:239
 
-error: cannot cast a value of type `byte unsigned` to `reg [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/p_monta.v.html#l-26" target="file-frame">third_party/tests/ivtest/ivltests/p_monta.v:26</a>:15-20:
-   | 
-   |     data_in = 8&#39;h23;
-   |               ^^^^^ 
-   = note: `byte unsigned` can be cast to an intermediate `logic [7:0]`, but
-   = note: `logic [7:0]` cannot be cast to the final `reg [7:0]`
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Byte), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: byte unsigned -&gt; PackSBVT bit [7:0] -&gt; Domain(FourValued) logic [7:0]
+thread &#39;main&#39; panicked at &#39;type assertion failed: `&lt;error&gt;` != `integer unsigned`&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

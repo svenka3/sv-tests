@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/packed/treat-as-integer.sv.html" target="file-frame">tests/chapter-7/arrays/packed/treat-as-integer.sv</a>
 time_elapsed: 0.004s
-ram usage: 10464 KB
+ram usage: 10508 KB
 </pre>
 <pre class="log">
 
@@ -31,16 +31,19 @@ warning: `$display` not supported; ignored
 
 proc %top.initial.52.0 () -&gt; (i8$ %arr_a, i8$ %arr_b) {
 0:
-    %1 = const i8 17
-    %2 = const time 0s 1e
-    drv i8$ %arr_a, %1, %2
-    %3 = const i32 0
-    %arr_a1 = prb i8$ %arr_a
-    %zext = inss i32 %3, i8 %arr_a1, 0, 8
-    %4 = const i32 29
-    %5 = add i32 %zext, %4
-    %6 = exts i8, i32 %5, 0, 8
-    drv i8$ %arr_b, %6, %2
+    %1 = prb i8$ %arr_a
+    %arr_a.shadow = var i8 %1
+    %2 = const i8 17
+    %3 = const time 0s 1e
+    drv i8$ %arr_a, %2, %3
+    st i8* %arr_a.shadow, %2
+    %4 = const i32 0
+    %arr_a.shadow.ld = ld i8* %arr_a.shadow
+    %zext = inss i32 %4, i8 %arr_a.shadow.ld, 0, 8
+    %5 = const i32 29
+    %6 = add i32 %zext, %5
+    %7 = exts i8, i32 %6, 0, 8
+    drv i8$ %arr_b, %7, %3
     halt
 }
 

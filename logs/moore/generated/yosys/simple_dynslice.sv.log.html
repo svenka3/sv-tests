@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,20 +18,41 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/dynslice.v.html" target="file-frame">third_party/tools/yosys/tests/simple/dynslice.v</a>
 time_elapsed: 0.004s
-ram usage: 10420 KB
+ram usage: 10504 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple -e dynslice <a href="../../../../third_party/tools/yosys/tests/simple/dynslice.v.html" target="file-frame">third_party/tools/yosys/tests/simple/dynslice.v</a>
-error: cannot cast a value of type `logic [15:0]` to `reg [15:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/dynslice.v.html#l-10" target="file-frame">third_party/tools/yosys/tests/simple/dynslice.v:10</a>:27-30:
-   | 
-   |     dout[ctrl*sel+:16] &lt;= din ;
-   |                           ^^^  
+proc %dynslice.always.88.0 (i1$ %clk, i10$ %ctrl, i16$ %din, i4$ %sel) -&gt; (i128$ %dout) {
+init:
+    %clk.prb = prb i1$ %clk
+    wait %check, %clk
+check:
+    %0 = const i1 0
+    %1 = eq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb, %0
+    %posedge = and i1 %1, %2
+    br %posedge, %init, %event
+event:
+    %ctrl.prb = prb i10$ %ctrl
+    %3 = const i10 0
+    %sel.prb = prb i4$ %sel
+    %zext = inss i10 %3, i4 %sel.prb, 0, 4
+    %4 = umul i10 %ctrl.prb, %zext
+    %5 = const i128 0
+    %6 = sig i128 %5
+    %7 = shr i128$ %dout, i128$ %6, i10 %4
+    %8 = exts i16$, i128$ %7, 0, 16
+    %din.prb = prb i16$ %din
+    %9 = const time 0s 1d
+    drv i16$ %8, %din.prb, %9
+    br %init
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [15:0]
+entity @dynslice (i1$ %clk, i10$ %ctrl, i16$ %din, i4$ %sel) -&gt; (i128$ %dout) {
+    inst %dynslice.always.88.0 (i1$ %clk, i10$ %ctrl, i16$ %din, i4$ %sel) -&gt; (i128$ %dout)
+    halt
+}
 
 </pre>
 </body>

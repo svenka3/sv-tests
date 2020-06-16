@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../tests/chapter-10/10.4.1--blocking-assignment.sv.html" target="file-frame">tests/chapter-10/10.4.1--blocking-assignment.sv</a>
 time_elapsed: 0.004s
-ram usage: 10396 KB
+ram usage: 10600 KB
 </pre>
 <pre class="log">
 
@@ -31,11 +31,14 @@ warning: `$display` not supported; ignored
 
 proc %top.initial.54.0 () -&gt; (i1$ %a, i1$ %b) {
 0:
-    %1 = const i1 1
-    %2 = const time 0s 1e
-    drv i1$ %a, %1, %2
-    %a1 = prb i1$ %a
-    drv i1$ %b, %a1, %2
+    %1 = prb i1$ %a
+    %a.shadow = var i1 %1
+    %2 = const i1 1
+    %3 = const time 0s 1e
+    drv i1$ %a, %2, %3
+    st i1* %a.shadow, %2
+    %a.shadow.ld = ld i1* %a.shadow
+    drv i1$ %b, %a.shadow.ld, %3
     halt
 }
 

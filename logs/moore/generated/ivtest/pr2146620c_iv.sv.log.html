@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2146620c.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2146620c.v</a>
-time_elapsed: 0.004s
-ram usage: 10192 KB
+time_elapsed: 0.008s
+ram usage: 10632 KB
 </pre>
 <pre class="log">
 
@@ -41,17 +41,23 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;FAILED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `logic [24:0]` to `reg [4:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2146620c.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr2146620c.v:8</a>:10-39:
-   | 
-   |     r170 = (5&#39;h1c % 25&#39;h5b50) - 20&#39;h05818;
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-   = note: `logic [24:0]` can be cast to an intermediate `logic [4:0]`, but
-   = note: `logic [4:0]` cannot be cast to the final `reg [4:0]`
+proc %comp1001a.initial.55.0 () -&gt; (i5$ %r170) {
+0:
+    %1 = prb i5$ %r170
+    %r170.shadow = var i5 %1
+    %2 = const i5 4
+    %3 = const time 0s 1e
+    drv i5$ %r170, %2, %3
+    st i5* %r170.shadow, %2
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([24:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([4:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [24:0] -&gt; Range([4:0], false) logic [4:0]
+entity @comp1001a () -&gt; () {
+    %0 = const i5 0
+    %r170 = sig i5 %0
+    inst %comp1001a.initial.55.0 () -&gt; (i5$ %r170)
+    halt
+}
 
 </pre>
 </body>

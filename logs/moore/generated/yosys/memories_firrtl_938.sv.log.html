@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories
@@ -18,20 +18,59 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/firrtl_938.v.html" target="file-frame">third_party/tools/yosys/tests/memories/firrtl_938.v</a>
 time_elapsed: 0.004s
-ram usage: 10616 KB
+ram usage: 10676 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories -e top <a href="../../../../third_party/tools/yosys/tests/memories/firrtl_938.v.html" target="file-frame">third_party/tools/yosys/tests/memories/firrtl_938.v</a>
-error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/firrtl_938.v.html#l-16" target="file-frame">third_party/tools/yosys/tests/memories/firrtl_938.v:16</a>:19-25:
-   | 
-   |             ram[addr_a] &lt;= data_a;
-   |                            ^^^^^^ 
+proc %top.always.106.0 (i8$ %data_a, i6$ %addr_a, i6$ %we_a, i6$ %clk) -&gt; (i8$ %q_a, [64 x i8]$ %ram) {
+0:
+    %1 = prb [64 x i8]$ %ram
+    %ram.shadow = var [64 x i8] %1
+    br %init
+init:
+    %clk.prb = prb i6$ %clk
+    wait %check, %clk
+check:
+    %2 = prb [64 x i8]$ %ram
+    st [64 x i8]* %ram.shadow, %2
+    %3 = const i6 0
+    %4 = eq i6 %clk.prb, %3
+    %5 = neq i6 %clk.prb, %3
+    %posedge = and i1 %4, %5
+    br %posedge, %init, %event
+event:
+    %we_a.prb = prb i6$ %we_a
+    %6 = neq i6 %we_a.prb, %3
+    %addr_a.prb = prb i6$ %addr_a
+    %7 = const i8 0
+    %8 = const time 0s 1d
+    br %6, %if_exit, %if_true
+if_true:
+    %9 = [64 x i8 %7]
+    %10 = sig [64 x i8] %9
+    %11 = shr [64 x i8]$ %ram, [64 x i8]$ %10, i6 %addr_a.prb
+    %12 = extf i8$, [64 x i8]$ %11, 0
+    %data_a.prb = prb i8$ %data_a
+    drv i8$ %12, %data_a.prb, %8
+    drv i8$ %q_a, %data_a.prb, %8
+    br %if_exit
+if_exit:
+    %ram.shadow.ld = ld [64 x i8]* %ram.shadow
+    %13 = [64 x i8 %7]
+    %14 = shr [64 x i8] %ram.shadow.ld, [64 x i8] %13, i6 %addr_a.prb
+    %15 = extf i8, [64 x i8] %14, 0
+    drv i8$ %q_a, %15, %8
+    br %0
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
+entity @top (i8$ %data_a, i6$ %addr_a, i6$ %we_a, i6$ %clk) -&gt; (i8$ %q_a) {
+    %0 = const i8 0
+    %1 = [i8 %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0]
+    %ram = sig [64 x i8] %1
+    inst %top.always.106.0 (i8$ %data_a, i6$ %addr_a, i6$ %we_a, i6$ %clk) -&gt; (i8$ %q_a, [64 x i8]$ %ram)
+    halt
+}
 
 </pre>
 </body>

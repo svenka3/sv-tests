@@ -18,35 +18,27 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/disable3.6B.v.html" target="file-frame">third_party/tests/ivtest/ivltests/disable3.6B.v</a>
 time_elapsed: 0.004s
-ram usage: 10856 KB
+ram usage: 11012 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/disable3.6B.v.html" target="file-frame">third_party/tests/ivtest/ivltests/disable3.6B.v</a>
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/disable3.6B.v.html#l-49" target="file-frame">third_party/tests/ivtest/ivltests/disable3.6B.v:49</a>:9-78:
+compiler bug: type analysis of task `task_a` not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/disable3.6B.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/disable3.6B.v:28</a>:1-96:
    | 
-   |         $display(&#34;FAILED - disable3.6B - Flop didn&#39;t clear on clock &amp; reset&#34;);
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/disable3.6B.v.html#l-58" target="file-frame">third_party/tests/ivtest/ivltests/disable3.6B.v:58</a>:9-68:
+   | task task_a ;
+   | ^^^^^^^^^^^^^
+   = note: Encountered at src/svlog/typeck.rs:105
+   = note: Needed to compute the type of the expression:
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/disable3.6B.v.html#l-44" target="file-frame">third_party/tests/ivtest/ivltests/disable3.6B.v:44</a>:5-11:
    | 
-   |         $display(&#34;FAILED - disable3.6B - Flop didn&#39;t set on clock&#34;);
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
- ERROR moore_svlog::hir::lowering &gt; Stmt #173
-compiler bug: lowering of Stmt #173 to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/disable3.6B.v.html#l-64" target="file-frame">third_party/tests/ivtest/ivltests/disable3.6B.v:64</a>:5-156:
-   | 
-   |     fork
-   |     ^^^^
-   = note: Encountered at src/svlog/hir/lowering.rs:368
+   |     task_a ;    // Same as posedge reset in previous test
+   |     ^^^^^^                                               
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;lowering of Stmt #173 to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+thread &#39;main&#39; panicked at &#39;type analysis of task `task_a` not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

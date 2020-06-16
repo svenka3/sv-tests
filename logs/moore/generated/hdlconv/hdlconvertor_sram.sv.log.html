@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from hdlconv
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog
@@ -17,21 +17,58 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v</a>
-time_elapsed: 0.004s
-ram usage: 10556 KB
+time_elapsed: 0.012s
+ram usage: 11080 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/verilog -e sram <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v</a>
-error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
-  --&gt; <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html#l-35" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v:35</a>:37-43:
-   | 
-   |             memory_array[i_addr] &lt;= i_data;
-   |                                     ^^^^^^ 
+proc %sram.always.136.0 (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %o_data, [256 x i8]$ %memory_array) {
+0:
+    %1 = prb [256 x i8]$ %memory_array
+    %memory_array.shadow = var [256 x i8] %1
+    br %init
+init:
+    %i_clk.prb = prb i1$ %i_clk
+    wait %check, %i_clk
+check:
+    %2 = prb [256 x i8]$ %memory_array
+    st [256 x i8]* %memory_array.shadow, %2
+    %3 = const i1 0
+    %4 = eq i1 %i_clk.prb, %3
+    %5 = neq i1 %i_clk.prb, %3
+    %posedge = and i1 %4, %5
+    br %posedge, %init, %event
+event:
+    %i_write.prb = prb i8$ %i_write
+    %6 = const i8 0
+    %7 = neq i8 %i_write.prb, %6
+    %i_addr.prb = prb i8$ %i_addr
+    %8 = [256 x i8 %6]
+    %9 = const time 0s 1d
+    br %7, %if_false, %if_true
+if_true:
+    %10 = sig [256 x i8] %8
+    %11 = shr [256 x i8]$ %memory_array, [256 x i8]$ %10, i8 %i_addr.prb
+    %12 = extf i8$, [256 x i8]$ %11, 0
+    %i_data.prb = prb i8$ %i_data
+    drv i8$ %12, %i_data.prb, %9
+    br %0
+if_false:
+    %memory_array.shadow.ld = ld [256 x i8]* %memory_array.shadow
+    %13 = shr [256 x i8] %memory_array.shadow.ld, [256 x i8] %8, i8 %i_addr.prb
+    %14 = extf i8, [256 x i8] %13, 0
+    drv i8$ %o_data, %14, %9
+    br %0
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
+entity @sram (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %o_data) {
+    %0 = const i8 0
+    %1 = [i8 %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0]
+    %memory_array = sig [256 x i8] %1
+    inst %sram.always.136.0 (i1$ %i_clk, i8$ %i_addr, i8$ %i_write, i8$ %i_data) -&gt; (i8$ %o_data, [256 x i8]$ %memory_array)
+    halt
+}
 
 </pre>
 </body>

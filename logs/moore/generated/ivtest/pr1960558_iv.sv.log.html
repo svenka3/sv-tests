@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1960558.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1960558.v</a>
 time_elapsed: 0.004s
-ram usage: 10232 KB
+ram usage: 10560 KB
 </pre>
 <pre class="log">
 
@@ -29,15 +29,18 @@ warning: `$write` not supported; ignored
    |     $write(
    |     ^^^^^^^
 
-error: cannot cast a value of type `logic [1:0]` to `reg [1:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1960558.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr1960558.v:5</a>:7-12:
-   | 
-   |     v2 = 2&#39;b0z;
-   |          ^^^^^ 
+proc %test.initial.67.0 () -&gt; () {
+0:
+    %1 = const i2 0
+    %v2 = var i2 %1
+    st i2* %v2, %1
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [1:0]
+entity @test () -&gt; () {
+    inst %test.initial.67.0 () -&gt; ()
+    halt
+}
 
 </pre>
 </body>

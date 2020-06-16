@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,24 +18,58 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2152011.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2152011.v</a>
 time_elapsed: 0.004s
-ram usage: 10904 KB
+ram usage: 10704 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e dupe <a href="../../../../third_party/tests/ivtest/ivltests/pr2152011.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2152011.v</a>
- ERROR moore_svlog::hir::lowering &gt; Expr #35
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2152011.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/pr2152011.v:5</a>:27-34:
+warning: `$floor` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2152011.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr2152011.v:6</a>:6-40:
    | 
-   | initial for (cc=0; cc&lt;20; cc=cc+1) begin
-   |                           ^^^^^^^       
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+   |     y = $floor(200000.0*$sin(cc*0.81)+0.5);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2152011.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr2152011.v:7</a>:2-20:
+   | 
+   |     $display(&#34;%7d&#34;, y);
+   |     ^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+proc %dupe.initial.73.0 () -&gt; (i32$ %cc, i20$ %y) {
+0:
+    %1 = prb i32$ %cc
+    %cc.shadow = var i32 %1
+    %2 = const i32 0
+    %3 = const time 0s 1e
+    drv i32$ %cc, %2, %3
+    st i32* %cc.shadow, %2
+    br %loop_body
+loop_body:
+    %cc.shadow.ld = ld i32* %cc.shadow
+    %4 = const i32 20
+    %5 = slt i32 %cc.shadow.ld, %4
+    br %5, %loop_exit, %loop_continue
+loop_exit:
+    halt
+loop_continue:
+    %6 = const i20 0
+    drv i20$ %y, %6, %3
+    %cc.shadow.ld1 = ld i32* %cc.shadow
+    %7 = const i32 1
+    %8 = add i32 %cc.shadow.ld1, %7
+    drv i32$ %cc, %8, %3
+    st i32* %cc.shadow, %8
+    br %loop_body
+}
+
+entity @dupe () -&gt; () {
+    %0 = const i32 0
+    %cc = sig i32 %0
+    %1 = const i20 0
+    %y = sig i20 %1
+    inst %dupe.initial.73.0 () -&gt; (i32$ %cc, i20$ %y)
+    halt
+}
 
 </pre>
 </body>

@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh219.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh219.v</a>
-time_elapsed: 0.004s
-ram usage: 10608 KB
+time_elapsed: 0.008s
+ram usage: 10632 KB
 </pre>
 <pre class="log">
 
@@ -49,24 +49,30 @@ warning: `$display` not supported; ignored
 
 proc %Main.initial.129.0 (i3$ %a, i3$ %a_signed, i3$ %b) -&gt; (i4$ %c0, i4$ %c1) {
 0:
-    %a1 = prb i3$ %a
-    %1 = exts i1, i3 %a1, 2, 1
-    %2 = const i4 0
-    %3 = const i4 15
-    %4 = [i4 %2, %3]
-    %5 = mux [2 x i4] %4, i1 %1
-    %sext = inss i4 %5, i3 %a1, 0, 3
-    %b1 = prb i3$ %b
-    %zext = inss i4 %2, i3 %b1, 0, 3
-    %6 = add i4 %sext, %zext
-    %7 = const time 0s 1e
-    drv i4$ %c0, %6, %7
-    %a_signed1 = prb i3$ %a_signed
-    %8 = exts i1, i3 %a_signed1, 2, 1
-    %9 = mux [2 x i4] %4, i1 %8
-    %sext1 = inss i4 %9, i3 %a_signed1, 0, 3
-    %10 = add i4 %sext1, %zext
-    drv i4$ %c1, %10, %7
+    %1 = prb i4$ %c0
+    %c0.shadow = var i4 %1
+    %2 = prb i4$ %c1
+    %c1.shadow = var i4 %2
+    %a.prb = prb i3$ %a
+    %3 = exts i1, i3 %a.prb, 2, 1
+    %4 = const i4 0
+    %5 = const i4 15
+    %6 = [i4 %4, %5]
+    %7 = mux [2 x i4] %6, i1 %3
+    %sext = inss i4 %7, i3 %a.prb, 0, 3
+    %b.prb = prb i3$ %b
+    %zext = inss i4 %4, i3 %b.prb, 0, 3
+    %8 = add i4 %sext, %zext
+    %9 = const time 0s 1e
+    drv i4$ %c0, %8, %9
+    st i4* %c0.shadow, %8
+    %a_signed.prb = prb i3$ %a_signed
+    %10 = exts i1, i3 %a_signed.prb, 2, 1
+    %11 = mux [2 x i4] %6, i1 %10
+    %sext1 = inss i4 %11, i3 %a_signed.prb, 0, 3
+    %12 = add i4 %sext1, %zext
+    drv i4$ %c1, %12, %9
+    st i4* %c1.shadow, %12
     halt
 }
 

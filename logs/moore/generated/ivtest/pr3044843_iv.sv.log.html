@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr3044843.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3044843.v</a>
 time_elapsed: 0.004s
-ram usage: 10332 KB
+ram usage: 10460 KB
 </pre>
 <pre class="log">
 
@@ -35,17 +35,25 @@ warning: `$display` not supported; ignored
    |     else $display(&#34;PASSED&#34;);
    |          ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `int` to `reg [15:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3044843.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr3044843.v:8</a>:21-22:
-   | 
-   |     r[0+:ab * ch] = 2;
-   |                     ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [15:0]`, but
-   = note: `logic unsigned [15:0]` cannot be cast to the final `reg [15:0]`
+proc %top.initial.80.0 () -&gt; (i64$ %r) {
+0:
+    %1 = prb i64$ %r
+    %r.shadow = var i64 %1
+    %2 = exts i16$, i64$ %r, 0, 16
+    %3 = exts i16*, i64* %r.shadow, 0, 16
+    %4 = const i16 2
+    %5 = const time 0s 1e
+    drv i16$ %2, %4, %5
+    st i16* %3, %4
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([15:0], true) bit signed [15:0] -&gt; Sign(unsigned) bit unsigned [15:0] -&gt; Domain(FourValued) logic unsigned [15:0]
+entity @top () -&gt; () {
+    %0 = const i64 0
+    %r = sig i64 %0
+    inst %top.initial.80.0 () -&gt; (i64$ %r)
+    halt
+}
 
 </pre>
 </body>

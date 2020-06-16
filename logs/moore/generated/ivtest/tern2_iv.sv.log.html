@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,20 +18,48 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/tern2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/tern2.v</a>
 time_elapsed: 0.004s
-ram usage: 10304 KB
+ram usage: 10568 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main2 <a href="../../../../third_party/tests/ivtest/ivltests/tern2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/tern2.v</a>
-error: cannot cast a value of type `logic [13:0]` to `reg [13:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern2.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/tern2.v:21</a>:16-39:
-   | 
-   |     out[13:0] = ( sel ? a[13:0] : b[13:0] );
-   |                   ^^^^^^^^^^^^^^^^^^^^^^^   
+proc %main2.always.76.0 (i1$ %sel, i14$ %a, i14$ %b) -&gt; (i14$ %out) {
+init:
+    %sel.prb = prb i1$ %sel
+    %a.prb = prb i14$ %a
+    %b.prb = prb i14$ %b
+    wait %check, %sel, %a, %b
+check:
+    %impledge = neq i1 %sel.prb, %sel.prb
+    %impledge1 = neq i14 %a.prb, %a.prb
+    %event_or = or i1 %impledge, %impledge1
+    %impledge2 = neq i14 %b.prb, %b.prb
+    %event_or1 = or i1 %event_or, %impledge2
+    br %event_or1, %init, %event
+event:
+    %0 = exts i14$, i14$ %out, 0, 14
+    %sel.prb1 = prb i1$ %sel
+    %1 = const i1 0
+    %2 = neq i1 %sel.prb1, %1
+    %a.prb1 = prb i14$ %a
+    %b.prb1 = prb i14$ %b
+    %3 = [i14 %b.prb1, %a.prb1]
+    %4 = mux [2 x i14] %3, i1 %2
+    %5 = const time 0s 1e
+    drv i14$ %0, %4, %5
+    br %init
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([13:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([13:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [13:0]
+entity @main2 () -&gt; () {
+    %0 = const i1 0
+    %sel = sig i1 %0
+    %1 = const i14 0
+    %out = sig i14 %1
+    %a = sig i14 %1
+    %b = sig i14 %1
+    inst %main2.always.76.0 (i1$ %sel, i14$ %a, i14$ %b) -&gt; (i14$ %out)
+    halt
+}
 
 </pre>
 </body>

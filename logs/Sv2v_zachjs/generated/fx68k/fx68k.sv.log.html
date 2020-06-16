@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/fx68k/fx68k.sv.html" target="file-frame">third_party/cores/fx68k/fx68k.sv</a> <a href="../../../../third_party/cores/fx68k/fx68kAlu.sv.html" target="file-frame">third_party/cores/fx68k/fx68kAlu.sv</a> <a href="../../../../third_party/cores/fx68k/uaddrPla.sv.html" target="file-frame">third_party/cores/fx68k/uaddrPla.sv</a>
-time_elapsed: 14.356s
-ram usage: 116076 KB
+time_elapsed: 13.456s
+ram usage: 80072 KB
 </pre>
 <pre class="log">
 
@@ -189,12 +189,12 @@ module fx68k (
 			nanoAddr &lt;= orgAddr;
 		end
 		if (Clks[3]) begin
-			microLatch &lt;= 1&#39;sb0;
-			nanoLatch &lt;= 1&#39;sb0;
+			microLatch &lt;= &#39;sd0;
+			nanoLatch &lt;= &#39;sd0;
 		end
 		else if (rstUrom) begin
-			{microLatch[16], microLatch[15], microLatch[0]} &lt;= 1&#39;sb0;
-			nanoLatch &lt;= 1&#39;sb0;
+			{microLatch[16], microLatch[15], microLatch[0]} &lt;= &#39;sd0;
+			nanoLatch &lt;= &#39;sd0;
 		end
 		else if (enT3) begin
 			microLatch &lt;= microOutput;
@@ -389,7 +389,7 @@ module fx68k (
 	assign Iac = rFC == 3&#39;b111;
 	always @(posedge Clks[4])
 		if (Clks[3])
-			rFC &lt;= 1&#39;sb0;
+			rFC &lt;= &#39;sd0;
 		else if (enT1 &amp; Nanod[104]) begin
 			rFC[2] &lt;= pswS;
 			rFC[1] &lt;= microLatch[16] | (~microLatch[15] &amp; Irdecod[41]);
@@ -416,7 +416,7 @@ module fx68k (
 					intPend &lt;= 1&#39;b0;
 		end
 		if (Clks[3]) begin
-			inl &lt;= 1&#39;sb1;
+			inl &lt;= -&#39;sd1;
 			updIll &lt;= 1&#39;b0;
 		end
 		else if (enT4)
@@ -437,7 +437,7 @@ module fx68k (
 	always @(posedge Clks[4]) begin
 		if (Clks[2]) begin
 			E &lt;= 1&#39;b0;
-			eCntr &lt;= 1&#39;sb0;
+			eCntr &lt;= &#39;sd0;
 			rVma &lt;= 1&#39;b1;
 		end
 		if (Clks[0]) begin
@@ -446,13 +446,13 @@ module fx68k (
 			else if (eCntr == 5)
 				E &lt;= 1&#39;b1;
 			if (eCntr == 9)
-				eCntr &lt;= 1&#39;sb0;
+				eCntr &lt;= &#39;sd0;
 			else
 				eCntr &lt;= eCntr + 1&#39;b1;
 		end
 		if (((Clks[0] &amp; addrOe) &amp; ~Vpai) &amp; (eCntr == 3))
 			rVma &lt;= 1&#39;b0;
-		else if (Clks[1] &amp; (eCntr == 1&#39;sb0))
+		else if (Clks[1] &amp; (eCntr == &#39;sd0))
 			rVma &lt;= 1&#39;b1;
 	end
 	always @(posedge Clks[4]) begin
@@ -497,8 +497,8 @@ module fx68k (
 	always @(posedge Clks[4])
 		if (Clks[2]) begin
 			Tpend &lt;= 1&#39;b0;
-			{pswT, pswS, pswI} &lt;= 1&#39;sb0;
-			irdToCcr_t4 &lt;= 1&#39;sb0;
+			{pswT, pswS, pswI} &lt;= &#39;sd0;
+			irdToCcr_t4 &lt;= &#39;sd0;
 		end
 		else if (enT4)
 			irdToCcr_t4 &lt;= Irdecod[38];
@@ -530,7 +530,7 @@ module fx68k (
 			inExcept01 &lt;= tvn != 1;
 		end
 		if (Clks[2])
-			ftu &lt;= 1&#39;sb0;
+			ftu &lt;= &#39;sd0;
 		else if (enT3)
 			case (1&#39;b1)
 				Nanod[95]: ftu &lt;= tvnMux;
@@ -845,7 +845,7 @@ module irdDecode (
 			lineOnehot[&#39;h5], lineOnehot[&#39;he]: ftuConst = {12&#39;b0, zero28};
 			lineOnehot[&#39;h8], lineOnehot[&#39;hc]: ftuConst = 16&#39;h0f;
 			lineOnehot[4]: ftuConst = 16&#39;h80;
-			default: ftuConst = 1&#39;sb0;
+			default: ftuConst = &#39;sd0;
 		endcase
 	always @(*) Irdecod[22-:16] = ftuConst;
 	always @(*)
@@ -916,8 +916,8 @@ module excUnit (
 		reg signed [31:0] i;
 		for (i = 0; i &lt; 18; i = i + 1)
 			begin
-				regs68L[i] &lt;= 1&#39;sb0;
-				regs68H[i] &lt;= 1&#39;sb0;
+				regs68L[i] &lt;= &#39;sd0;
+				regs68H[i] &lt;= &#39;sd0;
 			end
 	end
 	wire [31:0] SSP = {regs68H[REG_SSP], regs68L[REG_SSP]};
@@ -996,7 +996,7 @@ module excUnit (
 		if (Irdecod[36] &amp; !Nanod[29]) begin
 			ryMux = REG_DT;
 			ryIsSp = 1&#39;b0;
-			ryReg = 1&#39;sbX;
+			ryReg = &#39;sdX;
 		end
 		else begin
 			ryReg = (Nanod[29] ? Irc[15:12] : {Irdecod[23], Irdecod[27-:3]});
@@ -1033,8 +1033,8 @@ module excUnit (
 	reg dblIdle;
 	reg dbdIdle;
 	always @(*) begin
-		{abhIdle, ablIdle, abdIdle} = 1&#39;sb0;
-		{dbhIdle, dblIdle, dbdIdle} = 1&#39;sb0;
+		{abhIdle, ablIdle, abdIdle} = &#39;sd0;
+		{dbhIdle, dblIdle, dbdIdle} = &#39;sd0;
 		case (1&#39;b1)
 			ryl2Dbd: dbdMux = regs68L[actualRy];
 			rxl2Dbd: dbdMux = regs68L[actualRx];
@@ -1043,7 +1043,7 @@ module excUnit (
 			Nanod[13]: dbdMux = aluOut;
 			Nanod[18]: dbdMux = dcrOutput;
 			default: begin
-				dbdMux = 1&#39;sbX;
+				dbdMux = &#39;sdX;
 				dbdIdle = 1&#39;b1;
 			end
 		endcase
@@ -1055,7 +1055,7 @@ module excUnit (
 			Nanod[70]: dblMux = Atl;
 			Pcl2Dbl: dblMux = PcL;
 			default: begin
-				dblMux = 1&#39;sbX;
+				dblMux = &#39;sdX;
 				dblIdle = 1&#39;b1;
 			end
 		endcase
@@ -1066,7 +1066,7 @@ module excUnit (
 			Nanod[67]: dbhMux = Ath;
 			Pch2Dbh: dbhMux = PcH;
 			default: begin
-				dbhMux = 1&#39;sbX;
+				dbhMux = &#39;sdX;
 				dbhIdle = 1&#39;b1;
 			end
 		endcase
@@ -1076,7 +1076,7 @@ module excUnit (
 			Nanod[8]: abdMux = dbin;
 			Nanod[12]: abdMux = aluOut;
 			default: begin
-				abdMux = 1&#39;sbX;
+				abdMux = &#39;sdX;
 				abdIdle = 1&#39;b1;
 			end
 		endcase
@@ -1089,7 +1089,7 @@ module excUnit (
 			Nanod[62]: ablMux = aob[15:0];
 			Nanod[71]: ablMux = Atl;
 			default: begin
-				ablMux = 1&#39;sbX;
+				ablMux = &#39;sdX;
 				ablIdle = 1&#39;b1;
 			end
 		endcase
@@ -1101,7 +1101,7 @@ module excUnit (
 			Nanod[62]: abhMux = aob[31:16];
 			Nanod[66]: abhMux = Ath;
 			default: begin
-				abhMux = 1&#39;sbX;
+				abhMux = &#39;sdX;
 				abhIdle = 1&#39;b1;
 			end
 		endcase
@@ -1164,13 +1164,13 @@ module excUnit (
 			3&#39;b101: auInpMux = 4;
 			3&#39;b110: auInpMux = -2;
 			3&#39;b111: auInpMux = (byteNotSpAlign | Nanod[79] ? -1 : -2);
-			default: auInpMux = 1&#39;sbX;
+			default: auInpMux = &#39;sdX;
 		endcase
 	wire [16:0] aulow = Dbl + auInpMux[15:0];
 	wire [31:0] auResult = {(Dbh + auInpMux[31:16]) + aulow[16], aulow[15:0]};
 	always @(posedge Clks[4])
 		if (Clks[2])
-			auReg &lt;= 1&#39;sb0;
+			auReg &lt;= &#39;sd0;
 		else if (enT3 &amp; Nanod[80])
 			auReg &lt;= auResult;
 	always @(posedge Clks[4])
@@ -1208,7 +1208,7 @@ module excUnit (
 	reg abl2Pcl;
 	always @(posedge Clks[4]) begin
 		if (Clks[3]) begin
-			{dbl2Pcl, dbh2Pch, abh2Pch, abl2Pcl} &lt;= 1&#39;sb0;
+			{dbl2Pcl, dbh2Pch, abh2Pch, abl2Pcl} &lt;= &#39;sd0;
 			Pcl2Dbl &lt;= 1&#39;b0;
 			Pch2Dbh &lt;= 1&#39;b0;
 			Pcl2Abl &lt;= 1&#39;b0;
@@ -1272,7 +1272,7 @@ module excUnit (
 	);
 	always @(posedge Clks[4])
 		if (Clks[2])
-			dcr4 &lt;= 1&#39;sb0;
+			dcr4 &lt;= &#39;sd0;
 		else if (enT3 &amp; Nanod[19]) begin
 			dcrOutput &lt;= dcrCode;
 			dcr4 &lt;= Abd[4];
@@ -1295,7 +1295,7 @@ module excUnit (
 			NANO_DOB_ADB: dobInput = Abd;
 			NANO_DOB_DBD: dobInput = Dbd;
 			NANO_DOB_ALU: dobInput = aluOut;
-			default: dobInput = 1&#39;sbX;
+			default: dobInput = &#39;sdX;
 		endcase
 	dataIo dataIo(
 		.Clks(Clks),
@@ -1670,7 +1670,7 @@ module sequencer (
 					2&#39;b10: c0c1 = &#39;b11;
 					2&#39;b01, 2&#39;b11: c0c1 = {1&#39;b0, microLatch[6]};
 				endcase
-			default: c0c1 = 1&#39;sbX;
+			default: c0c1 = &#39;sdX;
 		endcase
 	always @(*)
 		case (Ird[11:8])
@@ -1733,7 +1733,7 @@ module sequencer (
 	always @(*) begin
 		grp1Nma = TRAC1_NMA;
 		if (rExcRst)
-			tvn = 1&#39;sb0;
+			tvn = &#39;sd0;
 		else if (rExcBusErr | rExcAdrErr)
 			tvn = {1&#39;b1, rExcAdrErr};
 		else if (rSpurious | rAutovec)
@@ -1966,7 +1966,7 @@ module busControl (
 			rUDS &lt;= 1&#39;b1;
 			rLDS &lt;= 1&#39;b1;
 			rRWn &lt;= 1&#39;b1;
-			dataOe &lt;= 1&#39;sb0;
+			dataOe &lt;= &#39;sd0;
 		end
 		else begin
 			if ((Clks[0] &amp; isWriteReg) &amp; (busPhase == S2))
@@ -2206,7 +2206,7 @@ module microToNanoAddr (
 			&#39;hF9: orgBase = 7&#39;h53;
 			&#39;hFA: orgBase = 7&#39;h53;
 			&#39;hFB: orgBase = 7&#39;h53;
-			default: orgBase = 1&#39;sbX;
+			default: orgBase = &#39;sdX;
 		endcase
 endmodule
 module fx68kAlu (
@@ -2336,7 +2336,7 @@ module fx68kAlu (
 			2&#39;b00: dOperand = iDataBus;
 			2&#39;b01: dOperand = &#39;h0000;
 			2&#39;b11: dOperand = &#39;hffff;
-			2&#39;b10: dOperand = 1&#39;sbX;
+			2&#39;b10: dOperand = &#39;sdX;
 		endcase
 	end
 	wire shftMsb = (isLong ? alue[15] : (isByte ? aOperand[7] : aOperand[15]));
@@ -2408,7 +2408,7 @@ module fx68kAlu (
 				else
 					shftCin = pswCcr[XF];
 			OP_SLAA: shftCin = aluColumn[1];
-			default: shftCin = 1&#39;sbX;
+			default: shftCin = &#39;sdX;
 		endcase
 	end
 	localparam OP_ABCD = 22;
@@ -2430,7 +2430,7 @@ module fx68kAlu (
 			end
 			OP_ADD, OP_ADDC, OP_ADDX, OP_SUB, OP_SUBC, OP_SUB0, OP_SUBX: result = subResult;
 			OP_ABCD, OP_SBCD: result = {8&#39;hXX, bcdLatch};
-			default: result = 1&#39;sbX;
+			default: result = &#39;sdX;
 		endcase
 	end
 	task mySubber;
@@ -2545,7 +2545,7 @@ module fx68kAlu (
 				alue &lt;= shftResult[31:16];
 		end
 		if (pwrUp)
-			pswCcr &lt;= 1&#39;sb0;
+			pswCcr &lt;= &#39;sd0;
 		else if (enT3 &amp; ftu2Ccr)
 			pswCcr &lt;= ftu[4:0];
 		else if ((enT3 &amp; ~noCcrEn) &amp; (finish | init))
@@ -2658,7 +2658,7 @@ module aluGetOp (
 	localparam OP_SUBC = 10;
 	localparam OP_SUBX = 3;
 	always @(*) begin
-		aluOp = 1&#39;sbX;
+		aluOp = &#39;sdX;
 		case (col)
 			1: aluOp = OP_AND;
 			5: aluOp = OP_EXT;
@@ -2914,20 +2914,20 @@ module pla_lined (
 	assign plaA3 = (lineBmap[0] ? scA3 : arA23[line]);
 	always @(*) begin
 		arIll[&#39;h6] = 1&#39;b0;
-		arA23[&#39;h6] = 1&#39;sbX;
+		arA23[&#39;h6] = &#39;sdX;
 		if (opcode[11:8] == 4&#39;h1)
 			arA1[&#39;h6] = (|opcode[7:0] ? &#39;h089 : &#39;h0A9);
 		else
 			arA1[&#39;h6] = (|opcode[7:0] ? &#39;h308 : &#39;h068);
 		arIll[&#39;h7] = opcode[8];
-		arA23[&#39;h7] = 1&#39;sbX;
+		arA23[&#39;h7] = &#39;sdX;
 		arA1[&#39;h7] = &#39;h23B;
 		arIll[&#39;ha] = 1&#39;b1;
 		arIll[&#39;hf] = 1&#39;b1;
-		arA1[&#39;ha] = 1&#39;sbX;
-		arA1[&#39;hf] = 1&#39;sbX;
-		arA23[&#39;ha] = 1&#39;sbX;
-		arA23[&#39;hf] = 1&#39;sbX;
+		arA1[&#39;ha] = &#39;sdX;
+		arA1[&#39;hf] = &#39;sdX;
+		arA23[&#39;ha] = &#39;sdX;
+		arA23[&#39;hf] = &#39;sdX;
 	end
 	always @(*)
 		if ((~opcode[11] &amp; opcode[7]) &amp; opcode[6]) begin
@@ -2963,12 +2963,12 @@ module pla_lined (
 				end
 				default: begin
 					arIll[&#39;he] = 1&#39;b1;
-					arA1[&#39;he] = 1&#39;sbX;
+					arA1[&#39;he] = &#39;sdX;
 				end
 			endcase
 		end
 		else begin
-			arA23[&#39;he] = 1&#39;sbX;
+			arA23[&#39;he] = &#39;sdX;
 			case (opcode[7:6])
 				2&#39;b00, 2&#39;b01: begin
 					arIll[&#39;he] = 1&#39;b0;
@@ -2980,7 +2980,7 @@ module pla_lined (
 				end
 				2&#39;b11: begin
 					arIll[&#39;he] = 1&#39;b1;
-					arA1[&#39;he] = 1&#39;sbX;
+					arA1[&#39;he] = &#39;sdX;
 				end
 			endcase
 		end
@@ -3003,12 +3003,12 @@ module pla_lined (
 					3&#39;b101: a1Misc = &#39;h126;
 					default: begin
 						illMisc = 1&#39;b1;
-						a1Misc = 1&#39;sbX;
+						a1Misc = &#39;sdX;
 					end
 				endcase
 			default: begin
 				illMisc = 1&#39;b1;
-				a1Misc = 1&#39;sbX;
+				a1Misc = &#39;sdX;
 			end
 		endcase
 	end
@@ -3019,13 +3019,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h100;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3071,27 +3071,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h1CC;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h37) == &#39;h0)
@@ -3100,13 +3100,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h100;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3152,27 +3152,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h1CC;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h1F) == &#39;h9)
@@ -3181,13 +3181,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h100;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3233,27 +3233,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h1CC;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h37) == &#39;h1)
@@ -3262,13 +3262,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h100;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3314,27 +3314,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h1CC;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h1F) == &#39;hA)
@@ -3343,13 +3343,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3E0;
 					arA23[&#39;h0] = &#39;h10C;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3395,27 +3395,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h37) == &#39;h2)
@@ -3424,13 +3424,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3E0;
 					arA23[&#39;h0] = &#39;h10C;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3476,27 +3476,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h37) == &#39;h10)
@@ -3505,13 +3505,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h100;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3557,27 +3557,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h37) == &#39;h11)
@@ -3586,13 +3586,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h100;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3638,27 +3638,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h37) == &#39;h12)
@@ -3667,13 +3667,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3E0;
 					arA23[&#39;h0] = &#39;h10C;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -3719,27 +3719,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h7) == &#39;h4)
@@ -3747,80 +3747,80 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3E7;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1D2;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h006;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				3: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h21C;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				4: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h103;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				5: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1C2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				6: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E3;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				7: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h00A;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				8: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1C2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E3;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h215;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h0EA;
 					arA23[&#39;h0] = &#39;h0AB;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h7) == &#39;h5)
@@ -3828,80 +3828,80 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3EF;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1D6;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h006;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				3: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h21C;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				4: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h103;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				5: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1C2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				6: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E3;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				7: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h00A;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				8: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h7) == &#39;h7)
@@ -3909,80 +3909,80 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3EF;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1CE;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h006;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				3: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h21C;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				4: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h103;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				5: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1C2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				6: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E3;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				7: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h00A;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				8: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h081;
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h7) == &#39;h6)
@@ -3990,80 +3990,80 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3EB;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1CA;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h006;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h069;
 				end
 				3: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h21C;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h069;
 				end
 				4: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h103;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h069;
 				end
 				5: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1C2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h069;
 				end
 				6: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E3;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h069;
 				end
 				7: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h00A;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h069;
 				end
 				8: begin
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h1E2;
-					arA23[&#39;h0] = 1&#39;sbX;
+					arA23[&#39;h0] = &#39;sdX;
 					scA3 = &#39;h069;
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h20)
@@ -4072,13 +4072,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h3E7;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -4136,15 +4136,15 @@ module pla_lined (
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h21)
@@ -4153,13 +4153,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h3EF;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -4205,27 +4205,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h23)
@@ -4234,13 +4234,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h3EF;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -4286,27 +4286,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h22)
@@ -4315,13 +4315,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h3EB;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -4367,27 +4367,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h30)
@@ -4396,13 +4396,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h108;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -4448,27 +4448,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h31)
@@ -4477,13 +4477,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h2B9;
 					arA23[&#39;h0] = &#39;h108;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -4529,27 +4529,27 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h32)
@@ -4558,13 +4558,13 @@ module pla_lined (
 					arIll[&#39;h0] = 1&#39;b0;
 					arA1[&#39;h0] = &#39;h3E0;
 					arA23[&#39;h0] = &#39;h104;
-					scA3 = 1&#39;sbX;
+					scA3 = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h0] = 1&#39;b0;
@@ -4610,34 +4610,34 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h0] = 1&#39;b1;
-					arA1[&#39;h0] = 1&#39;sbX;
-					arA23[&#39;h0] = 1&#39;sbX;
-					scA3 = 1&#39;sbX;
+					arA1[&#39;h0] = &#39;sdX;
+					arA23[&#39;h0] = &#39;sdX;
+					scA3 = &#39;sdX;
 				end
 			endcase
 		else begin
 			arIll[&#39;h0] = 1&#39;b1;
-			arA1[&#39;h0] = 1&#39;sbX;
-			arA23[&#39;h0] = 1&#39;sbX;
-			scA3 = 1&#39;sbX;
+			arA1[&#39;h0] = &#39;sdX;
+			arA23[&#39;h0] = &#39;sdX;
+			scA3 = &#39;sdX;
 		end
 	always @(*)
 		if ((opcode[11:6] &amp; &#39;h27) == &#39;h0)
@@ -4645,12 +4645,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h133;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -4689,23 +4689,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h27) == &#39;h1)
@@ -4713,12 +4713,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h133;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -4757,23 +4757,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h27) == &#39;h2)
@@ -4781,12 +4781,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h137;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -4825,23 +4825,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h3)
@@ -4849,12 +4849,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h3A5;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -4893,23 +4893,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h13)
@@ -4917,12 +4917,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h301;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -4976,8 +4976,8 @@ module pla_lined (
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h1B)
@@ -4985,12 +4985,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h301;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -5044,8 +5044,8 @@ module pla_lined (
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h20)
@@ -5053,12 +5053,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h13B;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -5097,23 +5097,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h21)
@@ -5121,67 +5121,67 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h341;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h17C;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				3: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				4: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				5: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h17D;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				6: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1FF;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				7: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h178;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				8: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1FA;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h17D;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1FF;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h22)
@@ -5189,67 +5189,67 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h133;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h3A0;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				3: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				4: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h3A4;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				5: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F1;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				6: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h325;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				7: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1ED;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				8: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1E5;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h23)
@@ -5257,67 +5257,67 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h232;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h3A0;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				3: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				4: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h3A4;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				5: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F1;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				6: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h325;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				7: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1ED;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				8: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1E5;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h28)
@@ -5325,12 +5325,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h12D;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -5369,23 +5369,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h29)
@@ -5393,12 +5393,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h12D;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -5437,23 +5437,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h2A)
@@ -5461,12 +5461,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h125;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -5505,23 +5505,23 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h2B)
@@ -5529,12 +5529,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h345;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -5573,91 +5573,91 @@ module pla_lined (
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h3E) == &#39;h32)
 			case (col)
 				0: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h127;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				3: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h123;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				4: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				5: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1FD;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				6: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F5;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				7: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F9;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				8: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1E9;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1FD;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F5;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h7) == &#39;h6)
@@ -5665,12 +5665,12 @@ module pla_lined (
 				0: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h152;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
@@ -5724,223 +5724,223 @@ module pla_lined (
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if ((opcode[11:6] &amp; &#39;h7) == &#39;h7)
 			case (col)
 				0: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h2F1;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				3: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				4: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				5: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h2F2;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				6: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1FB;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				7: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h275;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				8: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h3E4;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h2F2;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1FB;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h3A)
 			case (col)
 				0: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h273;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				3: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				4: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				5: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h2B0;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				6: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F3;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				7: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h293;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				8: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F2;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h2B0;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F3;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h3B)
 			case (col)
 				0: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				1: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				2: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h255;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				3: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				4: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				5: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h2B4;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				6: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F7;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				7: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h297;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				8: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F6;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				9: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h2B4;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				10: begin
 					arIll[&#39;h4] = 1&#39;b0;
 					arA1[&#39;h4] = &#39;h1F7;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				11: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 				default: begin
 					arIll[&#39;h4] = 1&#39;b1;
-					arA1[&#39;h4] = 1&#39;sbX;
-					arA23[&#39;h4] = 1&#39;sbX;
+					arA1[&#39;h4] = &#39;sdX;
+					arA23[&#39;h4] = &#39;sdX;
 				end
 			endcase
 		else if (opcode[11:6] == &#39;h39) begin
 			arIll[&#39;h4] = illMisc;
 			arA1[&#39;h4] = a1Misc;
-			arA23[&#39;h4] = 1&#39;sbX;
+			arA23[&#39;h4] = &#39;sdX;
 		end
 		else begin
 			arIll[&#39;h4] = 1&#39;b1;
-			arA1[&#39;h4] = 1&#39;sbX;
-			arA23[&#39;h4] = 1&#39;sbX;
+			arA1[&#39;h4] = &#39;sdX;
+			arA23[&#39;h4] = &#39;sdX;
 		end
 	always @(*) begin
 		case (movEa)
@@ -5949,12 +5949,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h121;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6008,8 +6008,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			2:
@@ -6017,12 +6017,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h2FA;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6076,8 +6076,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			3:
@@ -6085,12 +6085,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h2FE;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6144,8 +6144,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			4:
@@ -6153,12 +6153,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h2F8;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6212,8 +6212,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			5:
@@ -6221,12 +6221,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h2DA;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6280,8 +6280,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			6:
@@ -6289,12 +6289,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h1EB;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6348,8 +6348,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			7:
@@ -6357,12 +6357,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h2D9;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6416,8 +6416,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			8:
@@ -6425,12 +6425,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h1] = 1&#39;b0;
 						arA1[&#39;h1] = &#39;h1EA;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h1] = 1&#39;b0;
@@ -6484,14 +6484,14 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h1] = 1&#39;b1;
-						arA1[&#39;h1] = 1&#39;sbX;
-						arA23[&#39;h1] = 1&#39;sbX;
+						arA1[&#39;h1] = &#39;sdX;
+						arA23[&#39;h1] = &#39;sdX;
 					end
 				endcase
 			default: begin
 				arIll[&#39;h1] = 1&#39;b1;
-				arA1[&#39;h1] = 1&#39;sbX;
-				arA23[&#39;h1] = 1&#39;sbX;
+				arA1[&#39;h1] = &#39;sdX;
+				arA23[&#39;h1] = &#39;sdX;
 			end
 		endcase
 		case (movEa)
@@ -6500,12 +6500,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h129;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h129;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -6559,8 +6559,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			1:
@@ -6568,12 +6568,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h129;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h129;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -6627,8 +6627,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			2:
@@ -6636,12 +6636,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2F9;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2F9;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -6695,8 +6695,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			3:
@@ -6704,12 +6704,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2FD;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2FD;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -6763,8 +6763,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			4:
@@ -6772,12 +6772,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2FC;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2FC;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -6831,8 +6831,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			5:
@@ -6840,12 +6840,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2DE;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2DE;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -6899,8 +6899,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			6:
@@ -6908,12 +6908,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h1EF;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h1EF;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -6967,8 +6967,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			7:
@@ -6976,12 +6976,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2DD;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h2DD;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -7035,8 +7035,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			8:
@@ -7044,12 +7044,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h1EE;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h2] = 1&#39;b0;
 						arA1[&#39;h2] = &#39;h1EE;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h2] = 1&#39;b0;
@@ -7103,14 +7103,14 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h2] = 1&#39;b1;
-						arA1[&#39;h2] = 1&#39;sbX;
-						arA23[&#39;h2] = 1&#39;sbX;
+						arA1[&#39;h2] = &#39;sdX;
+						arA23[&#39;h2] = &#39;sdX;
 					end
 				endcase
 			default: begin
 				arIll[&#39;h2] = 1&#39;b1;
-				arA1[&#39;h2] = 1&#39;sbX;
-				arA23[&#39;h2] = 1&#39;sbX;
+				arA1[&#39;h2] = &#39;sdX;
+				arA23[&#39;h2] = &#39;sdX;
 			end
 		endcase
 		case (movEa)
@@ -7119,12 +7119,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h121;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h121;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7178,8 +7178,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			1:
@@ -7187,12 +7187,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h279;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h279;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7246,8 +7246,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			2:
@@ -7255,12 +7255,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2FA;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2FA;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7314,8 +7314,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			3:
@@ -7323,12 +7323,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2FE;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2FE;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7382,8 +7382,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			4:
@@ -7391,12 +7391,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2F8;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2F8;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7450,8 +7450,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			5:
@@ -7459,12 +7459,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2DA;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2DA;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7518,8 +7518,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			6:
@@ -7527,12 +7527,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h1EB;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h1EB;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7586,8 +7586,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			7:
@@ -7595,12 +7595,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2D9;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h2D9;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7654,8 +7654,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			8:
@@ -7663,12 +7663,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h1EA;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h3] = 1&#39;b0;
 						arA1[&#39;h3] = &#39;h1EA;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h3] = 1&#39;b0;
@@ -7722,14 +7722,14 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h3] = 1&#39;b1;
-						arA1[&#39;h3] = 1&#39;sbX;
-						arA23[&#39;h3] = 1&#39;sbX;
+						arA1[&#39;h3] = &#39;sdX;
+						arA23[&#39;h3] = &#39;sdX;
 					end
 				endcase
 			default: begin
 				arIll[&#39;h3] = 1&#39;b1;
-				arA1[&#39;h3] = 1&#39;sbX;
-				arA23[&#39;h3] = 1&#39;sbX;
+				arA1[&#39;h3] = &#39;sdX;
+				arA23[&#39;h3] = &#39;sdX;
 			end
 		endcase
 		case (row86)
@@ -7738,12 +7738,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2D8;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -7782,8 +7782,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 			3&#39;b001:
@@ -7791,12 +7791,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2D8;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2DC;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -7835,8 +7835,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 			3&#39;b010:
@@ -7844,12 +7844,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2DC;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2DC;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -7888,8 +7888,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 			3&#39;b011:
@@ -7897,12 +7897,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h384;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h06C;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -7941,8 +7941,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 			3&#39;b100:
@@ -7950,12 +7950,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2D8;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -7994,8 +7994,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 			3&#39;b101:
@@ -8003,12 +8003,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2D8;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2DC;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -8047,8 +8047,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 			3&#39;b110:
@@ -8056,12 +8056,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2DC;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h2DC;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -8100,8 +8100,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 			3&#39;b111:
@@ -8109,12 +8109,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h384;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h5] = 1&#39;b0;
 						arA1[&#39;h5] = &#39;h06C;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h5] = 1&#39;b0;
@@ -8153,8 +8153,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h5] = 1&#39;b1;
-						arA1[&#39;h5] = 1&#39;sbX;
-						arA23[&#39;h5] = 1&#39;sbX;
+						arA1[&#39;h5] = &#39;sdX;
+						arA23[&#39;h5] = &#39;sdX;
 					end
 				endcase
 		endcase
@@ -8164,12 +8164,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h8] = 1&#39;b0;
 						arA1[&#39;h8] = &#39;h1C1;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8223,8 +8223,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 			3&#39;b001:
@@ -8232,12 +8232,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h8] = 1&#39;b0;
 						arA1[&#39;h8] = &#39;h1C1;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8291,8 +8291,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 			3&#39;b010:
@@ -8300,12 +8300,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h8] = 1&#39;b0;
 						arA1[&#39;h8] = &#39;h1C5;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8359,8 +8359,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 			3&#39;b011:
@@ -8368,12 +8368,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h8] = 1&#39;b0;
 						arA1[&#39;h8] = &#39;h0A6;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8427,8 +8427,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 			3&#39;b100:
@@ -8436,12 +8436,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h8] = 1&#39;b0;
 						arA1[&#39;h8] = &#39;h1CD;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b0;
 						arA1[&#39;h8] = &#39;h107;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8480,36 +8480,36 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 			3&#39;b101:
 				case (col)
 					0: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8548,36 +8548,36 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 			3&#39;b110:
 				case (col)
 					0: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8616,23 +8616,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 			3&#39;b111:
@@ -8640,12 +8640,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h8] = 1&#39;b0;
 						arA1[&#39;h8] = &#39;h0AE;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h8] = 1&#39;b0;
@@ -8699,8 +8699,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h8] = 1&#39;b1;
-						arA1[&#39;h8] = 1&#39;sbX;
-						arA23[&#39;h8] = 1&#39;sbX;
+						arA1[&#39;h8] = &#39;sdX;
+						arA23[&#39;h8] = &#39;sdX;
 					end
 				endcase
 		endcase
@@ -8710,12 +8710,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C1;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -8769,8 +8769,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 			3&#39;b001:
@@ -8778,12 +8778,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C1;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C1;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -8837,8 +8837,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 			3&#39;b010:
@@ -8846,12 +8846,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C5;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C5;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -8905,8 +8905,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 			3&#39;b011:
@@ -8914,12 +8914,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C9;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C9;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -8973,8 +8973,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 			3&#39;b100:
@@ -8982,12 +8982,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C1;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h10F;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -9026,23 +9026,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 			3&#39;b101:
@@ -9050,12 +9050,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C1;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h10F;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -9094,23 +9094,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 			3&#39;b110:
@@ -9118,12 +9118,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C5;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h10B;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -9162,23 +9162,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 			3&#39;b111:
@@ -9186,12 +9186,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C5;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;h9] = 1&#39;b0;
 						arA1[&#39;h9] = &#39;h1C5;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;h9] = 1&#39;b0;
@@ -9245,8 +9245,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;h9] = 1&#39;b1;
-						arA1[&#39;h9] = 1&#39;sbX;
-						arA23[&#39;h9] = 1&#39;sbX;
+						arA1[&#39;h9] = &#39;sdX;
+						arA23[&#39;h9] = &#39;sdX;
 					end
 				endcase
 		endcase
@@ -9256,12 +9256,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D1;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9315,8 +9315,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 			3&#39;b001:
@@ -9324,12 +9324,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D1;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D1;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9383,8 +9383,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 			3&#39;b010:
@@ -9392,12 +9392,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D5;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D5;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9451,8 +9451,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 			3&#39;b011:
@@ -9460,12 +9460,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D9;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D9;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9519,8 +9519,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 			3&#39;b100:
@@ -9528,12 +9528,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h100;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h06B;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9572,23 +9572,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 			3&#39;b101:
@@ -9596,12 +9596,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h100;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h06B;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9640,23 +9640,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 			3&#39;b110:
@@ -9664,12 +9664,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h10C;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h06F;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9708,23 +9708,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 			3&#39;b111:
@@ -9732,12 +9732,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D5;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hb] = 1&#39;b0;
 						arA1[&#39;hb] = &#39;h1D5;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hb] = 1&#39;b0;
@@ -9791,8 +9791,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hb] = 1&#39;b1;
-						arA1[&#39;hb] = 1&#39;sbX;
-						arA23[&#39;hb] = 1&#39;sbX;
+						arA1[&#39;hb] = &#39;sdX;
+						arA23[&#39;hb] = &#39;sdX;
 					end
 				endcase
 		endcase
@@ -9802,12 +9802,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h1C1;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -9861,8 +9861,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 			3&#39;b001:
@@ -9870,12 +9870,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h1C1;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -9929,8 +9929,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 			3&#39;b010:
@@ -9938,12 +9938,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h1C5;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -9997,8 +9997,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 			3&#39;b011:
@@ -10006,12 +10006,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h15B;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -10065,8 +10065,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 			3&#39;b100:
@@ -10074,12 +10074,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h1CD;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h107;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -10118,23 +10118,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 			3&#39;b101:
@@ -10142,12 +10142,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h3E3;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h3E3;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -10186,36 +10186,36 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 			3&#39;b110:
 				case (col)
 					0: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h3E3;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -10254,23 +10254,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 			3&#39;b111:
@@ -10278,12 +10278,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hc] = 1&#39;b0;
 						arA1[&#39;hc] = &#39;h15B;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hc] = 1&#39;b0;
@@ -10337,8 +10337,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hc] = 1&#39;b1;
-						arA1[&#39;hc] = 1&#39;sbX;
-						arA23[&#39;hc] = 1&#39;sbX;
+						arA1[&#39;hc] = &#39;sdX;
+						arA23[&#39;hc] = &#39;sdX;
 					end
 				endcase
 		endcase
@@ -10348,12 +10348,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C1;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10407,8 +10407,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 			3&#39;b001:
@@ -10416,12 +10416,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C1;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C1;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10475,8 +10475,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 			3&#39;b010:
@@ -10484,12 +10484,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C5;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C5;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10543,8 +10543,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 			3&#39;b011:
@@ -10552,12 +10552,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C9;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C9;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10611,8 +10611,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 			3&#39;b100:
@@ -10620,12 +10620,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C1;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h10F;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10664,23 +10664,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 			3&#39;b101:
@@ -10688,12 +10688,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C1;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h10F;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10732,23 +10732,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 			3&#39;b110:
@@ -10756,12 +10756,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C5;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h10B;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10800,23 +10800,23 @@ module pla_lined (
 					end
 					9: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					10: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					11: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 			3&#39;b111:
@@ -10824,12 +10824,12 @@ module pla_lined (
 					0: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C5;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					1: begin
 						arIll[&#39;hd] = 1&#39;b0;
 						arA1[&#39;hd] = &#39;h1C5;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 					2: begin
 						arIll[&#39;hd] = 1&#39;b0;
@@ -10883,8 +10883,8 @@ module pla_lined (
 					end
 					default: begin
 						arIll[&#39;hd] = 1&#39;b1;
-						arA1[&#39;hd] = 1&#39;sbX;
-						arA23[&#39;hd] = 1&#39;sbX;
+						arA1[&#39;hd] = &#39;sdX;
+						arA23[&#39;hd] = &#39;sdX;
 					end
 				endcase
 		endcase

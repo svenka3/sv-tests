@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: assignment in expression test
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 11.3.6
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-11
@@ -18,24 +18,29 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-11/11.3.6--assign_in_expr.sv.html" target="file-frame">tests/chapter-11/11.3.6--assign_in_expr.sv</a>
 time_elapsed: 0.004s
-ram usage: 10416 KB
+ram usage: 10308 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-11 -e top <a href="../../../tests/chapter-11/11.3.6--assign_in_expr.sv.html" target="file-frame">tests/chapter-11/11.3.6--assign_in_expr.sv</a>
- ERROR moore_svlog::hir::lowering &gt; Expr #28
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../tests/chapter-11/11.3.6--assign_in_expr.sv.html#l-13" target="file-frame">tests/chapter-11/11.3.6--assign_in_expr.sv:13</a>:7-18:
-   | 
-   |     a = (b = (c = 5));    
-   |          ^^^^^^^^^^^      
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+proc %top.initial.34.0 () -&gt; (i32$ %a, i32$ %b, i32$ %c) {
+0:
+    %1 = const i32 5
+    %2 = const time 0s 1e
+    drv i32$ %c, %1, %2
+    drv i32$ %b, %1, %2
+    drv i32$ %a, %1, %2
+    halt
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @top () -&gt; () {
+    %0 = const i32 0
+    %a = sig i32 %0
+    %b = sig i32 %0
+    %c = sig i32 %0
+    inst %top.initial.34.0 () -&gt; (i32$ %a, i32$ %b, i32$ %c)
+    halt
+}
 
 </pre>
 </body>

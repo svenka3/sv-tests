@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/sva
@@ -17,7 +17,7 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/sva/sva_not.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/sva_not.sv</a>
-time_elapsed: 0.004s
+time_elapsed: 0.008s
 ram usage: 10600 KB
 </pre>
 <pre class="log">
@@ -35,17 +35,68 @@ warning: unsupported: concurrent assertion; ignored
    |     assume property (
    |     ^^^^^^^^^^^^^^^^^
 
-error: cannot cast a value of type `int` to `reg [2:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/sva/sva_not.sv.html#l-13" target="file-frame">third_party/tools/yosys/tests/sva/sva_not.sv:13</a>:11-12:
-   | 
-   |             cnt &lt;= 0;
-   |                    ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [2:0]`, but
-   = note: `logic unsigned [2:0]` cannot be cast to the final `reg [2:0]`
+proc %top.always.120.0 (i1$ %clk, i1$ %reset, i1$ %ping, i2$ %cfg) -&gt; (i1$ %pong, i3$ %cnt) {
+0:
+    %1 = prb i3$ %cnt
+    %cnt.shadow = var i3 %1
+    br %init
+init:
+    %clk.prb = prb i1$ %clk
+    wait %check, %clk
+check:
+    %2 = prb i3$ %cnt
+    st i3* %cnt.shadow, %2
+    %3 = const i1 0
+    %4 = eq i1 %clk.prb, %3
+    %5 = neq i1 %clk.prb, %3
+    %posedge = and i1 %4, %5
+    br %posedge, %init, %event
+event:
+    %reset.prb = prb i1$ %reset
+    %6 = neq i1 %reset.prb, %3
+    %7 = const i3 0
+    %8 = const time 0s 1d
+    br %6, %if_false, %if_true
+if_true:
+    drv i3$ %cnt, %7, %8
+    drv i1$ %pong, %3, %8
+    br %0
+if_false:
+    %cnt.shadow.ld = ld i3* %cnt.shadow
+    %cnt.shadow.ld1 = ld i3* %cnt.shadow
+    %9 = exts i1, i3 %cnt.shadow.ld1, 0, 1
+    %10 = exts i1, i3 %cnt.shadow.ld1, 1, 1
+    %11 = or i1 %9, %10
+    %12 = exts i1, i3 %cnt.shadow.ld1, 2, 1
+    %13 = or i1 %11, %12
+    %zext = inss i3 %7, i1 %13, 0, 1
+    %14 = sub i3 %cnt.shadow.ld, %zext
+    drv i3$ %cnt, %14, %8
+    %15 = const i32 0
+    %cnt.shadow.ld2 = ld i3* %cnt.shadow
+    %zext1 = inss i32 %15, i3 %cnt.shadow.ld2, 0, 3
+    %16 = const i32 1
+    %17 = eq i32 %zext1, %16
+    drv i1$ %pong, %17, %8
+    %ping.prb = prb i1$ %ping
+    %18 = neq i1 %ping.prb, %3
+    br %18, %0, %if_true1
+if_true1:
+    %19 = const i32 4
+    %cfg.prb = prb i2$ %cfg
+    %zext2 = inss i32 %15, i2 %cfg.prb, 0, 2
+    %20 = add i32 %19, %zext2
+    %21 = exts i3, i32 %20, 0, 3
+    drv i3$ %cnt, %21, %8
+    br %0
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([2:0], true) bit signed [2:0] -&gt; Sign(unsigned) bit unsigned [2:0] -&gt; Domain(FourValued) logic unsigned [2:0]
+entity @top (i1$ %clk, i1$ %reset, i1$ %ping, i2$ %cfg) -&gt; (i1$ %pong) {
+    %0 = const i3 0
+    %cnt = sig i3 %0
+    inst %top.always.120.0 (i1$ %clk, i1$ %reset, i1$ %ping, i2$ %cfg) -&gt; (i1$ %pong, i3$ %cnt)
+    halt
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,34 +17,175 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v</a>
-time_elapsed: 0.004s
-ram usage: 11012 KB
+time_elapsed: 0.008s
+ram usage: 10756 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e array_assign <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v</a>
-error: cannot cast a value of type `reg signed [2:0]` to `logic signed [2:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:9</a>:37-46:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:14</a>:9-79:
    | 
-   |   assign as_wr = {{2{ar_reg[0][2]}},ar_reg[1]};
-   |                                     ^^^^^^^^^  
+   |         $display(&#34;  %t  ar_reg=%0d    w_assign=%0d&#34;, $time, ar_reg[ii], as_wr);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: signed, sign_explicit: true, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: signed, sign_explicit: true, dims: [Range([2:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg signed [2:0]
-compiler bug: assertion failed: value.ty.coalesces_to_llhd_scalar()
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:9</a>:37-46:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:15</a>:9-92:
    | 
-   |   assign as_wr = {{2{ar_reg[0][2]}},ar_reg[1]};
-   |                                     ^^^^^^^^^  
-   = note: Assertion failed: value.ty.coalesces_to_llhd_scalar()
-   = note: Encountered at src/svlog/mir/lower/rvalue.rs:254
+   |         $display(&#34;  %t    ar_reg[0]=3&#39;b%3b  ar_reg[1]=3&#39;b%3b&#34;, $time, ar_reg[0], ar_reg[1]);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:16</a>:9-57:
+   | 
+   |         $display(&#34;  %t      as_wr=5&#39;b%5b&#34;, $time, as_wr);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.coalesces_to_llhd_scalar()&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:21</a>:5-71:
+   | 
+   |     $display(&#34;\n*** module %m **************************************&#34;);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1719055.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/pr1719055.v:30</a>:5-21:
+   | 
+   |     $display(&#34;\n\n&#34;);
+   |     ^^^^^^^^^^^^^^^^ 
+
+proc %array_assign.always.171.0 (i5$ %as_wr) -&gt; (i32$ %ii) {
+0:
+    %1 = prb i32$ %ii
+    %ii.shadow = var i32 %1
+    br %init
+init:
+    %as_wr.prb = prb i5$ %as_wr
+    wait %check, %as_wr
+check:
+    %2 = prb i32$ %ii
+    st i32* %ii.shadow, %2
+    %impledge = neq i5 %as_wr.prb, %as_wr.prb
+    br %impledge, %init, %event
+event:
+    %3 = const i32 0
+    %4 = const time 0s 1e
+    drv i32$ %ii, %3, %4
+    st i32* %ii.shadow, %3
+    br %loop_body
+loop_body:
+    %ii.shadow.ld = ld i32* %ii.shadow
+    %5 = const i32 2
+    %6 = slt i32 %ii.shadow.ld, %5
+    br %6, %0, %loop_continue
+loop_continue:
+    %ii.shadow.ld1 = ld i32* %ii.shadow
+    %7 = const i32 1
+    %8 = add i32 %ii.shadow.ld1, %7
+    drv i32$ %ii, %8, %4
+    st i32* %ii.shadow, %8
+    br %loop_body
+}
+
+proc %array_assign.initial.306.0 () -&gt; (i32$ %ii, [2 x i3]$ %ar_reg) {
+0:
+    %1 = prb i32$ %ii
+    %ii.shadow = var i32 %1
+    %2 = const i32 10
+    wait %3 for %2
+3:
+    %4 = prb i32$ %ii
+    st i32* %ii.shadow, %4
+    %5 = const i32 0
+    %6 = const time 0s 1e
+    drv i32$ %ii, %5, %6
+    st i32* %ii.shadow, %5
+    br %loop_body
+loop_body:
+    %ii.shadow.ld = ld i32* %ii.shadow
+    %7 = const i32 2
+    %8 = slt i32 %ii.shadow.ld, %7
+    br %8, %loop_exit, %loop_continue
+loop_exit:
+    %9 = const i32 10
+    wait %10 for %9
+loop_continue:
+    %ii.shadow.ld1 = ld i32* %ii.shadow
+    %11 = const i3 0
+    %12 = [2 x i3 %11]
+    %13 = sig [2 x i3] %12
+    %14 = shr [2 x i3]$ %ar_reg, [2 x i3]$ %13, i32 %ii.shadow.ld1
+    %15 = extf i3$, [2 x i3]$ %14, 0
+    %16 = const i3 1
+    %17 = const time 0s 1d
+    drv i3$ %15, %16, %17
+    %ii.shadow.ld2 = ld i32* %ii.shadow
+    %18 = const i32 1
+    %19 = add i32 %ii.shadow.ld2, %18
+    drv i32$ %ii, %19, %6
+    st i32* %ii.shadow, %19
+    br %loop_body
+10:
+    %20 = prb i32$ %ii
+    st i32* %ii.shadow, %20
+    %21 = const i32 0
+    %22 = const time 0s 1e
+    drv i32$ %ii, %21, %22
+    st i32* %ii.shadow, %21
+    br %loop_body1
+loop_body1:
+    %ii.shadow.ld3 = ld i32* %ii.shadow
+    %23 = const i32 2
+    %24 = slt i32 %ii.shadow.ld3, %23
+    br %24, %loop_exit1, %loop_continue1
+loop_exit1:
+    halt
+loop_continue1:
+    %ii.shadow.ld4 = ld i32* %ii.shadow
+    %25 = const i3 0
+    %26 = [2 x i3 %25]
+    %27 = sig [2 x i3] %26
+    %28 = shr [2 x i3]$ %ar_reg, [2 x i3]$ %27, i32 %ii.shadow.ld4
+    %29 = extf i3$, [2 x i3]$ %28, 0
+    %30 = const time 0s 1d
+    drv i3$ %29, %25, %30
+    %ii.shadow.ld5 = ld i32* %ii.shadow
+    %31 = const i32 1
+    %32 = add i32 %ii.shadow.ld5, %31
+    drv i32$ %ii, %32, %22
+    st i32* %ii.shadow, %32
+    br %loop_body1
+}
+
+entity @array_assign () -&gt; () {
+    %0 = const i32 0
+    %ii = sig i32 %0
+    %1 = const i3 0
+    %2 = [i3 %1, %1]
+    %ar_reg = sig [2 x i3] %2
+    %3 = const i5 0
+    %as_wr = sig i5 %3
+    %ar_reg.prb = prb [2 x i3]$ %ar_reg
+    %4 = [2 x i3 %1]
+    %5 = exts [1 x i3], [2 x i3] %4, 0, 1
+    %6 = exts [1 x i3], [2 x i3] %ar_reg.prb, 1, 1
+    %7 = inss [2 x i3] %4, [1 x i3] %5, 1, 1
+    %8 = inss [2 x i3] %7, [1 x i3] %6, 0, 1
+    %9 = extf i3, [2 x i3] %8, 0
+    %10 = inss i5 %3, i3 %9, 0, 3
+    %11 = extf i3, [2 x i3] %ar_reg.prb, 0
+    %12 = exts i1, i3 %11, 2, 1
+    %13 = inss i3 %1, i1 %12, 0, 1
+    %concat = exts i1, i3 %13, 0, 1
+    %14 = const i2 0
+    %15 = inss i2 %14, i1 %concat, 0, 1
+    %repeat = inss i2 %15, i1 %concat, 1, 1
+    %concat1 = inss i5 %10, i2 %repeat, 3, 2
+    %16 = const time 0s 1e
+    drv i5$ %as_wr, %concat1, %16
+    inst %array_assign.always.171.0 (i5$ %as_wr) -&gt; (i32$ %ii)
+    inst %array_assign.initial.306.0 () -&gt; (i32$ %ii, [2 x i3]$ %ar_reg)
+    halt
+}
 
 </pre>
 </body>

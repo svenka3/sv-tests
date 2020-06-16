@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/tests/generated/yosys_hana
@@ -17,21 +17,30 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_always.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_always.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
-time_elapsed: 0.024s
-ram usage: 14972 KB
+time_elapsed: 0.028s
+ram usage: 14864 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/generated/yosys_hana -e f1_test <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_always.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_always.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
-error: cannot cast a value of type `logic [1:0]` to `reg [1:0]`
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_always.v.html#l-6" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_always.v:6</a>:11-13:
-   | 
-   |     out = in;
-   |           ^^ 
+proc %f1_test.always.28.0 (i2$ %in) -&gt; (i2$ %out) {
+init:
+    %in.prb = prb i2$ %in
+    wait %check, %in
+check:
+    %impledge = neq i2 %in.prb, %in.prb
+    br %impledge, %init, %event
+event:
+    %in.prb1 = prb i2$ %in
+    %0 = const time 0s 1e
+    drv i2$ %out, %in.prb1, %0
+    br %init
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [1:0]
+entity @f1_test (i2$ %in) -&gt; (i2$ %out) {
+    inst %f1_test.always.28.0 (i2$ %in) -&gt; (i2$ %out)
+    halt
+}
 
 </pre>
 </body>

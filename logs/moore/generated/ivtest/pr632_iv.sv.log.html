@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr632.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr632.v</a>
 time_elapsed: 0.004s
-ram usage: 10968 KB
+ram usage: 10524 KB
 </pre>
 <pre class="log">
 
@@ -29,19 +29,46 @@ warning: `$monitor` not supported; ignored
    |     $monitor (&#34;a1[0]=%b&#34;,a1[0]);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::hir::lowering &gt; Expr #49
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr632.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr632.v:9</a>:37-48:
-   | 
-   |     for (a1 = 16&#39;h01; a1 != 16&#39;h1f; a1 = a1 + 1)
-   |                                     ^^^^^^^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+proc %test.initial.56.0 () -&gt; (i16$ %a1) {
+0:
+    %1 = prb i16$ %a1
+    %a1.shadow = var i16 %1
+    %2 = const i16 1
+    %3 = const time 0s 1e
+    drv i16$ %a1, %2, %3
+    st i16* %a1.shadow, %2
+    br %loop_body
+loop_body:
+    %a1.shadow.ld = ld i16* %a1.shadow
+    %4 = const i16 31
+    %5 = neq i16 %a1.shadow.ld, %4
+    br %5, %loop_exit, %loop_continue
+loop_exit:
+    halt
+loop_continue:
+    %6 = const i32 1
+    wait %7 for %6
+7:
+    %8 = prb i16$ %a1
+    st i16* %a1.shadow, %8
+    %9 = const i32 0
+    %a1.shadow.ld1 = ld i16* %a1.shadow
+    %zext = inss i32 %9, i16 %a1.shadow.ld1, 0, 16
+    %10 = const i32 1
+    %11 = add i32 %zext, %10
+    %12 = exts i16, i32 %11, 0, 16
+    %13 = const time 0s 1e
+    drv i16$ %a1, %12, %13
+    st i16* %a1.shadow, %12
+    br %loop_body
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @test () -&gt; () {
+    %0 = const i16 0
+    %a1 = sig i16 %0
+    inst %test.initial.56.0 () -&gt; (i16$ %a1)
+    halt
+}
 
 </pre>
 </body>

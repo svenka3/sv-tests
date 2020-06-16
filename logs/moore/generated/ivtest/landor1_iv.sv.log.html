@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/landor1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/landor1.v</a>
 time_elapsed: 0.004s
-ram usage: 10168 KB
+ram usage: 10552 KB
 </pre>
 <pre class="log">
 
@@ -47,17 +47,34 @@ warning: `$display` not supported; ignored
    |         $display(&#34;FAILED&#34;);
    |         ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit [1:0]` to `reg [1:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/landor1.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/landor1.v:5</a>:7-11:
-   | 
-   |     r1 = 2&#39;d2;
-   |          ^^^^ 
-   = note: `bit [1:0]` can be cast to an intermediate `logic [1:0]`, but
-   = note: `logic [1:0]` cannot be cast to the final `reg [1:0]`
+proc %test.initial.93.0 () -&gt; (i2$ %r1, i2$ %r2) {
+0:
+    %1 = prb i2$ %r2
+    %r2.shadow = var i2 %1
+    %2 = prb i2$ %r1
+    %r1.shadow = var i2 %2
+    %3 = const i2 2
+    %4 = const time 0s 1e
+    drv i2$ %r1, %3, %4
+    st i2* %r1.shadow, %3
+    %5 = const i2 0
+    drv i2$ %r2, %5, %4
+    st i2* %r2.shadow, %5
+    drv i2$ %r1, %3, %4
+    st i2* %r1.shadow, %3
+    %6 = const i2 1
+    drv i2$ %r2, %6, %4
+    st i2* %r2.shadow, %6
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([1:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [1:0] -&gt; Domain(FourValued) logic [1:0]
+entity @test () -&gt; () {
+    %0 = const i2 0
+    %r1 = sig i2 %0
+    %r2 = sig i2 %0
+    inst %test.initial.93.0 () -&gt; (i2$ %r1, i2$ %r2)
+    halt
+}
 
 </pre>
 </body>

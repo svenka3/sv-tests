@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/lh_varindx.v.html" target="file-frame">third_party/tests/ivtest/ivltests/lh_varindx.v</a>
 time_elapsed: 0.004s
-ram usage: 10396 KB
+ram usage: 10600 KB
 </pre>
 <pre class="log">
 
@@ -41,17 +41,115 @@ warning: `$display` not supported; ignored
    |        $display(&#34;PASSED&#34;);
    |        ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit [3:0]` to `reg [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lh_varindx.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/lh_varindx.v:33</a>:9-16:
-   | 
-   |     a = 4&#39;b1111;
-   |         ^^^^^^^ 
-   = note: `bit [3:0]` can be cast to an intermediate `logic [3:0]`, but
-   = note: `logic [3:0]` cannot be cast to the final `reg [3:0]`
+proc %main.always.54.0 (i4$ %b, i1$ %c) -&gt; (i4$ %a) {
+init:
+    %c.prb = prb i1$ %c
+    %b.prb = prb i4$ %b
+    wait %check, %c, %b
+check:
+    %impledge = neq i1 %c.prb, %c.prb
+    %impledge1 = neq i4 %b.prb, %b.prb
+    %event_or = or i1 %impledge, %impledge1
+    br %event_or, %init, %event
+event:
+    %b.prb1 = prb i4$ %b
+    %0 = const i4 0
+    %1 = sig i4 %0
+    %2 = shr i4$ %a, i4$ %1, i4 %b.prb1
+    %3 = exts i1$, i4$ %2, 0, 1
+    %c.prb1 = prb i1$ %c
+    %4 = const time 0s 1e
+    drv i1$ %3, %c.prb1, %4
+    br %init
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [3:0] -&gt; Domain(FourValued) logic [3:0]
+proc %main.initial.216.0 () -&gt; (i4$ %a, i4$ %b, i1$ %c, i1$ %error) {
+0:
+    %1 = prb i1$ %error
+    %error.shadow = var i1 %1
+    %2 = prb i4$ %a
+    %a.shadow = var i4 %2
+    %3 = const i32 1
+    wait %4 for %3
+4:
+    %5 = prb i1$ %error
+    st i1* %error.shadow, %5
+    %6 = prb i4$ %a
+    st i4* %a.shadow, %6
+    %7 = const i4 15
+    %8 = const time 0s 1e
+    drv i4$ %a, %7, %8
+    st i4* %a.shadow, %7
+    %9 = const i1 0
+    drv i1$ %error, %9, %8
+    st i1* %error.shadow, %9
+    %10 = const i4 0
+    drv i4$ %b, %10, %8
+    drv i1$ %c, %9, %8
+    %11 = const i32 1
+    wait %12 for %11
+12:
+    %13 = prb i1$ %error
+    st i1* %error.shadow, %13
+    %14 = prb i4$ %a
+    st i4* %a.shadow, %14
+    %a.shadow.ld = ld i4* %a.shadow
+    %15 = const i4 14
+    %16 = neq i4 %a.shadow.ld, %15
+    %17 = const i1 0
+    %18 = neq i1 %16, %17
+    br %18, %if_exit, %if_true
+if_true:
+    %19 = const i1 1
+    %20 = const time 0s 1e
+    drv i1$ %error, %19, %20
+    st i1* %error.shadow, %19
+    br %if_exit
+if_exit:
+    %21 = const i32 1
+    wait %22 for %21
+22:
+    %23 = prb i1$ %error
+    st i1* %error.shadow, %23
+    %24 = prb i4$ %a
+    st i4* %a.shadow, %24
+    %25 = const i4 1
+    %26 = const time 0s 1e
+    drv i4$ %b, %25, %26
+    %27 = const i32 1
+    wait %28 for %27
+28:
+    %29 = prb i1$ %error
+    st i1* %error.shadow, %29
+    %30 = prb i4$ %a
+    st i4* %a.shadow, %30
+    %a.shadow.ld1 = ld i4* %a.shadow
+    %31 = const i4 12
+    %32 = neq i4 %a.shadow.ld1, %31
+    %33 = const i1 0
+    %34 = neq i1 %32, %33
+    br %34, %if_exit1, %if_true1
+if_true1:
+    %35 = const i1 1
+    %36 = const time 0s 1e
+    drv i1$ %error, %35, %36
+    st i1* %error.shadow, %35
+    br %if_exit1
+if_exit1:
+    halt
+}
+
+entity @main () -&gt; () {
+    %0 = const i4 0
+    %a = sig i4 %0
+    %b = sig i4 %0
+    %1 = const i1 0
+    %c = sig i1 %1
+    %error = sig i1 %1
+    inst %main.always.54.0 (i4$ %b, i1$ %c) -&gt; (i4$ %a)
+    inst %main.initial.216.0 () -&gt; (i4$ %a, i4$ %b, i1$ %c, i1$ %error)
+    halt
+}
 
 </pre>
 </body>

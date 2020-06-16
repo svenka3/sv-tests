@@ -18,30 +18,30 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v</a>
 time_elapsed: 0.004s
-ram usage: 10272 KB
+ram usage: 10304 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/asicworld -e simple_if <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v</a>
 proc %simple_if.always.37.0 (i1$ %enable, i1$ %din) -&gt; (i1$ %latch) {
 init:
-    %enable1 = prb i1$ %enable
-    %din1 = prb i1$ %din
+    %enable.prb = prb i1$ %enable
+    %din.prb = prb i1$ %din
     wait %check, %enable, %din
 check:
-    %enable2 = prb i1$ %enable
-    %impledge = neq i1 %enable1, %enable2
-    %din2 = prb i1$ %din
-    %impledge1 = neq i1 %din1, %din2
+    %impledge = neq i1 %enable.prb, %enable.prb
+    %impledge1 = neq i1 %din.prb, %din.prb
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
+    %enable.prb1 = prb i1$ %enable
     %0 = const i1 0
-    %1 = neq i1 %enable2, %0
+    %1 = neq i1 %enable.prb1, %0
     br %1, %init, %if_true
 if_true:
+    %din.prb1 = prb i1$ %din
     %2 = const time 0s 1d
-    drv i1$ %latch, %din2, %2
+    drv i1$ %latch, %din.prb1, %2
     br %init
 }
 

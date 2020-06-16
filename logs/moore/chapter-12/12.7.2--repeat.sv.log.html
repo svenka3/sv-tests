@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-12/12.7.2--repeat.sv.html" target="file-frame">tests/chapter-12/12.7.2--repeat.sv</a>
 time_elapsed: 0.004s
-ram usage: 10332 KB
+ram usage: 10280 KB
 </pre>
 <pre class="log">
 
@@ -31,16 +31,19 @@ warning: `$display` not supported; ignored
 
 proc %repeat_tb.initial.18.0 (i32$ %a) -&gt; () {
 0:
-    %a1 = prb i32$ %a
+    %a.prb = prb i32$ %a
+    %loop_count = var i32 %a.prb
     br %loop_body
 loop_body:
-    %1 = phi i32 [%1, %loop_continue], [%a1, %0]
+    %1 = ld i32* %loop_count
     %2 = const i32 0
     %3 = neq i32 %1, %2
     br %3, %loop_exit, %loop_continue
 loop_exit:
     halt
 loop_continue:
+    %4 = ld i32* %loop_count
+    st i32* %loop_count, %4
     br %loop_body
 }
 

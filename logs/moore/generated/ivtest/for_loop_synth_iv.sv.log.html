@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,25 +17,76 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/for_loop_synth.v.html" target="file-frame">third_party/tests/ivtest/ivltests/for_loop_synth.v</a>
-time_elapsed: 0.004s
-ram usage: 11160 KB
+time_elapsed: 0.008s
+ram usage: 10852 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/for_loop_synth.v.html" target="file-frame">third_party/tests/ivtest/ivltests/for_loop_synth.v</a>
- ERROR moore_svlog::hir::lowering &gt; Expr #66
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/for_loop_synth.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/for_loop_synth.v:12</a>:33-40:
-   | 
-   |       for (j = 0 ; j &lt; inputs ; j = j+1) begin
-   |                                 ^^^^^^^       
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+proc %test.always.155.0 (i8$ %D, i8$ %I) -&gt; (i8$ %Q, i32$ %j) {
+0:
+    %1 = prb i32$ %j
+    %j.shadow = var i32 %1
+    wait %trigger, %D, %I, %j
+trigger:
+    %2 = prb i32$ %j
+    st i32* %j.shadow, %2
+    %3 = const i32 0
+    %4 = const time 0s 1e
+    drv i32$ %j, %3, %4
+    st i32* %j.shadow, %3
+    br %loop_body
+loop_body:
+    %j.shadow.ld = ld i32* %j.shadow
+    %5 = const i32 8
+    %6 = slt i32 %j.shadow.ld, %5
+    br %6, %0, %loop_continue
+loop_continue:
+    %I.prb = prb i8$ %I
+    %j.shadow.ld1 = ld i32* %j.shadow
+    %7 = const i8 0
+    %8 = shr i8 %I.prb, i8 %7, i32 %j.shadow.ld1
+    %9 = exts i1, i8 %8, 0, 1
+    %10 = const i1 0
+    %11 = neq i1 %9, %10
+    %D.prb = prb i8$ %D
+    br %11, %if_false, %if_true
+if_true:
+    %j.shadow.ld2 = ld i32* %j.shadow
+    %12 = sig i8 %7
+    %13 = shr i8$ %Q, i8$ %12, i32 %j.shadow.ld2
+    %14 = exts i1$, i8$ %13, 0, 1
+    %j.shadow.ld3 = ld i32* %j.shadow
+    %15 = shr i8 %D.prb, i8 %7, i32 %j.shadow.ld3
+    %16 = exts i1, i8 %15, 0, 1
+    %17 = not i1 %16
+    drv i1$ %14, %17, %4
+    br %if_exit
+if_false:
+    %j.shadow.ld4 = ld i32* %j.shadow
+    %18 = sig i8 %7
+    %19 = shr i8$ %Q, i8$ %18, i32 %j.shadow.ld4
+    %20 = exts i1$, i8$ %19, 0, 1
+    %j.shadow.ld5 = ld i32* %j.shadow
+    %21 = shr i8 %D.prb, i8 %7, i32 %j.shadow.ld5
+    %22 = exts i1, i8 %21, 0, 1
+    drv i1$ %20, %22, %4
+    br %if_exit
+if_exit:
+    %j.shadow.ld6 = ld i32* %j.shadow
+    %23 = const i32 1
+    %24 = add i32 %j.shadow.ld6, %23
+    drv i32$ %j, %24, %4
+    st i32* %j.shadow, %24
+    br %loop_body
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @test (i8$ %D, i8$ %I) -&gt; (i8$ %Q) {
+    %0 = const i32 0
+    %j = sig i32 %0
+    inst %test.always.155.0 (i8$ %D, i8$ %I) -&gt; (i8$ %Q, i32$ %j)
+    halt
+}
 
 </pre>
 </body>

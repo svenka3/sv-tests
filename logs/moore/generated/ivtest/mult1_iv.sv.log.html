@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,38 +18,29 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/mult1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/mult1.v</a>
 time_elapsed: 0.004s
-ram usage: 10600 KB
+ram usage: 11084 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/mult1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/mult1.v</a>
-error: cannot cast a value of type `reg [3:0]` to `logic [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mult1.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/mult1.v:28</a>:13-14:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mult1.v.html#l-43" target="file-frame">third_party/tests/ivtest/ivltests/mult1.v:43</a>:9-71:
    | 
-   | assign wa = a;
-   |             ^ 
+   |         $display(&#34;FAILED - Mult 0*0 reg assign failed - is %b&#34;,result);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [3:0]
-error: cannot cast a value of type `reg [3:0]` to `logic [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mult1.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/mult1.v:29</a>:13-14:
+compiler bug: lowering of Expr #128 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mult1.v.html#l-44" target="file-frame">third_party/tests/ivtest/ivltests/mult1.v:44</a>:9-16:
    | 
-   | assign wb = b;
-   |             ^ 
+   |         $finish;
+   |         ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1398
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [3:0]
-error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/mult1.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/mult1.v:33</a>:13-18:
-   | 
-   |    result = a * b;
-   |             ^^^^^ 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
+thread &#39;main&#39; panicked at &#39;lowering of Expr #128 to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

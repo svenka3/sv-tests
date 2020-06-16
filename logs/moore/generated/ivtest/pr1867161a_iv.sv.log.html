@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,24 +18,68 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1867161a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1867161a.v</a>
 time_elapsed: 0.004s
-ram usage: 10996 KB
+ram usage: 10736 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1867161a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1867161a.v</a>
- ERROR moore_svlog::hir::lowering &gt; Expr #49
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1867161a.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr1867161a.v:15</a>:20-25:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1867161a.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/pr1867161a.v:17</a>:7-48:
    | 
-   |     for (b=0; b&lt;7; b=b+1) begin
-   |                    ^^^^^       
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+   |       $display(&#34;Value[%0d]: %1d&#34;, b, a[base+b]);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+proc %test.initial.153.0 () -&gt; ([8 x i32]$ %a, i3$ %b) {
+0:
+    %1 = prb i3$ %b
+    %b.shadow = var i3 %1
+    %2 = const i3 0
+    %3 = const time 0s 1e
+    drv i3$ %b, %2, %3
+    st i3* %b.shadow, %2
+    br %loop_body
+loop_body:
+    %4 = const i32 0
+    %b.shadow.ld = ld i3* %b.shadow
+    %zext = inss i32 %4, i3 %b.shadow.ld, 0, 3
+    %5 = const i32 7
+    %6 = ult i32 %zext, %5
+    br %6, %loop_exit, %loop_continue
+loop_exit:
+    halt
+loop_continue:
+    %7 = const i32 8
+    %b.shadow.ld1 = ld i3* %b.shadow
+    %zext1 = inss i32 %4, i3 %b.shadow.ld1, 0, 3
+    %8 = add i32 %7, %zext1
+    %9 = [8 x i32 %4]
+    %10 = sig [8 x i32] %9
+    %11 = shr [8 x i32]$ %a, [8 x i32]$ %10, i32 %8
+    %12 = extf i32$, [8 x i32]$ %11, 0
+    %13 = const i32 2
+    %b.shadow.ld2 = ld i3* %b.shadow
+    %zext2 = inss i32 %4, i3 %b.shadow.ld2, 0, 3
+    %14 = add i32 %13, %zext2
+    drv i32$ %12, %14, %3
+    %b.shadow.ld3 = ld i3* %b.shadow
+    %zext3 = inss i32 %4, i3 %b.shadow.ld3, 0, 3
+    %15 = const i32 1
+    %16 = add i32 %zext3, %15
+    %17 = exts i3, i32 %16, 0, 3
+    drv i3$ %b, %17, %3
+    st i3* %b.shadow, %17
+    br %loop_body
+}
 
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @test () -&gt; () {
+    %0 = const i32 0
+    %1 = [i32 %0, %0, %0, %0, %0, %0, %0, %0]
+    %a = sig [8 x i32] %1
+    %2 = const i3 0
+    %b = sig i3 %2
+    inst %test.initial.153.0 () -&gt; ([8 x i32]$ %a, i3$ %b)
+    halt
+}
 
 </pre>
 </body>

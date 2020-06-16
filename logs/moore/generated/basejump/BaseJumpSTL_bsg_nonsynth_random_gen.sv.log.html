@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_random_gen.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_random_gen.v</a>
-time_elapsed: 0.004s
-ram usage: 10820 KB
+time_elapsed: 0.008s
+ram usage: 10852 KB
 </pre>
 <pre class="log">
 
@@ -37,18 +37,17 @@ warning: `$random` not supported; ignored
 
 proc %bsg_nonsynth_random_gen.always_ff.462.0 (i1$ %clk_i, i1$ %reset_i, i1$ %yumi_i) -&gt; (i3$ %data_o) {
 init:
-    %clk_i1 = prb i1$ %clk_i
+    %clk_i.prb = prb i1$ %clk_i
     wait %check, %clk_i
 check:
-    %clk_i2 = prb i1$ %clk_i
     %0 = const i1 0
-    %1 = eq i1 %clk_i1, %0
-    %2 = neq i1 %clk_i2, %0
+    %1 = eq i1 %clk_i.prb, %0
+    %2 = neq i1 %clk_i.prb, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
-    %reset_i1 = prb i1$ %reset_i
-    %3 = neq i1 %reset_i1, %0
+    %reset_i.prb = prb i1$ %reset_i
+    %3 = neq i1 %reset_i.prb, %0
     %4 = const i3 0
     %5 = const time 0s 1d
     br %3, %if_false, %if_true
@@ -56,8 +55,8 @@ if_true:
     drv i3$ %data_o, %4, %5
     br %init
 if_false:
-    %yumi_i1 = prb i1$ %yumi_i
-    %6 = neq i1 %yumi_i1, %0
+    %yumi_i.prb = prb i1$ %yumi_i
+    %6 = neq i1 %yumi_i.prb, %0
     br %6, %init, %if_true1
 if_true1:
     drv i3$ %data_o, %4, %5

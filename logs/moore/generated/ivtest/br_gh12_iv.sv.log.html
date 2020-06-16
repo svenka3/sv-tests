@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh12.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh12.v</a>
 time_elapsed: 0.004s
-ram usage: 10568 KB
+ram usage: 10556 KB
 </pre>
 <pre class="log">
 
@@ -43,19 +43,24 @@ warning: `$display` not supported; ignored
 
 proc %bug.initial.88.0 (i2$ %y) -&gt; (i1$ %failed) {
 0:
-    %1 = const i32 0
-    wait %2 for %1
-2:
-    %y1 = prb i2$ %y
-    %3 = const i2 0
-    %4 = neq i2 %y1, %3
-    %5 = const i1 0
-    %6 = neq i1 %4, %5
-    br %6, %if_exit, %if_true
+    %1 = prb i1$ %failed
+    %failed.shadow = var i1 %1
+    %2 = const i32 0
+    wait %3 for %2
+3:
+    %4 = prb i1$ %failed
+    st i1* %failed.shadow, %4
+    %y.prb = prb i2$ %y
+    %5 = const i2 0
+    %6 = neq i2 %y.prb, %5
+    %7 = const i1 0
+    %8 = neq i1 %6, %7
+    br %8, %if_exit, %if_true
 if_true:
-    %7 = const i1 1
-    %8 = const time 0s 1e
-    drv i1$ %failed, %7, %8
+    %9 = const i1 1
+    %10 = const time 0s 1e
+    drv i1$ %failed, %9, %10
+    st i1* %failed.shadow, %9
     br %if_exit
 if_exit:
     halt
@@ -70,8 +75,8 @@ entity @bug () -&gt; () {
     %2 = const i2 2
     %3 = const time 0s 1e
     drv i2$ %a, %2, %3
-    %a1 = prb i2$ %a
-    %4 = [i2 %a1, %0]
+    %a.prb = prb i2$ %a
+    %4 = [i2 %a.prb, %0]
     %5 = extf i2, [2 x i2] %4, 0
     drv i2$ %y, %5, %3
     inst %bug.initial.88.0 (i2$ %y) -&gt; (i1$ %failed)

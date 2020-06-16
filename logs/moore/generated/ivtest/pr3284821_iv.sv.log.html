@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr3284821.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3284821.v</a>
 time_elapsed: 0.004s
-ram usage: 10448 KB
+ram usage: 10648 KB
 </pre>
 <pre class="log">
 
@@ -41,17 +41,57 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `integer` to `reg signed [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3284821.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr3284821.v:11</a>:9-11:
-   | 
-   |     N = -1;
-   |         ^^ 
-   = note: `integer` can be cast to an intermediate `logic signed [3:0]`, but
-   = note: `logic signed [3:0]` cannot be cast to the final `reg signed [3:0]`
+proc %test.initial.141.0 (i160$ %str) -&gt; (i1$ %pass, i4$ %N) {
+0:
+    %1 = prb i1$ %pass
+    %pass.shadow = var i1 %1
+    %2 = const i1 1
+    %3 = const time 0s 1e
+    drv i1$ %pass, %2, %3
+    st i1* %pass.shadow, %2
+    %4 = const i4 15
+    drv i4$ %N, %4, %3
+    %str.prb = prb i160$ %str
+    %5 = exts i159, i160 %str.prb, 1, 159
+    %6 = const i160 0
+    %7 = inss i160 %6, i159 %5, 0, 159
+    %8 = exts i40, i160 %7, 0, 40
+    %concat = const i8 0
+    %9 = const i40 0
+    %10 = const i40 1099511627775
+    %11 = [i40 %9, %10]
+    %12 = extf i40, [2 x i40] %11, 0
+    %sext = inss i40 %12, i8 %concat, 0, 8
+    %13 = neq i40 %8, %sext
+    %14 = const i1 0
+    %15 = neq i1 %13, %14
+    %16 = exts i119, i160 %str.prb, 41, 119
+    %17 = inss i160 %6, i119 %16, 0, 119
+    %18 = exts i120, i160 %17, 0, 120
+    %19 = const i120 0
+    %20 = neq i120 %18, %19
+    %21 = neq i1 %20, %14
+    %22 = or i1 %15, %21
+    %23 = neq i1 %22, %14
+    br %23, %if_exit, %if_true
+if_true:
+    drv i1$ %pass, %14, %3
+    st i1* %pass.shadow, %14
+    br %if_exit
+if_exit:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Integer), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: signed, sign_explicit: true, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: integer -&gt; PackSBVT logic signed [31:0] -&gt; Range([3:0], true) logic signed [3:0]
+entity @test () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i160 0
+    %str = sig i160 %1
+    %2 = const i4 0
+    %N = sig i4 %2
+    inst %test.initial.141.0 (i160$ %str) -&gt; (i1$ %pass, i4$ %N)
+    halt
+}
 
 </pre>
 </body>

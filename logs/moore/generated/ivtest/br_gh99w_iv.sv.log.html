@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,21 +17,82 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99w.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99w.v</a>
-time_elapsed: 0.004s
-ram usage: 10308 KB
+time_elapsed: 0.008s
+ram usage: 10520 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99w.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99w.v</a>
-error: cannot cast a value of type `logic [7:0]` to `reg [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99w.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99w.v:12</a>:15-21:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99w.v.html#l-20" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99w.v:20</a>:3-36:
    | 
-   |     value2 &lt;= value1;
-   |               ^^^^^^ 
+   |   $display(&#34;%b %b&#34;, value1, value2);
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [7:0]
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99w.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99w.v:22</a>:5-23:
+   | 
+   |     $display(&#34;PASSED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99w.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99w.v:24</a>:5-23:
+   | 
+   |     $display(&#34;FAILED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+proc %test.always.49.0 (i8$ %value1, i1$ %en) -&gt; (i8$ %value2) {
+0:
+    wait %trigger, %value1, %en
+trigger:
+    %en.prb = prb i1$ %en
+    %1 = const i1 0
+    %2 = neq i1 %en.prb, %1
+    br %2, %0, %if_true
+if_true:
+    %value1.prb = prb i8$ %value1
+    %3 = const time 0s 1d
+    drv i8$ %value2, %value1.prb, %3
+    br %0
+}
+
+proc %test.initial.127.0 (i8$ %value2) -&gt; (i1$ %en) {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    %3 = const i1 0
+    %4 = const time 0s 1e
+    drv i1$ %en, %3, %4
+    %5 = const i32 1
+    wait %6 for %5
+6:
+    %7 = const i1 1
+    %8 = const time 0s 1e
+    drv i1$ %en, %7, %8
+    %9 = const i32 1
+    wait %10 for %9
+10:
+    %11 = const i1 0
+    %12 = const time 0s 1e
+    drv i1$ %en, %11, %12
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i8 0
+    %value1 = sig i8 %0
+    %value2 = sig i8 %0
+    %1 = const i1 0
+    %en = sig i1 %1
+    %2 = exts i4$, i8$ %value1, 0, 4
+    %3 = const i4 10
+    %4 = const time 0s 1e
+    drv i4$ %2, %3, %4
+    inst %test.always.49.0 (i8$ %value1, i1$ %en) -&gt; (i8$ %value2)
+    inst %test.initial.127.0 (i8$ %value2) -&gt; (i1$ %en)
+    halt
+}
 
 </pre>
 </body>

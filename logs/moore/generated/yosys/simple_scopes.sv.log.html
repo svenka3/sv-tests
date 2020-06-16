@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Tests imported from yosys
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/scopes.v.html" target="file-frame">third_party/tools/yosys/tests/simple/scopes.v</a>
 time_elapsed: 0.004s
-ram usage: 10484 KB
+ram usage: 10956 KB
 </pre>
 <pre class="log">
 
@@ -29,8 +29,36 @@ error: cannot infer implicit type
    |     function [15:0] func_01;
    |              ^^^^^^         
    = note: This usually indicates that a declaration is missing a default value.
+   = note: Needed to compute the type of the expression:
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/scopes.v.html#l-50" target="file-frame">third_party/tools/yosys/tests/simple/scopes.v:50</a>:7-22:
+   | 
+   |         x = func_01(11, 22);
+   |             ^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; offending implicit type is TypeKind #17 (#21 in Type #20) ImplicitType
+error: cannot infer implicit type
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/scopes.v.html#l-15" target="file-frame">third_party/tools/yosys/tests/simple/scopes.v:15</a>:11-17:
+   | 
+   |     function [15:0] func_02;
+   |              ^^^^^^         
+   = note: This usually indicates that a declaration is missing a default value.
+   = note: Needed to compute the type of the expression:
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/scopes.v.html#l-51" target="file-frame">third_party/tools/yosys/tests/simple/scopes.v:51</a>:7-22:
+   | 
+   |         y = func_02(33, 44);
+   |             ^^^^^^^^^^^^^^^ 
+
+compiler bug: lowering of expression `task_01(k)` to mir not yet supported
+  --&gt; <a href="../../../../third_party/tools/yosys/tests/simple/scopes.v.html#l-52" target="file-frame">third_party/tools/yosys/tests/simple/scopes.v:52</a>:3-13:
+   | 
+   |         task_01(k);
+   |         ^^^^^^^^^^ 
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:408
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of expression `task_01(k)` to mir not yet supported&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

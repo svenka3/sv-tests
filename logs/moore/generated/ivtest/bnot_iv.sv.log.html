@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/bnot.v.html" target="file-frame">third_party/tests/ivtest/ivltests/bnot.v</a>
 time_elapsed: 0.004s
-ram usage: 12416 KB
+ram usage: 10552 KB
 </pre>
 <pre class="log">
 
@@ -37,15 +37,22 @@ warning: `$display` not supported; ignored
 
 proc %test.initial.73.0 () -&gt; (i1$ %a, i1$ %b, i32$ %x) {
 0:
-    %1 = const i32 10
-    %2 = const time 0s 1e
-    drv i32$ %x, %1, %2
-    %x1 = prb i32$ %x
-    %3 = exts i1, i32 %x1, 0, 1
-    drv i1$ %a, %3, %2
-    %4 = not i32 %x1
-    %5 = exts i1, i32 %4, 0, 1
-    drv i1$ %b, %5, %2
+    %1 = prb i1$ %b
+    %b.shadow = var i1 %1
+    %2 = prb i32$ %x
+    %x.shadow = var i32 %2
+    %3 = const i32 10
+    %4 = const time 0s 1e
+    drv i32$ %x, %3, %4
+    st i32* %x.shadow, %3
+    %x.shadow.ld = ld i32* %x.shadow
+    %5 = exts i1, i32 %x.shadow.ld, 0, 1
+    drv i1$ %a, %5, %4
+    %x.shadow.ld1 = ld i32* %x.shadow
+    %6 = not i32 %x.shadow.ld1
+    %7 = exts i1, i32 %6, 0, 1
+    drv i1$ %b, %7, %4
+    st i1* %b.shadow, %7
     halt
 }
 

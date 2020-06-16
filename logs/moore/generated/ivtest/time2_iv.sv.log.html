@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,25 +17,123 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/time2.v</a>
-time_elapsed: 0.004s
-ram usage: 10948 KB
+time_elapsed: 0.008s
+ram usage: 12828 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e time2 <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/time2.v</a>
- ERROR moore_svlog::hir::lowering &gt; Expr #64
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:31</a>:32-49:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:33</a>:9-54:
    | 
-   |     for (clock = 0; clock&lt;=10; clock = clock + 1)
-   |                                ^^^^^^^^^^^^^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+   |         $display(&#34;time = %t, clock = %h&#34;,$time,clock);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-41" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:41</a>:5-58:
+   | 
+   |     $display(&#34; edge ! time = %t, count = %h&#34;,$time,count);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-48" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:48</a>:9-65:
+   | 
+   |         $display(&#34;FAILED - vect[0] clock detect count=%d&#34;,count);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-50" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:50</a>:9-27:
+   | 
+   |         $display(&#34;PASSED&#34;);
+   |         ^^^^^^^^^^^^^^^^^^ 
+
+proc %time2.initial.86.0 () -&gt; (i4$ %clock, i4$ %b, i4$ %count) {
+0:
+    %1 = prb i4$ %clock
+    %clock.shadow = var i4 %1
+    %2 = const i4 15
+    %3 = const time 0s 1e
+    drv i4$ %b, %2, %3
+    %4 = const i4 0
+    drv i4$ %count, %4, %3
+    drv i4$ %clock, %4, %3
+    st i4* %clock.shadow, %4
+    br %loop_body
+loop_body:
+    %5 = const i32 0
+    %clock.shadow.ld = ld i4* %clock.shadow
+    %zext = inss i32 %5, i4 %clock.shadow.ld, 0, 4
+    %6 = const i32 10
+    %7 = ule i32 %zext, %6
+    br %7, %loop_exit, %loop_continue
+loop_exit:
+    halt
+loop_continue:
+    wait %8 for %6
+8:
+    %9 = prb i4$ %clock
+    st i4* %clock.shadow, %9
+    %10 = const i32 0
+    %clock.shadow.ld1 = ld i4* %clock.shadow
+    %zext1 = inss i32 %10, i4 %clock.shadow.ld1, 0, 4
+    %11 = const i32 1
+    %12 = add i32 %zext1, %11
+    %13 = exts i4, i32 %12, 0, 4
+    %14 = const time 0s 1e
+    drv i4$ %clock, %13, %14
+    st i4* %clock.shadow, %13
+    br %loop_body
+}
+
+proc %time2.always.126.0 (i4$ %clock, i4$ %b) -&gt; (i4$ %count) {
+0:
+    %1 = prb i4$ %count
+    %count.shadow = var i4 %1
+    br %init
+init:
+    %clock.prb = prb i4$ %clock
+    %b.prb = prb i4$ %b
+    %2 = and i4 %clock.prb, %b.prb
+    wait %check, %clock, %b
+check:
+    %3 = prb i4$ %count
+    st i4* %count.shadow, %3
+    %4 = const i4 0
+    %5 = eq i4 %2, %4
+    %6 = neq i4 %2, %4
+    %posedge = and i1 %5, %6
+    br %posedge, %init, %event
+event:
+    %7 = const i32 0
+    %count.shadow.ld = ld i4* %count.shadow
+    %zext = inss i32 %7, i4 %count.shadow.ld, 0, 4
+    %8 = const i32 1
+    %9 = add i32 %zext, %8
+    %10 = exts i4, i32 %9, 0, 4
+    %11 = const time 0s 1e
+    drv i4$ %count, %10, %11
+    st i4* %count.shadow, %10
+    br %0
+}
+
+proc %time2.initial.158.0 (i4$ %count) -&gt; () {
+0:
+    %1 = const i32 1000
+    wait %2 for %1
+2:
+    halt
+}
+
+entity @time2 () -&gt; () {
+    %0 = const i4 0
+    %clock = sig i4 %0
+    %b = sig i4 %0
+    %count = sig i4 %0
+    inst %time2.initial.86.0 () -&gt; (i4$ %clock, i4$ %b, i4$ %count)
+    inst %time2.always.126.0 (i4$ %clock, i4$ %b) -&gt; (i4$ %count)
+    inst %time2.initial.158.0 (i4$ %count) -&gt; ()
+    halt
+}
 
 </pre>
 </body>

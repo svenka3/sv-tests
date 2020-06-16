@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v</a>
 time_elapsed: 0.004s
-ram usage: 10372 KB
+ram usage: 10724 KB
 </pre>
 <pre class="log">
 
@@ -41,17 +41,37 @@ warning: `$display` not supported; ignored
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `longint unsigned` to `reg [63:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr307.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr307.v:8</a>:13-33:
-   | 
-   |       in1 = 64&#39;hffffffffffffffff;
-   |             ^^^^^^^^^^^^^^^^^^^^ 
-   = note: `longint unsigned` can be cast to an intermediate `logic [63:0]`, but
-   = note: `logic [63:0]` cannot be cast to the final `reg [63:0]`
+proc %top.initial.97.0 () -&gt; (i64$ %in1, i64$ %in2, i64$ %out) {
+0:
+    %1 = prb i64$ %in2
+    %in2.shadow = var i64 %1
+    %2 = prb i64$ %out
+    %out.shadow = var i64 %2
+    %3 = prb i64$ %in1
+    %in1.shadow = var i64 %3
+    %4 = const i64 18446744073709551615
+    %5 = const time 0s 1e
+    drv i64$ %in1, %4, %5
+    st i64* %in1.shadow, %4
+    %6 = const i64 18446744073709551607
+    drv i64$ %in2, %6, %5
+    st i64* %in2.shadow, %6
+    %in1.shadow.ld = ld i64* %in1.shadow
+    %in2.shadow.ld = ld i64* %in2.shadow
+    %7 = add i64 %in1.shadow.ld, %in2.shadow.ld
+    drv i64$ %out, %7, %5
+    st i64* %out.shadow, %7
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(LongInt), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([63:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: longint unsigned -&gt; PackSBVT bit [63:0] -&gt; Domain(FourValued) logic [63:0]
+entity @top () -&gt; () {
+    %0 = const i64 0
+    %in1 = sig i64 %0
+    %in2 = sig i64 %0
+    %out = sig i64 %0
+    inst %top.initial.97.0 () -&gt; (i64$ %in1, i64$ %in2, i64$ %out)
+    halt
+}
 
 </pre>
 </body>

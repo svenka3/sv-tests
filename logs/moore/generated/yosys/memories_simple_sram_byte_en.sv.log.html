@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from yosys
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: yosys
 incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories
@@ -17,25 +17,98 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/simple_sram_byte_en.v.html" target="file-frame">third_party/tools/yosys/tests/memories/simple_sram_byte_en.v</a>
-time_elapsed: 0.004s
-ram usage: 11136 KB
+time_elapsed: 0.008s
+ram usage: 10792 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/memories -e generic_sram_byte_en <a href="../../../../third_party/tools/yosys/tests/memories/simple_sram_byte_en.v.html" target="file-frame">third_party/tools/yosys/tests/memories/simple_sram_byte_en.v</a>
- ERROR moore_svlog::hir::lowering &gt; Expr #118
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tools/yosys/tests/memories/simple_sram_byte_en.v.html#l-20" target="file-frame">third_party/tools/yosys/tests/memories/simple_sram_byte_en.v:20</a>:26-31:
-   | 
-   |     for (i=0;i&lt;DATA_WIDTH/8;i=i+1)
-   |                             ^^^^^ 
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+proc %generic_sram_byte_en.always.233.0 (i1$ %i_clk, i32$ %i_write_data, i32$ %i_write_enable, i4$ %i_address, i4$ %i_byte_enable) -&gt; (i32$ %o_read_data, [16 x i32]$ %mem, i32$ %i) {
+0:
+    %1 = prb i32$ %i
+    %i.shadow = var i32 %1
+    %2 = prb [16 x i32]$ %mem
+    %mem.shadow = var [16 x i32] %2
+    br %init
+init:
+    %i_clk.prb = prb i1$ %i_clk
+    wait %check, %i_clk
+check:
+    %3 = prb i32$ %i
+    st i32* %i.shadow, %3
+    %4 = prb [16 x i32]$ %mem
+    st [16 x i32]* %mem.shadow, %4
+    %5 = const i1 0
+    %6 = eq i1 %i_clk.prb, %5
+    %7 = neq i1 %i_clk.prb, %5
+    %posedge = and i1 %6, %7
+    br %posedge, %init, %event
+event:
+    %8 = const i32 0
+    %9 = const time 0s 1e
+    drv i32$ %i, %8, %9
+    st i32* %i.shadow, %8
+    br %loop_body
+loop_body:
+    %i.shadow.ld = ld i32* %i.shadow
+    %10 = const i32 4
+    %11 = slt i32 %i.shadow.ld, %10
+    %i_address.prb = prb i4$ %i_address
+    %12 = [16 x i32 %8]
+    %13 = const time 0s 1d
+    br %11, %loop_exit, %loop_continue
+loop_exit:
+    %mem.shadow.ld = ld [16 x i32]* %mem.shadow
+    %14 = shr [16 x i32] %mem.shadow.ld, [16 x i32] %12, i4 %i_address.prb
+    %15 = extf i32, [16 x i32] %14, 0
+    drv i32$ %o_read_data, %15, %13
+    br %0
+loop_continue:
+    %i_write_enable.prb = prb i32$ %i_write_enable
+    %16 = neq i32 %i_write_enable.prb, %8
+    %i_byte_enable.prb = prb i4$ %i_byte_enable
+    %i.shadow.ld1 = ld i32* %i.shadow
+    %17 = const i4 0
+    %18 = shr i4 %i_byte_enable.prb, i4 %17, i32 %i.shadow.ld1
+    %19 = exts i1, i4 %18, 0, 1
+    %20 = neq i1 %19, %5
+    %21 = and i1 %16, %20
+    %22 = neq i1 %21, %5
+    br %22, %if_exit, %if_true
+if_true:
+    %23 = sig [16 x i32] %12
+    %24 = shr [16 x i32]$ %mem, [16 x i32]$ %23, i4 %i_address.prb
+    %25 = extf i32$, [16 x i32]$ %24, 0
+    %i.shadow.ld2 = ld i32* %i.shadow
+    %26 = const i32 8
+    %27 = smul i32 %i.shadow.ld2, %26
+    %28 = sig i32 %8
+    %29 = shr i32$ %25, i32$ %28, i32 %27
+    %30 = exts i8$, i32$ %29, 0, 8
+    %i_write_data.prb = prb i32$ %i_write_data
+    %i.shadow.ld3 = ld i32* %i.shadow
+    %31 = smul i32 %i.shadow.ld3, %26
+    %32 = shr i32 %i_write_data.prb, i32 %8, i32 %31
+    %33 = exts i8, i32 %32, 0, 8
+    drv i8$ %30, %33, %13
+    br %if_exit
+if_exit:
+    %i.shadow.ld4 = ld i32* %i.shadow
+    %34 = const i32 1
+    %35 = add i32 %i.shadow.ld4, %34
+    drv i32$ %i, %35, %9
+    st i32* %i.shadow, %35
+    br %loop_body
+}
 
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @generic_sram_byte_en (i1$ %i_clk, i32$ %i_write_data, i32$ %i_write_enable, i4$ %i_address, i4$ %i_byte_enable) -&gt; (i32$ %o_read_data) {
+    %0 = const i32 0
+    %1 = [i32 %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0]
+    %mem = sig [16 x i32] %1
+    %i = sig i32 %0
+    inst %generic_sram_byte_en.always.233.0 (i1$ %i_clk, i32$ %i_write_data, i32$ %i_write_enable, i4$ %i_address, i4$ %i_byte_enable) -&gt; (i32$ %o_read_data, [16 x i32]$ %mem, i32$ %i)
+    halt
+}
 
 </pre>
 </body>

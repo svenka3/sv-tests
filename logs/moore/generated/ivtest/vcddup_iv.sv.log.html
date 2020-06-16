@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/vcd-dup.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vcd-dup.v</a>
 time_elapsed: 0.004s
-ram usage: 10496 KB
+ram usage: 10872 KB
 </pre>
 <pre class="log">
 
@@ -59,12 +59,23 @@ error: `c2` not found
    |    assign c = c1 ^ c2;
    |                    ^^ 
 
-error: `c1` not found
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/vcd-dup.v.html#l-5" target="file-frame">third_party/tests/ivtest/ivltests/vcd-dup.v:5</a>:22-24:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #407)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/vcd-dup.v.html#l-57" target="file-frame">third_party/tests/ivtest/ivltests/vcd-dup.v:57</a>:11-12:
    | 
-   |    submod m1 (a, b1, c1);
-   |                      ^^  
+   |    output c;
+   |           ^ 
+   = note: Encountered at src/svlog/typeck.rs:61
+   = note: Needed to compute the type of the expression:
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/vcd-dup.v.html#l-62" target="file-frame">third_party/tests/ivtest/ivltests/vcd-dup.v:62</a>:11-12:
+   | 
+   |    assign c = c1 ^ c2;
+   |           ^           
 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #407)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,20 +18,47 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/contrib8.4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/contrib8.4.v</a>
 time_elapsed: 0.004s
-ram usage: 10240 KB
+ram usage: 10356 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/contrib8.4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/contrib8.4.v</a>
-error: cannot cast a value of type `logic [4:0]` to `reg [4:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/contrib8.4.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/contrib8.4.v:24</a>:5-14:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/contrib8.4.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/contrib8.4.v:27</a>:3-21:
    | 
-   | b = {5{a[4]}};
-   |     ^^^^^^^^^ 
+   |   $display(&#34;PASSED&#34;);
+   |   ^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([4:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([4:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [4:0]
+proc %main.initial.31.0 (i5$ %a) -&gt; (i5$ %b) {
+0:
+    %a.prb = prb i5$ %a
+    %1 = exts i1, i5 %a.prb, 4, 1
+    %2 = const i5 0
+    %3 = inss i5 %2, i1 %1, 0, 1
+    %concat = exts i1, i5 %3, 0, 1
+    %4 = inss i5 %2, i1 %concat, 0, 1
+    %5 = inss i5 %4, i1 %concat, 1, 1
+    %6 = inss i5 %5, i1 %concat, 2, 1
+    %7 = inss i5 %6, i1 %concat, 3, 1
+    %repeat = inss i5 %7, i1 %concat, 4, 1
+    %8 = const time 0s 1e
+    drv i5$ %b, %repeat, %8
+    halt
+}
+
+proc %main.initial.40.0 () -&gt; () {
+0:
+    halt
+}
+
+entity @main () -&gt; () {
+    %0 = const i5 0
+    %a = sig i5 %0
+    %b = sig i5 %0
+    inst %main.initial.31.0 (i5$ %a) -&gt; (i5$ %b)
+    inst %main.initial.40.0 () -&gt; ()
+    halt
+}
 
 </pre>
 </body>

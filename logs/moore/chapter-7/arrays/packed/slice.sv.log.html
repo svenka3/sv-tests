@@ -18,7 +18,7 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../../tests/chapter-7/arrays/packed/slice.sv.html" target="file-frame">tests/chapter-7/arrays/packed/slice.sv</a>
 time_elapsed: 0.004s
-ram usage: 10544 KB
+ram usage: 10560 KB
 </pre>
 <pre class="log">
 
@@ -37,18 +37,21 @@ warning: `$display` not supported; ignored
 
 proc %top.initial.99.0 () -&gt; (i8$ %arr_a, i8$ %arr_b) {
 0:
-    %1 = const i8 255
-    %2 = const time 0s 1e
-    drv i8$ %arr_a, %1, %2
-    %3 = const i8 0
-    drv i8$ %arr_b, %3, %2
-    %4 = const i2 3
-    %5 = sig i8 %3
-    %6 = shr i8$ %arr_b, i8$ %5, i2 %4
-    %7 = exts i3$, i8$ %6, 0, 3
-    %arr_a1 = prb i8$ %arr_a
-    %8 = exts i3, i8 %arr_a1, 0, 3
-    drv i3$ %7, %8, %2
+    %1 = prb i8$ %arr_a
+    %arr_a.shadow = var i8 %1
+    %2 = const i8 255
+    %3 = const time 0s 1e
+    drv i8$ %arr_a, %2, %3
+    st i8* %arr_a.shadow, %2
+    %4 = const i8 0
+    drv i8$ %arr_b, %4, %3
+    %5 = const i2 3
+    %6 = sig i8 %4
+    %7 = shr i8$ %arr_b, i8$ %6, i2 %5
+    %8 = exts i3$, i8$ %7, 0, 3
+    %arr_a.shadow.ld = ld i8* %arr_a.shadow
+    %9 = exts i3, i8 %arr_a.shadow.ld, 0, 3
+    drv i3$ %8, %9, %3
     halt
 }
 

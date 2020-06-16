@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v</a>
-time_elapsed: 0.004s
-ram usage: 10848 KB
+time_elapsed: 0.008s
+ram usage: 12720 KB
 </pre>
 <pre class="log">
 
@@ -65,28 +65,52 @@ warning: `$display` not supported; ignored
    |     if (passed) $display(&#34;PASSED&#34;);
    |                 ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `reg [63:0]` to `logic [63:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v:12</a>:9-13:
-   | 
-   |     if (wide !== 64&#39;h0123456789abcdef) begin
-   |         ^^^^                                
+proc %top.initial.153.0 (i64$ %wide, i32$ %norm) -&gt; (i1$ %passed) {
+0:
+    %1 = prb i1$ %passed
+    %passed.shadow = var i1 %1
+    %2 = const i1 1
+    %3 = const time 0s 1e
+    drv i1$ %passed, %2, %3
+    st i1* %passed.shadow, %2
+    %4 = const i1 0
+    drv i1$ %passed, %4, %3
+    st i1* %passed.shadow, %4
+    %wide.prb = prb i64$ %wide
+    %5 = const i64 81985529216486895
+    %6 = neq i64 %wide.prb, %5
+    %7 = neq i1 %6, %4
+    br %7, %if_exit, %if_true
+if_true:
+    drv i1$ %passed, %4, %3
+    st i1* %passed.shadow, %4
+    br %if_exit
+if_exit:
+    drv i1$ %passed, %4, %3
+    st i1* %passed.shadow, %4
+    %norm.prb = prb i32$ %norm
+    %8 = const i32 2309737967
+    %9 = neq i32 %norm.prb, %8
+    %10 = neq i1 %9, %4
+    br %10, %if_exit1, %if_true1
+if_true1:
+    drv i1$ %passed, %4, %3
+    st i1* %passed.shadow, %4
+    br %if_exit1
+if_exit1:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([63:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([63:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [63:0]
-compiler bug: value of type `&lt;error&gt;` should be a bool
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2202706.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr2202706.v:12</a>:9-38:
-   | 
-   |     if (wide !== 64&#39;h0123456789abcdef) begin
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       
-   = note: Assertion failed: mir.ty.get_simple_bit_vector().map(|sbv| sbv.size == 1).unwrap_or(false)
-   = note: Encountered at src/svlog/codegen.rs:1235
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;value of type `&lt;error&gt;` should be a bool&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %passed = sig i1 %0
+    %1 = const i64 0
+    %wide = sig i64 %1
+    %2 = const i32 0
+    %norm = sig i32 %2
+    inst %top.initial.153.0 (i64$ %wide, i32$ %norm) -&gt; (i1$ %passed)
+    halt
+}
 
 </pre>
 </body>

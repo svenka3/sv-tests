@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1912843.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1912843.v</a>
-time_elapsed: 0.004s
-ram usage: 10372 KB
+time_elapsed: 0.008s
+ram usage: 10576 KB
 </pre>
 <pre class="log">
 
@@ -35,17 +35,37 @@ warning: `$display` not supported; ignored
    |     if (arr[0] + 1 + 1 &gt; 4) $display(&#34;FAILED&#34;); else $display(&#34;PASSED&#34;);
    |                                                      ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit` to `reg [31:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1912843.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1912843.v:7</a>:14-17:
-   | 
-   |     arr[0] = &#39;d1;
-   |              ^^^ 
-   = note: `bit` can be cast to an intermediate `logic [31:0]`, but
-   = note: `logic [31:0]` cannot be cast to the final `reg [31:0]`
+proc %test.initial.71.0 () -&gt; ([2 x i32]$ %arr) {
+0:
+    %1 = prb [2 x i32]$ %arr
+    %arr.shadow = var [2 x i32] %1
+    %2 = extf i32$, [2 x i32]$ %arr, 0
+    %3 = extf i32*, [2 x i32]* %arr.shadow, 0
+    %4 = const i32 1
+    %5 = const time 0s 1e
+    drv i32$ %2, %4, %5
+    st i32* %3, %4
+    %6 = const i32 0
+    %7 = [2 x i32 %6]
+    %8 = sig [2 x i32] %7
+    %9 = shr [2 x i32]$ %arr, [2 x i32]$ %8, i32 %4
+    %10 = var [2 x i32] %7
+    %11 = shr [2 x i32]* %arr.shadow, [2 x i32]* %10, i32 %4
+    %12 = extf i32$, [2 x i32]$ %9, 0
+    %13 = extf i32*, [2 x i32]* %11, 0
+    %14 = const i32 5
+    drv i32$ %12, %14, %5
+    st i32* %13, %14
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([31:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit -&gt; PackSBVT bit [0:0] -&gt; Range([31:0], false) bit [31:0] -&gt; Domain(FourValued) logic [31:0]
+entity @test () -&gt; () {
+    %0 = const i32 0
+    %1 = [i32 %0, %0]
+    %arr = sig [2 x i32] %1
+    inst %test.initial.71.0 () -&gt; ([2 x i32]$ %arr)
+    halt
+}
 
 </pre>
 </body>

@@ -18,53 +18,59 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v</a>
 time_elapsed: 0.012s
-ram usage: 11852 KB
+ram usage: 12044 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dmc -e tx_bit_slice <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v</a>
 proc %tx_bit_slice.always.504.0 (i1$ %clk_2x_n, i1$ %wrdata_en_90, i2$ %wrdata_90) -&gt; (i1$ %dq_o, i1$ %dq_oe_n, i1$ %odd) {
+0:
+    %1 = prb i1$ %odd
+    %odd.shadow = var i1 %1
+    br %init
 init:
-    %clk_2x_n1 = prb i1$ %clk_2x_n
+    %clk_2x_n.prb = prb i1$ %clk_2x_n
     wait %check, %clk_2x_n
 check:
-    %clk_2x_n2 = prb i1$ %clk_2x_n
-    %0 = const i1 0
-    %1 = eq i1 %clk_2x_n1, %0
-    %2 = neq i1 %clk_2x_n2, %0
-    %posedge = and i1 %1, %2
+    %2 = prb i1$ %odd
+    st i1* %odd.shadow, %2
+    %3 = const i1 0
+    %4 = eq i1 %clk_2x_n.prb, %3
+    %5 = neq i1 %clk_2x_n.prb, %3
+    %posedge = and i1 %4, %5
     br %posedge, %init, %event
 event:
-    %wrdata_en_901 = prb i1$ %wrdata_en_90
-    %3 = neq i1 %wrdata_en_901, %0
-    %4 = const time 0s 1d
-    br %3, %if_false, %if_true
+    %wrdata_en_90.prb = prb i1$ %wrdata_en_90
+    %6 = neq i1 %wrdata_en_90.prb, %3
+    %7 = const time 0s 1d
+    br %6, %if_false, %if_true
 if_true:
-    %odd1 = prb i1$ %odd
-    %5 = not i1 %odd1
-    drv i1$ %odd, %5, %4
-    %6 = neq i1 %odd1, %0
-    %wrdata_901 = prb i2$ %wrdata_90
-    br %6, %if_false1, %if_true1
+    %odd.shadow.ld = ld i1* %odd.shadow
+    %8 = not i1 %odd.shadow.ld
+    drv i1$ %odd, %8, %7
+    %odd.shadow.ld1 = ld i1* %odd.shadow
+    %9 = neq i1 %odd.shadow.ld1, %3
+    %wrdata_90.prb = prb i2$ %wrdata_90
+    br %9, %if_false1, %if_true1
 if_false:
-    drv i1$ %odd, %0, %4
-    %7 = const i1 1
-    drv i1$ %dq_oe_n, %7, %4
-    br %init
+    drv i1$ %odd, %3, %7
+    %10 = const i1 1
+    drv i1$ %dq_oe_n, %10, %7
+    br %0
 if_true1:
-    %8 = exts i1, i2 %wrdata_901, 1, 1
-    %9 = const i2 0
-    %10 = inss i2 %9, i1 %8, 0, 1
-    %11 = exts i1, i2 %10, 0, 1
-    drv i1$ %dq_o, %11, %4
+    %11 = exts i1, i2 %wrdata_90.prb, 1, 1
+    %12 = const i2 0
+    %13 = inss i2 %12, i1 %11, 0, 1
+    %14 = exts i1, i2 %13, 0, 1
+    drv i1$ %dq_o, %14, %7
     br %if_exit
 if_false1:
-    %12 = exts i1, i2 %wrdata_901, 0, 1
-    drv i1$ %dq_o, %12, %4
+    %15 = exts i1, i2 %wrdata_90.prb, 0, 1
+    drv i1$ %dq_o, %15, %7
     br %if_exit
 if_exit:
-    drv i1$ %dq_oe_n, %0, %4
-    br %init
+    drv i1$ %dq_oe_n, %3, %7
+    br %0
 }
 
 entity @tx_bit_slice (i1$ %clk_2x_n, i1$ %wrdata_en_90, i2$ %wrdata_90) -&gt; (i1$ %dq_o, i1$ %dq_oe_n) {

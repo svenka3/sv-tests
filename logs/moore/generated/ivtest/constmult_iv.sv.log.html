@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/constmult.v.html" target="file-frame">third_party/tests/ivtest/ivltests/constmult.v</a>
 time_elapsed: 0.004s
-ram usage: 10260 KB
+ram usage: 10572 KB
 </pre>
 <pre class="log">
 
@@ -35,17 +35,29 @@ warning: `$display` not supported; ignored
    |         $display(&#34;FAILED&#34;);
    |         ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `integer unsigned` to `reg [10:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/constmult.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/constmult.v:30</a>:13-22:
-   | 
-   |      val1 = 11&#39;h1 * 5;
-   |             ^^^^^^^^^ 
-   = note: `integer unsigned` can be cast to an intermediate `logic [10:0]`, but
-   = note: `logic [10:0]` cannot be cast to the final `reg [10:0]`
+proc %main.initial.69.0 () -&gt; (i11$ %val1, i11$ %val2) {
+0:
+    %1 = prb i11$ %val2
+    %val2.shadow = var i11 %1
+    %2 = prb i11$ %val1
+    %val1.shadow = var i11 %2
+    %3 = const i11 5
+    %4 = const time 0s 1e
+    drv i11$ %val1, %3, %4
+    st i11* %val1.shadow, %3
+    %5 = const i11 8
+    drv i11$ %val2, %5, %4
+    st i11* %val2.shadow, %5
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Integer), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([10:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: integer unsigned -&gt; PackSBVT logic [31:0] -&gt; Range([10:0], false) logic [10:0]
+entity @main () -&gt; () {
+    %0 = const i11 0
+    %val1 = sig i11 %0
+    %val2 = sig i11 %0
+    inst %main.initial.69.0 () -&gt; (i11$ %val1, i11$ %val2)
+    halt
+}
 
 </pre>
 </body>

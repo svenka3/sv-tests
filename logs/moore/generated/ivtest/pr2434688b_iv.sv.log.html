@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2434688b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2434688b.v</a>
-time_elapsed: 0.004s
-ram usage: 10576 KB
+time_elapsed: 0.008s
+ram usage: 10792 KB
 </pre>
 <pre class="log">
 
@@ -65,17 +65,103 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit [7:0]` to `reg [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2434688b.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr2434688b.v:9</a>:11-20:
-   | 
-   |     out = in[7:&#39;dx];
-   |           ^^^^^^^^^ 
-   = note: `bit [7:0]` can be cast to an intermediate `logic [3:0]`, but
-   = note: `logic [3:0]` cannot be cast to the final `reg [3:0]`
+proc %top.initial.358.0 () -&gt; (i1$ %pass, i4$ %out) {
+0:
+    %1 = prb i4$ %out
+    %out.shadow = var i4 %1
+    %2 = prb i1$ %pass
+    %pass.shadow = var i1 %2
+    %3 = const i1 1
+    %4 = const time 0s 1e
+    drv i1$ %pass, %3, %4
+    st i1* %pass.shadow, %3
+    %5 = const i4 5
+    drv i4$ %out, %5, %4
+    st i4* %out.shadow, %5
+    %out.shadow.ld = ld i4* %out.shadow
+    %6 = const i4 0
+    %7 = neq i4 %out.shadow.ld, %6
+    %8 = const i1 0
+    %9 = neq i1 %7, %8
+    br %9, %if_exit, %if_true
+if_true:
+    drv i1$ %pass, %8, %4
+    st i1* %pass.shadow, %8
+    br %if_exit
+if_exit:
+    %zext = const i4 1
+    drv i4$ %out, %zext, %4
+    st i4* %out.shadow, %zext
+    %out.shadow.ld1 = ld i4* %out.shadow
+    %10 = neq i4 %out.shadow.ld1, %6
+    %11 = neq i1 %10, %8
+    br %11, %if_exit1, %if_true1
+if_true1:
+    drv i1$ %pass, %8, %4
+    st i1* %pass.shadow, %8
+    br %if_exit1
+if_exit1:
+    drv i4$ %out, %6, %4
+    st i4* %out.shadow, %6
+    %12 = exts i1$, i4$ %out, 0, 1
+    %13 = exts i1*, i4* %out.shadow, 0, 1
+    drv i1$ %12, %3, %4
+    st i1* %13, %3
+    %out.shadow.ld2 = ld i4* %out.shadow
+    %14 = neq i4 %out.shadow.ld2, %6
+    %15 = neq i1 %14, %8
+    br %15, %if_exit2, %if_true2
+if_true2:
+    drv i1$ %pass, %8, %4
+    st i1* %pass.shadow, %8
+    br %if_exit2
+if_exit2:
+    drv i4$ %out, %5, %4
+    st i4* %out.shadow, %5
+    %out.shadow.ld3 = ld i4* %out.shadow
+    %16 = neq i4 %out.shadow.ld3, %6
+    %17 = neq i1 %16, %8
+    br %17, %if_exit3, %if_true3
+if_true3:
+    drv i1$ %pass, %8, %4
+    st i1* %pass.shadow, %8
+    br %if_exit3
+if_exit3:
+    drv i4$ %out, %zext, %4
+    st i4* %out.shadow, %zext
+    %out.shadow.ld4 = ld i4* %out.shadow
+    %18 = neq i4 %out.shadow.ld4, %6
+    %19 = neq i1 %18, %8
+    br %19, %if_exit4, %if_true4
+if_true4:
+    drv i1$ %pass, %8, %4
+    st i1* %pass.shadow, %8
+    br %if_exit4
+if_exit4:
+    drv i4$ %out, %6, %4
+    st i4* %out.shadow, %6
+    drv i1$ %12, %3, %4
+    st i1* %13, %3
+    %out.shadow.ld5 = ld i4* %out.shadow
+    %20 = neq i4 %out.shadow.ld5, %6
+    %21 = neq i1 %20, %8
+    br %21, %if_exit5, %if_true5
+if_true5:
+    drv i1$ %pass, %8, %4
+    st i1* %pass.shadow, %8
+    br %if_exit5
+if_exit5:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [7:0] -&gt; Range([3:0], false) bit [3:0] -&gt; Domain(FourValued) logic [3:0]
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i4 0
+    %out = sig i4 %1
+    inst %top.initial.358.0 () -&gt; (i1$ %pass, i4$ %out)
+    halt
+}
 
 </pre>
 </body>

@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2029336.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2029336.v</a>
 time_elapsed: 0.004s
-ram usage: 10500 KB
+ram usage: 11300 KB
 </pre>
 <pre class="log">
 
@@ -53,17 +53,42 @@ warning: `$fwrite` not supported; ignored
    |         $fwrite(outfile, &#34;# x = %d\n&#34;, test_val3);   // $fwrite() seems to be ok...
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                  
 
-error: cannot cast a value of type `int` to `reg [32:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2029336.v.html#l-43" target="file-frame">third_party/tests/ivtest/ivltests/pr2029336.v:43</a>:8-9:
+warning: `$fwrite` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2029336.v.html#l-55" target="file-frame">third_party/tests/ivtest/ivltests/pr2029336.v:55</a>:3-31:
    | 
-   |         in = 0;
-   |              ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [32:0]`, but
-   = note: `logic unsigned [32:0]` cannot be cast to the final `reg [32:0]`
+   |         $fwrite(outfile, &#34;%d\n&#34;, in);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([32:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([32:0], true) bit signed [32:0] -&gt; Sign(unsigned) bit unsigned [32:0] -&gt; Domain(FourValued) logic unsigned [32:0]
+warning: `$fscanf` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2029336.v.html#l-56" target="file-frame">third_party/tests/ivtest/ivltests/pr2029336.v:56</a>:11-38:
+   | 
+   |         count = $fscanf(infile, &#34;%d\n&#34;, in);  // $fscanf() seems buggy...
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^                              
+
+warning: `$fclose` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2029336.v.html#l-58" target="file-frame">third_party/tests/ivtest/ivltests/pr2029336.v:58</a>:4-19:
+   | 
+   |             $fclose(infile);
+   |             ^^^^^^^^^^^^^^^ 
+
+warning: `$fclose` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2029336.v.html#l-59" target="file-frame">third_party/tests/ivtest/ivltests/pr2029336.v:59</a>:4-20:
+   | 
+   |             $fclose(outfile);
+   |             ^^^^^^^^^^^^^^^^ 
+
+compiler bug: lowering of Expr #274 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2029336.v.html#l-60" target="file-frame">third_party/tests/ivtest/ivltests/pr2029336.v:60</a>:4-11:
+   | 
+   |             $finish;
+   |             ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1398
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of Expr #274 to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

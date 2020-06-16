@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/signed_a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/signed_a.v</a>
-time_elapsed: 0.004s
-ram usage: 10532 KB
+time_elapsed: 0.008s
+ram usage: 10800 KB
 </pre>
 <pre class="log">
 
@@ -53,17 +53,72 @@ warning: `$display` not supported; ignored
    |     if (pass) $display(&#34;PASSED&#34;);
    |               ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit [3:0]` to `reg [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed_a.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/signed_a.v:9</a>:17-24:
-   | 
-   |     array [7] = 4&#39;b1001;
-   |                 ^^^^^^^ 
-   = note: `bit [3:0]` can be cast to an intermediate `logic [3:0]`, but
-   = note: `logic [3:0]` cannot be cast to the final `reg [3:0]`
+proc %top.initial.240.0 (i32$ %res) -&gt; (i1$ %pass, [8 x i4]$ %array, i3$ %a, i128$ %b) {
+0:
+    %1 = prb i1$ %pass
+    %pass.shadow = var i1 %1
+    %2 = const i32 7
+    %3 = const i4 0
+    %4 = [8 x i4 %3]
+    %5 = sig [8 x i4] %4
+    %6 = shr [8 x i4]$ %array, [8 x i4]$ %5, i32 %2
+    %7 = extf i4$, [8 x i4]$ %6, 0
+    %8 = const i4 9
+    %9 = const time 0s 1e
+    drv i4$ %7, %8, %9
+    %10 = const i1 1
+    drv i1$ %pass, %10, %9
+    st i1* %pass.shadow, %10
+    %11 = const i3 7
+    drv i3$ %a, %11, %9
+    %res.prb = prb i32$ %res
+    %concat = const i8 0
+    %12 = const i32 0
+    %13 = const i32 4294967295
+    %14 = [i32 %12, %13]
+    %15 = extf i32, [2 x i32] %14, 0
+    %sext = inss i32 %15, i8 %concat, 0, 8
+    %16 = neq i32 %res.prb, %sext
+    %17 = const i1 0
+    %18 = neq i1 %16, %17
+    br %18, %if_exit, %if_true
+if_true:
+    drv i1$ %pass, %17, %9
+    st i1* %pass.shadow, %17
+    br %if_exit
+if_exit:
+    %19 = const i128 7
+    drv i128$ %b, %19, %9
+    %20 = const i32 120
+    %21 = const i128 0
+    %22 = sig i128 %21
+    %23 = shr i128$ %b, i128$ %22, i32 %20
+    %24 = exts i1$, i128$ %23, 0, 1
+    drv i1$ %24, %10, %9
+    br %18, %if_exit1, %if_true1
+if_true1:
+    drv i1$ %pass, %17, %9
+    st i1* %pass.shadow, %17
+    br %if_exit1
+if_exit1:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [3:0] -&gt; Domain(FourValued) logic [3:0]
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %pass = sig i1 %0
+    %1 = const i4 0
+    %2 = [i4 %1, %1, %1, %1, %1, %1, %1, %1]
+    %array = sig [8 x i4] %2
+    %3 = const i3 0
+    %a = sig i3 %3
+    %4 = const i128 0
+    %b = sig i128 %4
+    %5 = const i32 0
+    %res = sig i32 %5
+    inst %top.initial.240.0 (i32$ %res) -&gt; (i1$ %pass, [8 x i4]$ %array, i3$ %a, i128$ %b)
+    halt
+}
 
 </pre>
 </body>

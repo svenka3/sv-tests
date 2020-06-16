@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/fr49.v.html" target="file-frame">third_party/tests/ivtest/ivltests/fr49.v</a>
 time_elapsed: 0.004s
-ram usage: 10460 KB
+ram usage: 10540 KB
 </pre>
 <pre class="log">
 
@@ -37,20 +37,25 @@ warning: `$display` not supported; ignored
 
 proc %top.initial.54.0 () -&gt; (i32$ %i) {
 0:
-    %1 = const i32 0
-    %2 = const time 0s 1e
-    drv i32$ %i, %1, %2
+    %1 = prb i32$ %i
+    %i.shadow = var i32 %1
+    %2 = const i32 0
+    %3 = const time 0s 1e
+    drv i32$ %i, %2, %3
+    st i32* %i.shadow, %2
     br %loop_body
 loop_body:
-    %3 = const i32 1
-    %i1 = prb i32$ %i
-    %4 = add i32 %i1, %3
-    drv i32$ %i, %4, %2
-    %5 = const i32 2
-    %6 = slt i32 %i1, %5
-    %7 = const i1 0
-    %8 = neq i1 %6, %7
-    br %8, %loop_exit, %loop_body
+    %4 = const i32 1
+    %i.shadow.ld = ld i32* %i.shadow
+    %5 = add i32 %i.shadow.ld, %4
+    drv i32$ %i, %5, %3
+    st i32* %i.shadow, %5
+    %i.shadow.ld1 = ld i32* %i.shadow
+    %6 = const i32 2
+    %7 = slt i32 %i.shadow.ld1, %6
+    %8 = const i1 0
+    %9 = neq i1 %7, %8
+    br %9, %loop_exit, %loop_body
 loop_exit:
     halt
 }

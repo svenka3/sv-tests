@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,21 +17,29 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2138979d.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2138979d.v</a>
-time_elapsed: 0.008s
-ram usage: 11984 KB
+time_elapsed: 0.012s
+ram usage: 12368 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e signed_logic_operators_bug <a href="../../../../third_party/tests/ivtest/ivltests/pr2138979d.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2138979d.v</a>
-error: cannot cast a value of type `reg [7:0]` to `logic [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2138979d.v.html#l-70" target="file-frame">third_party/tests/ivtest/ivltests/pr2138979d.v:70</a>:5-6:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #2184)
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2138979d.v.html#l-196" target="file-frame">third_party/tests/ivtest/ivltests/pr2138979d.v:196</a>:15-21:
    | 
-   |     a, b,
-   |     ^    
+   | output [15:0] mux_uu, mux_us, mux_su, mux_ss;
+   |               ^^^^^^                         
+   = note: Encountered at src/svlog/typeck.rs:61
+   = note: Needed to compute the type of the expression:
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2138979d.v.html#l-210" target="file-frame">third_party/tests/ivtest/ivltests/pr2138979d.v:210</a>:8-14:
+   | 
+   | assign mux_uu = sel ? {{8{1&#39;b0}}, a} : {{8{1&#39;b0}}, b};
+   |        ^^^^^^                                         
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [7:0]
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #2184)&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

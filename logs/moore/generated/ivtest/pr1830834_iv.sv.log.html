@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,21 +17,12 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v</a>
-time_elapsed: 0.004s
-ram usage: 10412 KB
+time_elapsed: 0.008s
+ram usage: 10704 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v</a>
-error: cannot cast a value of type `reg [5:0]` to `logic [5:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:8</a>:16-21:
-   | 
-   |   assign out = in[j]; // This uses the current j.
-   |                ^^^^^                             
-
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([5:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([5:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: reg [5:0]
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:15</a>:5-52:
    | 
@@ -56,17 +47,41 @@ warning: `$strobe` not supported; ignored
    |     $strobe(&#34;out[3:0]: %b, in[%0d] %b:&#34;, out[j*1-1 +: 4], j, in[j]);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `bit [5:0]` to `reg [5:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1830834.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr1830834.v:11</a>:13-22:
-   | 
-   |     in[1] = 6&#39;b110001;
-   |             ^^^^^^^^^ 
-   = note: `bit [5:0]` can be cast to an intermediate `logic [5:0]`, but
-   = note: `logic [5:0]` cannot be cast to the final `reg [5:0]`
+proc %test.initial.297.0 () -&gt; (i5$ %j, [2 x i6]$ %in) {
+0:
+    %1 = const i32 1
+    %2 = const i6 0
+    %3 = [2 x i6 %2]
+    %4 = sig [2 x i6] %3
+    %5 = shr [2 x i6]$ %in, [2 x i6]$ %4, i32 %1
+    %6 = extf i6$, [2 x i6]$ %5, 0
+    %7 = const i6 49
+    %8 = const time 0s 1e
+    drv i6$ %6, %7, %8
+    %9 = const i5 1
+    drv i5$ %j, %9, %8
+    wait %10 for %1
+10:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Bit), sign: unsigned, sign_explicit: false, dims: [Range([5:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([5:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: bit [5:0] -&gt; Domain(FourValued) logic [5:0]
+entity @test () -&gt; () {
+    %0 = const i5 0
+    %j = sig i5 %0
+    %1 = const i6 0
+    %2 = [i6 %1, %1]
+    %in = sig [2 x i6] %2
+    %out = sig i6 %1
+    %in.prb = prb [2 x i6]$ %in
+    %j.prb = prb i5$ %j
+    %3 = [2 x i6 %1]
+    %4 = shr [2 x i6] %in.prb, [2 x i6] %3, i5 %j.prb
+    %5 = extf i6, [2 x i6] %4, 0
+    %6 = const time 0s 1e
+    drv i6$ %out, %5, %6
+    inst %test.initial.297.0 () -&gt; (i5$ %j, [2 x i6]$ %in)
+    halt
+}
 
 </pre>
 </body>

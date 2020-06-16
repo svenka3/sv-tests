@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v</a>
 time_elapsed: 0.004s
-ram usage: 10204 KB
+ram usage: 10688 KB
 </pre>
 <pre class="log">
 
@@ -35,17 +35,28 @@ warning: `$readmempath` not supported; ignored
    |     $readmempath(str);
    |     ^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `byte [0:0]` to `reg [79:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2509349b.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr2509349b.v:6</a>:11-17:
-   | 
-   |     str = &#34;test&#34;;
-   |           ^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `logic unsigned [79:0]`, but
-   = note: `logic unsigned [79:0]` cannot be cast to the final `reg [79:0]`
+proc %top.initial.64.0 () -&gt; (i80$ %str) {
+0:
+    %concat = const i8 0
+    %1 = const i80 0
+    %2 = const i80 1208925819614629174706175
+    %3 = [i80 %1, %2]
+    %4 = extf i80, [2 x i80] %3, 0
+    %sext = inss i80 %4, i8 %concat, 0, 8
+    %5 = const time 0s 1e
+    drv i80$ %str, %sext, %5
+    %6 = exts i8$, i80$ %str, 0, 8
+    %7 = const i8 2
+    drv i8$ %6, %7, %5
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Byte), sign: signed, sign_explicit: false, dims: [Range([0:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([79:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: byte [0:0] -&gt; PackSBVT bit signed [7:0] -&gt; Range([79:0], true) bit signed [79:0] -&gt; Sign(unsigned) bit unsigned [79:0] -&gt; Domain(FourValued) logic unsigned [79:0]
+entity @top () -&gt; () {
+    %0 = const i80 0
+    %str = sig i80 %0
+    inst %top.initial.64.0 () -&gt; (i80$ %str)
+    halt
+}
 
 </pre>
 </body>

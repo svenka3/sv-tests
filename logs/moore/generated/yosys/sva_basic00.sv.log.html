@@ -31,21 +31,20 @@ warning: unsupported: concurrent assertion; ignored
 
 proc %top.always.41.0 (i1$ %clk, i1$ %reset, i1$ %antecedent) -&gt; (i1$ %consequent) {
 init:
-    %clk1 = prb i1$ %clk
+    %clk.prb = prb i1$ %clk
     wait %check, %clk
 check:
-    %clk2 = prb i1$ %clk
     %0 = const i1 0
-    %1 = eq i1 %clk1, %0
-    %2 = neq i1 %clk2, %0
+    %1 = eq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
-    %reset1 = prb i1$ %reset
-    %3 = neq i1 %reset1, %0
+    %reset.prb = prb i1$ %reset
+    %3 = neq i1 %reset.prb, %0
     %4 = const i32 0
-    %antecedent1 = prb i1$ %antecedent
-    %zext = inss i32 %4, i1 %antecedent1, 0, 1
+    %antecedent.prb = prb i1$ %antecedent
+    %zext = inss i32 %4, i1 %antecedent.prb, 0, 1
     %5 = [i32 %zext, %4]
     %6 = mux [2 x i32] %5, i1 %3
     %7 = exts i1, i32 %6, 0, 1

@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,23 +17,30 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sdw_array.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sdw_array.v</a>
-time_elapsed: 0.004s
-ram usage: 10436 KB
+time_elapsed: 0.008s
+ram usage: 11488 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/sdw_array.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sdw_array.v</a>
-error: cannot cast a value of type `shortint unsigned` to `reg [15:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_array.v.html#l-37" target="file-frame">third_party/tests/ivtest/ivltests/sdw_array.v:37</a>:14-19:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_array.v.html#l-57" target="file-frame">third_party/tests/ivtest/ivltests/sdw_array.v:57</a>:10-54:
    | 
-   |     mem_2 [0] = 16&#39;h0;
-   |                 ^^^^^ 
-   = note: `shortint unsigned` can be cast to an intermediate `logic [15:0]`, but
-   = note: `logic [15:0]` cannot be cast to the final `reg [15:0]`
+   |          $display(&#34;FAILED - mem_1 [0] init failed\n&#34;);
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(ShortInt), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: shortint unsigned -&gt; PackSBVT bit [15:0] -&gt; Domain(FourValued) logic [15:0]
+compiler bug: lowering of Expr #214 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sdw_array.v.html#l-58" target="file-frame">third_party/tests/ivtest/ivltests/sdw_array.v:58</a>:10-17:
+   | 
+   |          $finish ;
+   |          ^^^^^^^  
+   = note: Encountered at src/svlog/hir/lowering.rs:1398
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of Expr #214 to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

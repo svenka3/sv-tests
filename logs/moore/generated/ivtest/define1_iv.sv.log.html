@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/define1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/define1.v</a>
-time_elapsed: 0.004s
-ram usage: 10500 KB
+time_elapsed: 0.008s
+ram usage: 10600 KB
 </pre>
 <pre class="log">
 
@@ -47,17 +47,67 @@ warning: `$display` not supported; ignored
    |        $display(&#34;PASSED&#34;);
    |        ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `int` to `reg [3:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/define1.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/define1.v:22</a>:14-16:
-   | 
-   | `define NUM1 10
-   |              ^^
-   = note: `int` can be cast to an intermediate `logic unsigned [3:0]`, but
-   = note: `logic unsigned [3:0]` cannot be cast to the final `reg [3:0]`
+proc %define1.initial.140.0 () -&gt; (i4$ %val, i1$ %error) {
+0:
+    %1 = prb i1$ %error
+    %error.shadow = var i1 %1
+    %2 = prb i4$ %val
+    %val.shadow = var i4 %2
+    %3 = const i1 0
+    %4 = const time 0s 1e
+    drv i1$ %error, %3, %4
+    st i1* %error.shadow, %3
+    %5 = const i4 10
+    drv i4$ %val, %5, %4
+    st i4* %val.shadow, %5
+    %6 = const i32 0
+    %val.shadow.ld = ld i4* %val.shadow
+    %zext = inss i32 %6, i4 %val.shadow.ld, 0, 4
+    %7 = const i32 10
+    %8 = neq i32 %zext, %7
+    %9 = neq i1 %8, %3
+    %10 = const i1 1
+    br %9, %if_exit, %if_true
+if_true:
+    drv i1$ %error, %10, %4
+    st i1* %error.shadow, %10
+    br %if_exit
+if_exit:
+    %11 = const i4 1
+    drv i4$ %val, %11, %4
+    st i4* %val.shadow, %11
+    %val.shadow.ld1 = ld i4* %val.shadow
+    %12 = neq i4 %val.shadow.ld1, %11
+    %13 = neq i1 %12, %3
+    br %13, %if_exit1, %if_true1
+if_true1:
+    drv i1$ %error, %10, %4
+    st i1* %error.shadow, %10
+    br %if_exit1
+if_exit1:
+    %14 = const i4 4
+    drv i4$ %val, %14, %4
+    st i4* %val.shadow, %14
+    %val.shadow.ld2 = ld i4* %val.shadow
+    %15 = neq i4 %val.shadow.ld2, %14
+    %16 = neq i1 %15, %3
+    br %16, %if_exit2, %if_true2
+if_true2:
+    drv i1$ %error, %10, %4
+    st i1* %error.shadow, %10
+    br %if_exit2
+if_exit2:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Int), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([3:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: int -&gt; PackSBVT bit signed [31:0] -&gt; Range([3:0], true) bit signed [3:0] -&gt; Sign(unsigned) bit unsigned [3:0] -&gt; Domain(FourValued) logic unsigned [3:0]
+entity @define1 () -&gt; () {
+    %0 = const i4 0
+    %val = sig i4 %0
+    %1 = const i1 0
+    %error = sig i1 %1
+    inst %define1.initial.140.0 () -&gt; (i4$ %val, i1$ %error)
+    halt
+}
 
 </pre>
 </body>

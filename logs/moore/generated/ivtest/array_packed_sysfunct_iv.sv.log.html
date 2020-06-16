@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/array_packed_sysfunct.v.html" target="file-frame">third_party/tests/ivtest/ivltests/array_packed_sysfunct.v</a>
 time_elapsed: 0.012s
-ram usage: 12020 KB
+ram usage: 12096 KB
 </pre>
 <pre class="log">
 
@@ -41,18 +41,23 @@ warning: `$display` not supported; ignored
    |       if ($bits      (abg) != WA*WB*WC) begin $display(&#34;FAILED -- $bits      (abg) = %0d&#34;, $bits      (abg)); err=1; end;
    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^             
 
- ERROR moore_svlog::hir::lowering &gt; Expr #216
-compiler bug: lowering of expression to hir not implemented
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/array_packed_sysfunct.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/array_packed_sysfunct.v:33</a>:23-28:
+warning: `$left` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/array_packed_sysfunct.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/array_packed_sysfunct.v:34</a>:14-37:
    | 
-   |       for (i=1; i&lt;=3; i=i+1) begin
-   |                       ^^^^^       
-   = note: Encountered at src/svlog/hir/lowering.rs:1363
+   |          if ($left     (abg     , i) != wdt(i  )-1) begin $display(&#34;FAILED -- $left     (abg     , %0d) = %0d&#34;, i, $left     (abg     , i)); err=1; end;
+   |              ^^^^^^^^^^^^^^^^^^^^^^^                                                                                                                    
+
+compiler bug: lowering of expression `wdt(i  )` to mir not yet supported
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/array_packed_sysfunct.v.html#l-34" target="file-frame">third_party/tests/ivtest/ivltests/array_packed_sysfunct.v:34</a>:41-49:
+   | 
+   |          if ($left     (abg     , i) != wdt(i  )-1) begin $display(&#34;FAILED -- $left     (abg     , %0d) = %0d&#34;, i, $left     (abg     , i)); err=1; end;
+   |                                         ^^^^^^^^                                                                                                        
+   = note: Encountered at src/svlog/mir/lower/rvalue.rs:408
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;lowering of expression to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+thread &#39;main&#39; panicked at &#39;lowering of expression `wdt(i  )` to mir not yet supported&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

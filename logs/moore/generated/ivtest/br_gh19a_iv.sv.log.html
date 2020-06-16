@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh19a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh19a.v</a>
 time_elapsed: 0.004s
-ram usage: 10436 KB
+ram usage: 10732 KB
 </pre>
 <pre class="log">
 
@@ -43,17 +43,23 @@ warning: `$display` not supported; ignored
 
 proc %bug.initial.70.0 () -&gt; (i1$ %a, i1$ %y) {
 0:
-    %1 = const i1 1
-    %2 = const time 0s 1e
-    drv i1$ %a, %1, %2
-    %3 = const i32 1
-    %4 = const i65 0
-    %a1 = prb i1$ %a
-    %concat = inss i65 %4, i1 %a1, 64, 1
-    %5 = const i32 0
-    %6 = shr i32 %3, i32 %5, i65 %concat
-    %7 = exts i1, i32 %6, 0, 1
-    drv i1$ %y, %7, %2
+    %1 = prb i1$ %y
+    %y.shadow = var i1 %1
+    %2 = prb i1$ %a
+    %a.shadow = var i1 %2
+    %3 = const i1 1
+    %4 = const time 0s 1e
+    drv i1$ %a, %3, %4
+    st i1* %a.shadow, %3
+    %5 = const i32 1
+    %6 = const i65 0
+    %a.shadow.ld = ld i1* %a.shadow
+    %concat = inss i65 %6, i1 %a.shadow.ld, 64, 1
+    %7 = const i32 0
+    %8 = shr i32 %5, i32 %7, i65 %concat
+    %9 = exts i1, i32 %8, 0, 1
+    drv i1$ %y, %9, %4
+    st i1* %y.shadow, %9
     halt
 }
 

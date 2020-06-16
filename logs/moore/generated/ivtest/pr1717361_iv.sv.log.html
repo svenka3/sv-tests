@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1717361.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1717361.v</a>
-time_elapsed: 0.004s
-ram usage: 10344 KB
+time_elapsed: 0.008s
+ram usage: 10752 KB
 </pre>
 <pre class="log">
 
@@ -41,17 +41,91 @@ warning: `$display` not supported; ignored
    |     $display(&#34;%s&#34;, (t1==t2) ? &#34;PASSED&#34; : &#34;FAIL&#34;);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `integer` to `reg signed [20:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1717361.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1717361.v:8</a>:5-12:
-   | 
-   |     s3=+400000;
-   |        ^^^^^^^ 
-   = note: `integer` can be cast to an intermediate `logic signed [20:0]`, but
-   = note: `logic signed [20:0]` cannot be cast to the final `reg signed [20:0]`
+proc %adding.initial.183.0 () -&gt; (i21$ %s3, i21$ %s4, i1$ %clk) {
+0:
+    %1 = const i1 0
+    %2 = const time 0s 1e
+    drv i1$ %clk, %1, %2
+    %3 = const i21 400000
+    drv i21$ %s3, %3, %2
+    %4 = const i21 200000
+    drv i21$ %s4, %4, %2
+    %5 = const i32 10
+    wait %6 for %5
+6:
+    %7 = const i1 1
+    %8 = const time 0s 1e
+    drv i1$ %clk, %7, %8
+    %9 = const i32 10
+    wait %10 for %9
+10:
+    %11 = const i1 0
+    %12 = const time 0s 1e
+    drv i1$ %clk, %11, %12
+    %13 = const i21 1697152
+    drv i21$ %s3, %13, %12
+    %14 = const i21 1897152
+    drv i21$ %s4, %14, %12
+    %15 = const i32 10
+    wait %16 for %15
+16:
+    %17 = const i1 1
+    %18 = const time 0s 1e
+    drv i1$ %clk, %17, %18
+    %19 = const i32 10
+    wait %20 for %19
+20:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Integer), sign: signed, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: signed, sign_explicit: true, dims: [Range([20:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: integer -&gt; PackSBVT logic signed [31:0] -&gt; Range([20:0], true) logic signed [20:0]
+proc %adding.always.226.0 (i21$ %s3, i21$ %s4, i1$ %clk) -&gt; (i22$ %t1, i22$ %t2) {
+init:
+    %clk.prb = prb i1$ %clk
+    wait %check, %clk
+check:
+    %0 = const i1 0
+    %1 = eq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb, %0
+    %posedge = and i1 %1, %2
+    br %posedge, %init, %event
+event:
+    %s3.prb = prb i21$ %s3
+    %3 = exts i1, i21 %s3.prb, 20, 1
+    %4 = const i32 0
+    %5 = const i32 4294967295
+    %6 = [i32 %4, %5]
+    %7 = mux [2 x i32] %6, i1 %3
+    %sext = inss i32 %7, i21 %s3.prb, 0, 21
+    %8 = const i32 2
+    %s4.prb = prb i21$ %s4
+    %9 = exts i1, i21 %s4.prb, 20, 1
+    %10 = mux [2 x i32] %6, i1 %9
+    %sext1 = inss i32 %10, i21 %s4.prb, 0, 21
+    %11 = smul i32 %8, %sext1
+    %12 = add i32 %sext, %11
+    %13 = exts i22, i32 %12, 0, 22
+    %14 = const time 0s 1d
+    drv i22$ %t1, %13, %14
+    %15 = smul i32 %sext1, %8
+    %16 = add i32 %sext, %15
+    %17 = exts i22, i32 %16, 0, 22
+    drv i22$ %t2, %17, %14
+    br %init
+}
+
+entity @adding () -&gt; () {
+    %0 = const i21 0
+    %s3 = sig i21 %0
+    %s4 = sig i21 %0
+    %1 = const i22 0
+    %t1 = sig i22 %1
+    %t2 = sig i22 %1
+    %2 = const i1 0
+    %clk = sig i1 %2
+    inst %adding.initial.183.0 () -&gt; (i21$ %s3, i21$ %s4, i1$ %clk)
+    inst %adding.always.226.0 (i21$ %s3, i21$ %s4, i1$ %clk) -&gt; (i22$ %t1, i22$ %t2)
+    halt
+}
 
 </pre>
 </body>

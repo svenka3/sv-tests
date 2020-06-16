@@ -18,33 +18,40 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2012/p88.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2012/p88.sv</a>
 time_elapsed: 0.004s
-ram usage: 10608 KB
+ram usage: 10496 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2012 -e ma <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2012/p88.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2012/p88.sv</a>
-proc %ma.always.62.0 (i2$ %i, i16$ %j) -&gt; (i2$ %o) {
+proc %ma.always.62.0 (i2$ %i) -&gt; (i2$ %o, i16$ %j) {
+0:
+    %1 = prb i16$ %j
+    %j.shadow = var i16 %1
+    br %init
 init:
-    %i1 = prb i2$ %i
+    %i.prb = prb i2$ %i
     wait %check, %i
 check:
-    %i2 = prb i2$ %i
-    %impledge = neq i2 %i1, %i2
+    %2 = prb i16$ %j
+    st i16* %j.shadow, %2
+    %impledge = neq i2 %i.prb, %i.prb
     br %impledge, %init, %event
 event:
-    %0 = const time 0s 1e
-    drv i2$ %o, %i2, %0
-    %j1 = prb i16$ %j
-    %1 = const i16 1
-    %2 = add i16 %j1, %1
-    drv i16$ %j, %2, %0
-    br %init
+    %i.prb1 = prb i2$ %i
+    %3 = const time 0s 1e
+    drv i2$ %o, %i.prb1, %3
+    %j.shadow.ld = ld i16* %j.shadow
+    %4 = const i16 1
+    %5 = add i16 %j.shadow.ld, %4
+    drv i16$ %j, %5, %3
+    st i16* %j.shadow, %5
+    br %0
 }
 
 entity @ma (i2$ %i) -&gt; (i2$ %o) {
     %0 = const i16 0
     %j = sig i16 %0
-    inst %ma.always.62.0 (i2$ %i, i16$ %j) -&gt; (i2$ %o)
+    inst %ma.always.62.0 (i2$ %i) -&gt; (i2$ %o, i16$ %j)
     halt
 }
 

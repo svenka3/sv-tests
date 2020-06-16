@@ -17,7 +17,7 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/sva/basic01.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic01.sv</a>
-time_elapsed: 0.004s
+time_elapsed: 0.016s
 ram usage: 10596 KB
 </pre>
 <pre class="log">
@@ -36,26 +36,31 @@ warning: unsupported: concurrent assertion; ignored
    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 proc %top.always.62.0 (i1$ %clock, i1$ %ctrl) -&gt; (i1$ %read, i1$ %write, i1$ %ready) {
+0:
+    %1 = prb i1$ %write
+    %write.shadow = var i1 %1
+    br %init
 init:
-    %clock1 = prb i1$ %clock
+    %clock.prb = prb i1$ %clock
     wait %check, %clock
 check:
-    %clock2 = prb i1$ %clock
-    %0 = const i1 0
-    %1 = eq i1 %clock1, %0
-    %2 = neq i1 %clock2, %0
-    %posedge = and i1 %1, %2
+    %2 = prb i1$ %write
+    st i1* %write.shadow, %2
+    %3 = const i1 0
+    %4 = eq i1 %clock.prb, %3
+    %5 = neq i1 %clock.prb, %3
+    %posedge = and i1 %4, %5
     br %posedge, %init, %event
 event:
-    %ctrl1 = prb i1$ %ctrl
-    %3 = neq i1 %ctrl1, %0
-    %4 = not i1 %3
-    %5 = const time 0s 1d
-    drv i1$ %read, %4, %5
-    drv i1$ %write, %ctrl1, %5
-    %write1 = prb i1$ %write
-    drv i1$ %ready, %write1, %5
-    br %init
+    %ctrl.prb = prb i1$ %ctrl
+    %6 = neq i1 %ctrl.prb, %3
+    %7 = not i1 %6
+    %8 = const time 0s 1d
+    drv i1$ %read, %7, %8
+    drv i1$ %write, %ctrl.prb, %8
+    %write.shadow.ld = ld i1* %write.shadow
+    drv i1$ %ready, %write.shadow.ld, %8
+    br %0
 }
 
 entity @top (i1$ %clock, i1$ %ctrl) -&gt; () {

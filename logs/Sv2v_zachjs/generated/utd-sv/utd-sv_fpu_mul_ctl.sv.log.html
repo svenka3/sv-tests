@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/fpu_mul_ctl.v.html" target="file-frame">third_party/tests/utd-sv/fpu_mul_ctl.v</a>
-time_elapsed: 1.168s
-ram usage: 26620 KB
+time_elapsed: 1.776s
+ram usage: 28184 KB
 </pre>
 <pre class="log">
 
@@ -249,6 +249,10 @@ module fpu_mul_ctl (
 	wire m1stg_norm_dbl_in1;
 	wire m1stg_norm_sng_in2;
 	wire m1stg_norm_dbl_in2;
+	wire m1stg_snan_sng_in1;
+	wire m1stg_snan_dbl_in1;
+	wire m1stg_snan_sng_in2;
+	wire m1stg_snan_dbl_in2;
 	wire m1stg_qnan_sng_in1;
 	wire m1stg_qnan_dbl_in1;
 	wire m1stg_qnan_sng_in2;
@@ -291,23 +295,32 @@ module fpu_mul_ctl (
 	wire m2stg_zero_in1;
 	wire m2stg_zero_in2;
 	wire m2stg_zero_in;
+	wire m1stg_step;
 	wire [7:0] m1stg_op_in;
 	wire [7:0] m1stg_op;
 	wire m1stg_mul_in;
 	wire m1stg_mul;
+	wire m1stg_sngop;
 	wire [3:0] m1stg_sngopa;
+	wire m1stg_dblop;
 	wire [3:0] m1stg_dblopa;
 	wire m1stg_dblop_inv_in;
+	wire m1stg_dblop_inv;
 	wire [1:0] m1stg_rnd_mode;
 	wire [4:0] m1stg_id;
+	wire m1stg_fmul;
 	wire m1stg_fmul_dbl_dst;
 	wire m1stg_fmuls;
 	wire m1stg_fmuld;
+	wire m1stg_fsmuld;
 	wire [4:0] m1stg_opdec;
 	wire [4:0] m2stg_opdec;
 	wire [1:0] m2stg_rnd_mode;
 	wire [4:0] m2stg_id;
 	wire m2stg_fmul;
+	wire m2stg_fmuls;
+	wire m2stg_fmuld;
+	wire m2stg_fsmuld;
 	wire [4:1] m3astg_opdec;
 	wire [1:0] m3astg_rnd_mode;
 	wire [4:0] m3astg_id;
@@ -327,11 +340,19 @@ module fpu_mul_ctl (
 	wire [1:0] m5stg_rnd_mode;
 	wire [4:0] m5stg_id;
 	wire m5stg_fmul;
+	wire m5stg_fmuls;
+	wire m5stg_fmuld;
+	wire m5stg_fmulda;
+	wire m6stg_fmul_in;
 	wire [4:2] m6stg_opdec;
+	wire [9:0] m6stg_id_in;
 	wire [9:0] m6stg_id;
 	wire m6stg_fmul;
+	wire m6stg_fmul_dbl_dst;
+	wire m6stg_fmuls;
 	wire m6stg_hold;
 	wire m6stg_holda;
+	wire m6stg_step;
 	wire m6stg_stepa;
 	wire m1stg_sign1;
 	wire m1stg_sign2;
@@ -355,7 +376,9 @@ module fpu_mul_ctl (
 	wire m5stg_sign;
 	wire m5stg_nv;
 	wire m5stg_of_mask;
+	wire mul_sign_out;
 	wire mul_nv_out;
+	wire m5stg_in_of;
 	wire mul_of_out_tmp1_in;
 	wire mul_of_out_tmp1;
 	wire mul_of_out_tmp2;
@@ -365,13 +388,32 @@ module fpu_mul_ctl (
 	wire mul_uf_out;
 	wire mul_nx_out_in;
 	wire mul_nx_out;
+	wire [4:0] mul_exc_out;
+	wire m2stg_frac1_dbl_norm;
+	wire m2stg_frac1_dbl_dnrm;
+	wire m2stg_frac1_sng_norm;
+	wire m2stg_frac1_sng_dnrm;
+	wire m2stg_frac1_inf;
+	wire m2stg_frac2_dbl_norm;
+	wire m2stg_frac2_dbl_dnrm;
+	wire m2stg_frac2_sng_norm;
+	wire m2stg_frac2_sng_dnrm;
+	wire m2stg_frac2_inf;
+	wire m1stg_inf_zero_in;
+	wire m1stg_inf_zero_in_dbl;
 	wire [5:0] m2stg_ld0_1_in;
 	wire [5:0] m2stg_ld0_1;
 	wire [5:0] m2stg_ld0_2_in;
 	wire [5:0] m2stg_ld0_2;
+	wire m2stg_exp_expadd;
+	wire m2stg_exp_0bff;
+	wire m2stg_exp_017f;
+	wire m2stg_exp_04ff;
+	wire m2stg_exp_zero;
 	wire [6:0] m2stg_ld0;
 	wire [6:0] m2stg_ld0_inv;
 	wire [6:0] m3astg_ld0_inv;
+	wire [6:0] m3bstg_ld0_inv;
 	wire m4stg_expadd_eq_0;
 	wire m3stg_exp_lte_0;
 	wire m4stg_right_shift_in;
@@ -379,8 +421,22 @@ module fpu_mul_ctl (
 	wire [5:0] m3stg_exp_minus1;
 	wire [5:0] m3stg_exp_inv_plus2;
 	wire m3stg_exp_lt_neg57;
+	wire [5:0] m4stg_sh_cnt_in;
+	wire m4stg_left_shift_step;
+	wire m4stg_right_shift_step;
+	wire m4stg_inc_exp_54;
+	wire m4stg_inc_exp_55;
+	wire m4stg_inc_exp_105;
 	wire m5stg_rndup;
+	wire m5stg_to_0;
+	wire m5stg_to_0_inv;
+	wire mul_frac_out_fracadd;
+	wire mul_frac_out_frac;
+	wire mul_exp_out_exp_plus1;
+	wire mul_exp_out_exp;
 	wire mul_pipe_active_in;
+	wire mul_pipe_active;
+	wire mula_rst_l;
 	dffrl_async #(1) dffrl_mul_ctl(
 		.din(grst_l),
 		.clk(rclk),

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v</a>
-time_elapsed: 0.004s
-ram usage: 10372 KB
+time_elapsed: 0.008s
+ram usage: 10792 KB
 </pre>
 <pre class="log">
 
@@ -41,15 +41,55 @@ warning: `$display` not supported; ignored
    |       $display(&#34;PASSED&#34;);
    |       ^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `logic [15:0]` to `reg [15:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/signed3.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/signed3.v:31</a>:10-16:
-   | 
-   |     R0 = -4&#39;d12;
-   |          ^^^^^^ 
+proc %test.initial.127.0 () -&gt; (i16$ %R0, i16$ %R1, i4$ %error) {
+0:
+    %1 = prb i16$ %R1
+    %R1.shadow = var i16 %1
+    %2 = prb i4$ %error
+    %error.shadow = var i4 %2
+    %3 = prb i16$ %R0
+    %R0.shadow = var i16 %3
+    %4 = const i16 65524
+    %5 = const time 0s 1e
+    drv i16$ %R0, %4, %5
+    st i16* %R0.shadow, %4
+    drv i16$ %R1, %4, %5
+    st i16* %R1.shadow, %4
+    %6 = const i4 0
+    drv i4$ %error, %6, %5
+    st i4* %error.shadow, %6
+    %R0.shadow.ld = ld i16* %R0.shadow
+    %7 = neq i16 %R0.shadow.ld, %4
+    %8 = const i1 0
+    %9 = neq i1 %7, %8
+    %10 = const i4 1
+    br %9, %if_exit, %if_true
+if_true:
+    drv i4$ %error, %10, %5
+    st i4* %error.shadow, %10
+    br %if_exit
+if_exit:
+    %R1.shadow.ld = ld i16* %R1.shadow
+    %11 = neq i16 %R1.shadow.ld, %4
+    %12 = neq i1 %11, %8
+    br %12, %if_exit1, %if_true1
+if_true1:
+    drv i4$ %error, %10, %5
+    st i4* %error.shadow, %10
+    br %if_exit1
+if_exit1:
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntVec(Logic), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([15:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: logic [15:0]
+entity @test () -&gt; () {
+    %0 = const i16 0
+    %R0 = sig i16 %0
+    %R1 = sig i16 %0
+    %1 = const i4 0
+    %error = sig i4 %1
+    inst %test.initial.127.0 () -&gt; (i16$ %R0, i16$ %R1, i4$ %error)
+    halt
+}
 
 </pre>
 </body>

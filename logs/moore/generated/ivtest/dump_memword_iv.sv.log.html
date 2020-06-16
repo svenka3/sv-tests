@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/dump_memword.v.html" target="file-frame">third_party/tests/ivtest/ivltests/dump_memword.v</a>
 time_elapsed: 0.004s
-ram usage: 10424 KB
+ram usage: 10592 KB
 </pre>
 <pre class="log">
 
@@ -35,17 +35,38 @@ warning: `$dumpvars` not supported; ignored
    |     $dumpvars(1, arr[4]);
    |     ^^^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `byte unsigned` to `reg [7:0]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dump_memword.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/dump_memword.v:7</a>:14-19:
-   | 
-   |     arr[4] = 8&#39;h00;
-   |              ^^^^^ 
-   = note: `byte unsigned` can be cast to an intermediate `logic [7:0]`, but
-   = note: `logic [7:0]` cannot be cast to the final `reg [7:0]`
+proc %top.initial.73.0 () -&gt; ([7 x i8]$ %arr) {
+0:
+    %1 = const i32 4
+    %2 = const i8 0
+    %3 = [7 x i8 %2]
+    %4 = sig [7 x i8] %3
+    %5 = shr [7 x i8]$ %arr, [7 x i8]$ %4, i32 %1
+    %6 = extf i8$, [7 x i8]$ %5, 0
+    %7 = const time 0s 1e
+    drv i8$ %6, %2, %7
+    %8 = const i32 1
+    wait %9 for %8
+9:
+    %10 = const i32 4
+    %11 = const i8 0
+    %12 = [7 x i8 %11]
+    %13 = sig [7 x i8] %12
+    %14 = shr [7 x i8]$ %arr, [7 x i8]$ %13, i32 %10
+    %15 = extf i8$, [7 x i8]$ %14, 0
+    %16 = const i8 255
+    %17 = const time 0s 1e
+    drv i8$ %15, %16, %17
+    halt
+}
 
- ERROR moore_svlog::typeck &gt; Inferred type: UnpackedType { core: Packed(PackedType { core: IntAtom(Byte), sign: unsigned, sign_explicit: false, dims: [], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Context type: UnpackedType { core: Packed(PackedType { core: IntVec(Reg), sign: unsigned, sign_explicit: false, dims: [Range([7:0])], resolved: None, resolved_full: None }), dims: [], resolved: None, resolved_full: None }
- ERROR moore_svlog::typeck &gt; Cast chain thus far: byte unsigned -&gt; PackSBVT bit [7:0] -&gt; Domain(FourValued) logic [7:0]
+entity @top () -&gt; () {
+    %0 = const i8 0
+    %1 = [i8 %0, %0, %0, %0, %0, %0, %0]
+    %arr = sig [7 x i8] %1
+    inst %top.initial.73.0 () -&gt; ([7 x i8]$ %arr)
+    halt
+}
 
 </pre>
 </body>

@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_rom.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_rom.v</a>
-time_elapsed: 0.008s
-ram usage: 11020 KB
+time_elapsed: 0.012s
+ram usage: 11272 KB
 </pre>
 <pre class="log">
 
@@ -86,17 +86,20 @@ proc %bsg_nonsynth_dpi_rom.initial.604.0 () -&gt; (i1$ %debug_b, i1$ %init_b) {
     drv i1$ %debug_b, %1, %2
     drv i1$ %init_b, %1, %2
     %3 = const i32 0
+    %i = var i32 %3
     br %loop_body
 loop_body:
-    %i = phi i32 [%3, %0], [%4, %loop_continue]
-    %5 = const i32 4294967295
-    %6 = slt i32 %i, %5
-    br %6, %loop_exit, %loop_continue
+    %i.ld = ld i32* %i
+    %4 = const i32 4294967295
+    %5 = slt i32 %i.ld, %4
+    br %5, %loop_exit, %loop_continue
 loop_exit:
     halt
 loop_continue:
-    %7 = const i32 1
-    %4 = add i32 %i, %7
+    %i.ld1 = ld i32* %i
+    %6 = const i32 1
+    %7 = add i32 %i.ld1, %6
+    st i32* %i, %7
     br %loop_body
 }
 
