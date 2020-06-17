@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,19 +18,41 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr704.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr704.v</a>
 time_elapsed: 0.008s
-ram usage: 11224 KB
+ram usage: 11784 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e foo <a href="../../../../third_party/tests/ivtest/ivltests/pr704.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr704.v</a>
-error: cannot cast a value of type `byte [0:0]` to `reg [640:1]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr704.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr704.v:7</a>:22-42:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr704.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr704.v:10</a>:6-47:
    | 
-   |   initial filename = &#34;ivltests/pr704.hex&#34;;
-   |                      ^^^^^^^^^^^^^^^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `logic unsigned [639:0]`, but
-   = note: `logic unsigned [639:0]` cannot be cast to the final `reg [640:1]`
+   |      $display(&#34;The filename is %0s&#34;, filename);
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$readmemb` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr704.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr704.v:11</a>:6-36:
+   | 
+   |      $readmemb(filename, memory, 1);
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr704.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr704.v:14</a>:2-20:
+   | 
+   |     $display(&#34;FAILED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+compiler bug: lowering of Expr #78 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr704.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr704.v:15</a>:2-9:
+   | 
+   |     $finish;
+   |     ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1398
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of Expr #78 to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

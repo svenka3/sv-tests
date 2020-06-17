@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: string concatenation test
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 11.10.1
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-11
@@ -18,27 +18,11 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../tests/chapter-11/11.10.1--string_concat.sv.html" target="file-frame">tests/chapter-11/11.10.1--string_concat.sv</a>
 time_elapsed: 0.004s
-ram usage: 10596 KB
+ram usage: 10380 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-11 -e top <a href="../../../tests/chapter-11/11.10.1--string_concat.sv.html" target="file-frame">tests/chapter-11/11.10.1--string_concat.sv</a>
-error: cannot cast a value of type `byte [0:0]` to `bit [112:1]`
-  --&gt; <a href="../../../tests/chapter-11/11.10.1--string_concat.sv.html#l-13" target="file-frame">tests/chapter-11/11.10.1--string_concat.sv:13</a>:6-12:
-   | 
-   |     a = &#34;Test&#34;;
-   |         ^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `bit unsigned [111:0]`, but
-   = note: `bit unsigned [111:0]` cannot be cast to the final `bit [112:1]`
-
-error: cannot cast a value of type `byte [0:0]` to `bit [112:1]`
-  --&gt; <a href="../../../tests/chapter-11/11.10.1--string_concat.sv.html#l-14" target="file-frame">tests/chapter-11/11.10.1--string_concat.sv:14</a>:6-12:
-   | 
-   |     b = &#34;TEST&#34;;
-   |         ^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `bit unsigned [111:0]`, but
-   = note: `bit unsigned [111:0]` cannot be cast to the final `bit [112:1]`
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../tests/chapter-11/11.10.1--string_concat.sv.html#l-15" target="file-frame">tests/chapter-11/11.10.1--string_concat.sv:15</a>:2-47:
    | 
@@ -51,6 +35,27 @@ warning: `$display` not supported; ignored
    |     $display(&#34;:assert: (&#39;Test&#39; in &#39;%s&#39;)&#34;, {a, b});
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+proc %top.initial.81.0 () -&gt; (i112$ %a, i112$ %b) {
+0:
+    %concat = const i8 0
+    %1 = const i112 0
+    %2 = const i112 5192296858534827628530496329220095
+    %3 = [i112 %1, %2]
+    %4 = extf i112, [2 x i112] %3, 0
+    %sext = inss i112 %4, i8 %concat, 0, 8
+    %5 = const time 0s 1e
+    drv i112$ %a, %sext, %5
+    drv i112$ %b, %sext, %5
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i112 0
+    %a = sig i112 %0
+    %b = sig i112 %0
+    inst %top.initial.81.0 () -&gt; (i112$ %a, i112$ %b)
+    halt
+}
 
 </pre>
 </body>

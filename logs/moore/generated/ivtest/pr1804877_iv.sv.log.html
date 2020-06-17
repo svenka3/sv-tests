@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,19 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v</a>
 time_elapsed: 0.004s
-ram usage: 10244 KB
+ram usage: 10372 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v</a>
-error: cannot cast a value of type `byte [0:0]` to `reg [128:1]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v:6</a>:14-28:
-   | 
-   |     str[0] = &#34;test_counter&#34;;
-   |              ^^^^^^^^^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `logic unsigned [127:0]`, but
-   = note: `logic unsigned [127:0]` cannot be cast to the final `reg [128:1]`
-
 warning: `$write` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1804877.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr1804877.v:8</a>:5-37:
    | 
@@ -43,6 +35,31 @@ warning: `$write` not supported; ignored
    |     $write(&#34;String is %s\n&#34;, str[idx]); // This fails.
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                
 
+proc %test.initial.90.0 () -&gt; ([1 x i128]$ %str, i32$ %idx) {
+0:
+    %1 = extf i128$, [1 x i128]$ %str, 0
+    %concat = const i8 0
+    %2 = const i128 0
+    %3 = const i128 340282366920938463463374607431768211455
+    %4 = [i128 %2, %3]
+    %5 = extf i128, [2 x i128] %4, 0
+    %sext = inss i128 %5, i8 %concat, 0, 8
+    %6 = const time 0s 1e
+    drv i128$ %1, %sext, %6
+    %7 = const i32 0
+    drv i32$ %idx, %7, %6
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i128 0
+    %1 = [i128 %0]
+    %str = sig [1 x i128] %1
+    %2 = const i32 0
+    %idx = sig i32 %2
+    inst %test.initial.90.0 () -&gt; ([1 x i128]$ %str, i32$ %idx)
+    halt
+}
 
 </pre>
 </body>

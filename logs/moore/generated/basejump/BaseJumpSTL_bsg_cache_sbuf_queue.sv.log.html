@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_cache
@@ -18,23 +18,69 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v</a>
 time_elapsed: 0.004s
-ram usage: 10896 KB
+ram usage: 10812 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_cache -e bsg_cache_sbuf_queue <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v</a>
-error: cannot cast a value of type `logic [1:0]` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v.html#l-38" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v:38</a>:19-46:
-   | 
-   |   assign data_o = mux1_sel_i ? el1_r : data_i;
-   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+proc %bsg_cache_sbuf_queue.always_ff.516.0 (i1$ %clk_i, i2$ %data_i, i2$ %el0_en_i, i2$ %el1_en_i, i2$ %mux0_sel_i) -&gt; (i2$ %el0_r, i2$ %el1_r) {
+0:
+    %1 = prb i2$ %el0_r
+    %el0_r.shadow = var i2 %1
+    br %init
+init:
+    %clk_i.prb = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %2 = prb i2$ %el0_r
+    st i2* %el0_r.shadow, %2
+    %3 = const i1 0
+    %4 = eq i1 %clk_i.prb, %3
+    %5 = neq i1 %clk_i.prb, %3
+    %posedge = and i1 %4, %5
+    br %posedge, %init, %event
+event:
+    %el0_en_i.prb = prb i2$ %el0_en_i
+    %6 = const i2 0
+    %7 = neq i2 %el0_en_i.prb, %6
+    %data_i.prb = prb i2$ %data_i
+    %8 = const time 0s 1d
+    br %7, %if_exit, %if_true
+if_true:
+    drv i2$ %el0_r, %data_i.prb, %8
+    br %if_exit
+if_exit:
+    %el1_en_i.prb = prb i2$ %el1_en_i
+    %9 = neq i2 %el1_en_i.prb, %6
+    br %9, %0, %if_true1
+if_true1:
+    %mux0_sel_i.prb = prb i2$ %mux0_sel_i
+    %10 = neq i2 %mux0_sel_i.prb, %6
+    %el0_r.shadow.ld = ld i2* %el0_r.shadow
+    %11 = [i2 %data_i.prb, %el0_r.shadow.ld]
+    %12 = mux [2 x i2] %11, i1 %10
+    drv i2$ %el1_r, %12, %8
+    br %0
+}
 
-error: cannot cast a value of type `logic [1:0]` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v.html#l-34" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf_queue.v:34</a>:16-43:
-   | 
-   |       el1_r &lt;= mux0_sel_i ? el0_r : data_i;
-   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
+entity @bsg_cache_sbuf_queue (i1$ %clk_i, i2$ %data_i, i2$ %el0_en_i, i2$ %el1_en_i, i2$ %mux0_sel_i, i2$ %mux1_sel_i) -&gt; (i2$ %el0_snoop_o, i2$ %el1_snoop_o, i2$ %data_o) {
+    %0 = const i2 0
+    %el0_r = sig i2 %0
+    %el1_r = sig i2 %0
+    %mux1_sel_i.prb = prb i2$ %mux1_sel_i
+    %1 = neq i2 %mux1_sel_i.prb, %0
+    %el1_r.prb = prb i2$ %el1_r
+    %data_i.prb = prb i2$ %data_i
+    %2 = [i2 %data_i.prb, %el1_r.prb]
+    %3 = mux [2 x i2] %2, i1 %1
+    %4 = const time 0s 1e
+    drv i2$ %data_o, %3, %4
+    %el0_r.prb = prb i2$ %el0_r
+    drv i2$ %el0_snoop_o, %el0_r.prb, %4
+    drv i2$ %el1_snoop_o, %el1_r.prb, %4
+    inst %bsg_cache_sbuf_queue.always_ff.516.0 (i1$ %clk_i, i2$ %data_i, i2$ %el0_en_i, i2$ %el1_en_i, i2$ %mux0_sel_i) -&gt; (i2$ %el0_r, i2$ %el1_r)
+    halt
+}
 
 </pre>
 </body>

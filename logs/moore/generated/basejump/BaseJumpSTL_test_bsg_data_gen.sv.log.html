@@ -18,7 +18,7 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v</a>
 time_elapsed: 0.008s
-ram usage: 11180 KB
+ram usage: 10836 KB
 </pre>
 <pre class="log">
 
@@ -34,22 +34,56 @@ error: `channel_width_p` is not a constant integer
    |      assign send_data[0+:channel_width_p] = data_r;
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^          
 
-error: cannot cast a value of type `int` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v.html#l-17" target="file-frame">third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v:17</a>:18-19:
-   | 
-   |        data_r &lt;= 0;
-   |                  ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [1:0]`, but
-   = note: `logic unsigned [1:0]` cannot be cast to the final `logic [-1:0]`
+proc %test_bsg_data_gen.always.481.0 (i1$ %clk_i, i1$ %reset_i, i1$ %yumi_i) -&gt; (i2$ %data_r) {
+0:
+    %1 = prb i2$ %data_r
+    %data_r.shadow = var i2 %1
+    br %init
+init:
+    %clk_i.prb = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %2 = prb i2$ %data_r
+    st i2* %data_r.shadow, %2
+    %3 = const i1 0
+    %4 = eq i1 %clk_i.prb, %3
+    %5 = neq i1 %clk_i.prb, %3
+    %posedge = and i1 %4, %5
+    br %posedge, %init, %event
+event:
+    %reset_i.prb = prb i1$ %reset_i
+    %6 = neq i1 %reset_i.prb, %3
+    %7 = const time 0s 1d
+    br %6, %if_false, %if_true
+if_true:
+    %8 = const i2 0
+    drv i2$ %data_r, %8, %7
+    br %0
+if_false:
+    %yumi_i.prb = prb i1$ %yumi_i
+    %9 = neq i1 %yumi_i.prb, %3
+    br %9, %0, %if_true1
+if_true1:
+    %10 = const i32 0
+    %data_r.shadow.ld = ld i2* %data_r.shadow
+    %zext = inss i32 %10, i2 %data_r.shadow.ld, 0, 2
+    %11 = const i32 1
+    %12 = add i32 %zext, %11
+    %13 = exts i2, i32 %12, 0, 2
+    drv i2$ %data_r, %13, %7
+    br %0
+}
 
-error: cannot cast a value of type `integer unsigned` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v.html#l-20" target="file-frame">third_party/cores/basejump_stl/bsg_test/test_bsg_data_gen.v:20</a>:20-30:
-   | 
-   |          data_r &lt;= data_r + 1;
-   |                    ^^^^^^^^^^ 
-   = note: `integer unsigned` can be cast to an intermediate `logic [1:0]`, but
-   = note: `logic [1:0]` cannot be cast to the final `logic [-1:0]`
-
+entity @test_bsg_data_gen (i1$ %clk_i, i1$ %reset_i, i1$ %yumi_i) -&gt; (i2$ %o) {
+    %0 = const i2 0
+    %data_r = sig i2 %0
+    %send_data = sig i2 %0
+    %send_data.prb = prb i2$ %send_data
+    %1 = const time 0s 1e
+    drv i2$ %o, %send_data.prb, %1
+    inst %test_bsg_data_gen.always.481.0 (i1$ %clk_i, i1$ %reset_i, i1$ %yumi_i) -&gt; (i2$ %data_r)
+    halt
+}
 
 </pre>
 </body>

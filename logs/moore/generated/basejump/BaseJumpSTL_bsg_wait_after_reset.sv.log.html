@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
@@ -17,28 +17,65 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v</a>
-time_elapsed: 0.004s
-ram usage: 10680 KB
+time_elapsed: 0.008s
+ram usage: 10760 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -e bsg_wait_after_reset <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v</a>
-error: cannot cast a value of type `int` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v.html#l-19" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v:19</a>:27-28:
-   | 
-   |              counter_r &lt;= 1;
-   |                           ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [1:0]`, but
-   = note: `logic unsigned [1:0]` cannot be cast to the final `logic [-1:0]`
+proc %bsg_wait_after_reset.always.477.0 (i1$ %reset_i, i1$ %clk_i) -&gt; (i1$ %ready_r_o, i2$ %counter_r) {
+0:
+    %1 = prb i2$ %counter_r
+    %counter_r.shadow = var i2 %1
+    br %init
+init:
+    %clk_i.prb = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %2 = prb i2$ %counter_r
+    st i2* %counter_r.shadow, %2
+    %3 = const i1 0
+    %4 = eq i1 %clk_i.prb, %3
+    %5 = neq i1 %clk_i.prb, %3
+    %posedge = and i1 %4, %5
+    br %posedge, %init, %event
+event:
+    %reset_i.prb = prb i1$ %reset_i
+    %6 = neq i1 %reset_i.prb, %3
+    %7 = const time 0s 1d
+    br %6, %if_false, %if_true
+if_true:
+    %8 = const i2 1
+    drv i2$ %counter_r, %8, %7
+    drv i1$ %ready_r_o, %3, %7
+    br %0
+if_false:
+    %9 = const i32 0
+    %counter_r.shadow.ld = ld i2* %counter_r.shadow
+    %zext = inss i32 %9, i2 %counter_r.shadow.ld, 0, 2
+    %10 = eq i32 %zext, %9
+    %11 = neq i1 %10, %3
+    br %11, %if_false1, %if_true1
+if_true1:
+    %12 = const i1 1
+    drv i1$ %ready_r_o, %12, %7
+    br %0
+if_false1:
+    %counter_r.shadow.ld1 = ld i2* %counter_r.shadow
+    %zext1 = inss i32 %9, i2 %counter_r.shadow.ld1, 0, 2
+    %13 = const i32 1
+    %14 = add i32 %zext1, %13
+    %15 = exts i2, i32 %14, 0, 2
+    drv i2$ %counter_r, %15, %7
+    br %0
+}
 
-error: cannot cast a value of type `integer unsigned` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v.html#l-26" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_after_reset.v:26</a>:26-39:
-   | 
-   |             counter_r &lt;= counter_r + 1;
-   |                          ^^^^^^^^^^^^^ 
-   = note: `integer unsigned` can be cast to an intermediate `logic [1:0]`, but
-   = note: `logic [1:0]` cannot be cast to the final `logic [-1:0]`
-
+entity @bsg_wait_after_reset (i1$ %reset_i, i1$ %clk_i) -&gt; (i1$ %ready_r_o) {
+    %0 = const i2 0
+    %counter_r = sig i2 %0
+    inst %bsg_wait_after_reset.always.477.0 (i1$ %reset_i, i1$ %clk_i) -&gt; (i1$ %ready_r_o, i2$ %counter_r)
+    halt
+}
 
 </pre>
 </body>

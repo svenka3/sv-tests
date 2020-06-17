@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_link
@@ -18,19 +18,80 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_iddr_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_iddr_phy.v</a>
 time_elapsed: 0.008s
-ram usage: 10860 KB
+ram usage: 10856 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_link -e bsg_link_iddr_phy <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_iddr_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_iddr_phy.v</a>
-error: cannot cast a value of type `logic [3:0]` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_iddr_phy.v.html#l-45" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_iddr_phy.v:45</a>:16-36:
-   | 
-   |     data_rr &lt;= {data_n_r, data_p_r};
-   |                ^^^^^^^^^^^^^^^^^^^^ 
-   = note: `logic [3:0]` can be cast to an intermediate `logic [1:0]`, but
-   = note: `logic [1:0]` cannot be cast to the final `logic [-1:0]`
+proc %bsg_link_iddr_phy.always_ff.465.0 (i1$ %clk_i, i2$ %data_i) -&gt; (i2$ %data_p_r) {
+init:
+    %clk_i.prb = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %0 = const i1 0
+    %1 = eq i1 %clk_i.prb, %0
+    %2 = neq i1 %clk_i.prb, %0
+    %posedge = and i1 %1, %2
+    br %posedge, %init, %event
+event:
+    %data_i.prb = prb i2$ %data_i
+    %3 = const time 0s 1d
+    drv i2$ %data_p_r, %data_i.prb, %3
+    br %init
+}
 
+proc %bsg_link_iddr_phy.always_ff.483.0 (i1$ %clk_i, i2$ %data_i) -&gt; (i2$ %data_n_r) {
+init:
+    %clk_i.prb = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %0 = const i1 0
+    %1 = neq i1 %clk_i.prb, %0
+    %2 = eq i1 %clk_i.prb, %0
+    %negedge = and i1 %2, %1
+    br %negedge, %init, %event
+event:
+    %data_i.prb = prb i2$ %data_i
+    %3 = const time 0s 1d
+    drv i2$ %data_n_r, %data_i.prb, %3
+    br %init
+}
+
+proc %bsg_link_iddr_phy.always_ff.505.0 (i1$ %clk_i, i2$ %data_n_r, i2$ %data_p_r) -&gt; (i2$ %data_rr) {
+init:
+    %clk_i.prb = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %0 = const i1 0
+    %1 = eq i1 %clk_i.prb, %0
+    %2 = neq i1 %clk_i.prb, %0
+    %posedge = and i1 %1, %2
+    br %posedge, %init, %event
+event:
+    %3 = const i4 0
+    %data_p_r.prb = prb i2$ %data_p_r
+    %4 = inss i4 %3, i2 %data_p_r.prb, 0, 2
+    %data_n_r.prb = prb i2$ %data_n_r
+    %concat = inss i4 %4, i2 %data_n_r.prb, 2, 2
+    %5 = exts i2, i4 %concat, 0, 2
+    %6 = const time 0s 1d
+    drv i2$ %data_rr, %5, %6
+    br %init
+}
+
+entity @bsg_link_iddr_phy (i1$ %clk_i, i2$ %data_i) -&gt; (i2$ %data_r_o) {
+    %0 = const i2 0
+    %data_rr = sig i2 %0
+    %data_n_r = sig i2 %0
+    %data_p_r = sig i2 %0
+    %data_rr.prb = prb i2$ %data_rr
+    %1 = const time 0s 1e
+    drv i2$ %data_r_o, %data_rr.prb, %1
+    inst %bsg_link_iddr_phy.always_ff.465.0 (i1$ %clk_i, i2$ %data_i) -&gt; (i2$ %data_p_r)
+    inst %bsg_link_iddr_phy.always_ff.483.0 (i1$ %clk_i, i2$ %data_i) -&gt; (i2$ %data_n_r)
+    inst %bsg_link_iddr_phy.always_ff.505.0 (i1$ %clk_i, i2$ %data_n_r, i2$ %data_p_r) -&gt; (i2$ %data_rr)
+    halt
+}
 
 </pre>
 </body>

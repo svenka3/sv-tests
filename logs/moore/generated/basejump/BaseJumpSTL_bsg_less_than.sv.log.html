@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
@@ -18,26 +18,16 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v</a>
 time_elapsed: 0.004s
-ram usage: 10724 KB
+ram usage: 10500 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -e bsg_less_than <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v</a>
-error: cannot cast a value of type `logic [-1:0]` to `logic [1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v.html#l-13" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v:13</a>:16-19:
-   | 
-   |   assign o =  (a_i &lt; b_i);
-   |                ^^^        
-
-error: cannot cast a value of type `logic [-1:0]` to `logic [1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v.html#l-13" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_less_than.v:13</a>:22-25:
-   | 
-   |   assign o =  (a_i &lt; b_i);
-   |                      ^^^  
-
 entity @bsg_less_than (i2$ %a_i, i2$ %b_i) -&gt; (i1$ %o) {
-    %0 = const i1 0
-    %1 = const time 0s
+    %a_i.prb = prb i2$ %a_i
+    %b_i.prb = prb i2$ %b_i
+    %0 = ult i2 %a_i.prb, %b_i.prb
+    %1 = const time 0s 1e
     drv i1$ %o, %0, %1
     halt
 }

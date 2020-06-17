@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
@@ -18,33 +18,75 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v</a>
 time_elapsed: 0.008s
-ram usage: 10980 KB
+ram usage: 10816 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -e bsg_wait_cycles <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v</a>
-error: cannot cast a value of type `byte [0:0]` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v.html#l-22" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v:22</a>:19-27:
-   | 
-   |           ctr_n = cycles_p;
-   |                   ^^^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `logic unsigned [1:0]`, but
-   = note: `logic unsigned [1:0]` cannot be cast to the final `logic [-1:0]`
+proc %bsg_wait_cycles.always_ff.460.0 (i1$ %clk_i, i2$ %ctr_n) -&gt; (i1$ %ready_r_o, i2$ %ctr_r) {
+init:
+    %clk_i.prb = prb i1$ %clk_i
+    wait %check, %clk_i
+check:
+    %0 = const i1 0
+    %1 = eq i1 %clk_i.prb, %0
+    %2 = neq i1 %clk_i.prb, %0
+    %posedge = and i1 %1, %2
+    br %posedge, %init, %event
+event:
+    %ctr_n.prb = prb i2$ %ctr_n
+    %3 = const time 0s 1d
+    drv i2$ %ctr_r, %ctr_n.prb, %3
+    %4 = const i8 0
+    %zext = inss i8 %4, i2 %ctr_n.prb, 0, 2
+    %5 = eq i8 %zext, %4
+    drv i1$ %ready_r_o, %5, %3
+    br %init
+}
 
-error: cannot cast a value of type `int` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v.html#l-25" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v:25</a>:21-22:
-   | 
-   |             ctr_n = 0;
-   |                     ^ 
-   = note: `int` can be cast to an intermediate `logic unsigned [1:0]`, but
-   = note: `logic unsigned [1:0]` cannot be cast to the final `logic [-1:0]`
+proc %bsg_wait_cycles.always_comb.527.0 (i1$ %reset_i, i1$ %activate_i, i2$ %ctr_r) -&gt; (i2$ %ctr_n) {
+body:
+    %ctr_r.prb = prb i2$ %ctr_r
+    %0 = const time 0s 1e
+    drv i2$ %ctr_n, %ctr_r.prb, %0
+    %reset_i.prb = prb i1$ %reset_i
+    %1 = const i1 0
+    %2 = neq i1 %reset_i.prb, %1
+    %3 = const i2 0
+    br %2, %if_false, %if_true
+check:
+    wait %body, %reset_i, %activate_i, %ctr_r
+if_true:
+    drv i2$ %ctr_n, %3, %0
+    br %check
+if_false:
+    %activate_i.prb = prb i1$ %activate_i
+    %4 = neq i1 %activate_i.prb, %1
+    br %4, %if_false1, %if_true1
+if_true1:
+    drv i2$ %ctr_n, %3, %0
+    br %check
+if_false1:
+    %5 = const i8 0
+    %zext = inss i8 %5, i2 %ctr_r.prb, 0, 2
+    %6 = neq i8 %zext, %5
+    %7 = neq i1 %6, %1
+    br %7, %check, %if_true2
+if_true2:
+    %8 = const i2 1
+    %9 = add i2 %ctr_r.prb, %8
+    drv i2$ %ctr_n, %9, %0
+    br %check
+}
 
-error: cannot cast a value of type `logic [1:0]` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v.html#l-28" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_wait_cycles.v:28</a>:23-35:
-   | 
-   |               ctr_n = ctr_r + 1&#39;b1;
-   |                       ^^^^^^^^^^^^ 
-
+entity @bsg_wait_cycles (i1$ %clk_i, i1$ %reset_i, i1$ %activate_i) -&gt; (i1$ %ready_r_o) {
+    %0 = const i2 0
+    %ctr_r = sig i2 %0
+    %ctr_n = sig i2 %0
+    inst %bsg_wait_cycles.always_ff.460.0 (i1$ %clk_i, i2$ %ctr_n) -&gt; (i1$ %ready_r_o, i2$ %ctr_r)
+    inst %bsg_wait_cycles.always_comb.527.0 (i1$ %reset_i, i1$ %activate_i, i2$ %ctr_r) -&gt; (i2$ %ctr_n)
+    halt
+}
 
 </pre>
 </body>

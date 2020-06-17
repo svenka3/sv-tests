@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
@@ -17,22 +17,21 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_nor3.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_nor3.v</a>
-time_elapsed: 0.008s
-ram usage: 10712 KB
+time_elapsed: 0.004s
+ram usage: 10476 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -e bsg_nor3 <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_nor3.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_nor3.v</a>
-error: cannot cast a value of type `logic [1:0]` to `logic [-1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_nor3.v.html#l-9" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_nor3.v:9</a>:15-33:
-   | 
-   |    assign o = ~(a_i | b_i | c_i);
-   |               ^^^^^^^^^^^^^^^^^^ 
-
 entity @bsg_nor3 (i2$ %a_i, i2$ %b_i, i2$ %c_i) -&gt; (i2$ %o) {
-    %0 = const i2 0
-    %1 = const time 0s
-    drv i2$ %o, %0, %1
+    %a_i.prb = prb i2$ %a_i
+    %b_i.prb = prb i2$ %b_i
+    %0 = or i2 %a_i.prb, %b_i.prb
+    %c_i.prb = prb i2$ %c_i
+    %1 = or i2 %0, %c_i.prb
+    %2 = not i2 %1
+    %3 = const time 0s 1e
+    drv i2$ %o, %2, %3
     halt
 }
 

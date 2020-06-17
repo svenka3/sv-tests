@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,19 +18,35 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1735822.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1735822.v</a>
 time_elapsed: 0.004s
-ram usage: 10252 KB
+ram usage: 10972 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1735822.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1735822.v</a>
-error: cannot cast a value of type `byte [0:0]` to `reg [0:47]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1735822.v.html#l-3" target="file-frame">third_party/tests/ivtest/ivltests/pr1735822.v:3</a>:30-38:
+warning: `$write` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1735822.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/pr1735822.v:18</a>:11-34:
    | 
-   |    reg [0:(8*6)-1] identstr= &#34;PASSED&#34;;
-   |                              ^^^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `logic unsigned [47:0]`, but
-   = note: `logic unsigned [47:0]` cannot be cast to the final `reg [0:47]`
+   |              $write(&#34;%c&#34;, identdata);
+   |              ^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$write` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1735822.v.html#l-20" target="file-frame">third_party/tests/ivtest/ivltests/pr1735822.v:20</a>:2-14:
+   | 
+   |     $write(&#34;\n&#34;);
+   |     ^^^^^^^^^^^^ 
+
+compiler bug: lowering of Expr #103 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1735822.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/pr1735822.v:21</a>:2-9:
+   | 
+   |     $finish;
+   |     ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1398
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of Expr #103 to hir not implemented&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -18,17 +18,11 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr3571573.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3571573.v</a>
 time_elapsed: 0.004s
-ram usage: 10736 KB
+ram usage: 10524 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e pr3571573 <a href="../../../../third_party/tests/ivtest/ivltests/pr3571573.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3571573.v</a>
-error: cannot cast a value of type `logic [5:0]` to `logic [6:1]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3571573.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/pr3571573.v:19</a>:13-28:
-   | 
-   | assign io = {io3, io2, io1};
-   |             ^^^^^^^^^^^^^^^ 
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3571573.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/pr3571573.v:8</a>:6-28:
    | 
@@ -38,16 +32,24 @@ warning: `$display` not supported; ignored
 entity @data_test.param1 () -&gt; (i6$ %io) {
     %0 = const i4 0
     %io1 = sig i4 %0
-    %1 = const i2 2
-    %2 = sig i4 %0
-    %3 = shr i4$ %io1, i4$ %2, i2 %1
-    %4 = exts i2$, i4$ %3, 0, 2
-    %5 = const i2 1
-    %6 = const time 0s 1e
-    drv i2$ %4, %5, %6
-    %7 = const i6 0
-    %8 = const time 0s
-    drv i6$ %io, %7, %8
+    %1 = const i1 0
+    %io2 = sig i1 %1
+    %io3 = sig i1 %1
+    %2 = const i6 0
+    %io1.prb = prb i4$ %io1
+    %3 = inss i6 %2, i4 %io1.prb, 0, 4
+    %io2.prb = prb i1$ %io2
+    %4 = inss i6 %3, i1 %io2.prb, 4, 1
+    %io3.prb = prb i1$ %io3
+    %concat = inss i6 %4, i1 %io3.prb, 5, 1
+    %5 = const time 0s 1e
+    drv i6$ %io, %concat, %5
+    %6 = const i2 2
+    %7 = sig i4 %0
+    %8 = shr i4$ %io1, i4$ %7, i2 %6
+    %9 = exts i2$, i4$ %8, 0, 2
+    %10 = const i2 1
+    drv i2$ %9, %10, %5
     halt
 }
 

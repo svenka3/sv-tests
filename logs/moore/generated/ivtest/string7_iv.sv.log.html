@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
@@ -17,8 +17,8 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/string7.v.html" target="file-frame">third_party/tests/ivtest/ivltests/string7.v</a>
-time_elapsed: 0.008s
-ram usage: 10432 KB
+time_elapsed: 0.012s
+ram usage: 10536 KB
 </pre>
 <pre class="log">
 
@@ -77,14 +77,6 @@ warning: `$display` not supported; ignored
    |         $display(&#34;============================ myReg40r = \&#34;12345\&#34;&#34;);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: cannot cast a value of type `byte [0:0]` to `reg [0:39]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/string7.v.html#l-44" target="file-frame">third_party/tests/ivtest/ivltests/string7.v:44</a>:14-21:
-   | 
-   |         myReg40r = &#34;12345&#34;;
-   |                    ^^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `logic unsigned [39:0]`, but
-   = note: `logic unsigned [39:0]` cannot be cast to the final `reg [0:39]`
-
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/string7.v.html#l-46" target="file-frame">third_party/tests/ivtest/ivltests/string7.v:46</a>:3-23:
    | 
@@ -114,14 +106,6 @@ warning: `$display` not supported; ignored
    | 
    |         $display(&#34;============================ myReg39r = \&#34;12345\&#34;&#34;);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-error: cannot cast a value of type `byte [0:0]` to `reg [0:38]`
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/string7.v.html#l-52" target="file-frame">third_party/tests/ivtest/ivltests/string7.v:52</a>:14-21:
-   | 
-   |         myReg39r = &#34;12345&#34;;
-   |                    ^^^^^^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `logic unsigned [38:0]`, but
-   = note: `logic unsigned [38:0]` cannot be cast to the final `reg [0:38]`
 
 warning: `$display` not supported; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/string7.v.html#l-54" target="file-frame">third_party/tests/ivtest/ivltests/string7.v:54</a>:3-23:
@@ -201,6 +185,49 @@ warning: `$display` not supported; ignored
    |         $display(&#34;*|%s|&#34;, myInt);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+proc %main.initial.400.0 () -&gt; (i32$ %myInt, i40$ %myReg40, i40$ %myReg40r, i39$ %myReg39r, i14$ %myReg14, i8$ %myReg8) {
+0:
+    %1 = const i8 65
+    %2 = const time 0s 1e
+    drv i8$ %myReg8, %1, %2
+    %concat = const i8 0
+    %3 = const i40 0
+    %4 = const i40 1099511627775
+    %5 = [i40 %3, %4]
+    %6 = extf i40, [2 x i40] %5, 0
+    %sext = inss i40 %6, i8 %concat, 0, 8
+    drv i40$ %myReg40, %sext, %2
+    drv i40$ %myReg40r, %sext, %2
+    %7 = const i39 0
+    %8 = const i39 549755813887
+    %9 = [i39 %7, %8]
+    %10 = extf i39, [2 x i39] %9, 0
+    %sext1 = inss i39 %10, i8 %concat, 0, 8
+    drv i39$ %myReg39r, %sext1, %2
+    %11 = const i14 65
+    drv i14$ %myReg14, %11, %2
+    %12 = const i14 8513
+    drv i14$ %myReg14, %12, %2
+    %13 = const i32 65
+    drv i32$ %myInt, %13, %2
+    halt
+}
+
+entity @main () -&gt; () {
+    %0 = const i32 0
+    %myInt = sig i32 %0
+    %1 = const i40 0
+    %myReg40 = sig i40 %1
+    %myReg40r = sig i40 %1
+    %2 = const i39 0
+    %myReg39r = sig i39 %2
+    %3 = const i14 0
+    %myReg14 = sig i14 %3
+    %4 = const i8 0
+    %myReg8 = sig i8 %4
+    inst %main.initial.400.0 () -&gt; (i32$ %myInt, i40$ %myReg40, i40$ %myReg40r, i39$ %myReg39r, i14$ %myReg14, i8$ %myReg8)
+    halt
+}
 
 </pre>
 </body>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: empty string test
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: 11.10.3
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-11
@@ -18,25 +18,36 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-11/11.10.3--empty_string.sv.html" target="file-frame">tests/chapter-11/11.10.3--empty_string.sv</a>
 time_elapsed: 0.004s
-ram usage: 10216 KB
+ram usage: 10400 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-11 -e top <a href="../../../tests/chapter-11/11.10.3--empty_string.sv.html" target="file-frame">tests/chapter-11/11.10.3--empty_string.sv</a>
-error: cannot cast a value of type `byte [0:0]` to `bit [112:1]`
-  --&gt; <a href="../../../tests/chapter-11/11.10.3--empty_string.sv.html#l-11" target="file-frame">tests/chapter-11/11.10.3--empty_string.sv:11</a>:6-8:
-   | 
-   |     a = &#34;&#34;;
-   |         ^^ 
-   = note: `byte [0:0]` can be cast to an intermediate `bit unsigned [111:0]`, but
-   = note: `bit unsigned [111:0]` cannot be cast to the final `bit [112:1]`
-
 warning: unsupported: immediate assertion; ignored
   --&gt; <a href="../../../tests/chapter-11/11.10.3--empty_string.sv.html#l-12" target="file-frame">tests/chapter-11/11.10.3--empty_string.sv:12</a>:2-17:
    | 
    |     assert(a == 0);
    |     ^^^^^^^^^^^^^^^
 
+proc %top.initial.27.0 () -&gt; (i112$ %a) {
+0:
+    %concat = const i8 0
+    %1 = const i112 0
+    %2 = const i112 5192296858534827628530496329220095
+    %3 = [i112 %1, %2]
+    %4 = extf i112, [2 x i112] %3, 0
+    %sext = inss i112 %4, i8 %concat, 0, 8
+    %5 = const time 0s 1e
+    drv i112$ %a, %sext, %5
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i112 0
+    %a = sig i112 %0
+    inst %top.initial.27.0 () -&gt; (i112$ %a)
+    halt
+}
 
 </pre>
 </body>

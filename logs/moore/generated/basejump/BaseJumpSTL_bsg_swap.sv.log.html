@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 101 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
@@ -18,30 +18,45 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_swap.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_swap.v</a>
 time_elapsed: 0.008s
-ram usage: 11180 KB
+ram usage: 10676 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -e bsg_swap <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_swap.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_swap.v</a>
-error: cannot cast a value of type `logic [-1:0]` to `logic [1:0]`
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_swap.v.html#l-16" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_swap.v:16</a>:8-17:
-   | 
-   |     ? {data_i[0], data_i[1]}
-   |        ^^^^^^^^^            
-
-compiler bug: assertion failed: value.ty.coalesces_to_llhd_scalar()
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_swap.v.html#l-16" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_swap.v:16</a>:8-17:
-   | 
-   |     ? {data_i[0], data_i[1]}
-   |        ^^^^^^^^^            
-   = note: Assertion failed: value.ty.coalesces_to_llhd_scalar()
-   = note: Encountered at src/svlog/mir/lower/rvalue.rs:261
-
-You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
-[1]: https://github.com/fabianschuiki/moore
-
-thread &#39;main&#39; panicked at &#39;assertion failed: value.ty.coalesces_to_llhd_scalar()&#39;, /rustc/49cae55760da0a43428eba73abcb659bb70cf2e4/src/libstd/macros.rs:16:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+entity @bsg_swap ([2 x i2]$ %data_i, [2 x i2]$ %swap_i) -&gt; ([2 x i2]$ %data_o) {
+    %0 = const i4 0
+    %swap_i.prb = prb [2 x i2]$ %swap_i
+    %1 = const i2 0
+    %2 = [2 x i2 %1]
+    %3 = exts [1 x i2], [2 x i2] %2, 0, 1
+    %4 = exts [1 x i2], [2 x i2] %swap_i.prb, 1, 1
+    %5 = inss [2 x i2] %2, [1 x i2] %3, 1, 1
+    %6 = inss [2 x i2] %5, [1 x i2] %4, 0, 1
+    %7 = extf i2, [2 x i2] %6, 0
+    %8 = inss i4 %0, i2 %7, 0, 2
+    %9 = extf i2, [2 x i2] %swap_i.prb, 0
+    %concat = inss i4 %8, i2 %9, 2, 2
+    %10 = neq i4 %concat, %0
+    %data_i.prb = prb [2 x i2]$ %data_i
+    %11 = exts [1 x i2], [2 x i2] %data_i.prb, 1, 1
+    %12 = inss [2 x i2] %5, [1 x i2] %11, 0, 1
+    %13 = extf i2, [2 x i2] %12, 0
+    %14 = inss i4 %0, i2 %13, 0, 2
+    %15 = extf i2, [2 x i2] %data_i.prb, 0
+    %concat1 = inss i4 %14, i2 %15, 2, 2
+    %16 = inss i4 %0, i2 %15, 0, 2
+    %concat2 = inss i4 %16, i2 %13, 2, 2
+    %17 = [i4 %concat2, %concat1]
+    %18 = mux [2 x i4] %17, i1 %10
+    %19 = exts i2, i4 %18, 0, 2
+    %20 = exts i2, i4 %18, 2, 2
+    %21 = inss i4 %0, i2 %20, 0, 2
+    %22 = exts i2, i4 %21, 0, 2
+    %23 = [i2 %19, %22]
+    %24 = const time 0s 1e
+    drv [2 x i2]$ %data_o, %23, %24
+    halt
+}
 
 </pre>
 </body>
