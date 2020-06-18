@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from hdlconv
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 should_fail: 0
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017
@@ -17,15 +17,60 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv</a>
-time_elapsed: 0.028s
-ram usage: 9604 KB
+time_elapsed: 0.084s
+ram usage: 12216 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017 <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv</a>
-zachjs-sv2v: instantiations mixed with other items: [DTIdent <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv.html#l-6" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv:6</a>:8 &#34;c&#34;,DTBit <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv.html#l-6" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv:6</a>:11 8,DTBit <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv.html#l-6" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv:6</a>:14 4,DTInstance <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv.html#l-6" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p716.sv:6</a>:19 [(&#34;&#34;,o),(&#34;&#34;,i)]]
-CallStack (from HasCallStack):
-  error, called at src/Language/SystemVerilog/Parser/ParseDecl.hs:169:14 in main:Language.SystemVerilog.Parser.ParseDecl
+module child (
+	o,
+	i
+);
+	output o;
+	input [0:4] i;
+endmodule
+module parent (
+	o,
+	i
+);
+	output [31:0] o;
+	input [159:0] i;
+	child c[31:0](
+		o,
+		i
+	);
+endmodule
+module MxN_pipeline (
+	in,
+	out,
+	clk
+);
+	parameter M = 3;
+	parameter N = 4;
+	input [M - 1:0] in;
+	output [M - 1:0] out;
+	input clk;
+	wire [(M &gt;= 1 ? (1 &gt;= N ? (M * (2 - N)) + (N - 1) : M * N) : (1 &gt;= N ? ((2 - M) * (2 - N)) + ((N + ((M - 1) * (2 - N))) - 1) : ((2 - M) * N) + ((1 + ((M - 1) * N)) - 1))):(M &gt;= 1 ? (1 &gt;= N ? N : 1) : (1 &gt;= N ? N + ((M - 1) * (2 - N)) : 1 + ((M - 1) * N)))] Ins;
+	wire [(M &gt;= 1 ? (1 &gt;= N ? (M * (2 - N)) + (N - 1) : M * N) : (1 &gt;= N ? ((2 - M) * (2 - N)) + ((N + ((M - 1) * (2 - N))) - 1) : ((2 - M) * N) + ((1 + ((M - 1) * N)) - 1))):(M &gt;= 1 ? (1 &gt;= N ? N : 1) : (1 &gt;= N ? N + ((M - 1) * (2 - N)) : 1 + ((M - 1) * N)))] Outs;
+	DFF dff[(M &gt;= 1 ? (1 &gt;= N ? (M * (2 - N)) + (N - 1) : M * N) : (1 &gt;= N ? ((2 - M) * (2 - N)) + ((N + ((M - 1) * (2 - N))) - 1) : ((2 - M) * N) + ((1 + ((M - 1) * N)) - 1))):(M &gt;= 1 ? (1 &gt;= N ? N : 1) : (1 &gt;= N ? N + ((M - 1) * (2 - N)) : 1 + ((M - 1) * N)))](
+		Outs,
+		Ins,
+		clk
+	);
+	generate
+		genvar I;
+		genvar J;
+		for (I = M - 1; I &gt;= 0; I = I - 1) for (J = 1; J &lt;= N; J = J + 1) case (J)
+			1: begin
+				assign out[I] = Outs[((M &gt;= 1 ? I : 0 - (I - (M - 1))) * (1 &gt;= N ? 2 - N : N)) + (1 &gt;= N ? 1 : N)];
+				assign Ins[((M &gt;= 1 ? I : 0 - (I - (M - 1))) * (1 &gt;= N ? 2 - N : N)) + (1 &gt;= N ? J : N - (J - 1))] = Outs[((M &gt;= 1 ? I : 0 - (I - (M - 1))) * (1 &gt;= N ? 2 - N : N)) + (1 &gt;= N ? 2 : N - 1)];
+			end
+			default: assign Ins[((M &gt;= 1 ? I : 0 - (I - (M - 1))) * (1 &gt;= N ? 2 - N : N)) + (1 &gt;= N ? J : N - (J - 1))] = Outs[((M &gt;= 1 ? I : 0 - (I - (M - 1))) * (1 &gt;= N ? 2 - N : N)) + (1 &gt;= N ? J + 1 : N - J)];
+			N: assign Ins[((M &gt;= 1 ? I : 0 - (I - (M - 1))) * (1 &gt;= N ? 2 - N : N)) + (1 &gt;= N ? N : N - (N - 1))] = in[I];
+		endcase
+	endgenerate
+endmodule
 
 </pre>
 </body>
