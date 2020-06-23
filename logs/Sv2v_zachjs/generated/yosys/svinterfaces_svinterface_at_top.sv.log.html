@@ -17,8 +17,9 @@ top_module:
 type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/svinterfaces/svinterface_at_top.sv.html" target="file-frame">third_party/tools/yosys/tests/svinterfaces/svinterface_at_top.sv</a>
+defines: 
 time_elapsed: 0.376s
-ram usage: 15000 KB
+ram usage: 13292 KB
 </pre>
 <pre class="log">
 
@@ -42,9 +43,9 @@ module TopModule (
 	input wire [1:0] sig;
 	input wire flip;
 	output wire [1:0] sig_out;
-	parameter WIDTH = 3;
+	parameter interfaceInstanceAtTop_WIDTH = 3;
 	input wire interfaceInstanceAtTop_setting;
-	output wire [WIDTH - 1:0] interfaceInstanceAtTop_other_setting;
+	output wire [interfaceInstanceAtTop_WIDTH - 1:0] interfaceInstanceAtTop_other_setting;
 	output wire [1:0] interfaceInstanceAtTop_mysig_out;
 	output wire [15:0] interfaceInstanceAtTop_passThrough;
 	output wire [15:0] passThrough;
@@ -54,8 +55,8 @@ module TopModule (
 	wire [1:0] MyInterfaceInstance_mysig_out;
 	wire [15:0] MyInterfaceInstance_passThrough;
 	SubModule1 #(
-		.WIDTH(MyInterfaceInstance_WIDTH),
-		.WIDTH(interfaceInstanceAtTop_WIDTH)
+		.u_MyInterface_WIDTH(MyInterfaceInstance_WIDTH),
+		.u_MyInterfaceFromTop_WIDTH(interfaceInstanceAtTop_WIDTH)
 	) u_SubModule1(
 		.clk(clk),
 		.rst(rst),
@@ -90,14 +91,14 @@ module SubModule1 (
 );
 	input wire clk;
 	input wire rst;
-	parameter WIDTH = 3;
+	parameter u_MyInterface_WIDTH = 3;
 	input wire u_MyInterface_setting;
-	output wire [WIDTH - 1:0] u_MyInterface_other_setting;
+	output wire [u_MyInterface_WIDTH - 1:0] u_MyInterface_other_setting;
 	output reg [1:0] u_MyInterface_mysig_out;
 	output wire [15:0] u_MyInterface_passThrough;
-	parameter WIDTH = 3;
+	parameter u_MyInterfaceFromTop_WIDTH = 3;
 	input wire u_MyInterfaceFromTop_setting;
-	output wire [WIDTH - 1:0] u_MyInterfaceFromTop_other_setting;
+	output wire [u_MyInterfaceFromTop_WIDTH - 1:0] u_MyInterfaceFromTop_other_setting;
 	output wire [1:0] u_MyInterfaceFromTop_mysig_out;
 	output wire [15:0] u_MyInterfaceFromTop_passThrough;
 	input wire [1:0] sig;
@@ -115,9 +116,9 @@ module SubModule1 (
 	wire [1:0] MyInterfaceInstanceInSub_mysig_out;
 	wire [15:0] MyInterfaceInstanceInSub_passThrough;
 	SubModule2 #(
-		.WIDTH(u_MyInterfaceFromTop_WIDTH),
-		.WIDTH(u_MyInterface_WIDTH),
-		.WIDTH(MyInterfaceInstanceInSub_WIDTH)
+		.u_MyInterfaceFromTopDown_WIDTH(u_MyInterfaceFromTop_WIDTH),
+		.u_MyInterfaceInSub2_WIDTH(u_MyInterface_WIDTH),
+		.u_MyInterfaceInSub3_WIDTH(MyInterfaceInstanceInSub_WIDTH)
 	) u_SubModule2(
 		.clk(clk),
 		.rst(rst),
@@ -156,19 +157,19 @@ module SubModule2 (
 );
 	input wire clk;
 	input wire rst;
-	parameter WIDTH = 3;
+	parameter u_MyInterfaceInSub2_WIDTH = 3;
 	input wire u_MyInterfaceInSub2_setting;
-	output wire [WIDTH - 1:0] u_MyInterfaceInSub2_other_setting;
+	output wire [u_MyInterfaceInSub2_WIDTH - 1:0] u_MyInterfaceInSub2_other_setting;
 	input wire [1:0] u_MyInterfaceInSub2_mysig_out;
 	output wire [15:0] u_MyInterfaceInSub2_passThrough;
-	parameter WIDTH = 3;
+	parameter u_MyInterfaceFromTopDown_WIDTH = 3;
 	input wire u_MyInterfaceFromTopDown_setting;
-	output wire [WIDTH - 1:0] u_MyInterfaceFromTopDown_other_setting;
+	output wire [u_MyInterfaceFromTopDown_WIDTH - 1:0] u_MyInterfaceFromTopDown_other_setting;
 	output wire [1:0] u_MyInterfaceFromTopDown_mysig_out;
 	output wire [15:0] u_MyInterfaceFromTopDown_passThrough;
-	parameter WIDTH = 3;
+	parameter u_MyInterfaceInSub3_WIDTH = 3;
 	input wire u_MyInterfaceInSub3_setting;
-	output reg [WIDTH - 1:0] u_MyInterfaceInSub3_other_setting;
+	output reg [u_MyInterfaceInSub3_WIDTH - 1:0] u_MyInterfaceInSub3_other_setting;
 	input wire [1:0] u_MyInterfaceInSub3_mysig_out;
 	output wire [15:0] u_MyInterfaceInSub3_passThrough;
 	assign u_MyInterfaceFromTopDown_mysig_out = (u_MyInterfaceFromTop.setting ? 10 : 20);
