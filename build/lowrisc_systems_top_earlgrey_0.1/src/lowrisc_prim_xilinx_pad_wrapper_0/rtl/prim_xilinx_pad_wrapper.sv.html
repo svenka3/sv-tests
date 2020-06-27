@@ -40,11 +40,19 @@
 <a href="#l-32">32</a>
 <a href="#l-33">33</a>
 <a href="#l-34">34</a>
-<a href="#l-35">35</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-35">35</a>
+<a href="#l-36">36</a>
+<a href="#l-37">37</a>
+<a href="#l-38">38</a>
+<a href="#l-39">39</a>
+<a href="#l-40">40</a>
+<a href="#l-41">41</a>
+<a href="#l-42">42</a>
+<a href="#l-43">43</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
-<a name="l-5"></a><span class="c1">// Inferrable, bidirectional IO buffer for FPGAs. Implements inversion and</span>
+<a name="l-5"></a><span class="c1">// Bidirectional IO buffer for Xilinx FPGAs. Implements inversion and</span>
 <a name="l-6"></a><span class="c1">// virtual open drain feature.</span>
 <a name="l-7"></a>
 <a name="l-8"></a>
@@ -64,17 +72,25 @@
 <a name="l-22"></a>  <span class="k">assign</span> <span class="p">{</span><span class="n">od</span><span class="p">,</span> <span class="n">inv</span><span class="p">}</span> <span class="o">=</span> <span class="n">attr_i</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
 <a name="l-23"></a>
 <a name="l-24"></a>  <span class="c1">// input inversion</span>
-<a name="l-25"></a>  <span class="k">assign</span> <span class="n">in_o</span>     <span class="o">=</span> <span class="n">inv</span> <span class="o">^</span> <span class="n">inout_io</span><span class="p">;</span>
-<a name="l-26"></a>
-<a name="l-27"></a>  <span class="c1">// virtual open drain emulation</span>
-<a name="l-28"></a>  <span class="k">logic</span> <span class="n">oe</span><span class="p">,</span> <span class="n">out</span><span class="p">;</span>
-<a name="l-29"></a>  <span class="k">assign</span> <span class="n">out</span>      <span class="o">=</span> <span class="n">out_i</span> <span class="o">^</span> <span class="n">inv</span><span class="p">;</span>
-<a name="l-30"></a>  <span class="k">assign</span> <span class="n">oe</span>       <span class="o">=</span> <span class="n">oe_i</span> <span class="o">&amp;</span> <span class="p">((</span><span class="n">od</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">out</span><span class="p">)</span> <span class="o">|</span> <span class="o">~</span><span class="n">od</span><span class="p">);</span>
-<a name="l-31"></a>
-<a name="l-32"></a>  <span class="c1">// driver</span>
-<a name="l-33"></a>  <span class="k">assign</span> <span class="n">inout_io</span> <span class="o">=</span> <span class="p">(</span><span class="n">oe</span><span class="p">)</span> <span class="o">?</span> <span class="n">out</span> <span class="o">:</span> <span class="mh">1</span><span class="p">&#39;</span><span class="n">bz</span><span class="p">;</span>
+<a name="l-25"></a>  <span class="k">logic</span> <span class="n">in</span><span class="p">;</span>
+<a name="l-26"></a>  <span class="k">assign</span> <span class="n">in_o</span>     <span class="o">=</span> <span class="n">inv</span> <span class="o">^</span> <span class="n">in</span><span class="p">;</span>
+<a name="l-27"></a>
+<a name="l-28"></a>  <span class="c1">// virtual open drain emulation</span>
+<a name="l-29"></a>  <span class="k">logic</span> <span class="n">oe_n</span><span class="p">,</span> <span class="n">out</span><span class="p">;</span>
+<a name="l-30"></a>  <span class="k">assign</span> <span class="n">out</span>      <span class="o">=</span> <span class="n">out_i</span> <span class="o">^</span> <span class="n">inv</span><span class="p">;</span>
+<a name="l-31"></a>  <span class="c1">// oe_n = 0: enable driver</span>
+<a name="l-32"></a>  <span class="c1">// oe_n = 1: disable driver</span>
+<a name="l-33"></a>  <span class="k">assign</span> <span class="n">oe_n</span>     <span class="o">=</span> <span class="o">~</span><span class="n">oe_i</span> <span class="o">|</span> <span class="p">(</span><span class="n">out</span> <span class="o">&amp;</span> <span class="n">od</span><span class="p">);</span>
 <a name="l-34"></a>
-<a name="l-35"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_xilinx_pad_wrapper</span>
+<a name="l-35"></a>  <span class="c1">// driver</span>
+<a name="l-36"></a>  <span class="n">IOBUF</span> <span class="n">i_iobuf</span> <span class="p">(</span>
+<a name="l-37"></a>    <span class="p">.</span><span class="n">T</span><span class="p">(</span><span class="n">oe_n</span><span class="p">),</span>
+<a name="l-38"></a>    <span class="p">.</span><span class="n">I</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
+<a name="l-39"></a>    <span class="p">.</span><span class="n">O</span><span class="p">(</span><span class="n">in</span><span class="p">),</span>
+<a name="l-40"></a>    <span class="p">.</span><span class="n">IO</span><span class="p">(</span><span class="n">inout_io</span><span class="p">)</span>
+<a name="l-41"></a>  <span class="p">);</span>
+<a name="l-42"></a>
+<a name="l-43"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_xilinx_pad_wrapper</span>
 </pre></div>
 </td></tr></table>
   </body>

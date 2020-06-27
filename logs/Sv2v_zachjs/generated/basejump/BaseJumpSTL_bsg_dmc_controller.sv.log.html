@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v</a>
 defines: 
-time_elapsed: 1.604s
-ram usage: 19908 KB
+time_elapsed: 1.856s
+ram usage: 19928 KB
 </pre>
 <pre class="log">
 
@@ -192,7 +192,7 @@ module bsg_dmc_controller (
 	wire rx_sipo_ready_lo;
 	wire [dfi_burst_length_lp - 1:0] rx_sipo_valid_lo;
 	wire [(dfi_burst_length_lp &gt;= 1 ? (dfi_data_width_p &gt;= 1 ? (dfi_burst_length_lp * dfi_data_width_p) + -1 : (dfi_burst_length_lp * (2 - dfi_data_width_p)) + ((dfi_data_width_p - 1) - 1)) : (dfi_data_width_p &gt;= 1 ? ((2 - dfi_burst_length_lp) * dfi_data_width_p) + (((dfi_burst_length_lp - 1) * dfi_data_width_p) - 1) : ((2 - dfi_burst_length_lp) * (2 - dfi_data_width_p)) + (((dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))) - 1))):(dfi_burst_length_lp &gt;= 1 ? (dfi_data_width_p &gt;= 1 ? 0 : dfi_data_width_p - 1) : (dfi_data_width_p &gt;= 1 ? (dfi_burst_length_lp - 1) * dfi_data_width_p : (dfi_data_width_p - 1) + ((dfi_burst_length_lp - 1) * (2 - dfi_data_width_p))))] rx_sipo_data_lo;
-	wire [$clog2(burst_data_width_p / dfi_data_width_p):0] rx_sipo_yumi_cnt_li;
+	wire [$clog2(dfi_burst_length_lp):0] rx_sipo_yumi_cnt_li;
 	wire [(dfi_data_width_p * dfi_burst_length_lp) - 1:0] rx_data;
 	wire [15:0] row_addr;
 	wire [15:0] col_addr;
@@ -237,7 +237,7 @@ module bsg_dmc_controller (
 		input reg [3:0] inp;
 		sv2v_cast_4 = inp;
 	endfunction
-	assign tbl = sv2v_cast_4($clog2((burst_data_width_p / dfi_data_width_p) &lt;&lt; 1));
+	assign tbl = sv2v_cast_4($clog2(dfi_burst_length_lp &lt;&lt; 1));
 	assign app_rdy_o = ~cmd_afifo_wfull;
 	assign cmd_afifo_wclk = ui_clk_i;
 	assign cmd_afifo_wrst = ui_clk_sync_rst_i;
@@ -760,11 +760,11 @@ module bsg_dmc_controller (
 	);
 	assign rx_sipo_valid_li = rddata_afifo_rvalid;
 	assign rx_sipo_data_li = rddata_afifo_rdata;
-	function automatic [$clog2(burst_data_width_p / dfi_data_width_p):0] sv2v_cast_3C922;
-		input reg [$clog2(burst_data_width_p / dfi_data_width_p):0] inp;
-		sv2v_cast_3C922 = inp;
+	function automatic [$clog2(dfi_burst_length_lp):0] sv2v_cast_D87BA;
+		input reg [$clog2(dfi_burst_length_lp):0] inp;
+		sv2v_cast_D87BA = inp;
 	endfunction
-	assign rx_sipo_yumi_cnt_li = sv2v_cast_3C922((&amp;rx_sipo_valid_lo ? dfi_burst_length_lp : 0));
+	assign rx_sipo_yumi_cnt_li = sv2v_cast_D87BA((&amp;rx_sipo_valid_lo ? dfi_burst_length_lp : 0));
 	bsg_serial_in_parallel_out #(
 		.width_p(dfi_data_width_p),
 		.els_p(dfi_burst_length_lp)

@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_i2f.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_i2f.v</a>
 defines: 
-time_elapsed: 0.468s
-ram usage: 16632 KB
+time_elapsed: 0.316s
+ram usage: 13180 KB
 </pre>
 <pre class="log">
 
@@ -64,7 +64,7 @@ module bsg_fpu_i2f (
 		.o(abs)
 	);
 	assign chosen_abs = (signed_i ? abs : a_i);
-	wire [(width_lp == 1 ? 1 : $clog2((e_p + m_p) + 1)) - 1:0] shamt;
+	wire [(width_lp == 1 ? 1 : $clog2(width_lp)) - 1:0] shamt;
 	wire all_zero;
 	bsg_fpu_clz #(.width_p(width_lp)) clz(
 		.i(chosen_abs),
@@ -72,7 +72,7 @@ module bsg_fpu_i2f (
 	);
 	assign all_zero = ~(|chosen_abs);
 	(* keep = &#34;true&#34; *) reg [width_lp - 1:0] chosen_abs_1_r;
-	reg [(width_lp == 1 ? 1 : $clog2((e_p + m_p) + 1)) - 1:0] shamt_1_r;
+	reg [(width_lp == 1 ? 1 : $clog2(width_lp)) - 1:0] shamt_1_r;
 	reg sign_1_r;
 	reg all_zero_1_r;
 	always @(posedge clk_i)

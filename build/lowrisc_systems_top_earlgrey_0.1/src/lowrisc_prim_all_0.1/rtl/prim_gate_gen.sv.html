@@ -114,7 +114,21 @@
 <a href="#l-106">106</a>
 <a href="#l-107">107</a>
 <a href="#l-108">108</a>
-<a href="#l-109">109</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-109">109</a>
+<a href="#l-110">110</a>
+<a href="#l-111">111</a>
+<a href="#l-112">112</a>
+<a href="#l-113">113</a>
+<a href="#l-114">114</a>
+<a href="#l-115">115</a>
+<a href="#l-116">116</a>
+<a href="#l-117">117</a>
+<a href="#l-118">118</a>
+<a href="#l-119">119</a>
+<a href="#l-120">120</a>
+<a href="#l-121">121</a>
+<a href="#l-122">122</a>
+<a href="#l-123">123</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -125,104 +139,118 @@
 <a name="l-9"></a><span class="c1">// them with registers, resulting in a split of around 50/50 between logic and</span>
 <a name="l-10"></a><span class="c1">// sequential cells.</span>
 <a name="l-11"></a><span class="c1">//</span>
-<a name="l-12"></a><span class="c1">// This generator has been tested with 32bit wide data, and it is accurate to</span>
-<a name="l-13"></a><span class="c1">// within around 250 GE. Do not use for fever than 500 GE.</span>
+<a name="l-12"></a><span class="c1">// This generator has been tested with 32bit wide data, and produces</span>
+<a name="l-13"></a><span class="c1">// the following results:</span>
 <a name="l-14"></a><span class="c1">//</span>
-<a name="l-15"></a><span class="c1">// -------------+-----------+----------</span>
-<a name="l-16"></a><span class="c1">// requested GE | actual GE | GE error</span>
-<a name="l-17"></a><span class="c1">// -------------+-----------+----------</span>
-<a name="l-18"></a><span class="c1">// 500          |   679     |   179</span>
-<a name="l-19"></a><span class="c1">// 1000         |   1018    |   18</span>
-<a name="l-20"></a><span class="c1">// 1500         |   1696    |   196</span>
-<a name="l-21"></a><span class="c1">// 2500         |   2714    |   214</span>
-<a name="l-22"></a><span class="c1">// 5000         |   5210    |   210</span>
-<a name="l-23"></a><span class="c1">// 7500         |   7456    |   -44</span>
-<a name="l-24"></a><span class="c1">// 10000        |   10015   |   15</span>
-<a name="l-25"></a><span class="c1">// 15000        |   15191   |   191</span>
-<a name="l-26"></a><span class="c1">// 25000        |   25228   |   228</span>
-<a name="l-27"></a><span class="c1">// 50000        |   50485   |   485</span>
-<a name="l-28"></a><span class="c1">//</span>
-<a name="l-29"></a>
-<a name="l-30"></a><span class="k">module</span> <span class="n">prim_gate_gen</span> <span class="p">#(</span>
-<a name="l-31"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">DataWidth</span> <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>
-<a name="l-32"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">NumGates</span> <span class="o">=</span> <span class="mh">1000</span>
-<a name="l-33"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-34"></a>  <span class="k">input</span>                        <span class="n">clk_i</span><span class="p">,</span>
-<a name="l-35"></a>  <span class="k">input</span>                        <span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-36"></a>
-<a name="l-37"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_i</span><span class="p">,</span>
-<a name="l-38"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_o</span>
-<a name="l-39"></a><span class="p">);</span>
-<a name="l-40"></a>
-<a name="l-41"></a>  <span class="c1">/////////////////////////////////////</span>
-<a name="l-42"></a>  <span class="c1">// Local parameters and assertions //</span>
-<a name="l-43"></a>  <span class="c1">/////////////////////////////////////</span>
-<a name="l-44"></a>
-<a name="l-45"></a>  <span class="c1">// technology specific tuning, do not modify.</span>
-<a name="l-46"></a>  <span class="c1">// an inner round is comprised of a 2bit rotation, followed by a 4bit SBox Layer.</span>
-<a name="l-47"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">NumInnerRounds</span> <span class="o">=</span> <span class="mh">2</span><span class="p">;</span>
-<a name="l-48"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">GatesPerRound</span>  <span class="o">=</span> <span class="n">DataWidth</span> <span class="o">*</span> <span class="mh">10</span><span class="p">;</span>
-<a name="l-49"></a>  <span class="c1">// an outer round consists of NumInnerRounds, followed by a register.</span>
-<a name="l-50"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">NumOuterRounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">NumGates</span> <span class="o">+</span> <span class="n">GatesPerRound</span> <span class="o">/</span> <span class="mh">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">GatesPerRound</span><span class="p">;</span>
-<a name="l-51"></a>
-<a name="l-52"></a>  <span class="c1">// do not use for fewer than 500 GE</span>
-<a name="l-53"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MinimumNumGates_A</span><span class="p">,</span> <span class="n">NumGates</span> <span class="o">&gt;=</span> <span class="mh">500</span><span class="p">)</span>
-<a name="l-54"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">DataMustBeMultipleOfFour_A</span><span class="p">,</span> <span class="n">DataWidth</span> <span class="o">%</span> <span class="mh">4</span> <span class="o">==</span> <span class="mh">0</span><span class="p">)</span>
+<a name="l-15"></a><span class="c1">// if valid_i constantly set to 1&#39;b1:</span>
+<a name="l-16"></a><span class="c1">// -------------+-----------+----------</span>
+<a name="l-17"></a><span class="c1">// requested GE | actual GE | GE error</span>
+<a name="l-18"></a><span class="c1">// -------------+-----------+----------</span>
+<a name="l-19"></a><span class="c1">// 500          |   679     |   179</span>
+<a name="l-20"></a><span class="c1">// 1000         |   1018    |   18</span>
+<a name="l-21"></a><span class="c1">// 1500         |   1696    |   196</span>
+<a name="l-22"></a><span class="c1">// 2500         |   2714    |   214</span>
+<a name="l-23"></a><span class="c1">// 5000         |   5210    |   210</span>
+<a name="l-24"></a><span class="c1">// 7500         |   7456    |   -44</span>
+<a name="l-25"></a><span class="c1">// 10000        |   10015   |   15</span>
+<a name="l-26"></a><span class="c1">// 15000        |   15191   |   191</span>
+<a name="l-27"></a><span class="c1">// 25000        |   25228   |   228</span>
+<a name="l-28"></a><span class="c1">// 50000        |   50485   |   485</span>
+<a name="l-29"></a><span class="c1">//</span>
+<a name="l-30"></a><span class="c1">// otherwise, with clock gating enabled:</span>
+<a name="l-31"></a><span class="c1">// -------------+-----------+----------</span>
+<a name="l-32"></a><span class="c1">// requested GE | actual GE | GE error</span>
+<a name="l-33"></a><span class="c1">// -------------+-----------+----------</span>
+<a name="l-34"></a><span class="c1">// 500          |   696     |   196</span>
+<a name="l-35"></a><span class="c1">// 1000         |   1043    |   43</span>
+<a name="l-36"></a><span class="c1">// 1500         |   1737    |   237</span>
+<a name="l-37"></a><span class="c1">// 2500         |   2779    |   279</span>
+<a name="l-38"></a><span class="c1">// 5000         |   5340    |   340</span>
+<a name="l-39"></a><span class="c1">// 7500         |   7634    |   134</span>
+<a name="l-40"></a><span class="c1">// 10000        |   10284   |   284</span>
+<a name="l-41"></a><span class="c1">// 15000        |   15585   |   585</span>
+<a name="l-42"></a><span class="c1">// 25000        |   25855   |   855</span>
+<a name="l-43"></a><span class="c1">// 50000        |   51732   |   1732</span>
+<a name="l-44"></a><span class="c1">//</span>
+<a name="l-45"></a><span class="c1">// Note that the generator is not very accurate for smaller gate counts due</span>
+<a name="l-46"></a><span class="c1">// to the generate loop granularity. Hence, do not use for fever than 500 GE.</span>
+<a name="l-47"></a>
+<a name="l-48"></a>
+<a name="l-49"></a><span class="k">module</span> <span class="n">prim_gate_gen</span> <span class="p">#(</span>
+<a name="l-50"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">DataWidth</span> <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>
+<a name="l-51"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">NumGates</span> <span class="o">=</span> <span class="mh">1000</span>
+<a name="l-52"></a><span class="p">)</span> <span class="p">(</span>
+<a name="l-53"></a>  <span class="k">input</span>                        <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-54"></a>  <span class="k">input</span>                        <span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-55"></a>
-<a name="l-56"></a>  <span class="c1">/////////////////////</span>
-<a name="l-57"></a>  <span class="c1">// Helper Function //</span>
-<a name="l-58"></a>  <span class="c1">/////////////////////</span>
-<a name="l-59"></a>
-<a name="l-60"></a>  <span class="c1">// this is the sbox from the prince cipher</span>
-<a name="l-61"></a>  <span class="k">localparam</span> <span class="k">logic</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">SBox4</span> <span class="o">=</span> <span class="p">{</span><span class="mh">4&#39;h4</span><span class="p">,</span> <span class="mh">4&#39;hD</span><span class="p">,</span> <span class="mh">4&#39;h5</span><span class="p">,</span> <span class="mh">4&#39;hE</span><span class="p">,</span>
-<a name="l-62"></a>                                       <span class="mh">4&#39;h0</span><span class="p">,</span> <span class="mh">4&#39;h8</span><span class="p">,</span> <span class="mh">4&#39;h7</span><span class="p">,</span> <span class="mh">4&#39;h6</span><span class="p">,</span>
-<a name="l-63"></a>                                       <span class="mh">4&#39;h1</span><span class="p">,</span> <span class="mh">4&#39;h9</span><span class="p">,</span> <span class="mh">4&#39;hC</span><span class="p">,</span> <span class="mh">4&#39;hA</span><span class="p">,</span>
-<a name="l-64"></a>                                       <span class="mh">4&#39;h2</span><span class="p">,</span> <span class="mh">4&#39;h3</span><span class="p">,</span> <span class="mh">4&#39;hF</span><span class="p">,</span> <span class="mh">4&#39;hB</span><span class="p">};</span>
+<a name="l-56"></a>  <span class="k">input</span>                        <span class="n">valid_i</span><span class="p">,</span>
+<a name="l-57"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_i</span><span class="p">,</span>
+<a name="l-58"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_o</span><span class="p">,</span>
+<a name="l-59"></a>  <span class="k">output</span>                       <span class="n">valid_o</span>
+<a name="l-60"></a><span class="p">);</span>
+<a name="l-61"></a>
+<a name="l-62"></a>  <span class="c1">/////////////////////////////////////</span>
+<a name="l-63"></a>  <span class="c1">// Local parameters and assertions //</span>
+<a name="l-64"></a>  <span class="c1">/////////////////////////////////////</span>
 <a name="l-65"></a>
-<a name="l-66"></a>  <span class="k">function</span> <span class="k">automatic</span> <span class="k">logic</span> <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sbox4_layer</span><span class="p">(</span><span class="k">logic</span> <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">state_in</span><span class="p">);</span>
-<a name="l-67"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">state_out</span><span class="p">;</span>
-<a name="l-68"></a>    <span class="c1">// note that if simulation performance becomes an issue, this loop can be unrolled</span>
-<a name="l-69"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">DataWidth</span><span class="o">/</span><span class="mh">4</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-70"></a>      <span class="n">state_out</span><span class="p">[</span><span class="n">k</span><span class="o">*</span><span class="mh">4</span>  <span class="o">+:</span> <span class="mh">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">SBox4</span><span class="p">[</span><span class="n">state_in</span><span class="p">[</span><span class="n">k</span><span class="o">*</span><span class="mh">4</span>  <span class="o">+:</span> <span class="mh">4</span><span class="p">]];</span>
-<a name="l-71"></a>    <span class="k">end</span>
-<a name="l-72"></a>    <span class="k">return</span> <span class="n">state_out</span><span class="p">;</span>
-<a name="l-73"></a>  <span class="k">endfunction</span> <span class="o">:</span> <span class="n">sbox4_layer</span>
-<a name="l-74"></a>
-<a name="l-75"></a>  <span class="c1">/////////////////////</span>
-<a name="l-76"></a>  <span class="c1">// Generator Loops //</span>
+<a name="l-66"></a>  <span class="c1">// technology specific tuning, do not modify.</span>
+<a name="l-67"></a>  <span class="c1">// an inner round is comprised of a 2bit rotation, followed by a 4bit SBox Layer.</span>
+<a name="l-68"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">NumInnerRounds</span> <span class="o">=</span> <span class="mh">2</span><span class="p">;</span>
+<a name="l-69"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">GatesPerRound</span>  <span class="o">=</span> <span class="n">DataWidth</span> <span class="o">*</span> <span class="mh">10</span><span class="p">;</span>
+<a name="l-70"></a>  <span class="c1">// an outer round consists of NumInnerRounds, followed by a register.</span>
+<a name="l-71"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">NumOuterRounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">NumGates</span> <span class="o">+</span> <span class="n">GatesPerRound</span> <span class="o">/</span> <span class="mh">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">GatesPerRound</span><span class="p">;</span>
+<a name="l-72"></a>
+<a name="l-73"></a>  <span class="c1">// do not use for fewer than 500 GE</span>
+<a name="l-74"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MinimumNumGates_A</span><span class="p">,</span> <span class="n">NumGates</span> <span class="o">&gt;=</span> <span class="mh">500</span><span class="p">)</span>
+<a name="l-75"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">DataMustBeMultipleOfFour_A</span><span class="p">,</span> <span class="n">DataWidth</span> <span class="o">%</span> <span class="mh">4</span> <span class="o">==</span> <span class="mh">0</span><span class="p">)</span>
+<a name="l-76"></a>
 <a name="l-77"></a>  <span class="c1">/////////////////////</span>
-<a name="l-78"></a>
-<a name="l-79"></a>  <span class="p">(</span><span class="o">*</span> <span class="n">preserve</span> <span class="o">*</span><span class="p">)</span> <span class="k">logic</span> <span class="p">[</span><span class="n">NumOuterRounds</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">regs_d</span><span class="p">,</span> <span class="n">regs_q</span><span class="p">;</span>
+<a name="l-78"></a>  <span class="c1">// Generator Loops //</span>
+<a name="l-79"></a>  <span class="c1">/////////////////////</span>
 <a name="l-80"></a>
-<a name="l-81"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">k</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">NumOuterRounds</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_outer_round</span>
-<a name="l-82"></a>
-<a name="l-83"></a>    <span class="p">(</span><span class="o">*</span> <span class="n">preserve</span> <span class="o">*</span><span class="p">)</span> <span class="k">logic</span> <span class="p">[</span><span class="nl">NumInnerRounds:</span><span class="mh">0</span><span class="p">][</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">inner_data</span><span class="p">;</span>
-<a name="l-84"></a>
-<a name="l-85"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="mh">0</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_first</span>
-<a name="l-86"></a>      <span class="k">assign</span> <span class="n">inner_data</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_i</span><span class="p">;</span>
-<a name="l-87"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_others</span>
-<a name="l-88"></a>      <span class="k">assign</span> <span class="n">inner_data</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">regs_q</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-89"></a>    <span class="k">end</span>
-<a name="l-90"></a>
-<a name="l-91"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">l</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">NumInnerRounds</span><span class="p">;</span> <span class="n">l</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_inner</span>
-<a name="l-92"></a>      <span class="c1">// 2bit rotation + sbox layer</span>
-<a name="l-93"></a>      <span class="k">assign</span> <span class="n">inner_data</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sbox4_layer</span><span class="p">({</span><span class="n">inner_data</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">inner_data</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">2</span><span class="p">]});</span>
+<a name="l-81"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumOuterRounds</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">regs_d</span><span class="p">,</span> <span class="n">regs_q</span><span class="p">;</span>
+<a name="l-82"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumOuterRounds</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">valid_d</span><span class="p">,</span> <span class="n">valid_q</span><span class="p">;</span>
+<a name="l-83"></a>
+<a name="l-84"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">k</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">NumOuterRounds</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_outer_round</span>
+<a name="l-85"></a>
+<a name="l-86"></a>    <span class="k">logic</span> <span class="p">[</span><span class="nl">NumInnerRounds:</span><span class="mh">0</span><span class="p">][</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">inner_data</span><span class="p">;</span>
+<a name="l-87"></a>
+<a name="l-88"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="mh">0</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_first</span>
+<a name="l-89"></a>      <span class="k">assign</span> <span class="n">inner_data</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_i</span><span class="p">;</span>
+<a name="l-90"></a>      <span class="k">assign</span> <span class="n">valid_d</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span>    <span class="o">=</span> <span class="n">valid_i</span><span class="p">;</span>
+<a name="l-91"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_others</span>
+<a name="l-92"></a>      <span class="k">assign</span> <span class="n">inner_data</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">regs_q</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
+<a name="l-93"></a>      <span class="k">assign</span> <span class="n">valid_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>    <span class="o">=</span> <span class="n">valid_q</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
 <a name="l-94"></a>    <span class="k">end</span>
 <a name="l-95"></a>
-<a name="l-96"></a>    <span class="k">assign</span> <span class="n">regs_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_data</span><span class="p">[</span><span class="n">NumInnerRounds</span><span class="p">];</span>
-<a name="l-97"></a>  <span class="k">end</span>
-<a name="l-98"></a>
-<a name="l-99"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
-<a name="l-100"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-101"></a>      <span class="n">regs_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-102"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-103"></a>      <span class="n">regs_q</span> <span class="o">&lt;=</span> <span class="n">regs_d</span><span class="p">;</span>
-<a name="l-104"></a>    <span class="k">end</span>
-<a name="l-105"></a>  <span class="k">end</span>
-<a name="l-106"></a>
-<a name="l-107"></a>  <span class="k">assign</span> <span class="n">data_o</span> <span class="o">=</span> <span class="n">regs_q</span><span class="p">[</span><span class="n">NumOuterRounds</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-108"></a>
-<a name="l-109"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_gate_gen</span>
+<a name="l-96"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">l</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">NumInnerRounds</span><span class="p">;</span> <span class="n">l</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_inner</span>
+<a name="l-97"></a>      <span class="c1">// 2bit rotation + sbox layer</span>
+<a name="l-98"></a>      <span class="k">assign</span> <span class="n">inner_data</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="mh">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prim_cipher_pkg</span><span class="o">::</span><span class="n">sbox4_32bit</span><span class="p">({</span><span class="n">inner_data</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span>
+<a name="l-99"></a>                                                             <span class="n">inner_data</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">2</span><span class="p">]},</span>
+<a name="l-100"></a>                                                             <span class="n">prim_cipher_pkg</span><span class="o">::</span><span class="n">PRINCE_SBOX4</span><span class="p">);</span>
+<a name="l-101"></a>    <span class="k">end</span>
+<a name="l-102"></a>
+<a name="l-103"></a>    <span class="k">assign</span> <span class="n">regs_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_data</span><span class="p">[</span><span class="n">NumInnerRounds</span><span class="p">];</span>
+<a name="l-104"></a>  <span class="k">end</span>
+<a name="l-105"></a>
+<a name="l-106"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
+<a name="l-107"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-108"></a>      <span class="n">regs_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-109"></a>      <span class="n">valid_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-110"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-111"></a>      <span class="n">valid_q</span> <span class="o">&lt;=</span> <span class="n">valid_d</span><span class="p">;</span>
+<a name="l-112"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">NumOuterRounds</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-113"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">valid_d</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">begin</span>
+<a name="l-114"></a>          <span class="n">regs_q</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">regs_d</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<a name="l-115"></a>        <span class="k">end</span>
+<a name="l-116"></a>      <span class="k">end</span>
+<a name="l-117"></a>    <span class="k">end</span>
+<a name="l-118"></a>  <span class="k">end</span>
+<a name="l-119"></a>
+<a name="l-120"></a>  <span class="k">assign</span> <span class="n">data_o</span> <span class="o">=</span> <span class="n">regs_q</span><span class="p">[</span><span class="n">NumOuterRounds</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
+<a name="l-121"></a>  <span class="k">assign</span> <span class="n">valid_o</span> <span class="o">=</span> <span class="n">valid_q</span><span class="p">[</span><span class="n">NumOuterRounds</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
+<a name="l-122"></a>
+<a name="l-123"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_gate_gen</span>
 </pre></div>
 </td></tr></table>
   </body>

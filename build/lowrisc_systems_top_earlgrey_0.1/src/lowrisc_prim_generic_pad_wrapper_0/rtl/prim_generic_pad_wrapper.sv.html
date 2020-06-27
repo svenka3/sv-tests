@@ -57,7 +57,8 @@
 <a href="#l-49">49</a>
 <a href="#l-50">50</a>
 <a href="#l-51">51</a>
-<a href="#l-52">52</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-52">52</a>
+<a href="#l-53">53</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -99,16 +100,17 @@
 <a name="l-40"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">strong0</span><span class="p">,</span> <span class="k">strong1</span><span class="p">)</span> <span class="n">inout_io</span> <span class="o">=</span> <span class="p">(</span><span class="n">oe</span> <span class="o">&amp;&amp;</span> <span class="n">drv</span> <span class="o">==</span> <span class="n">STRONG_DRIVE</span><span class="p">)</span> <span class="o">?</span> <span class="n">out</span> <span class="o">:</span> <span class="mh">1</span><span class="p">&#39;</span><span class="n">bz</span><span class="p">;</span>
 <a name="l-41"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">pull0</span><span class="p">,</span> <span class="k">pull1</span><span class="p">)</span>     <span class="n">inout_io</span> <span class="o">=</span> <span class="p">(</span><span class="n">oe</span> <span class="o">&amp;&amp;</span> <span class="n">drv</span> <span class="o">==</span> <span class="n">WEAK_DRIVE</span><span class="p">)</span>   <span class="o">?</span> <span class="n">out</span> <span class="o">:</span> <span class="mh">1</span><span class="p">&#39;</span><span class="n">bz</span><span class="p">;</span>
 <a name="l-42"></a>  <span class="c1">// pullup / pulldown termination</span>
-<a name="l-43"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">highz0</span><span class="p">,</span> <span class="k">weak1</span><span class="p">)</span>    <span class="n">inout_io</span> <span class="o">=</span> <span class="n">pu</span><span class="p">;</span>
-<a name="l-44"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">weak0</span><span class="p">,</span> <span class="k">highz1</span><span class="p">)</span>    <span class="n">inout_io</span> <span class="o">=</span> <span class="o">~</span><span class="n">pd</span><span class="p">;</span>
-<a name="l-45"></a>  <span class="c1">// fake trireg emulation</span>
-<a name="l-46"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">weak0</span><span class="p">,</span> <span class="k">weak1</span><span class="p">)</span>     <span class="n">inout_io</span> <span class="o">=</span> <span class="p">(</span><span class="n">kp</span><span class="p">)</span> <span class="o">?</span> <span class="n">inout_io</span> <span class="o">:</span> <span class="mh">1</span><span class="p">&#39;</span><span class="n">bz</span><span class="p">;</span>
-<a name="l-47"></a><span class="no">`endif</span>
-<a name="l-48"></a>
-<a name="l-49"></a>  <span class="c1">// assertions</span>
-<a name="l-50"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">AttrDwCheck_A</span><span class="p">,</span> <span class="n">AttrDw</span> <span class="o">&gt;=</span> <span class="mh">7</span><span class="p">)</span>
-<a name="l-51"></a>
-<a name="l-52"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_generic_pad_wrapper</span>
+<a name="l-43"></a>  <span class="c1">// default to high-Z in case both PU and PD are asserted (safety mechanism).</span>
+<a name="l-44"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">highz0</span><span class="p">,</span> <span class="k">weak1</span><span class="p">)</span>    <span class="n">inout_io</span> <span class="o">=</span> <span class="n">pu</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">pd</span><span class="p">;</span>
+<a name="l-45"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">weak0</span><span class="p">,</span> <span class="k">highz1</span><span class="p">)</span>    <span class="n">inout_io</span> <span class="o">=</span> <span class="n">pu</span> <span class="o">|</span> <span class="o">~</span><span class="n">pd</span><span class="p">;</span>
+<a name="l-46"></a>  <span class="c1">// fake trireg emulation</span>
+<a name="l-47"></a>  <span class="k">assign</span> <span class="p">(</span><span class="k">weak0</span><span class="p">,</span> <span class="k">weak1</span><span class="p">)</span>     <span class="n">inout_io</span> <span class="o">=</span> <span class="p">(</span><span class="n">kp</span><span class="p">)</span> <span class="o">?</span> <span class="n">inout_io</span> <span class="o">:</span> <span class="mh">1</span><span class="p">&#39;</span><span class="n">bz</span><span class="p">;</span>
+<a name="l-48"></a><span class="no">`endif</span>
+<a name="l-49"></a>
+<a name="l-50"></a>  <span class="c1">// assertions</span>
+<a name="l-51"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">AttrDwCheck_A</span><span class="p">,</span> <span class="n">AttrDw</span> <span class="o">&gt;=</span> <span class="mh">7</span><span class="p">)</span>
+<a name="l-52"></a>
+<a name="l-53"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_generic_pad_wrapper</span>
 </pre></div>
 </td></tr></table>
   </body>

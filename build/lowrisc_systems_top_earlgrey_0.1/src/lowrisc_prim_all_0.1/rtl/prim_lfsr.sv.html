@@ -490,7 +490,9 @@
 <a href="#l-482">482</a>
 <a href="#l-483">483</a>
 <a href="#l-484">484</a>
-<a href="#l-485">485</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-485">485</a>
+<a href="#l-486">486</a>
+<a href="#l-487">487</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -929,52 +931,54 @@
 <a name="l-437"></a>  <span class="c1">// this can be disabled if unused in order to not distort coverage</span>
 <a name="l-438"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">ExtSeedSVA</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_ext_seed_sva</span>
 <a name="l-439"></a>    <span class="c1">// check that external seed is correctly loaded into the state</span>
-<a name="l-440"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ExtDefaultSeedInputCheck_A</span><span class="p">,</span> <span class="n">seed_en_i</span> <span class="o">|=&gt;</span> <span class="n">lfsr_q</span> <span class="o">==</span> <span class="n">$past</span><span class="p">(</span><span class="n">seed_i</span><span class="p">))</span>
-<a name="l-441"></a>  <span class="k">end</span>
-<a name="l-442"></a>
-<a name="l-443"></a>  <span class="c1">// if the external seed mechanism is not used,</span>
-<a name="l-444"></a>  <span class="c1">// there is theoretically no way we end up in a lockup condition</span>
-<a name="l-445"></a>  <span class="c1">// in order to not distort coverage, this SVA can be disabled in such cases</span>
-<a name="l-446"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">LockupSVA</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_lockup_mechanism_sva</span>
-<a name="l-447"></a>    <span class="c1">// check that a stuck LFSR is correctly reseeded</span>
-<a name="l-448"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">LfsrLockupCheck_A</span><span class="p">,</span> <span class="n">lfsr_en_i</span> <span class="o">&amp;&amp;</span> <span class="n">lockup</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">seed_en_i</span> <span class="o">|=&gt;</span> <span class="o">!</span><span class="n">lockup</span><span class="p">)</span>
-<a name="l-449"></a>  <span class="k">end</span>
-<a name="l-450"></a>
-<a name="l-451"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">MaxLenSVA</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_max_len_sva</span>
+<a name="l-440"></a>    <span class="c1">// rst_ni is used directly as part of the pre-condition since the usage of rst_ni</span>
+<a name="l-441"></a>    <span class="c1">// in disable_iff is unsampled.  See #1985 for more details</span>
+<a name="l-442"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ExtDefaultSeedInputCheck_A</span><span class="p">,</span> <span class="p">(</span><span class="n">seed_en_i</span> <span class="o">&amp;&amp;</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="o">|=&gt;</span> <span class="n">lfsr_q</span> <span class="o">==</span> <span class="n">$past</span><span class="p">(</span><span class="n">seed_i</span><span class="p">))</span>
+<a name="l-443"></a>  <span class="k">end</span>
+<a name="l-444"></a>
+<a name="l-445"></a>  <span class="c1">// if the external seed mechanism is not used,</span>
+<a name="l-446"></a>  <span class="c1">// there is theoretically no way we end up in a lockup condition</span>
+<a name="l-447"></a>  <span class="c1">// in order to not distort coverage, this SVA can be disabled in such cases</span>
+<a name="l-448"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">LockupSVA</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_lockup_mechanism_sva</span>
+<a name="l-449"></a>    <span class="c1">// check that a stuck LFSR is correctly reseeded</span>
+<a name="l-450"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">LfsrLockupCheck_A</span><span class="p">,</span> <span class="n">lfsr_en_i</span> <span class="o">&amp;&amp;</span> <span class="n">lockup</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">seed_en_i</span> <span class="o">|=&gt;</span> <span class="o">!</span><span class="n">lockup</span><span class="p">)</span>
+<a name="l-451"></a>  <span class="k">end</span>
 <a name="l-452"></a>
-<a name="l-453"></a><span class="no">`ifndef</span> <span class="n">SYNTHESIS</span>
-<a name="l-454"></a>    <span class="c1">// the code below is a workaround to enable long sequences to be checked.</span>
-<a name="l-455"></a>    <span class="c1">// some simulators do not support SVA sequences longer than 2**32-1.</span>
-<a name="l-456"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">LfsrDw</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cnt_d</span><span class="p">,</span> <span class="n">cnt_q</span><span class="p">;</span>
-<a name="l-457"></a>    <span class="k">logic</span> <span class="n">perturbed_d</span><span class="p">,</span> <span class="n">perturbed_q</span><span class="p">;</span>
-<a name="l-458"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">LfsrDw</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cmp_val</span><span class="p">;</span>
-<a name="l-459"></a>
-<a name="l-460"></a>    <span class="k">assign</span> <span class="n">cmp_val</span> <span class="o">=</span> <span class="p">{{(</span><span class="n">LfsrDw</span><span class="o">-</span><span class="mh">1</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}},</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">};</span> <span class="c1">// 2**LfsrDw-2</span>
-<a name="l-461"></a>    <span class="k">assign</span> <span class="n">cnt_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">lfsr_en_i</span> <span class="o">&amp;&amp;</span> <span class="n">lockup</span><span class="p">)</span>             <span class="o">?</span> <span class="m">&#39;0</span>           <span class="o">:</span>
-<a name="l-462"></a>                   <span class="p">(</span><span class="n">lfsr_en_i</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cnt_q</span> <span class="o">==</span> <span class="n">cmp_val</span><span class="p">))</span> <span class="o">?</span> <span class="m">&#39;0</span>           <span class="o">:</span>
-<a name="l-463"></a>                   <span class="p">(</span><span class="n">lfsr_en_i</span><span class="p">)</span>                       <span class="o">?</span> <span class="n">cnt_q</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span> <span class="o">:</span>
-<a name="l-464"></a>                                                       <span class="n">cnt_q</span><span class="p">;</span>
-<a name="l-465"></a>
-<a name="l-466"></a>    <span class="k">assign</span> <span class="n">perturbed_d</span> <span class="o">=</span> <span class="n">perturbed_q</span> <span class="o">|</span> <span class="p">(</span><span class="o">|</span><span class="n">entropy_i</span><span class="p">)</span> <span class="o">|</span> <span class="n">seed_en_i</span><span class="p">;</span>
+<a name="l-453"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">MaxLenSVA</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_max_len_sva</span>
+<a name="l-454"></a>
+<a name="l-455"></a><span class="no">`ifndef</span> <span class="n">SYNTHESIS</span>
+<a name="l-456"></a>    <span class="c1">// the code below is a workaround to enable long sequences to be checked.</span>
+<a name="l-457"></a>    <span class="c1">// some simulators do not support SVA sequences longer than 2**32-1.</span>
+<a name="l-458"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">LfsrDw</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cnt_d</span><span class="p">,</span> <span class="n">cnt_q</span><span class="p">;</span>
+<a name="l-459"></a>    <span class="k">logic</span> <span class="n">perturbed_d</span><span class="p">,</span> <span class="n">perturbed_q</span><span class="p">;</span>
+<a name="l-460"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">LfsrDw</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cmp_val</span><span class="p">;</span>
+<a name="l-461"></a>
+<a name="l-462"></a>    <span class="k">assign</span> <span class="n">cmp_val</span> <span class="o">=</span> <span class="p">{{(</span><span class="n">LfsrDw</span><span class="o">-</span><span class="mh">1</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}},</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">};</span> <span class="c1">// 2**LfsrDw-2</span>
+<a name="l-463"></a>    <span class="k">assign</span> <span class="n">cnt_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">lfsr_en_i</span> <span class="o">&amp;&amp;</span> <span class="n">lockup</span><span class="p">)</span>             <span class="o">?</span> <span class="m">&#39;0</span>           <span class="o">:</span>
+<a name="l-464"></a>                   <span class="p">(</span><span class="n">lfsr_en_i</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cnt_q</span> <span class="o">==</span> <span class="n">cmp_val</span><span class="p">))</span> <span class="o">?</span> <span class="m">&#39;0</span>           <span class="o">:</span>
+<a name="l-465"></a>                   <span class="p">(</span><span class="n">lfsr_en_i</span><span class="p">)</span>                       <span class="o">?</span> <span class="n">cnt_q</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span> <span class="o">:</span>
+<a name="l-466"></a>                                                       <span class="n">cnt_q</span><span class="p">;</span>
 <a name="l-467"></a>
-<a name="l-468"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_max_len</span>
-<a name="l-469"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-470"></a>        <span class="n">cnt_q</span>       <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-471"></a>        <span class="n">perturbed_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-472"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-473"></a>        <span class="n">cnt_q</span>       <span class="o">&lt;=</span> <span class="n">cnt_d</span><span class="p">;</span>
-<a name="l-474"></a>        <span class="n">perturbed_q</span> <span class="o">&lt;=</span> <span class="n">perturbed_d</span><span class="p">;</span>
-<a name="l-475"></a>      <span class="k">end</span>
-<a name="l-476"></a>    <span class="k">end</span>
-<a name="l-477"></a><span class="no">`endif</span>
-<a name="l-478"></a>
-<a name="l-479"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MaximalLengthCheck0_A</span><span class="p">,</span> <span class="n">cnt_q</span> <span class="o">==</span> <span class="mh">0</span> <span class="o">|-&gt;</span> <span class="n">lfsr_q</span> <span class="o">==</span> <span class="n">DefaultSeed</span><span class="p">,</span>
-<a name="l-480"></a>        <span class="n">clk_i</span><span class="p">,</span> <span class="o">!</span><span class="n">rst_ni</span> <span class="o">||</span> <span class="n">perturbed_q</span><span class="p">)</span>
-<a name="l-481"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MaximalLengthCheck1_A</span><span class="p">,</span> <span class="n">cnt_q</span> <span class="o">!=</span> <span class="mh">0</span> <span class="o">|-&gt;</span> <span class="n">lfsr_q</span> <span class="o">!=</span> <span class="n">DefaultSeed</span><span class="p">,</span>
-<a name="l-482"></a>        <span class="n">clk_i</span><span class="p">,</span> <span class="o">!</span><span class="n">rst_ni</span> <span class="o">||</span> <span class="n">perturbed_q</span><span class="p">)</span>
-<a name="l-483"></a>  <span class="k">end</span>
-<a name="l-484"></a>
-<a name="l-485"></a><span class="k">endmodule</span>
+<a name="l-468"></a>    <span class="k">assign</span> <span class="n">perturbed_d</span> <span class="o">=</span> <span class="n">perturbed_q</span> <span class="o">|</span> <span class="p">(</span><span class="o">|</span><span class="n">entropy_i</span><span class="p">)</span> <span class="o">|</span> <span class="n">seed_en_i</span><span class="p">;</span>
+<a name="l-469"></a>
+<a name="l-470"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_max_len</span>
+<a name="l-471"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-472"></a>        <span class="n">cnt_q</span>       <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-473"></a>        <span class="n">perturbed_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-474"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-475"></a>        <span class="n">cnt_q</span>       <span class="o">&lt;=</span> <span class="n">cnt_d</span><span class="p">;</span>
+<a name="l-476"></a>        <span class="n">perturbed_q</span> <span class="o">&lt;=</span> <span class="n">perturbed_d</span><span class="p">;</span>
+<a name="l-477"></a>      <span class="k">end</span>
+<a name="l-478"></a>    <span class="k">end</span>
+<a name="l-479"></a>
+<a name="l-480"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MaximalLengthCheck0_A</span><span class="p">,</span> <span class="n">cnt_q</span> <span class="o">==</span> <span class="mh">0</span> <span class="o">|-&gt;</span> <span class="n">lfsr_q</span> <span class="o">==</span> <span class="n">DefaultSeed</span><span class="p">,</span>
+<a name="l-481"></a>        <span class="n">clk_i</span><span class="p">,</span> <span class="o">!</span><span class="n">rst_ni</span> <span class="o">||</span> <span class="n">perturbed_q</span><span class="p">)</span>
+<a name="l-482"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MaximalLengthCheck1_A</span><span class="p">,</span> <span class="n">cnt_q</span> <span class="o">!=</span> <span class="mh">0</span> <span class="o">|-&gt;</span> <span class="n">lfsr_q</span> <span class="o">!=</span> <span class="n">DefaultSeed</span><span class="p">,</span>
+<a name="l-483"></a>        <span class="n">clk_i</span><span class="p">,</span> <span class="o">!</span><span class="n">rst_ni</span> <span class="o">||</span> <span class="n">perturbed_q</span><span class="p">)</span>
+<a name="l-484"></a><span class="no">`endif</span>
+<a name="l-485"></a>  <span class="k">end</span>
+<a name="l-486"></a>
+<a name="l-487"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

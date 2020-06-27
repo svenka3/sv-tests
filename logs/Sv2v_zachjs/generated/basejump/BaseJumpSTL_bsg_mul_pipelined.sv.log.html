@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_mul_pipelined.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_mul_pipelined.v</a>
 defines: 
-time_elapsed: 1.692s
-ram usage: 19836 KB
+time_elapsed: 1.100s
+ram usage: 17024 KB
 </pre>
 <pre class="log">
 
@@ -83,7 +83,7 @@ module bsg_mul_32_32 (
 	output [63:0] z_o;
 	localparam width_lp = 32;
 	localparam pp_lp = (width_lp / 2) + 1;
-	wire [(pp_lp * 3) + -1:0] SDN;
+	wire [(pp_lp &gt;= 1 ? (pp_lp * 3) + -1 : ((2 - pp_lp) * 3) + (((pp_lp - 1) * 3) - 1)):(pp_lp &gt;= 1 ? 0 : (pp_lp - 1) * 3)] SDN;
 	bsg_mul_SDN #(.width_p(width_lp)) sdn(
 		.x_i(x_i),
 		.signed_i(signed_i),
@@ -119,7 +119,7 @@ module bsg_mul_32_32 (
 		.one_vec_p(164&#39;b1000_0000_0100_0000_0010____0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000),
 		.harden_p(harden_p)
 	) brr0(
-		.SDN_i({SDN[0+:12], 3&#39;b000}),
+		.SDN_i({SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 0 : 3) : 0 - ((pp_lp &gt;= 1 ? 0 : 3) - (pp_lp - 1)))+:12], 3&#39;b000}),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(verify_zero[0]),
@@ -136,7 +136,7 @@ module bsg_mul_32_32 (
 		.group_vec_p(48&#39;h22_1B_13_0B_05_00),
 		.harden_p(harden_p)
 	) gbd(
-		.SDN_i(SDN[45+:6]),
+		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 15 : 16) : 0 - ((pp_lp &gt;= 1 ? 15 : 16) - (pp_lp - 1)))+:6]),
 		.y_i(y_i),
 		.dot_o(gb_dot)
 	);
@@ -166,7 +166,7 @@ module bsg_mul_32_32 (
 		.one_vec_p(172&#39;b1000_0000_0100_0000_0010_0000_0001_0000____0000_0000_0000_0000_0000_0000__0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000),
 		.harden_p(harden_p)
 	) brr1(
-		.SDN_i(SDN[9+:15]),
+		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 3 : 7) : 0 - ((pp_lp &gt;= 1 ? 3 : 7) - (pp_lp - 1)))+:15]),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(verify_zero[1]),
@@ -234,7 +234,7 @@ module bsg_mul_32_32 (
 		.one_vec_p(172&#39;b1000_0000_0100_0000_0010_0000_0001_0000____0000_0000_0000_0000_0000_0000_0000_0000___0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000),
 		.harden_p(harden_p)
 	) brr2(
-		.SDN_i(SDN[21+:15]),
+		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 7 : 11) : 0 - ((pp_lp &gt;= 1 ? 7 : 11) - (pp_lp - 1)))+:15]),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(verify_zero[2]),
@@ -265,7 +265,7 @@ module bsg_mul_32_32 (
 		.one_vec_p(168&#39;b0000_0100_0000_0010_0000_0001_0000____0000_0000_0000_0000_0000_0000_0000_0000___0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000____0000_0000_0000_0000_0000_0000_0000_0000),
 		.harden_p(harden_p)
 	) brr3(
-		.SDN_i(SDN[33+:15]),
+		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 11 : 15) : 0 - ((pp_lp &gt;= 1 ? 11 : 15) - (pp_lp - 1)))+:15]),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(),

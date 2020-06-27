@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_miss_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_miss_fifo.v</a>
 defines: 
-time_elapsed: 1.004s
-ram usage: 18032 KB
+time_elapsed: 1.084s
+ram usage: 15932 KB
 </pre>
 <pre class="log">
 
@@ -125,12 +125,12 @@ module bsg_cache_non_blocking_miss_fifo (
 		.o(rptr_r),
 		.n_o(rptr_n)
 	);
-	function automatic [(els_p == 1 ? 1 : $clog2(els_p)) - 1:0] sv2v_cast_1D6A5;
-		input reg [(els_p == 1 ? 1 : $clog2(els_p)) - 1:0] inp;
-		sv2v_cast_1D6A5 = inp;
+	function automatic [lg_els_lp - 1:0] sv2v_cast_4DE5F;
+		input reg [lg_els_lp - 1:0] inp;
+		sv2v_cast_4DE5F = inp;
 	endfunction
-	wire [lg_els_lp - 1:0] rptr_plus1 = ((els_p - 1) == rptr_r ? sv2v_cast_1D6A5(0) : sv2v_cast_1D6A5(rptr_r + 1));
-	wire [lg_els_lp - 1:0] rptr_plus2 = ((els_p - 1) == rptr_plus1 ? sv2v_cast_1D6A5(0) : sv2v_cast_1D6A5(rptr_plus1 + 1));
+	wire [lg_els_lp - 1:0] rptr_plus1 = ((els_p - 1) == rptr_r ? sv2v_cast_4DE5F(0) : sv2v_cast_4DE5F(rptr_r + 1));
+	wire [lg_els_lp - 1:0] rptr_plus2 = ((els_p - 1) == rptr_plus1 ? sv2v_cast_4DE5F(0) : sv2v_cast_4DE5F(rptr_plus1 + 1));
 	wire wptr_inc;
 	wire [lg_els_lp - 1:0] wptr_r;
 	bsg_circular_ptr #(
@@ -252,16 +252,16 @@ module bsg_cache_non_blocking_miss_fifo (
 	assign ready_o = ~full;
 	assign enque = ready_o &amp; v_i;
 	assign wptr_inc = enque;
-	function automatic [$clog2(els_p) - 1:0] sv2v_cast_7466F;
-		input reg [$clog2(els_p) - 1:0] inp;
-		sv2v_cast_7466F = inp;
+	function automatic [rptr_inc_width_lp - 1:0] sv2v_cast_1689D;
+		input reg [rptr_inc_width_lp - 1:0] inp;
+		sv2v_cast_1689D = inp;
 	endfunction
 	always @(*)
 		if (rollback_i) begin
 			deque = 1&#39;b0;
 			cptr_inc = 1&#39;b0;
 			inval = 1&#39;b0;
-			rptr_inc = (cptr_r &gt;= rptr_r ? sv2v_cast_7466F(cptr_r - rptr_r) : sv2v_cast_7466F((els_p + cptr_r) - rptr_r));
+			rptr_inc = (cptr_r &gt;= rptr_r ? sv2v_cast_1689D(cptr_r - rptr_r) : sv2v_cast_1689D((els_p + cptr_r) - rptr_r));
 			mem_read_en = cptr_valid;
 			mem_read_addr = rptr_n;
 			v_n = v_r;
@@ -278,27 +278,27 @@ module bsg_cache_non_blocking_miss_fifo (
 						deque = 1&#39;b1;
 						inval = 1&#39;b1;
 						cptr_inc = 1&#39;b1;
-						rptr_inc = sv2v_cast_7466F(1);
+						rptr_inc = sv2v_cast_1689D(1);
 					end
 					e_miss_fifo_skip: begin
 						deque = 1&#39;b1;
 						inval = 1&#39;b0;
 						cptr_inc = 1&#39;b0;
-						rptr_inc = sv2v_cast_7466F(1);
+						rptr_inc = sv2v_cast_1689D(1);
 					end
 					e_miss_fifo_invalidate: begin
 						deque = 1&#39;b1;
 						inval = 1&#39;b1;
 						cptr_inc = 1&#39;b0;
-						rptr_inc = sv2v_cast_7466F(1);
+						rptr_inc = sv2v_cast_1689D(1);
 					end
 					default: begin
 						deque = 1&#39;b0;
 						inval = 1&#39;b0;
 						cptr_inc = 1&#39;b0;
-						rptr_inc = sv2v_cast_7466F(0);
+						rptr_inc = sv2v_cast_1689D(0);
 						mem_read_en = 1&#39;b0;
-						mem_read_addr = sv2v_cast_1D6A5(0);
+						mem_read_addr = sv2v_cast_4DE5F(0);
 						v_n = v_r;
 						data_n = data_r;
 					end
@@ -308,7 +308,7 @@ module bsg_cache_non_blocking_miss_fifo (
 				deque = 1&#39;b0;
 				inval = 1&#39;b0;
 				cptr_inc = 1&#39;b0;
-				rptr_inc = sv2v_cast_7466F(0);
+				rptr_inc = sv2v_cast_1689D(0);
 				mem_read_en = rptr_plus1_valid;
 				mem_read_addr = rptr_plus1;
 				v_n = v_r;
@@ -319,7 +319,7 @@ module bsg_cache_non_blocking_miss_fifo (
 			deque = (empty ? 1&#39;b0 : ~rptr_valid);
 			inval = 1&#39;b0;
 			cptr_inc = (empty ? 1&#39;b0 : (rptr_valid ? 1&#39;b0 : ~scan_not_dq_i));
-			rptr_inc = (empty ? sv2v_cast_7466F(0) : (rptr_valid ? 1&#39;b0 : sv2v_cast_7466F(1)));
+			rptr_inc = (empty ? sv2v_cast_1689D(0) : (rptr_valid ? 1&#39;b0 : sv2v_cast_1689D(1)));
 			mem_read_en = (mem_read_en_r ? rptr_plus1_valid : rptr_valid);
 			mem_read_addr = (mem_read_en_r ? rptr_plus1 : rptr_r);
 			v_n = (empty ? enque : mem_read_en_r);

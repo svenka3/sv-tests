@@ -309,7 +309,9 @@
 <a href="#l-301">301</a>
 <a href="#l-302">302</a>
 <a href="#l-303">303</a>
-<a href="#l-304">304</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-304">304</a>
+<a href="#l-305">305</a>
+<a href="#l-306">306</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -538,81 +540,83 @@
 <a name="l-227"></a>
 <a name="l-228"></a>      <span class="nl">StMsg:</span> <span class="k">begin</span>
 <a name="l-229"></a>        <span class="n">sel_rdata</span> <span class="o">=</span> <span class="n">SelFifo</span><span class="p">;</span>
-<a name="l-230"></a>
-<a name="l-231"></a>        <span class="k">if</span> <span class="p">(</span> <span class="p">(((</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Inner</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">reg_hash_process_flag</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Outer</span><span class="p">))</span>
-<a name="l-232"></a>            <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">txcount</span> <span class="o">&gt;=</span> <span class="n">sha_message_length</span><span class="p">))</span> <span class="k">begin</span>
-<a name="l-233"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StWaitResp</span><span class="p">;</span>
-<a name="l-234"></a>
-<a name="l-235"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span> <span class="c1">// block</span>
-<a name="l-236"></a>          <span class="n">hash_process</span> <span class="o">=</span> <span class="p">(</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Outer</span><span class="p">);</span>
-<a name="l-237"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-238"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StMsg</span><span class="p">;</span>
-<a name="l-239"></a>
-<a name="l-240"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="n">fifo_rvalid</span><span class="p">;</span>
-<a name="l-241"></a>        <span class="k">end</span>
-<a name="l-242"></a>      <span class="k">end</span>
-<a name="l-243"></a>
-<a name="l-244"></a>      <span class="nl">StWaitResp:</span> <span class="k">begin</span>
-<a name="l-245"></a>        <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-246"></a>
-<a name="l-247"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">sha_hash_done</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-248"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Outer</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-249"></a>            <span class="n">st_d</span> <span class="o">=</span> <span class="n">StDone</span><span class="p">;</span>
-<a name="l-250"></a>          <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="c1">// round_q == Inner</span>
-<a name="l-251"></a>            <span class="n">st_d</span> <span class="o">=</span> <span class="n">StPushToMsgFifo</span><span class="p">;</span>
-<a name="l-252"></a>          <span class="k">end</span>
-<a name="l-253"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-254"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StWaitResp</span><span class="p">;</span>
-<a name="l-255"></a>        <span class="k">end</span>
-<a name="l-256"></a>      <span class="k">end</span>
-<a name="l-257"></a>
-<a name="l-258"></a>      <span class="nl">StPushToMsgFifo:</span> <span class="k">begin</span>
-<a name="l-259"></a>        <span class="n">hmac_sha_rvalid</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-260"></a>        <span class="n">fifo_wsel</span>          <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-261"></a>        <span class="n">fifo_wvalid</span>        <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-262"></a>        <span class="n">clr_fifo_wdata_sel</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-263"></a>
-<a name="l-264"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">fifo_wready</span> <span class="o">&amp;&amp;</span> <span class="n">fifo_wdata_sel</span> <span class="o">==</span> <span class="mh">3&#39;h7</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-265"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StOPad</span><span class="p">;</span>
-<a name="l-266"></a>
-<a name="l-267"></a>          <span class="n">clr_txcount</span>  <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-268"></a>          <span class="n">update_round</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-269"></a>          <span class="n">round_d</span>      <span class="o">=</span> <span class="n">Outer</span><span class="p">;</span>
-<a name="l-270"></a>          <span class="n">hash_start</span>   <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-271"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-272"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StPushToMsgFifo</span><span class="p">;</span>
-<a name="l-273"></a>
-<a name="l-274"></a>        <span class="k">end</span>
-<a name="l-275"></a>      <span class="k">end</span>
-<a name="l-276"></a>
-<a name="l-277"></a>      <span class="nl">StOPad:</span> <span class="k">begin</span>
-<a name="l-278"></a>        <span class="n">sel_rdata</span> <span class="o">=</span> <span class="n">SelOPad</span><span class="p">;</span>
-<a name="l-279"></a>
-<a name="l-280"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">txcnt_eq_blksz</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-281"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StMsg</span><span class="p">;</span>
-<a name="l-282"></a>
-<a name="l-283"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span> <span class="c1">// block new read request</span>
-<a name="l-284"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-285"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StOPad</span><span class="p">;</span>
-<a name="l-286"></a>
-<a name="l-287"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-288"></a>        <span class="k">end</span>
-<a name="l-289"></a>      <span class="k">end</span>
-<a name="l-290"></a>
-<a name="l-291"></a>      <span class="nl">StDone:</span> <span class="k">begin</span>
-<a name="l-292"></a>        <span class="c1">// raise interrupt (hash_done)</span>
-<a name="l-293"></a>        <span class="n">st_d</span> <span class="o">=</span> <span class="n">StIdle</span><span class="p">;</span>
-<a name="l-294"></a>
-<a name="l-295"></a>        <span class="n">hmac_hash_done</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-296"></a>      <span class="k">end</span>
-<a name="l-297"></a>
-<a name="l-298"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-299"></a>        <span class="n">st_d</span> <span class="o">=</span> <span class="n">StIdle</span><span class="p">;</span>
-<a name="l-300"></a>      <span class="k">end</span>
-<a name="l-301"></a>
-<a name="l-302"></a>    <span class="k">endcase</span>
-<a name="l-303"></a>  <span class="k">end</span>
-<a name="l-304"></a><span class="k">endmodule</span>
+<a name="l-230"></a>        <span class="n">fifo_wsel</span> <span class="o">=</span> <span class="p">(</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Outer</span><span class="p">);</span>
+<a name="l-231"></a>
+<a name="l-232"></a>        <span class="k">if</span> <span class="p">(</span> <span class="p">(((</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Inner</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">reg_hash_process_flag</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Outer</span><span class="p">))</span>
+<a name="l-233"></a>            <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">txcount</span> <span class="o">&gt;=</span> <span class="n">sha_message_length</span><span class="p">))</span> <span class="k">begin</span>
+<a name="l-234"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StWaitResp</span><span class="p">;</span>
+<a name="l-235"></a>
+<a name="l-236"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span> <span class="c1">// block</span>
+<a name="l-237"></a>          <span class="n">hash_process</span> <span class="o">=</span> <span class="p">(</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Outer</span><span class="p">);</span>
+<a name="l-238"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-239"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StMsg</span><span class="p">;</span>
+<a name="l-240"></a>
+<a name="l-241"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="n">fifo_rvalid</span><span class="p">;</span>
+<a name="l-242"></a>        <span class="k">end</span>
+<a name="l-243"></a>      <span class="k">end</span>
+<a name="l-244"></a>
+<a name="l-245"></a>      <span class="nl">StWaitResp:</span> <span class="k">begin</span>
+<a name="l-246"></a>        <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-247"></a>
+<a name="l-248"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">sha_hash_done</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-249"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">round_q</span> <span class="o">==</span> <span class="n">Outer</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-250"></a>            <span class="n">st_d</span> <span class="o">=</span> <span class="n">StDone</span><span class="p">;</span>
+<a name="l-251"></a>          <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="c1">// round_q == Inner</span>
+<a name="l-252"></a>            <span class="n">st_d</span> <span class="o">=</span> <span class="n">StPushToMsgFifo</span><span class="p">;</span>
+<a name="l-253"></a>          <span class="k">end</span>
+<a name="l-254"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-255"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StWaitResp</span><span class="p">;</span>
+<a name="l-256"></a>        <span class="k">end</span>
+<a name="l-257"></a>      <span class="k">end</span>
+<a name="l-258"></a>
+<a name="l-259"></a>      <span class="nl">StPushToMsgFifo:</span> <span class="k">begin</span>
+<a name="l-260"></a>        <span class="n">hmac_sha_rvalid</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-261"></a>        <span class="n">fifo_wsel</span>          <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-262"></a>        <span class="n">fifo_wvalid</span>        <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-263"></a>        <span class="n">clr_fifo_wdata_sel</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-264"></a>
+<a name="l-265"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">fifo_wready</span> <span class="o">&amp;&amp;</span> <span class="n">fifo_wdata_sel</span> <span class="o">==</span> <span class="mh">3&#39;h7</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-266"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StOPad</span><span class="p">;</span>
+<a name="l-267"></a>
+<a name="l-268"></a>          <span class="n">clr_txcount</span>  <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-269"></a>          <span class="n">update_round</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-270"></a>          <span class="n">round_d</span>      <span class="o">=</span> <span class="n">Outer</span><span class="p">;</span>
+<a name="l-271"></a>          <span class="n">hash_start</span>   <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-272"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-273"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StPushToMsgFifo</span><span class="p">;</span>
+<a name="l-274"></a>
+<a name="l-275"></a>        <span class="k">end</span>
+<a name="l-276"></a>      <span class="k">end</span>
+<a name="l-277"></a>
+<a name="l-278"></a>      <span class="nl">StOPad:</span> <span class="k">begin</span>
+<a name="l-279"></a>        <span class="n">sel_rdata</span> <span class="o">=</span> <span class="n">SelOPad</span><span class="p">;</span>
+<a name="l-280"></a>        <span class="n">fifo_wsel</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span> <span class="c1">// Remained HMAC select to indicate HMAC is in second stage</span>
+<a name="l-281"></a>
+<a name="l-282"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">txcnt_eq_blksz</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-283"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StMsg</span><span class="p">;</span>
+<a name="l-284"></a>
+<a name="l-285"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span> <span class="c1">// block new read request</span>
+<a name="l-286"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-287"></a>          <span class="n">st_d</span> <span class="o">=</span> <span class="n">StOPad</span><span class="p">;</span>
+<a name="l-288"></a>
+<a name="l-289"></a>          <span class="n">hmac_sha_rvalid</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-290"></a>        <span class="k">end</span>
+<a name="l-291"></a>      <span class="k">end</span>
+<a name="l-292"></a>
+<a name="l-293"></a>      <span class="nl">StDone:</span> <span class="k">begin</span>
+<a name="l-294"></a>        <span class="c1">// raise interrupt (hash_done)</span>
+<a name="l-295"></a>        <span class="n">st_d</span> <span class="o">=</span> <span class="n">StIdle</span><span class="p">;</span>
+<a name="l-296"></a>
+<a name="l-297"></a>        <span class="n">hmac_hash_done</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-298"></a>      <span class="k">end</span>
+<a name="l-299"></a>
+<a name="l-300"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-301"></a>        <span class="n">st_d</span> <span class="o">=</span> <span class="n">StIdle</span><span class="p">;</span>
+<a name="l-302"></a>      <span class="k">end</span>
+<a name="l-303"></a>
+<a name="l-304"></a>    <span class="k">endcase</span>
+<a name="l-305"></a>  <span class="k">end</span>
+<a name="l-306"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
