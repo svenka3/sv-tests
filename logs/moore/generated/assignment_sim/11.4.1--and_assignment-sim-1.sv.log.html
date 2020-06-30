@@ -19,32 +19,37 @@ mode: parsing
 files: <a href="../../../../tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv.html" target="file-frame">tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv</a>
 defines: 
 time_elapsed: 0.004s
-ram usage: 10456 KB
+ram usage: 10348 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/generated/assignment_sim -e top <a href="../../../../tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv.html" target="file-frame">tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv</a>
 warning: `$display` not supported; ignored
-  --&gt; <a href="../../../../tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv.html#l-12" target="file-frame">tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv:12</a>:5-63:
+  --&gt; <a href="../../../../tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv.html#l-14" target="file-frame">tests/generated/assignment_sim/11.4.1--and_assignment-sim-1.sv:14</a>:5-51:
    | 
-   |     $display(&#34;:assert: (int(%s%s%s) == %d)&#34;, &#34;1&#34;, &#34;&amp;&#34;, &#34;1&#34;, a);
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+   |     $display(&#34;:assert: (int(%s) == %d)&#34;, &#34;4&amp;4&#34;, a);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-proc %top.initial.44.0 (i32$ %b) -&gt; (i32$ %a) {
+proc %top.initial.58.0 (i32$ %b) -&gt; (i32$ %a) {
 0:
-    %b.prb = prb i32$ %b
-    %a.prb = prb i32$ %a
-    %1 = and i32 %a.prb, %b.prb
+    %1 = const i32 4
     %2 = const time 0s 1e
     drv i32$ %a, %1, %2
+    %b.prb = prb i32$ %b
+    %a.prb = prb i32$ %a
+    %3 = and i32 %a.prb, %b.prb
+    drv i32$ %a, %3, %2
     halt
 }
 
 entity @top () -&gt; () {
-    %0 = const i32 1
+    %0 = const i32 0
     %a = sig i32 %0
     %b = sig i32 %0
-    inst %top.initial.44.0 (i32$ %b) -&gt; (i32$ %a)
+    %1 = const i32 4
+    %2 = const time 0s 1e
+    drv i32$ %b, %1, %2
+    inst %top.initial.58.0 (i32$ %b) -&gt; (i32$ %a)
     halt
 }
 
