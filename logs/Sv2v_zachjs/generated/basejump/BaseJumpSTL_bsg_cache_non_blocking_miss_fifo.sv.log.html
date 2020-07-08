@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_miss_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_miss_fifo.v</a>
 defines: 
-time_elapsed: 1.000s
-ram usage: 14428 KB
+time_elapsed: 1.092s
+ram usage: 16028 KB
 </pre>
 <pre class="log">
 
@@ -183,10 +183,14 @@ module bsg_cache_non_blocking_miss_fifo (
 	);
 	reg mem_read_en_r;
 	reg [lg_els_lp - 1:0] mem_read_addr_r;
+	function automatic [(lg_els_lp &gt;= 1 ? lg_els_lp : 2 - lg_els_lp) - 1:0] sv2v_cast_20F31;
+		input reg [(lg_els_lp &gt;= 1 ? lg_els_lp : 2 - lg_els_lp) - 1:0] inp;
+		sv2v_cast_20F31 = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (reset_i) begin
 			mem_read_en_r &lt;= 1&#39;b0;
-			mem_read_addr_r &lt;= &#39;sd0;
+			mem_read_addr_r &lt;= sv2v_cast_20F31(1&#39;sb0);
 		end
 		else begin
 			mem_read_en_r &lt;= mem_read_en;
@@ -197,9 +201,13 @@ module bsg_cache_non_blocking_miss_fifo (
 	reg [width_p - 1:0] data_n;
 	reg v_r;
 	reg v_n;
+	function automatic [(width_p &gt;= 1 ? width_p : 2 - width_p) - 1:0] sv2v_cast_4955A;
+		input reg [(width_p &gt;= 1 ? width_p : 2 - width_p) - 1:0] inp;
+		sv2v_cast_4955A = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (reset_i) begin
-			data_r &lt;= &#39;sd0;
+			data_r &lt;= sv2v_cast_4955A(1&#39;sb0);
 			v_r &lt;= 1&#39;b0;
 		end
 		else begin

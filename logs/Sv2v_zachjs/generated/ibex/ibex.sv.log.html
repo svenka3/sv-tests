@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/ibex/shared/rtl/prim_clock_gating.sv.html" target="file-frame">third_party/cores/ibex/shared/rtl/prim_clock_gating.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pkg.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pkg.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_alu.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_alu.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_compressed_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_compressed_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_controller.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_controller.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_cs_registers.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_cs_registers.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_counters.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_counters.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_decoder.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_decoder.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_ex_block.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_ex_block.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_id_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_id_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_if_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_if_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_wb_stage.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_wb_stage.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_load_store_unit.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_load_store_unit.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_slow.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_slow.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_multdiv_fast.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_multdiv_fast.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_prefetch_buffer.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_fetch_fifo.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_fetch_fifo.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_pmp.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_pmp.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_core.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_core.sv</a> <a href="../../../../third_party/cores/ibex/shared/rtl/prim_assert.sv.html" target="file-frame">third_party/cores/ibex/shared/rtl/prim_assert.sv</a> <a href="../../../../third_party/cores/ibex/rtl/ibex_register_file_fpga.sv.html" target="file-frame">third_party/cores/ibex/rtl/ibex_register_file_fpga.sv</a>
 defines: 
-time_elapsed: 24.588s
-ram usage: 111588 KB
+time_elapsed: 29.644s
+ram usage: 165164 KB
 </pre>
 <pre class="log">
 
@@ -542,7 +542,7 @@ module ibex_alu (
 			assign bitcnt_pcnt = operator_i == ALU_PCNT;
 			assign bitcnt_bits = (bitcnt_pcnt ? operand_a_i : (bitcnt_ctz ? ~operand_a_i : ~operand_a_rev));
 			always @(*) begin
-				bitcnt_result = &#39;sd0;
+				bitcnt_result = 6&#39;b000000;
 				bitcnt_bit_enable = {32&#39;b0, 1&#39;b1};
 				begin : sv2v_autoblock_25
 					reg [31:0] i;
@@ -566,17 +566,17 @@ module ibex_alu (
 				endcase
 		end
 		else begin : g_no_alu_rvb
-			assign minmax_result = &#39;sd0;
-			always @(*) bitcnt_result = &#39;sd0;
-			always @(*) pack_result = &#39;sd0;
-			always @(*) multicycle_result = &#39;sd0;
-			always @(*) singlebit_result = &#39;sd0;
-			always @(*) imd_val_d_o = &#39;sd0;
-			always @(*) imd_val_we_o = &#39;sd0;
+			assign minmax_result = 32&#39;b00000000000000000000000000000000;
+			always @(*) bitcnt_result = 6&#39;b000000;
+			always @(*) pack_result = 32&#39;b00000000000000000000000000000000;
+			always @(*) multicycle_result = 32&#39;b00000000000000000000000000000000;
+			always @(*) singlebit_result = 32&#39;b00000000000000000000000000000000;
+			always @(*) imd_val_d_o = 32&#39;b00000000000000000000000000000000;
+			always @(*) imd_val_we_o = 1&#39;b0;
 		end
 	endgenerate
 	always @(*) begin
-		result_o = &#39;sd0;
+		result_o = 32&#39;b00000000000000000000000000000000;
 		case (operator_i)
 			ALU_XOR, ALU_XNOR, ALU_OR, ALU_ORN, ALU_AND, ALU_ANDN: result_o = bwlogic_result;
 			ALU_ADD, ALU_SUB: result_o = adder_result;
@@ -1483,7 +1483,7 @@ module ibex_controller (
 		csr_restore_mret_id_o = 1&#39;b0;
 		csr_restore_dret_id_o = 1&#39;b0;
 		csr_save_cause_o = 1&#39;b0;
-		csr_mtval_o = &#39;sd0;
+		csr_mtval_o = 32&#39;b00000000000000000000000000000000;
 		pc_mux_o = PC_BOOT;
 		pc_set_o = 1&#39;b0;
 		exc_pc_mux_o = EXC_PC_IRQ;
@@ -2203,12 +2203,12 @@ module ibex_cs_registers (
 	assign mip[15] = irq_external_i;
 	assign mip[14-:15] = irq_fast_i;
 	always @(*) begin
-		csr_rdata_int = &#39;sd0;
+		csr_rdata_int = 32&#39;b00000000000000000000000000000000;
 		illegal_csr = 1&#39;b0;
 		case (csr_addr_i)
 			CSR_MHARTID: csr_rdata_int = hart_id_i;
 			CSR_MSTATUS: begin
-				csr_rdata_int = &#39;sd0;
+				csr_rdata_int = 32&#39;b00000000000000000000000000000000;
 				csr_rdata_int[CSR_MSTATUS_MIE_BIT] = mstatus_q[5];
 				csr_rdata_int[CSR_MSTATUS_MPIE_BIT] = mstatus_q[4];
 				csr_rdata_int[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] = mstatus_q[3-:2];
@@ -2217,7 +2217,7 @@ module ibex_cs_registers (
 			end
 			CSR_MISA: csr_rdata_int = MISA_VALUE;
 			CSR_MIE: begin
-				csr_rdata_int = &#39;sd0;
+				csr_rdata_int = 32&#39;b00000000000000000000000000000000;
 				csr_rdata_int[CSR_MSIX_BIT] = mie_q[17];
 				csr_rdata_int[CSR_MTIX_BIT] = mie_q[16];
 				csr_rdata_int[CSR_MEIX_BIT] = mie_q[15];
@@ -2229,7 +2229,7 @@ module ibex_cs_registers (
 			CSR_MCAUSE: csr_rdata_int = {mcause_q[5], 26&#39;b0, mcause_q[4:0]};
 			CSR_MTVAL: csr_rdata_int = mtval_q;
 			CSR_MIP: begin
-				csr_rdata_int = &#39;sd0;
+				csr_rdata_int = 32&#39;b00000000000000000000000000000000;
 				csr_rdata_int[CSR_MSIX_BIT] = mip[17];
 				csr_rdata_int[CSR_MTIX_BIT] = mip[16];
 				csr_rdata_int[CSR_MEIX_BIT] = mip[15];
@@ -2288,21 +2288,25 @@ module ibex_cs_registers (
 				illegal_csr = ~DbgTriggerEn;
 			end
 			CSR_TDATA3: begin
-				csr_rdata_int = &#39;sd0;
+				csr_rdata_int = 32&#39;b00000000000000000000000000000000;
 				illegal_csr = ~DbgTriggerEn;
 			end
 			CSR_MCONTEXT: begin
-				csr_rdata_int = &#39;sd0;
+				csr_rdata_int = 32&#39;b00000000000000000000000000000000;
 				illegal_csr = ~DbgTriggerEn;
 			end
 			CSR_SCONTEXT: begin
-				csr_rdata_int = &#39;sd0;
+				csr_rdata_int = 32&#39;b00000000000000000000000000000000;
 				illegal_csr = ~DbgTriggerEn;
 			end
 			CSR_CPUCTRL: csr_rdata_int = cpuctrl_rdata;
 			default: illegal_csr = 1&#39;b1;
 		endcase
 	end
+	function automatic [0:0] sv2v_cast_1;
+		input reg [0:0] inp;
+		sv2v_cast_1 = inp;
+	endfunction
 	function automatic [1:0] sv2v_cast_2;
 		input reg [1:0] inp;
 		sv2v_cast_2 = inp;
@@ -2325,12 +2329,12 @@ module ibex_cs_registers (
 		mstack_epc_d = mstack_epc_q;
 		mstack_cause_d = mstack_cause_q;
 		mcountinhibit_we = 1&#39;b0;
-		mhpmcounter_we = &#39;sd0;
-		mhpmcounterh_we = &#39;sd0;
+		mhpmcounter_we = 32&#39;b00000000000000000000000000000000;
+		mhpmcounterh_we = 32&#39;b00000000000000000000000000000000;
 		if (csr_we_int)
 			case (csr_addr_i)
 				CSR_MSTATUS: begin
-					mstatus_d = sv2v_struct_BF3E9(csr_wdata_int[CSR_MSTATUS_MIE_BIT], csr_wdata_int[CSR_MSTATUS_MPIE_BIT], sv2v_cast_2(csr_wdata_int[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW]), csr_wdata_int[CSR_MSTATUS_MPRV_BIT], csr_wdata_int[CSR_MSTATUS_TW_BIT]);
+					mstatus_d = {sv2v_cast_1(csr_wdata_int[CSR_MSTATUS_MIE_BIT]), sv2v_cast_1(csr_wdata_int[CSR_MSTATUS_MPIE_BIT]), sv2v_cast_2(sv2v_cast_2(csr_wdata_int[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW])), sv2v_cast_1(csr_wdata_int[CSR_MSTATUS_MPRV_BIT]), sv2v_cast_1(csr_wdata_int[CSR_MSTATUS_TW_BIT])};
 					if ((mstatus_d[3-:2] != PRIV_LVL_M) &amp;&amp; (mstatus_d[3-:2] != PRIV_LVL_U))
 						mstatus_d[3-:2] = PRIV_LVL_M;
 				end
@@ -2435,23 +2439,31 @@ module ibex_cs_registers (
 	assign debug_ebreaku_o = dcsr_q[12];
 	assign irqs_o = mip &amp; mie_q;
 	assign irq_pending_o = |irqs_o;
+	function automatic [2:0] sv2v_cast_3;
+		input reg [2:0] inp;
+		sv2v_cast_3 = inp;
+	endfunction
+	function automatic [3:0] sv2v_cast_4;
+		input reg [3:0] inp;
+		sv2v_cast_4 = inp;
+	endfunction
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni) begin
 			priv_lvl_q &lt;= PRIV_LVL_M;
-			mstatus_q &lt;= sv2v_struct_BF3E9(1&#39;b0, 1&#39;b1, PRIV_LVL_U, 1&#39;b0, 1&#39;b0);
-			mie_q &lt;= &#39;sd0;
-			mscratch_q &lt;= &#39;sd0;
-			mepc_q &lt;= &#39;sd0;
-			mcause_q &lt;= &#39;sd0;
-			mtval_q &lt;= &#39;sd0;
+			mstatus_q &lt;= {sv2v_cast_1(1&#39;b0), sv2v_cast_1(1&#39;b1), sv2v_cast_2(PRIV_LVL_U), sv2v_cast_1(1&#39;b0), sv2v_cast_1(1&#39;b0)};
+			mie_q &lt;= 18&#39;b000000000000000000;
+			mscratch_q &lt;= 32&#39;b00000000000000000000000000000000;
+			mepc_q &lt;= 32&#39;b00000000000000000000000000000000;
+			mcause_q &lt;= 6&#39;b000000;
+			mtval_q &lt;= 32&#39;b00000000000000000000000000000000;
 			mtvec_q &lt;= 32&#39;b01;
-			dcsr_q &lt;= sv2v_struct_996E9(XDEBUGVER_STD, &#39;sd0, &#39;sd0, &#39;sd0, &#39;sd0, &#39;sd0, &#39;sd0, &#39;sd0, &#39;sd0, DBG_CAUSE_NONE, &#39;sd0, &#39;sd0, &#39;sd0, &#39;sd0, PRIV_LVL_M);
-			depc_q &lt;= &#39;sd0;
-			dscratch0_q &lt;= &#39;sd0;
-			dscratch1_q &lt;= &#39;sd0;
-			mstack_q &lt;= sv2v_struct_70E1D(1&#39;b1, PRIV_LVL_U);
-			mstack_epc_q &lt;= &#39;sd0;
-			mstack_cause_q &lt;= &#39;sd0;
+			dcsr_q &lt;= {sv2v_cast_4(XDEBUGVER_STD), 12&#39;b000000000000, 1&#39;b0, 1&#39;b0, 1&#39;b0, 1&#39;b0, 1&#39;b0, 1&#39;b0, 1&#39;b0, sv2v_cast_3(DBG_CAUSE_NONE), 1&#39;b0, 1&#39;b0, 1&#39;b0, 1&#39;b0, sv2v_cast_2(PRIV_LVL_M)};
+			depc_q &lt;= 32&#39;b00000000000000000000000000000000;
+			dscratch0_q &lt;= 32&#39;b00000000000000000000000000000000;
+			dscratch1_q &lt;= 32&#39;b00000000000000000000000000000000;
+			mstack_q &lt;= {sv2v_cast_1(1&#39;b1), sv2v_cast_2(PRIV_LVL_U)};
+			mstack_epc_q &lt;= 32&#39;b00000000000000000000000000000000;
+			mstack_cause_q &lt;= 6&#39;b000000;
 		end
 		else begin
 			priv_lvl_q &lt;= priv_lvl_d;
@@ -2477,6 +2489,18 @@ module ibex_cs_registers (
 		input reg [5:0] inp;
 		sv2v_cast_6 = inp;
 	endfunction
+	function automatic [((PMPGranularity - 2) &gt;= 0 ? (PMPGranularity - 2) + 1 : 3 - PMPGranularity) - 1:0] sv2v_cast_55DCD;
+		input reg [((PMPGranularity - 2) &gt;= 0 ? (PMPGranularity - 2) + 1 : 3 - PMPGranularity) - 1:0] inp;
+		sv2v_cast_55DCD = inp;
+	endfunction
+	function automatic [(PMPGranularity &gt;= 1 ? PMPGranularity : 2 - PMPGranularity) - 1:0] sv2v_cast_9AE2D;
+		input reg [(PMPGranularity &gt;= 1 ? PMPGranularity : 2 - PMPGranularity) - 1:0] inp;
+		sv2v_cast_9AE2D = inp;
+	endfunction
+	function automatic [(PMP_CFG_W &gt;= 1 ? PMP_CFG_W : 2 - PMP_CFG_W) - 1:0] sv2v_cast_7588A;
+		input reg [(PMP_CFG_W &gt;= 1 ? PMP_CFG_W : 2 - PMP_CFG_W) - 1:0] inp;
+		sv2v_cast_7588A = inp;
+	endfunction
 	generate
 		genvar i;
 		if (PMPEnable) begin : g_pmp_registers
@@ -2495,22 +2519,22 @@ module ibex_cs_registers (
 						always @(*) begin
 							pmp_addr_rdata[i] = pmp_addr[i];
 							if ((pmp_cfg[i][4-:2] == PMP_MODE_OFF) || (pmp_cfg[i][4-:2] == PMP_MODE_TOR))
-								pmp_addr_rdata[i][PMPGranularity - 1:0] = &#39;sd0;
+								pmp_addr_rdata[i][PMPGranularity - 1:0] = sv2v_cast_9AE2D(1&#39;sb0);
 						end
 					end
 					else begin : g_pmp_g2
 						always @(*) begin
 							pmp_addr_rdata[i] = pmp_addr[i];
 							if ((pmp_cfg[i][4-:2] == PMP_MODE_OFF) || (pmp_cfg[i][4-:2] == PMP_MODE_TOR))
-								pmp_addr_rdata[i][PMPGranularity - 1:0] = &#39;sd0;
+								pmp_addr_rdata[i][PMPGranularity - 1:0] = sv2v_cast_9AE2D(1&#39;sb0);
 							else if (pmp_cfg[i][4-:2] == PMP_MODE_NAPOT)
-								pmp_addr_rdata[i][PMPGranularity - 2:0] = -&#39;sd1;
+								pmp_addr_rdata[i][PMPGranularity - 2:0] = sv2v_cast_55DCD(1&#39;sb1);
 						end
 					end
 				end
 				else begin : g_other_regions
-					assign pmp_cfg_rdata[i] = &#39;sd0;
-					always @(*) pmp_addr_rdata[i] = &#39;sd0;
+					assign pmp_cfg_rdata[i] = sv2v_cast_7588A(1&#39;sb0);
+					always @(*) pmp_addr_rdata[i] = 32&#39;b00000000000000000000000000000000;
 				end
 			end
 			for (i = 0; i &lt; PMPNumRegions; i = i + 1) begin : g_pmp_csrs
@@ -2549,12 +2573,12 @@ module ibex_cs_registers (
 		end
 		else begin : g_no_pmp_tieoffs
 			for (i = 0; i &lt; PMP_MAX_REGIONS; i = i + 1) begin : g_rdata
-				always @(*) pmp_addr_rdata[i] = &#39;sd0;
-				assign pmp_cfg_rdata[i] = &#39;sd0;
+				always @(*) pmp_addr_rdata[i] = 32&#39;b00000000000000000000000000000000;
+				assign pmp_cfg_rdata[i] = sv2v_cast_7588A(1&#39;sb0);
 			end
 			for (i = 0; i &lt; PMPNumRegions; i = i + 1) begin : g_outputs
 				assign csr_pmp_cfg_o[(0 &gt;= (PMPNumRegions - 1) ? i : (PMPNumRegions - 1) - i) * 6+:6] = sv2v_cast_6(1&#39;b0);
-				assign csr_pmp_addr_o[(0 &gt;= (PMPNumRegions - 1) ? i : (PMPNumRegions - 1) - i) * 34+:34] = &#39;sd0;
+				assign csr_pmp_addr_o[(0 &gt;= (PMPNumRegions - 1) ? i : (PMPNumRegions - 1) - i) * 34+:34] = 34&#39;b0000000000000000000000000000000000;
 			end
 		end
 	endgenerate
@@ -2591,16 +2615,16 @@ module ibex_cs_registers (
 			reg signed [31:0] i;
 			for (i = 0; i &lt; 32; i = i + 1)
 				begin : gen_mhpmevent_active
-					mhpmevent[i] = &#39;sd0;
+					mhpmevent[i] = 32&#39;b00000000000000000000000000000000;
 					mhpmevent[i][i] = 1&#39;b1;
 				end
 		end
-		mhpmevent[1] = &#39;sd0;
+		mhpmevent[1] = 32&#39;b00000000000000000000000000000000;
 		begin : sv2v_autoblock_28
 			reg [31:0] i;
 			for (i = 3 + MHPMCounterNum; i &lt; 32; i = i + 1)
 				begin : gen_mhpmevent_inactive
-					mhpmevent[i] = &#39;sd0;
+					mhpmevent[i] = 32&#39;b00000000000000000000000000000000;
 				end
 		end
 	end
@@ -2630,7 +2654,7 @@ module ibex_cs_registers (
 		.counter_val_i(csr_wdata_int),
 		.counter_val_o(mhpmcounter[1856+:64])
 	);
-	assign mhpmcounter[1920+:64] = &#39;sd0;
+	assign mhpmcounter[1920+:64] = 64&#39;b0000000000000000000000000000000000000000000000000000000000000000;
 	ibex_counters #(
 		.MaxNumCounters(29),
 		.NumCounters(MHPMCounterNum),
@@ -2652,9 +2676,13 @@ module ibex_cs_registers (
 			assign mcountinhibit = mcountinhibit_q;
 		end
 	endgenerate
+	function automatic [((MHPMCounterNum + 2) &gt;= 0 ? MHPMCounterNum + 3 : 1 - (MHPMCounterNum + 2)) - 1:0] sv2v_cast_7F10C;
+		input reg [((MHPMCounterNum + 2) &gt;= 0 ? MHPMCounterNum + 3 : 1 - (MHPMCounterNum + 2)) - 1:0] inp;
+		sv2v_cast_7F10C = inp;
+	endfunction
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni)
-			mcountinhibit_q &lt;= &#39;sd0;
+			mcountinhibit_q &lt;= sv2v_cast_7F10C(1&#39;sb0);
 		else
 			mcountinhibit_q &lt;= mcountinhibit_d;
 	generate
@@ -2691,7 +2719,11 @@ module ibex_cs_registers (
 			assign trigger_match_o = &#39;b0;
 		end
 	endgenerate
-	assign cpuctrl_rdata[31-:30] = &#39;sd0;
+	function automatic [29:0] sv2v_cast_21299;
+		input reg [29:0] inp;
+		sv2v_cast_21299 = inp;
+	endfunction
+	assign cpuctrl_rdata[31-:30] = sv2v_cast_21299(1&#39;sb0);
 	assign cpuctrl_wdata = sv2v_cast_32(csr_wdata_int);
 	generate
 		if (DataIndTiming) begin : gen_dit
@@ -2733,37 +2765,6 @@ module ibex_cs_registers (
 	assign icache_enable_o = cpuctrl_rdata[0];
 	wire [31:2] unused_cpuctrl;
 	assign unused_cpuctrl = cpuctrl_wdata[31:2];
-	function automatic [5:0] sv2v_struct_BF3E9;
-		input reg mie;
-		input reg mpie;
-		input reg [1:0] mpp;
-		input reg mprv;
-		input reg tw;
-		sv2v_struct_BF3E9 = {mie, mpie, mpp, mprv, tw};
-	endfunction
-	function automatic [2:0] sv2v_struct_70E1D;
-		input reg mpie;
-		input reg [1:0] mpp;
-		sv2v_struct_70E1D = {mpie, mpp};
-	endfunction
-	function automatic [31:0] sv2v_struct_996E9;
-		input reg [3:0] xdebugver;
-		input reg [11:0] zero2;
-		input reg ebreakm;
-		input reg zero1;
-		input reg ebreaks;
-		input reg ebreaku;
-		input reg stepie;
-		input reg stopcount;
-		input reg stoptime;
-		input reg [2:0] cause;
-		input reg zero0;
-		input reg mprven;
-		input reg nmip;
-		input reg step;
-		input reg [1:0] prv;
-		sv2v_struct_996E9 = {xdebugver, zero2, ebreakm, zero1, ebreaks, ebreaku, stepie, stopcount, stoptime, cause, zero0, mprven, nmip, step, prv};
-	endfunction
 endmodule
 module ibex_counters (
 	clk_i,
@@ -2786,6 +2787,14 @@ module ibex_counters (
 	output wire [(0 &gt;= (MaxNumCounters - 1) ? ((2 - MaxNumCounters) * 64) + (((MaxNumCounters - 1) * 64) - 1) : (MaxNumCounters * 64) + -1):(0 &gt;= (MaxNumCounters - 1) ? (MaxNumCounters - 1) * 64 : 0)] counter_val_o;
 	wire [(0 &gt;= (MaxNumCounters - 1) ? ((2 - MaxNumCounters) * 64) + (((MaxNumCounters - 1) * 64) - 1) : (MaxNumCounters * 64) + -1):(0 &gt;= (MaxNumCounters - 1) ? (MaxNumCounters - 1) * 64 : 0)] counter;
 	assign counter_val_o = counter;
+	function automatic [(63 &gt;= CounterWidth ? 64 - CounterWidth : (CounterWidth - 63) + 1) - 1:0] sv2v_cast_97C91;
+		input reg [(63 &gt;= CounterWidth ? 64 - CounterWidth : (CounterWidth - 63) + 1) - 1:0] inp;
+		sv2v_cast_97C91 = inp;
+	endfunction
+	function automatic [(CounterWidth &gt;= 1 ? CounterWidth : 2 - CounterWidth) - 1:0] sv2v_cast_9A8AA;
+		input reg [(CounterWidth &gt;= 1 ? CounterWidth : 2 - CounterWidth) - 1:0] inp;
+		sv2v_cast_9A8AA = inp;
+	endfunction
 	generate
 		genvar i;
 		for (i = 0; i &lt; MaxNumCounters; i = i + 1) begin : g_counter
@@ -2813,19 +2822,19 @@ module ibex_counters (
 				reg [CounterWidth - 1:0] counter_q;
 				always @(posedge clk_i or negedge rst_ni)
 					if (!rst_ni)
-						counter_q &lt;= &#39;sd0;
+						counter_q &lt;= sv2v_cast_9A8AA(1&#39;sb0);
 					else
 						counter_q &lt;= counter_d;
 				if (CounterWidth &lt; 64) begin : g_counter_narrow
 					assign counter[((0 &gt;= (MaxNumCounters - 1) ? i : (MaxNumCounters - 1) - i) * 64) + (CounterWidth &gt;= 1 ? CounterWidth - 1 : ((CounterWidth - 1) + (CounterWidth &gt;= 1 ? CounterWidth : 2 - CounterWidth)) - 1)-:(CounterWidth &gt;= 1 ? CounterWidth : 2 - CounterWidth)] = counter_q;
-					assign counter[((0 &gt;= (MaxNumCounters - 1) ? i : (MaxNumCounters - 1) - i) * 64) + (63 &gt;= CounterWidth ? 63 : (63 + (63 &gt;= CounterWidth ? 64 - CounterWidth : (CounterWidth - 63) + 1)) - 1)-:(63 &gt;= CounterWidth ? 64 - CounterWidth : (CounterWidth - 63) + 1)] = &#39;sd0;
+					assign counter[((0 &gt;= (MaxNumCounters - 1) ? i : (MaxNumCounters - 1) - i) * 64) + (63 &gt;= CounterWidth ? 63 : (63 + (63 &gt;= CounterWidth ? 64 - CounterWidth : (CounterWidth - 63) + 1)) - 1)-:(63 &gt;= CounterWidth ? 64 - CounterWidth : (CounterWidth - 63) + 1)] = sv2v_cast_97C91(1&#39;sb0);
 				end
 				else begin : g_counter_full
 					assign counter[(0 &gt;= (MaxNumCounters - 1) ? i : (MaxNumCounters - 1) - i) * 64+:64] = counter_q;
 				end
 			end
 			else begin : g_no_counter
-				assign counter[(0 &gt;= (MaxNumCounters - 1) ? i : (MaxNumCounters - 1) - i) * 64+:64] = &#39;sd0;
+				assign counter[(0 &gt;= (MaxNumCounters - 1) ? i : (MaxNumCounters - 1) - i) * 64+:64] = 64&#39;b0000000000000000000000000000000000000000000000000000000000000000;
 			end
 		end
 	endgenerate
@@ -3236,9 +3245,13 @@ module ibex_decoder (
 			assign illegal_reg_rv32e = 1&#39;b0;
 		end
 	endgenerate
+	function automatic [4:0] sv2v_cast_8FBCF;
+		input reg [4:0] inp;
+		sv2v_cast_8FBCF = inp;
+	endfunction
 	always @(*) begin : csr_operand_check
 		csr_op_o = csr_op;
-		if (((csr_op == CSR_OP_SET) || (csr_op == CSR_OP_CLEAR)) &amp;&amp; (instr[19:15] == &#39;sd0))
+		if (((csr_op == CSR_OP_SET) || (csr_op == CSR_OP_CLEAR)) &amp;&amp; (instr[19:15] == sv2v_cast_8FBCF(1&#39;sb0)))
 			csr_op_o = CSR_OP_READ;
 	end
 	function automatic [6:0] sv2v_cast_7;
@@ -4852,7 +4865,7 @@ module ibex_id_stage (
 	assign alu_op_a_mux_sel = (lsu_addr_incr_req_i ? OP_A_FWD : alu_op_a_mux_sel_dec);
 	assign alu_op_b_mux_sel = (lsu_addr_incr_req_i ? OP_B_IMM : alu_op_b_mux_sel_dec);
 	assign imm_b_mux_sel = (lsu_addr_incr_req_i ? IMM_B_INCR_ADDR : imm_b_mux_sel_dec);
-	assign imm_a = (imm_a_mux_sel == IMM_A_Z ? zimm_rs1_type : &#39;sd0);
+	assign imm_a = (imm_a_mux_sel == IMM_A_Z ? zimm_rs1_type : 32&#39;b00000000000000000000000000000000);
 	always @(*) begin : alu_operand_a_mux
 		case (alu_op_a_mux_sel)
 			OP_A_REG_A: alu_operand_a = rf_rdata_a_fwd;
@@ -4896,8 +4909,8 @@ module ibex_id_stage (
 			wire [2:0] unused_b_mux_sel;
 			assign unused_a_mux_sel = bt_a_mux_sel;
 			assign unused_b_mux_sel = bt_b_mux_sel;
-			always @(*) bt_a_operand_o = &#39;sd0;
-			always @(*) bt_b_operand_o = &#39;sd0;
+			always @(*) bt_a_operand_o = 32&#39;b00000000000000000000000000000000;
+			always @(*) bt_b_operand_o = 32&#39;b00000000000000000000000000000000;
 			always @(*) begin : immediate_b_mux
 				case (imm_b_mux_sel)
 					IMM_B_I: imm_b = imm_i_type;
@@ -4915,7 +4928,7 @@ module ibex_id_stage (
 	assign alu_operand_b = (alu_op_b_mux_sel == OP_B_IMM ? imm_b : rf_rdata_b_fwd);
 	always @(posedge clk_i or negedge rst_ni) begin : intermediate_val_reg
 		if (!rst_ni)
-			imd_val_q &lt;= &#39;sd0;
+			imd_val_q &lt;= 34&#39;b0000000000000000000000000000000000;
 		else if (imd_val_we_ex_i)
 			imd_val_q &lt;= imd_val_d_ex_i;
 	end
@@ -6121,7 +6134,7 @@ module ibex_wb_stage (
 			assign unused_lsu_data_valid = lsu_data_valid_i;
 			assign outstanding_load_wb_o = 1&#39;b0;
 			assign outstanding_store_wb_o = 1&#39;b0;
-			assign pc_wb_o = &#39;sd0;
+			assign pc_wb_o = 32&#39;b00000000000000000000000000000000;
 			assign rf_write_wb_o = 1&#39;b0;
 			assign rf_wdata_fwd_wb_o = 32&#39;b0;
 			assign instr_done_wb_o = 1&#39;b0;
@@ -6278,7 +6291,7 @@ module ibex_load_store_unit (
 		endcase
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni)
-			rdata_q &lt;= &#39;sd0;
+			rdata_q &lt;= 24&#39;b000000000000000000000000;
 		else if (rdata_update)
 			rdata_q &lt;= data_rdata_i[31:8];
 	always @(posedge clk_i or negedge rst_ni)
@@ -6296,7 +6309,7 @@ module ibex_load_store_unit (
 		end
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni)
-			addr_last_q &lt;= &#39;sd0;
+			addr_last_q &lt;= 32&#39;b00000000000000000000000000000000;
 		else if (addr_update)
 			addr_last_q &lt;= data_addr;
 	always @(*)
@@ -6451,9 +6464,9 @@ module ibex_load_store_unit (
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni) begin
 			ls_fsm_cs &lt;= IDLE;
-			handle_misaligned_q &lt;= &#39;sd0;
-			pmp_err_q &lt;= &#39;sd0;
-			lsu_err_q &lt;= &#39;sd0;
+			handle_misaligned_q &lt;= 1&#39;b0;
+			pmp_err_q &lt;= 1&#39;b0;
+			lsu_err_q &lt;= 1&#39;b0;
 		end
 		else begin
 			ls_fsm_cs &lt;= ls_fsm_ns;
@@ -6933,7 +6946,7 @@ module ibex_multdiv_slow (
 					multdiv_state_d = 5&#39;d31;
 				end
 				MD_ABS_A: begin
-					op_a_shift_d = &#39;sd0;
+					op_a_shift_d = 33&#39;b000000000000000000000000000000000;
 					op_numerator_d = (sign_a ? alu_adder_i : op_a_i);
 					md_state_d = MD_ABS_B;
 				end
@@ -7356,11 +7369,11 @@ module ibex_multdiv_fast (
 	localparam [2:0] MD_IDLE = 0;
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni) begin
-			div_counter_q &lt;= &#39;sd0;
+			div_counter_q &lt;= 5&#39;b00000;
 			md_state_q &lt;= MD_IDLE;
-			op_denominator_q &lt;= &#39;sd0;
-			op_numerator_q &lt;= &#39;sd0;
-			op_quotient_q &lt;= &#39;sd0;
+			op_denominator_q &lt;= 32&#39;b00000000000000000000000000000000;
+			op_numerator_q &lt;= 32&#39;b00000000000000000000000000000000;
+			op_quotient_q &lt;= 32&#39;b00000000000000000000000000000000;
 		end
 		else if (div_en_internal) begin
 			div_counter_q &lt;= div_counter_d;
@@ -7447,7 +7460,7 @@ module ibex_multdiv_fast (
 						mult3_op_a = op_a_i[31:16];
 						mult3_op_b = op_b_i[31:16];
 						mac_res_d = mac_res;
-						summand1 = &#39;sd0;
+						summand1 = 34&#39;b0000000000000000000000000000000000;
 						summand2 = accum;
 						summand3 = mult3_res;
 						mult_state_d = MULL;
@@ -7487,7 +7500,7 @@ module ibex_multdiv_fast (
 						mult_op_b = op_b_i[15:0];
 						sign_a = 1&#39;b0;
 						sign_b = 1&#39;b0;
-						accum = &#39;sd0;
+						accum = 34&#39;b0000000000000000000000000000000000;
 						mac_res_d = mac_res;
 						mult_state_d = ALBH;
 					end
@@ -7576,7 +7589,7 @@ module ibex_multdiv_fast (
 		case (md_state_q)
 			MD_IDLE: begin
 				if (operator_i == MD_OP_DIV) begin
-					op_remainder_d = -&#39;sd1;
+					op_remainder_d = 34&#39;b1111111111111111111111111111111111;
 					md_state_d = (equal_to_zero ? MD_FINISH : MD_ABS_A);
 				end
 				else begin
@@ -7588,7 +7601,7 @@ module ibex_multdiv_fast (
 				div_counter_d = 5&#39;d31;
 			end
 			MD_ABS_A: begin
-				op_quotient_d = &#39;sd0;
+				op_quotient_d = 32&#39;b00000000000000000000000000000000;
 				op_numerator_d = (div_sign_a ? alu_adder_i : op_a_i);
 				md_state_d = MD_ABS_B;
 				div_counter_d = 5&#39;d31;
@@ -7899,9 +7912,13 @@ module ibex_fetch_fifo (
 	assign entry_en[DEPTH - 1] = in_valid_i &amp; lowest_free_entry[DEPTH - 1];
 	assign rdata_d[(DEPTH &gt;= 1 ? DEPTH - 1 : 0 - ((DEPTH - 1) - (DEPTH - 1))) * 32+:32] = in_rdata_i;
 	assign err_d[DEPTH - 1] = in_err_i;
+	function automatic [(DEPTH &gt;= 1 ? DEPTH : 2 - DEPTH) - 1:0] sv2v_cast_A42BF;
+		input reg [(DEPTH &gt;= 1 ? DEPTH : 2 - DEPTH) - 1:0] inp;
+		sv2v_cast_A42BF = inp;
+	endfunction
 	always @(posedge clk_i or negedge rst_ni)
 		if (!rst_ni)
-			valid_q &lt;= &#39;sd0;
+			valid_q &lt;= sv2v_cast_A42BF(1&#39;sb0);
 		else
 			valid_q &lt;= valid_d;
 	generate
@@ -9183,9 +9200,13 @@ module ibex_register_file (
 	localparam signed [31:0] NUM_WORDS = 2 ** ADDR_WIDTH;
 	reg [DataWidth - 1:0] mem [0:NUM_WORDS - 1];
 	wire we;
-	assign rdata_a_o = (raddr_a_i == &#39;sd0 ? &#39;sd0 : mem[raddr_a_i]);
-	assign rdata_b_o = (raddr_b_i == &#39;sd0 ? &#39;sd0 : mem[raddr_b_i]);
-	assign we = (waddr_a_i == &#39;sd0 ? 1&#39;b0 : we_a_i);
+	function automatic [(DataWidth &gt;= 1 ? DataWidth : 2 - DataWidth) - 1:0] sv2v_cast_97070;
+		input reg [(DataWidth &gt;= 1 ? DataWidth : 2 - DataWidth) - 1:0] inp;
+		sv2v_cast_97070 = inp;
+	endfunction
+	assign rdata_a_o = (raddr_a_i == 5&#39;b00000 ? sv2v_cast_97070(1&#39;sb0) : mem[raddr_a_i]);
+	assign rdata_b_o = (raddr_b_i == 5&#39;b00000 ? sv2v_cast_97070(1&#39;sb0) : mem[raddr_b_i]);
+	assign we = (waddr_a_i == 5&#39;b00000 ? 1&#39;b0 : we_a_i);
 	always @(posedge clk_i) begin : sync_write
 		if (we == 1&#39;b1)
 			mem[waddr_a_i] &lt;= wdata_a_i;

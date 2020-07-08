@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_scatter_gather.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_scatter_gather.v</a>
 defines: 
-time_elapsed: 45.900s
-ram usage: 521676 KB
+time_elapsed: 68.168s
+ram usage: 485632 KB
 </pre>
 <pre class="log">
 
@@ -37,31 +37,35 @@ module bsg_scatter_gather (
 	output reg [(vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp))) - 1:0] fwd_datapath_o;
 	output reg [(vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp))) - 1:0] bk_o;
 	output reg [(vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp))) - 1:0] bk_datapath_o;
+	function automatic [((vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp))) &gt;= 1 ? vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp)) : 2 - (vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp)))) - 1:0] sv2v_cast_E4DAE;
+		input reg [((vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp))) &gt;= 1 ? vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp)) : 2 - (vec_size_lp * (vec_size_lp == 1 ? 1 : $clog2(vec_size_lp)))) - 1:0] inp;
+		sv2v_cast_E4DAE = inp;
+	endfunction
 	generate
 		if (vec_size_lp == 1) begin
 			always @(*)
 				case (vec_i)
 					1&#39;b0: bk_o = 1&#39;b0;
 					1&#39;b1: bk_o = 1&#39;b0;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
 					1&#39;b0: bk_datapath_o = 1&#39;b0;
 					1&#39;b1: bk_datapath_o = 1&#39;b0;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
 					1&#39;b0: fwd_o = 1&#39;b0;
 					1&#39;b1: fwd_o = 1&#39;b0;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
 					1&#39;b0: fwd_datapath_o = 1&#39;b0;
 					1&#39;b1: fwd_datapath_o = 1&#39;b0;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -73,7 +77,7 @@ module bsg_scatter_gather (
 					2&#39;b01: bk_o = 2&#39;b10;
 					2&#39;b10: bk_o = 2&#39;b01;
 					2&#39;b11: bk_o = 2&#39;b10;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -81,7 +85,7 @@ module bsg_scatter_gather (
 					2&#39;b01: bk_datapath_o = 2&#39;b00;
 					2&#39;b10: bk_datapath_o = 2&#39;b00;
 					2&#39;b11: bk_datapath_o = 2&#39;b10;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -89,7 +93,7 @@ module bsg_scatter_gather (
 					2&#39;b01: fwd_o = 2&#39;b10;
 					2&#39;b10: fwd_o = 2&#39;b01;
 					2&#39;b11: fwd_o = 2&#39;b10;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -97,7 +101,7 @@ module bsg_scatter_gather (
 					2&#39;b01: fwd_datapath_o = 2&#39;b00;
 					2&#39;b10: fwd_datapath_o = 2&#39;b01;
 					2&#39;b11: fwd_datapath_o = 2&#39;b00;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -113,7 +117,7 @@ module bsg_scatter_gather (
 					3&#39;b101: bk_o = 6&#39;b011000;
 					3&#39;b110: bk_o = 6&#39;b010010;
 					3&#39;b111: bk_o = 6&#39;b100100;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -125,7 +129,7 @@ module bsg_scatter_gather (
 					3&#39;b101: bk_datapath_o = 6&#39;b010000;
 					3&#39;b110: bk_datapath_o = 6&#39;b010000;
 					3&#39;b111: bk_datapath_o = 6&#39;b100100;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -137,7 +141,7 @@ module bsg_scatter_gather (
 					3&#39;b101: fwd_o = 6&#39;b011000;
 					3&#39;b110: fwd_o = 6&#39;b001001;
 					3&#39;b111: fwd_o = 6&#39;b100100;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -149,7 +153,7 @@ module bsg_scatter_gather (
 					3&#39;b101: fwd_datapath_o = 6&#39;b000100;
 					3&#39;b110: fwd_datapath_o = 6&#39;b000101;
 					3&#39;b111: fwd_datapath_o = 6&#39;b000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -173,7 +177,7 @@ module bsg_scatter_gather (
 					4&#39;b1101: bk_o = 8&#39;b10011100;
 					4&#39;b1110: bk_o = 8&#39;b10010011;
 					4&#39;b1111: bk_o = 8&#39;b11100100;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -193,7 +197,7 @@ module bsg_scatter_gather (
 					4&#39;b1101: bk_datapath_o = 8&#39;b10010000;
 					4&#39;b1110: bk_datapath_o = 8&#39;b10010000;
 					4&#39;b1111: bk_datapath_o = 8&#39;b11100100;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -213,7 +217,7 @@ module bsg_scatter_gather (
 					4&#39;b1101: fwd_o = 8&#39;b01111000;
 					4&#39;b1110: fwd_o = 8&#39;b00111001;
 					4&#39;b1111: fwd_o = 8&#39;b11100100;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -233,7 +237,7 @@ module bsg_scatter_gather (
 					4&#39;b1101: fwd_datapath_o = 8&#39;b00010100;
 					4&#39;b1110: fwd_datapath_o = 8&#39;b00010101;
 					4&#39;b1111: fwd_datapath_o = 8&#39;b00000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -273,7 +277,7 @@ module bsg_scatter_gather (
 					5&#39;b11101: bk_o = 15&#39;b011010001100000;
 					5&#39;b11110: bk_o = 15&#39;b011010001000100;
 					5&#39;b11111: bk_o = 15&#39;b100011010001000;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -309,7 +313,7 @@ module bsg_scatter_gather (
 					5&#39;b11101: bk_datapath_o = 15&#39;b011010001000000;
 					5&#39;b11110: bk_datapath_o = 15&#39;b011010001000000;
 					5&#39;b11111: bk_datapath_o = 15&#39;b100011010001000;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -345,7 +349,7 @@ module bsg_scatter_gather (
 					5&#39;b11101: fwd_o = 15&#39;b001100011010000;
 					5&#39;b11110: fwd_o = 15&#39;b000100011010001;
 					5&#39;b11111: fwd_o = 15&#39;b100011010001000;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -381,7 +385,7 @@ module bsg_scatter_gather (
 					5&#39;b11101: fwd_datapath_o = 15&#39;b000001001001000;
 					5&#39;b11110: fwd_datapath_o = 15&#39;b000001001001001;
 					5&#39;b11111: fwd_datapath_o = 15&#39;b000000000000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -453,7 +457,7 @@ module bsg_scatter_gather (
 					6&#39;b111101: bk_o = 18&#39;b100011010001101000;
 					6&#39;b111110: bk_o = 18&#39;b100011010001000101;
 					6&#39;b111111: bk_o = 18&#39;b101100011010001000;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -521,7 +525,7 @@ module bsg_scatter_gather (
 					6&#39;b111101: bk_datapath_o = 18&#39;b100011010001000000;
 					6&#39;b111110: bk_datapath_o = 18&#39;b100011010001000000;
 					6&#39;b111111: bk_datapath_o = 18&#39;b101100011010001000;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -589,7 +593,7 @@ module bsg_scatter_gather (
 					6&#39;b111101: fwd_o = 18&#39;b001101100011010000;
 					6&#39;b111110: fwd_o = 18&#39;b000101100011010001;
 					6&#39;b111111: fwd_o = 18&#39;b101100011010001000;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -657,7 +661,7 @@ module bsg_scatter_gather (
 					6&#39;b111101: fwd_datapath_o = 18&#39;b000001001001001000;
 					6&#39;b111110: fwd_datapath_o = 18&#39;b000001001001001001;
 					6&#39;b111111: fwd_datapath_o = 18&#39;b000000000000000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -793,7 +797,7 @@ module bsg_scatter_gather (
 					7&#39;b1111101: bk_o = 21&#39;b101100011010001110000;
 					7&#39;b1111110: bk_o = 21&#39;b101100011010001000110;
 					7&#39;b1111111: bk_o = 21&#39;b110101100011010001000;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -925,7 +929,7 @@ module bsg_scatter_gather (
 					7&#39;b1111101: bk_datapath_o = 21&#39;b101100011010001000000;
 					7&#39;b1111110: bk_datapath_o = 21&#39;b101100011010001000000;
 					7&#39;b1111111: bk_datapath_o = 21&#39;b110101100011010001000;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -1057,7 +1061,7 @@ module bsg_scatter_gather (
 					7&#39;b1111101: fwd_o = 21&#39;b001110101100011010000;
 					7&#39;b1111110: fwd_o = 21&#39;b000110101100011010001;
 					7&#39;b1111111: fwd_o = 21&#39;b110101100011010001000;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -1189,7 +1193,7 @@ module bsg_scatter_gather (
 					7&#39;b1111101: fwd_datapath_o = 21&#39;b000001001001001001000;
 					7&#39;b1111110: fwd_datapath_o = 21&#39;b000001001001001001001;
 					7&#39;b1111111: fwd_datapath_o = 21&#39;b000000000000000000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -1453,7 +1457,7 @@ module bsg_scatter_gather (
 					8&#39;b11111101: bk_o = 24&#39;b110101100011010001111000;
 					8&#39;b11111110: bk_o = 24&#39;b110101100011010001000111;
 					8&#39;b11111111: bk_o = 24&#39;b111110101100011010001000;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -1713,7 +1717,7 @@ module bsg_scatter_gather (
 					8&#39;b11111101: bk_datapath_o = 24&#39;b110101100011010001000000;
 					8&#39;b11111110: bk_datapath_o = 24&#39;b110101100011010001000000;
 					8&#39;b11111111: bk_datapath_o = 24&#39;b111110101100011010001000;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -1973,7 +1977,7 @@ module bsg_scatter_gather (
 					8&#39;b11111101: fwd_o = 24&#39;b001111110101100011010000;
 					8&#39;b11111110: fwd_o = 24&#39;b000111110101100011010001;
 					8&#39;b11111111: fwd_o = 24&#39;b111110101100011010001000;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -2233,7 +2237,7 @@ module bsg_scatter_gather (
 					8&#39;b11111101: fwd_datapath_o = 24&#39;b000001001001001001001000;
 					8&#39;b11111110: fwd_datapath_o = 24&#39;b000001001001001001001001;
 					8&#39;b11111111: fwd_datapath_o = 24&#39;b000000000000000000000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -2753,7 +2757,7 @@ module bsg_scatter_gather (
 					9&#39;b111111101: bk_o = 36&#39;b011101100101010000110010000110000000;
 					9&#39;b111111110: bk_o = 36&#39;b011101100101010000110010000100001000;
 					9&#39;b111111111: bk_o = 36&#39;b100001110110010101000011001000010000;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -3269,7 +3273,7 @@ module bsg_scatter_gather (
 					9&#39;b111111101: bk_datapath_o = 36&#39;b011101100101010000110010000100000000;
 					9&#39;b111111110: bk_datapath_o = 36&#39;b011101100101010000110010000100000000;
 					9&#39;b111111111: bk_datapath_o = 36&#39;b100001110110010101000011001000010000;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -3785,7 +3789,7 @@ module bsg_scatter_gather (
 					9&#39;b111111101: fwd_o = 36&#39;b000110000111011001010100001100100000;
 					9&#39;b111111110: fwd_o = 36&#39;b000010000111011001010100001100100001;
 					9&#39;b111111111: fwd_o = 36&#39;b100001110110010101000011001000010000;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -4301,7 +4305,7 @@ module bsg_scatter_gather (
 					9&#39;b111111101: fwd_datapath_o = 36&#39;b000000010001000100010001000100010000;
 					9&#39;b111111110: fwd_datapath_o = 36&#39;b000000010001000100010001000100010001;
 					9&#39;b111111111: fwd_datapath_o = 36&#39;b000000000000000000000000000000000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -5333,7 +5337,7 @@ module bsg_scatter_gather (
 					10&#39;b1111111101: bk_o = 40&#39;b1000011101100101010000110010000110010000;
 					10&#39;b1111111110: bk_o = 40&#39;b1000011101100101010000110010000100001001;
 					10&#39;b1111111111: bk_o = 40&#39;b1001100001110110010101000011001000010000;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -6361,7 +6365,7 @@ module bsg_scatter_gather (
 					10&#39;b1111111101: bk_datapath_o = 40&#39;b1000011101100101010000110010000100000000;
 					10&#39;b1111111110: bk_datapath_o = 40&#39;b1000011101100101010000110010000100000000;
 					10&#39;b1111111111: bk_datapath_o = 40&#39;b1001100001110110010101000011001000010000;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -7389,7 +7393,7 @@ module bsg_scatter_gather (
 					10&#39;b1111111101: fwd_o = 40&#39;b0001100110000111011001010100001100100000;
 					10&#39;b1111111110: fwd_o = 40&#39;b0000100110000111011001010100001100100001;
 					10&#39;b1111111111: fwd_o = 40&#39;b1001100001110110010101000011001000010000;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -8417,7 +8421,7 @@ module bsg_scatter_gather (
 					10&#39;b1111111101: fwd_datapath_o = 40&#39;b0000000100010001000100010001000100010000;
 					10&#39;b1111111110: fwd_datapath_o = 40&#39;b0000000100010001000100010001000100010001;
 					10&#39;b1111111111: fwd_datapath_o = 40&#39;b0000000000000000000000000000000000000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate
@@ -10473,7 +10477,7 @@ module bsg_scatter_gather (
 					11&#39;b11111111101: bk_o = 44&#39;b10011000011101100101010000110010000110100000;
 					11&#39;b11111111110: bk_o = 44&#39;b10011000011101100101010000110010000100001010;
 					11&#39;b11111111111: bk_o = 44&#39;b10101001100001110110010101000011001000010000;
-					default: bk_o = &#39;sdX;
+					default: bk_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -12525,7 +12529,7 @@ module bsg_scatter_gather (
 					11&#39;b11111111101: bk_datapath_o = 44&#39;b10011000011101100101010000110010000100000000;
 					11&#39;b11111111110: bk_datapath_o = 44&#39;b10011000011101100101010000110010000100000000;
 					11&#39;b11111111111: bk_datapath_o = 44&#39;b10101001100001110110010101000011001000010000;
-					default: bk_datapath_o = &#39;sdX;
+					default: bk_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -14577,7 +14581,7 @@ module bsg_scatter_gather (
 					11&#39;b11111111101: fwd_o = 44&#39;b00011010100110000111011001010100001100100000;
 					11&#39;b11111111110: fwd_o = 44&#39;b00001010100110000111011001010100001100100001;
 					11&#39;b11111111111: fwd_o = 44&#39;b10101001100001110110010101000011001000010000;
-					default: fwd_o = &#39;sdX;
+					default: fwd_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 			always @(*)
 				case (vec_i)
@@ -16629,7 +16633,7 @@ module bsg_scatter_gather (
 					11&#39;b11111111101: fwd_datapath_o = 44&#39;b00000001000100010001000100010001000100010000;
 					11&#39;b11111111110: fwd_datapath_o = 44&#39;b00000001000100010001000100010001000100010001;
 					11&#39;b11111111111: fwd_datapath_o = 44&#39;b00000000000000000000000000000000000000000000;
-					default: fwd_datapath_o = &#39;sdX;
+					default: fwd_datapath_o = sv2v_cast_E4DAE(1&#39;sbX);
 				endcase
 		end
 	endgenerate

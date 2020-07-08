@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/struct_packed_value_list.v.html" target="file-frame">third_party/tests/ivtest/ivltests/struct_packed_value_list.v</a>
 defines: 
-time_elapsed: 0.160s
-ram usage: 12572 KB
+time_elapsed: 0.128s
+ram usage: 10728 KB
 </pre>
 <pre class="log">
 
@@ -33,11 +33,15 @@ module test;
 	wire [15:0] word5;
 	reg err = 0;
 	assign word0 = {2, 3};
-	assign word1 = sv2v_struct_B774B(5, 6);
-	assign word2 = sv2v_struct_B774B(8, 7);
-	assign word3 = sv2v_struct_B774B(13, 13);
-	assign word4 = sv2v_struct_B774B(8&#39;haa, 1);
-	assign word5 = sv2v_struct_B774B(9&#39;h000, 9&#39;h1ff);
+	assign word1 = {8&#39;d5, 8&#39;d6};
+	assign word2 = {8&#39;d8, 8&#39;d7};
+	assign word3 = {8&#39;d13, 8&#39;d13};
+	function automatic [7:0] sv2v_cast_8;
+		input reg [7:0] inp;
+		sv2v_cast_8 = inp;
+	endfunction
+	assign word4 = {sv2v_cast_8(8&#39;haa), 8&#39;d1};
+	assign word5 = {sv2v_cast_8(9&#39;h000), sv2v_cast_8(9&#39;h1ff)};
 	initial begin
 		#(1)
 			;
@@ -68,11 +72,6 @@ module test;
 		if (!err)
 			$display(&#34;PASSED&#34;);
 	end
-	function automatic [15:0] sv2v_struct_B774B;
-		input reg [7:0] high;
-		input reg [7:0] low;
-		sv2v_struct_B774B = {high, low};
-	endfunction
 endmodule
 
 </pre>

@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_sbuf.v</a>
 defines: 
-time_elapsed: 1.132s
-ram usage: 15784 KB
+time_elapsed: 1.544s
+ram usage: 17332 KB
 </pre>
 <pre class="log">
 
@@ -220,10 +220,18 @@ module bsg_cache_sbuf (
 		.sel_i(tag_hit2x4 &amp; sbuf_entry_in[((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)-:((((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)) &gt;= ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) ? ((((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)) - ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) + 1 : (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) - (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))) + 1)]),
 		.data_o(bypass_data_n)
 	);
+	function automatic [(data_mask_width_lp &gt;= 1 ? data_mask_width_lp : 2 - data_mask_width_lp) - 1:0] sv2v_cast_B2A31;
+		input reg [(data_mask_width_lp &gt;= 1 ? data_mask_width_lp : 2 - data_mask_width_lp) - 1:0] inp;
+		sv2v_cast_B2A31 = inp;
+	endfunction
+	function automatic [(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) - 1:0] sv2v_cast_D8E3C;
+		input reg [(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) - 1:0] inp;
+		sv2v_cast_D8E3C = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (reset_i) begin
-			bypass_mask_o &lt;= &#39;sd0;
-			bypass_data_o &lt;= &#39;sd0;
+			bypass_mask_o &lt;= sv2v_cast_B2A31(1&#39;sb0);
+			bypass_data_o &lt;= sv2v_cast_D8E3C(1&#39;sb0);
 		end
 		else if (bypass_v_i) begin
 			bypass_mask_o &lt;= bypass_mask_n;

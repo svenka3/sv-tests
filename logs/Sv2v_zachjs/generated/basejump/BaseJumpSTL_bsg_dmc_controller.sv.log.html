@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v</a>
 defines: 
-time_elapsed: 1.504s
-ram usage: 20052 KB
+time_elapsed: 1.704s
+ram usage: 24048 KB
 </pre>
 <pre class="log">
 
@@ -87,7 +87,7 @@ module bsg_dmc_controller (
 	output app_wdf_rdy_o;
 	output app_rd_data_valid_o;
 	output [ui_data_width_p - 1:0] app_rd_data_o;
-	output wire app_rd_data_end_o;
+	output reg app_rd_data_end_o;
 	input app_ref_req_i;
 	output app_ref_ack_o;
 	input app_zq_req_i;
@@ -106,9 +106,9 @@ module bsg_dmc_controller (
 	output reg dfi_we_n_o;
 	output reg dfi_reset_n_o;
 	output reg dfi_odt_o;
-	output wire dfi_wrdata_en_o;
-	output wire [dfi_data_width_p - 1:0] dfi_wrdata_o;
-	output wire [dfi_mask_width_lp - 1:0] dfi_wrdata_mask_o;
+	output reg dfi_wrdata_en_o;
+	output reg [dfi_data_width_p - 1:0] dfi_wrdata_o;
+	output reg [dfi_mask_width_lp - 1:0] dfi_wrdata_mask_o;
 	output reg dfi_rddata_en_o;
 	input [dfi_data_width_p - 1:0] dfi_rddata_i;
 	input dfi_rddata_valid_i;
@@ -733,9 +733,9 @@ module bsg_dmc_controller (
 		.data_o(tx_mask_piso_data_lo),
 		.yumi_i(tx_mask_piso_yumi_li)
 	);
-	assign dfi_wrdata_o = tx_data_piso_data_lo;
-	assign dfi_wrdata_en_o = tx_data_piso_valid_lo;
-	assign dfi_wrdata_mask_o = tx_mask_piso_data_lo;
+	always @(*) dfi_wrdata_o = tx_data_piso_data_lo;
+	always @(*) dfi_wrdata_en_o = tx_data_piso_valid_lo;
+	always @(*) dfi_wrdata_mask_o = tx_mask_piso_data_lo;
 	assign rddata_afifo_wclk = dfi_clk_i;
 	assign rddata_afifo_wrst = dfi_clk_sync_rst_i;
 	assign rddata_afifo_winc = dfi_rddata_valid_i;
@@ -811,7 +811,7 @@ module bsg_dmc_controller (
 			rd_cnt &lt;= rd_cnt + 1;
 	assign app_rd_data_valid_o = rx_piso_valid_lo;
 	assign app_rd_data_o = rx_piso_data_lo;
-	assign app_rd_data_end_o = rd_cnt == (ui_burst_length_lp - 1);
+	always @(*) app_rd_data_end_o = rd_cnt == (ui_burst_length_lp - 1);
 endmodule
 
 </pre>

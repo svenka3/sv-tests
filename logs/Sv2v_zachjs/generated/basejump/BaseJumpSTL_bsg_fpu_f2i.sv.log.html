@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_f2i.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_f2i.v</a>
 defines: 
-time_elapsed: 0.496s
-ram usage: 12712 KB
+time_elapsed: 0.420s
+ram usage: 16360 KB
 </pre>
 <pre class="log">
 
@@ -78,6 +78,10 @@ module bsg_fpu_f2i (
 	wire [width_lp - 1:0] post_round;
 	assign inverted = {width_lp {signed_i &amp; sign}} ^ shifted;
 	assign post_round = inverted + sign;
+	function automatic [(width_lp &gt;= 1 ? width_lp : 2 - width_lp) - 1:0] sv2v_cast_61259;
+		input reg [(width_lp &gt;= 1 ? width_lp : 2 - width_lp) - 1:0] inp;
+		sv2v_cast_61259 = inp;
+	endfunction
 	always @(*)
 		if (nan) begin
 			z_o = (signed_i ? {1&#39;b0, {width_lp - 1 {1&#39;b1}}} : {width_lp {1&#39;b1}});
@@ -88,11 +92,11 @@ module bsg_fpu_f2i (
 			invalid_o = 1&#39;b1;
 		end
 		else if (~signed_i &amp; sign) begin
-			z_o = &#39;sd0;
+			z_o = sv2v_cast_61259(1&#39;sb0);
 			invalid_o = 1&#39;b1;
 		end
 		else if (zero) begin
-			z_o = &#39;sd0;
+			z_o = sv2v_cast_61259(1&#39;sb0);
 			invalid_o = 1&#39;b0;
 		end
 		else if (exp_too_big) begin
@@ -100,7 +104,7 @@ module bsg_fpu_f2i (
 			invalid_o = 1&#39;b1;
 		end
 		else if (exp_too_small) begin
-			z_o = &#39;sd0;
+			z_o = sv2v_cast_61259(1&#39;sb0);
 			invalid_o = 1&#39;b0;
 		end
 		else begin

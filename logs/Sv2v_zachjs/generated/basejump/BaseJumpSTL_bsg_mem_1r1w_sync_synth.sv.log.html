@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_sync_synth.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_sync_synth.v</a>
 defines: 
-time_elapsed: 0.248s
-ram usage: 16964 KB
+time_elapsed: 0.460s
+ram usage: 14604 KB
 </pre>
 <pre class="log">
 
@@ -50,11 +50,15 @@ module bsg_mem_1r1w_sync_synth (
 	reg [width_p - 1:0] mem [els_p - 1:0];
 	wire unused = reset_i;
 	reg [addr_width_lp - 1:0] r_addr_r;
+	function automatic [(addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp) - 1:0] sv2v_cast_D597B;
+		input reg [(addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp) - 1:0] inp;
+		sv2v_cast_D597B = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (r_v_i)
 			r_addr_r &lt;= r_addr_i;
 		else
-			r_addr_r &lt;= &#39;sdX;
+			r_addr_r &lt;= sv2v_cast_D597B(1&#39;sbX);
 	assign r_data_o = mem[r_addr_r];
 	always @(posedge clk_i)
 		if (w_v_i)

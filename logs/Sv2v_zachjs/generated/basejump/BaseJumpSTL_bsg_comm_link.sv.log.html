@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_comm_link.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_comm_link.v</a>
 defines: 
-time_elapsed: 1.372s
-ram usage: 17812 KB
+time_elapsed: 1.768s
+ram usage: 23064 KB
 </pre>
 <pre class="log">
 
@@ -144,7 +144,11 @@ module bsg_comm_link (
 		.i(core_channel_active),
 		.o(active_channel_count)
 	);
-	assign core_top_active_channel_n = (|core_channel_active ? active_channel_count - 1 : &#39;sd0);
+	function automatic [((0 &gt; ($clog2(link_channels_p) - 1) ? 0 : $clog2(link_channels_p) - 1) &gt;= 0 ? (0 &gt; ($clog2(link_channels_p) - 1) ? 0 : $clog2(link_channels_p) - 1) + 1 : 1 - (0 &gt; ($clog2(link_channels_p) - 1) ? 0 : $clog2(link_channels_p) - 1)) - 1:0] sv2v_cast_8EF64;
+		input reg [((0 &gt; ($clog2(link_channels_p) - 1) ? 0 : $clog2(link_channels_p) - 1) &gt;= 0 ? (0 &gt; ($clog2(link_channels_p) - 1) ? 0 : $clog2(link_channels_p) - 1) + 1 : 1 - (0 &gt; ($clog2(link_channels_p) - 1) ? 0 : $clog2(link_channels_p) - 1)) - 1:0] inp;
+		sv2v_cast_8EF64 = inp;
+	endfunction
+	assign core_top_active_channel_n = (|core_channel_active ? active_channel_count - 1 : sv2v_cast_8EF64(1&#39;sb0));
 	bsg_dff #(
 		.harden_p(1),
 		.strength_p(4),
@@ -251,7 +255,7 @@ module bsg_comm_link (
 			if (master_p) begin : m
 				wire [tests_p:0] im_tests_gather;
 				for (j = 0; j &lt; (tests_p + 1); j = j + 1) begin : mpa
-					assign mstr.im_test_scoreboard[j][i] = im_tests_gather[j];
+					assign mstr.im_test_scoreboard[(j * (link_channels_p &gt;= 1 ? link_channels_p : 2 - link_channels_p)) + (link_channels_p &gt;= 1 ? i : 0 - (i - (link_channels_p - 1)))] = im_tests_gather[j];
 				end
 				bsg_source_sync_channel_control_master #(
 					.width_p(channel_width_p),

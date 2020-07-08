@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_test_dram_rx_reorder.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_test_dram_rx_reorder.v</a>
 defines: 
-time_elapsed: 0.392s
-ram usage: 13408 KB
+time_elapsed: 0.576s
+ram usage: 16424 KB
 </pre>
 <pre class="log">
 
@@ -66,6 +66,10 @@ module bsg_cache_to_test_dram_rx_reorder (
 		.data_o(dma_data_o),
 		.yumi_i(dma_data_v_o &amp; dma_data_ready_i)
 	);
+	function automatic [(num_req_lp &gt;= 1 ? num_req_lp : 2 - num_req_lp) - 1:0] sv2v_cast_18E17;
+		input reg [(num_req_lp &gt;= 1 ? num_req_lp : 2 - num_req_lp) - 1:0] inp;
+		sv2v_cast_18E17 = inp;
+	endfunction
 	generate
 		if (num_req_lp == 1) begin : req1
 			always @(*) piso_data_li = dram_data_i;
@@ -117,9 +121,9 @@ module bsg_cache_to_test_dram_rx_reorder (
 			end
 			always @(posedge core_clk_i)
 				if (core_reset_i)
-					data_buffer_v_r &lt;= &#39;sd0;
+					data_buffer_v_r &lt;= sv2v_cast_18E17(1&#39;sb0);
 				else if (clear_buffer)
-					data_buffer_v_r &lt;= &#39;sd0;
+					data_buffer_v_r &lt;= sv2v_cast_18E17(1&#39;sb0);
 				else if (write_buffer) begin
 					data_buffer_v_r[req_num] &lt;= 1&#39;b1;
 					data_buffer_r[req_num] &lt;= dram_data_i;

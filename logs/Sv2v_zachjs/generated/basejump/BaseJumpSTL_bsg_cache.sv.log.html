@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache.v</a>
 defines: 
-time_elapsed: 2.588s
-ram usage: 21072 KB
+time_elapsed: 4.072s
+ram usage: 20896 KB
 </pre>
 <pre class="log">
 
@@ -159,10 +159,14 @@ module bsg_cache (
 	reg [addr_width_p - 1:0] addr_tl_r;
 	reg [data_width_p - 1:0] data_tl_r;
 	wire sbuf_hazard;
+	function automatic [(((data_mask_width_lp &gt;= 1 ? data_mask_width_lp : 2 - data_mask_width_lp) + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) + (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)) + 18:0] sv2v_cast_2019D;
+		input reg [(((data_mask_width_lp &gt;= 1 ? data_mask_width_lp : 2 - data_mask_width_lp) + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) + (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)) + 18:0] inp;
+		sv2v_cast_2019D = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (reset_i) begin
 			v_tl_r &lt;= 1&#39;b0;
-			{mask_tl_r, addr_tl_r, data_tl_r, decode_tl_r} &lt;= &#39;sd0;
+			{mask_tl_r, addr_tl_r, data_tl_r, decode_tl_r} &lt;= sv2v_cast_2019D(1&#39;sb0);
 		end
 		else if (ready_o) begin
 			v_tl_r &lt;= v_i;
@@ -247,10 +251,14 @@ module bsg_cache (
 	reg [(ways_p &gt;= 1 ? (tag_width_lp &gt;= 1 ? (ways_p * tag_width_lp) + -1 : (ways_p * (2 - tag_width_lp)) + ((tag_width_lp - 1) - 1)) : (tag_width_lp &gt;= 1 ? ((2 - ways_p) * tag_width_lp) + (((ways_p - 1) * tag_width_lp) - 1) : ((2 - ways_p) * (2 - tag_width_lp)) + (((tag_width_lp - 1) + ((ways_p - 1) * (2 - tag_width_lp))) - 1))):(ways_p &gt;= 1 ? (tag_width_lp &gt;= 1 ? 0 : tag_width_lp - 1) : (tag_width_lp &gt;= 1 ? (ways_p - 1) * tag_width_lp : (tag_width_lp - 1) + ((ways_p - 1) * (2 - tag_width_lp))))] tag_v_r;
 	reg [(ways_p &gt;= 1 ? (dma_data_width_p &gt;= 1 ? (ways_p * dma_data_width_p) + -1 : (ways_p * (2 - dma_data_width_p)) + ((dma_data_width_p - 1) - 1)) : (dma_data_width_p &gt;= 1 ? ((2 - ways_p) * dma_data_width_p) + (((ways_p - 1) * dma_data_width_p) - 1) : ((2 - ways_p) * (2 - dma_data_width_p)) + (((dma_data_width_p - 1) + ((ways_p - 1) * (2 - dma_data_width_p))) - 1))):(ways_p &gt;= 1 ? (dma_data_width_p &gt;= 1 ? 0 : dma_data_width_p - 1) : (dma_data_width_p &gt;= 1 ? (ways_p - 1) * dma_data_width_p : (dma_data_width_p - 1) + ((ways_p - 1) * (2 - dma_data_width_p))))] ld_data_v_r;
 	wire retval_op_v;
+	function automatic [(((((((data_mask_width_lp &gt;= 1 ? data_mask_width_lp : 2 - data_mask_width_lp) + 19) + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) + (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)) + (ways_p &gt;= 1 ? ways_p : 2 - ways_p)) + (ways_p &gt;= 1 ? ways_p : 2 - ways_p)) + ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) * (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1:0] sv2v_cast_2FFAF;
+		input reg [(((((((data_mask_width_lp &gt;= 1 ? data_mask_width_lp : 2 - data_mask_width_lp) + 19) + (addr_width_p &gt;= 1 ? addr_width_p : 2 - addr_width_p)) + (data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p)) + (ways_p &gt;= 1 ? ways_p : 2 - ways_p)) + (ways_p &gt;= 1 ? ways_p : 2 - ways_p)) + ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) * (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1:0] inp;
+		sv2v_cast_2FFAF = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (reset_i) begin
 			v_v_r &lt;= 1&#39;b0;
-			{mask_v_r, decode_v_r, addr_v_r, data_v_r, valid_v_r, lock_v_r, tag_v_r} &lt;= &#39;sd0;
+			{mask_v_r, decode_v_r, addr_v_r, data_v_r, valid_v_r, lock_v_r, tag_v_r} &lt;= sv2v_cast_2FFAF(1&#39;sb0);
 		end
 		else if (v_we) begin
 			v_v_r &lt;= v_tl_r;
@@ -460,10 +468,14 @@ module bsg_cache (
 	wire [(ways_p &gt;= 1 ? (dma_data_mask_width_lp &gt;= 1 ? (ways_p * dma_data_mask_width_lp) + -1 : (ways_p * (2 - dma_data_mask_width_lp)) + ((dma_data_mask_width_lp - 1) - 1)) : (dma_data_mask_width_lp &gt;= 1 ? ((2 - ways_p) * dma_data_mask_width_lp) + (((ways_p - 1) * dma_data_mask_width_lp) - 1) : ((2 - ways_p) * (2 - dma_data_mask_width_lp)) + (((dma_data_mask_width_lp - 1) + ((ways_p - 1) * (2 - dma_data_mask_width_lp))) - 1))):(ways_p &gt;= 1 ? (dma_data_mask_width_lp &gt;= 1 ? 0 : dma_data_mask_width_lp - 1) : (dma_data_mask_width_lp &gt;= 1 ? (ways_p - 1) * dma_data_mask_width_lp : (dma_data_mask_width_lp - 1) + ((ways_p - 1) * (2 - dma_data_mask_width_lp))))] sbuf_data_mem_w_mask;
 	wire [(ways_p &gt;= 1 ? (dma_data_width_p &gt;= 1 ? (ways_p * dma_data_width_p) + -1 : (ways_p * (2 - dma_data_width_p)) + ((dma_data_width_p - 1) - 1)) : (dma_data_width_p &gt;= 1 ? ((2 - ways_p) * dma_data_width_p) + (((ways_p - 1) * dma_data_width_p) - 1) : ((2 - ways_p) * (2 - dma_data_width_p)) + (((dma_data_width_p - 1) + ((ways_p - 1) * (2 - dma_data_width_p))) - 1))):(ways_p &gt;= 1 ? (dma_data_width_p &gt;= 1 ? 0 : dma_data_width_p - 1) : (dma_data_width_p &gt;= 1 ? (ways_p - 1) * dma_data_width_p : (dma_data_width_p - 1) + ((ways_p - 1) * (2 - dma_data_width_p))))] sbuf_data_mem_data;
 	wire [lg_data_mem_els_lp - 1:0] sbuf_data_mem_addr;
+	function automatic [(dma_data_mask_width_lp &gt;= 1 ? dma_data_mask_width_lp : 2 - dma_data_mask_width_lp) - 1:0] sv2v_cast_6606B;
+		input reg [(dma_data_mask_width_lp &gt;= 1 ? dma_data_mask_width_lp : 2 - dma_data_mask_width_lp) - 1:0] inp;
+		sv2v_cast_6606B = inp;
+	endfunction
 	generate
 		for (i = 0; i &lt; ways_p; i = i + 1) begin
 			assign sbuf_data_mem_data[(dma_data_width_p &gt;= 1 ? 0 : dma_data_width_p - 1) + ((ways_p &gt;= 1 ? i : 0 - (i - (ways_p - 1))) * (dma_data_width_p &gt;= 1 ? dma_data_width_p : 2 - dma_data_width_p))+:(dma_data_width_p &gt;= 1 ? dma_data_width_p : 2 - dma_data_width_p)] = {burst_size_in_words_lp {sbuf_entry_lo[(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) + (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))-:(((data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) + (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))) &gt;= (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) ? (((data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) + (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))) - (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))))) + 1 : ((((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) - ((data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) + (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)))) + 1)]}};
-			assign sbuf_data_mem_w_mask[(dma_data_mask_width_lp &gt;= 1 ? 0 : dma_data_mask_width_lp - 1) + ((ways_p &gt;= 1 ? i : 0 - (i - (ways_p - 1))) * (dma_data_mask_width_lp &gt;= 1 ? dma_data_mask_width_lp : 2 - dma_data_mask_width_lp))+:(dma_data_mask_width_lp &gt;= 1 ? dma_data_mask_width_lp : 2 - dma_data_mask_width_lp)] = (sbuf_way_decode[i] ? sbuf_expand_mask &amp; {burst_size_in_words_lp {sbuf_entry_lo[((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)-:((((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)) &gt;= ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) ? ((((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)) - ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) + 1 : (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) - (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))) + 1)]}} : &#39;sd0);
+			assign sbuf_data_mem_w_mask[(dma_data_mask_width_lp &gt;= 1 ? 0 : dma_data_mask_width_lp - 1) + ((ways_p &gt;= 1 ? i : 0 - (i - (ways_p - 1))) * (dma_data_mask_width_lp &gt;= 1 ? dma_data_mask_width_lp : 2 - dma_data_mask_width_lp))+:(dma_data_mask_width_lp &gt;= 1 ? dma_data_mask_width_lp : 2 - dma_data_mask_width_lp)] = (sbuf_way_decode[i] ? sbuf_expand_mask &amp; {burst_size_in_words_lp {sbuf_entry_lo[((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)-:((((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)) &gt;= ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) ? ((((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1)) - ((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p)))) + 1 : (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) - (((data_width_p &gt;&gt; 3) &gt;= 1 ? data_width_p &gt;&gt; 3 : 2 - (data_width_p &gt;&gt; 3)) + (((ways_p == 1 ? 1 : $clog2(ways_p)) &gt;= 1 ? (ways_p == 1 ? 1 : $clog2(ways_p)) : 2 - (ways_p == 1 ? 1 : $clog2(ways_p))) + -1))) + 1)]}} : sv2v_cast_6606B(1&#39;sb0));
 		end
 	endgenerate
 	generate
@@ -599,6 +611,10 @@ module bsg_cache (
 		.sel_i(decode_v_r[17+:lg_data_sel_mux_els_lp]),
 		.data_o(ld_data_final_lo)
 	);
+	function automatic [(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) - 1:0] sv2v_cast_D8E3C;
+		input reg [(data_width_p &gt;= 1 ? data_width_p : 2 - data_width_p) - 1:0] inp;
+		sv2v_cast_D8E3C = inp;
+	endfunction
 	always @(*)
 		if (retval_op_v) begin
 			if (decode_v_r[10])
@@ -613,7 +629,7 @@ module bsg_cache (
 				data_o = ld_data_final_lo;
 		end
 		else
-			data_o = &#39;sd0;
+			data_o = sv2v_cast_D8E3C(1&#39;sb0);
 	assign v_o = v_v_r &amp; (miss_v ? miss_done_lo : 1&#39;b1);
 	assign v_we = (v_v_r ? v_o &amp; yumi_i : 1&#39;b1);
 	assign sbuf_hazard = (sbuf_full_lo &amp; ((v_o &amp; yumi_i) &amp; (decode_v_r[13] | decode_v_r[2]))) &amp; (v_i &amp; (decode[14] | decode[2]));

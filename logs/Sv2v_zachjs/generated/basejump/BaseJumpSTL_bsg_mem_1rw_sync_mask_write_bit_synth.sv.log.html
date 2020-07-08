@@ -18,8 +18,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_bit_synth.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_bit_synth.v</a>
 defines: 
-time_elapsed: 0.560s
-ram usage: 14628 KB
+time_elapsed: 0.612s
+ram usage: 15964 KB
 </pre>
 <pre class="log">
 
@@ -51,11 +51,15 @@ module bsg_mem_1rw_sync_mask_write_bit_synth (
 	reg [width_p - 1:0] mem [els_p - 1:0];
 	wire read_en;
 	assign read_en = v_i &amp; ~w_i;
+	function automatic [(addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp) - 1:0] sv2v_cast_D597B;
+		input reg [(addr_width_lp &gt;= 1 ? addr_width_lp : 2 - addr_width_lp) - 1:0] inp;
+		sv2v_cast_D597B = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (read_en)
 			addr_r &lt;= addr_i;
 		else
-			addr_r &lt;= &#39;sdX;
+			addr_r &lt;= sv2v_cast_D597B(1&#39;sbX);
 	wire [width_p - 1:0] data_out;
 	assign data_out = mem[addr_r];
 	generate
