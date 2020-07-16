@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2202846c.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2202846c.v</a>
 defines: 
-time_elapsed: 0.024s
-ram usage: 14012 KB
+time_elapsed: 0.056s
+ram usage: 12256 KB
 </pre>
 <pre class="log">
 
@@ -30,40 +30,40 @@ module top;
 	integer result;
 	always @(cond or expr)
 		casex (cond)
-			6&#39;b01_??10: result = 1;
-			{2&#39;b10, 4&#39;b??10}: result = 2;
-			{expr[1:0], 4&#39;b??01}: result = 3;
+			6&#39;b1zz10: result = 1;
+			{2&#39;b10, 4&#39;bzz10}: result = 2;
+			{expr[1:0], 4&#39;bzz01}: result = 3;
 			expr[11:6]: result = 4;
 			default: result = 0;
 		endcase
 	initial begin
 		pass = 1&#39;b1;
 		expr = 2&#39;b10;
-		cond = 6&#39;b01_xx10;
+		cond = 6&#39;b1xx10;
 		#(1)
 			if (result != 1) begin
 				$display(&#34;Failed case expr 1 test, got expr %0d&#34;, result);
 				pass = 1&#39;b0;
 			end
-		cond = 6&#39;bxx_xxxx;
+		cond = 6&#39;bxxxxxx;
 		#(1)
 			if (result != 1) begin
 				$display(&#34;Failed case expr 1a test, got expr %0d&#34;, result);
 				pass = 1&#39;b0;
 			end
-		cond = 6&#39;b10_zz10;
+		cond = 6&#39;b10zz10;
 		#(1)
 			if (result != 2) begin
 				$display(&#34;Failed case expr 2 test, got expr %0d&#34;, result);
 				pass = 1&#39;b0;
 			end
-		cond = 6&#39;b0x_zz01;
+		cond = 6&#39;b0xzz01;
 		#(1)
 			if (result != 3) begin
 				$display(&#34;Failed case expr 3 test, got expr %0d&#34;, result);
 				pass = 1&#39;b0;
 			end
-		cond = 6&#39;b11_1111;
+		cond = 6&#39;b111111;
 		#(1)
 			if (result != 4) begin
 				$display(&#34;Failed case expr 1a test, got expr %0d&#34;, result);

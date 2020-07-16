@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/contrib/pic.v.html" target="file-frame">third_party/tests/ivtest/contrib/pic.v</a>
 defines: 
-time_elapsed: 1.576s
-ram usage: 27188 KB
+time_elapsed: 1.172s
+ram usage: 30408 KB
 </pre>
 <pre class="log">
 
@@ -39,19 +39,16 @@ module picalu (
 	input cin;
 	output cout;
 	output zout;
-	reg cout;
-	reg zout;
-	reg [7:0] y;
 	reg addercout;
-	parameter ALUOP_ADD = 4&#39;b0000;
+	parameter ALUOP_ADD = 4&#39;b0;
 	parameter ALUOP_SUB = 4&#39;b1000;
-	parameter ALUOP_AND = 4&#39;b0001;
-	parameter ALUOP_OR = 4&#39;b0010;
-	parameter ALUOP_XOR = 4&#39;b0011;
-	parameter ALUOP_COM = 4&#39;b0100;
-	parameter ALUOP_ROR = 4&#39;b0101;
-	parameter ALUOP_ROL = 4&#39;b0110;
-	parameter ALUOP_SWAP = 4&#39;b0111;
+	parameter ALUOP_AND = 4&#39;b1;
+	parameter ALUOP_OR = 4&#39;b10;
+	parameter ALUOP_XOR = 4&#39;b11;
+	parameter ALUOP_COM = 4&#39;b100;
+	parameter ALUOP_ROR = 4&#39;b101;
+	parameter ALUOP_ROL = 4&#39;b110;
+	parameter ALUOP_SWAP = 4&#39;b111;
 	always @(a or b or cin or op)
 		case (op)
 			ALUOP_ADD: {addercout, y} &lt;= a + b;
@@ -63,9 +60,9 @@ module picalu (
 			ALUOP_ROR: {addercout, y} &lt;= {a[0], cin, a[7:1]};
 			ALUOP_ROL: {addercout, y} &lt;= {a[7], a[6:0], cin};
 			ALUOP_SWAP: {addercout, y} &lt;= {1&#39;b0, a[3:0], a[7:4]};
-			default: {addercout, y} &lt;= {1&#39;b0, 8&#39;h00};
+			default: {addercout, y} &lt;= {1&#39;b0, 8&#39;h0};
 		endcase
-	always @(y) zout &lt;= y == 8&#39;h00;
+	always @(y) zout &lt;= y == 8&#39;h0;
 	always @(addercout or op)
 		if (op == ALUOP_SUB)
 			cout &lt;= ~addercout;
@@ -96,10 +93,7 @@ module piccpu (
 	output [8:0] debugpc;
 	output [11:0] debuginst;
 	output [7:0] debugstatus;
-	reg [8:0] paddr;
-	reg [7:0] portbout;
-	reg [7:0] portcout;
-	parameter RESET_VECTOR = 9&#39;h1FF;
+	parameter RESET_VECTOR = 9&#39;h1ff;
 	parameter INDF_ADDRESS = 3&#39;h0;
 	parameter TMR0_ADDRESS = 3&#39;h1;
 	parameter PCL_ADDRESS = 3&#39;h2;
@@ -108,7 +102,7 @@ module piccpu (
 	parameter PORTA_ADDRESS = 3&#39;h5;
 	parameter PORTB_ADDRESS = 3&#39;h6;
 	parameter PORTC_ADDRESS = 3&#39;h7;
-	parameter EXPADDRESS_LILADDER = 7&#39;h7F;
+	parameter EXPADDRESS_LILADDER = 7&#39;h7f;
 	reg [11:0] inst;
 	reg [8:0] pc;
 	reg [8:0] pcplus1;
@@ -162,23 +156,23 @@ module piccpu (
 	wire alucin;
 	wire alucout;
 	wire aluz;
-	parameter ALUASEL_W = 2&#39;b00;
-	parameter ALUASEL_SBUS = 2&#39;b01;
+	parameter ALUASEL_W = 2&#39;b0;
+	parameter ALUASEL_SBUS = 2&#39;b1;
 	parameter ALUASEL_K = 2&#39;b10;
 	parameter ALUASEL_BD = 2&#39;b11;
-	parameter ALUBSEL_W = 2&#39;b00;
-	parameter ALUBSEL_SBUS = 2&#39;b01;
+	parameter ALUBSEL_W = 2&#39;b0;
+	parameter ALUBSEL_SBUS = 2&#39;b1;
 	parameter ALUBSEL_K = 2&#39;b10;
 	parameter ALUBSEL_1 = 2&#39;b11;
-	parameter ALUOP_ADD = 4&#39;b0000;
+	parameter ALUOP_ADD = 4&#39;b0;
 	parameter ALUOP_SUB = 4&#39;b1000;
-	parameter ALUOP_AND = 4&#39;b0001;
-	parameter ALUOP_OR = 4&#39;b0010;
-	parameter ALUOP_XOR = 4&#39;b0011;
-	parameter ALUOP_COM = 4&#39;b0100;
-	parameter ALUOP_ROR = 4&#39;b0101;
-	parameter ALUOP_ROL = 4&#39;b0110;
-	parameter ALUOP_SWAP = 4&#39;b0111;
+	parameter ALUOP_AND = 4&#39;b1;
+	parameter ALUOP_OR = 4&#39;b10;
+	parameter ALUOP_XOR = 4&#39;b11;
+	parameter ALUOP_COM = 4&#39;b100;
+	parameter ALUOP_ROR = 4&#39;b101;
+	parameter ALUOP_ROL = 4&#39;b110;
+	parameter ALUOP_SWAP = 4&#39;b111;
 	picregs regs(
 		.clk(clk),
 		.reset(reset),
@@ -224,7 +218,7 @@ module piccpu (
 	always @(regfilesel or aluasel or alubsel) regfilere &lt;= regfilesel &amp; ((aluasel == ALUASEL_SBUS) | (alubsel == ALUBSEL_SBUS));
 	always @(fileaddr)
 		casex (fileaddr)
-			7&#39;bXX00XXX: begin
+			7&#39;bxx00xxx: begin
 				specialsel &lt;= 1&#39;b1;
 				regfilesel &lt;= 1&#39;b0;
 				expsel &lt;= 1&#39;b0;
@@ -257,7 +251,7 @@ module piccpu (
 		else if (regfilesel)
 			sbus &lt;= regfileout;
 		else
-			sbus &lt;= 8&#39;h00;
+			sbus &lt;= 8&#39;h0;
 	always @(aluout) dbus &lt;= aluout;
 	always @(dbus) regfilein &lt;= dbus;
 	always @(pc) paddr = pc;
@@ -268,78 +262,78 @@ module piccpu (
 	assign b = inst[7:5];
 	always @(b)
 		case (b)
-			3&#39;b000: bdec &lt;= 8&#39;b00000001;
-			3&#39;b001: bdec &lt;= 8&#39;b00000010;
-			3&#39;b010: bdec &lt;= 8&#39;b00000100;
-			3&#39;b011: bdec &lt;= 8&#39;b00001000;
-			3&#39;b100: bdec &lt;= 8&#39;b00010000;
-			3&#39;b101: bdec &lt;= 8&#39;b00100000;
-			3&#39;b110: bdec &lt;= 8&#39;b01000000;
+			3&#39;b0: bdec &lt;= 8&#39;b1;
+			3&#39;b1: bdec &lt;= 8&#39;b10;
+			3&#39;b10: bdec &lt;= 8&#39;b100;
+			3&#39;b11: bdec &lt;= 8&#39;b1000;
+			3&#39;b100: bdec &lt;= 8&#39;b10000;
+			3&#39;b101: bdec &lt;= 8&#39;b100000;
+			3&#39;b110: bdec &lt;= 8&#39;b1000000;
 			3&#39;b111: bdec &lt;= 8&#39;b10000000;
 		endcase
 	always @(bdec or bdpol) bd &lt;= bdec ^ bdpol;
 	always @(posedge clk)
 		if (reset)
-			inst &lt;= 12&#39;h000;
+			inst &lt;= 12&#39;h0;
 		else if (skip == 1&#39;b1)
-			inst &lt;= 12&#39;b000000000000;
+			inst &lt;= 12&#39;b0;
 		else
 			inst &lt;= pdata;
 	always @(inst or aluz)
 		casex ({inst, aluz})
-			13&#39;b10??_????_????_?: skip &lt;= 1&#39;b1;
-			13&#39;b0110_????_????_1: skip &lt;= 1&#39;b1;
-			13&#39;b0111_????_????_0: skip &lt;= 1&#39;b1;
-			13&#39;b0010_11??_????_1: skip &lt;= 1&#39;b1;
-			13&#39;b0011_11??_????_1: skip &lt;= 1&#39;b1;
+			13&#39;b10zzzzzzzzzzz: skip &lt;= 1&#39;b1;
+			13&#39;b110zzzzzzzz1: skip &lt;= 1&#39;b1;
+			13&#39;b111zzzzzzzz0: skip &lt;= 1&#39;b1;
+			13&#39;b1011zzzzzz1: skip &lt;= 1&#39;b1;
+			13&#39;b1111zzzzzz1: skip &lt;= 1&#39;b1;
 			default: skip &lt;= 1&#39;b0;
 		endcase
 	always @(aluasel or w or sbus or k or bd)
 		case (aluasel)
-			2&#39;b00: alua &lt;= w;
-			2&#39;b01: alua &lt;= sbus;
+			2&#39;b0: alua &lt;= w;
+			2&#39;b1: alua &lt;= sbus;
 			2&#39;b10: alua &lt;= k;
 			2&#39;b11: alua &lt;= bd;
 		endcase
 	always @(alubsel or w or sbus or k)
 		case (alubsel)
-			2&#39;b00: alub &lt;= w;
-			2&#39;b01: alub &lt;= sbus;
+			2&#39;b0: alub &lt;= w;
+			2&#39;b1: alub &lt;= sbus;
 			2&#39;b10: alub &lt;= k;
-			2&#39;b11: alub &lt;= 8&#39;b00000001;
+			2&#39;b11: alub &lt;= 8&#39;b1;
 		endcase
 	always @(posedge clk)
 		if (reset)
-			w &lt;= 8&#39;h00;
+			w &lt;= 8&#39;h0;
 		else if (wwe)
 			w &lt;= dbus;
 	always @(posedge clk)
 		if (reset)
-			tmr0 &lt;= 8&#39;h00;
+			tmr0 &lt;= 8&#39;h0;
 		else if ((fwe &amp; specialsel) &amp; (fsel == TMR0_ADDRESS))
 			tmr0 &lt;= dbus;
 		else
 			case (option[2:0])
-				3&#39;b000:
-					if (~|(prescaler &amp; 8&#39;b00000001))
+				3&#39;b0:
+					if (~|(prescaler &amp; 8&#39;b1))
 						tmr0 &lt;= tmr0 + 1;
-				3&#39;b001:
-					if (~|(prescaler &amp; 8&#39;b00000011))
+				3&#39;b1:
+					if (~|(prescaler &amp; 8&#39;b11))
 						tmr0 &lt;= tmr0 + 1;
-				3&#39;b010:
-					if (~|(prescaler &amp; 8&#39;b00000111))
+				3&#39;b10:
+					if (~|(prescaler &amp; 8&#39;b111))
 						tmr0 &lt;= tmr0 + 1;
-				3&#39;b011:
-					if (~|(prescaler &amp; 8&#39;b00001111))
+				3&#39;b11:
+					if (~|(prescaler &amp; 8&#39;b1111))
 						tmr0 &lt;= tmr0 + 1;
 				3&#39;b100:
-					if (~|(prescaler &amp; 8&#39;b00011111))
+					if (~|(prescaler &amp; 8&#39;b11111))
 						tmr0 &lt;= tmr0 + 1;
 				3&#39;b101:
-					if (~|(prescaler &amp; 8&#39;b00111111))
+					if (~|(prescaler &amp; 8&#39;b111111))
 						tmr0 &lt;= tmr0 + 1;
 				3&#39;b110:
-					if (~|(prescaler &amp; 8&#39;b01111111))
+					if (~|(prescaler &amp; 8&#39;b1111111))
 						tmr0 &lt;= tmr0 + 1;
 				3&#39;b111:
 					if (~|(prescaler &amp; 8&#39;b11111111))
@@ -347,40 +341,40 @@ module piccpu (
 			endcase
 	always @(posedge clk)
 		if (reset)
-			prescaler &lt;= 8&#39;h00;
+			prescaler &lt;= 8&#39;h0;
 		else
 			prescaler &lt;= prescaler + 1;
 	always @(posedge clk)
 		if (reset)
-			status &lt;= 8&#39;h00;
+			status &lt;= 8&#39;h0;
 		else if ((fwe &amp; specialsel) &amp; (fsel == STATUS_ADDRESS))
 			status &lt;= dbus;
 		else
 			status &lt;= {status[7], status[6], status[5], status[4], status[3], (zwe ? aluz : status[2]), status[1], (cwe ? alucout : status[0])};
 	always @(posedge clk)
 		if (reset)
-			fsr &lt;= 8&#39;h00;
+			fsr &lt;= 8&#39;h0;
 		else if ((fwe &amp; specialsel) &amp; (fsel == FSR_ADDRESS))
 			fsr &lt;= dbus;
 	always @(posedge clk)
 		if (reset)
-			option &lt;= 8&#39;h00;
+			option &lt;= 8&#39;h0;
 		else if (isoption)
 			option &lt;= dbus;
 	always @(posedge clk)
 		if (reset)
-			porta &lt;= 8&#39;h00;
+			porta &lt;= 8&#39;h0;
 		else
 			porta &lt;= portain;
 	always @(posedge clk)
 		if (reset)
-			portb &lt;= 8&#39;h00;
+			portb &lt;= 8&#39;h0;
 		else if (((fwe &amp; specialsel) &amp; (fsel == PORTB_ADDRESS)) &amp; ~istris)
 			portb &lt;= dbus;
 	always @(portb) portbout &lt;= portb;
 	always @(posedge clk)
 		if (reset)
-			portc &lt;= 8&#39;h00;
+			portc &lt;= 8&#39;h0;
 		else if (((fwe &amp; specialsel) &amp; (fsel == PORTC_ADDRESS)) &amp; ~istris)
 			portc &lt;= dbus;
 	always @(portc) portcout &lt;= portc;
@@ -400,18 +394,18 @@ module piccpu (
 		else if (((fwe &amp; specialsel) &amp; (fsel == PORTC_ADDRESS)) &amp; istris)
 			trisc &lt;= dbus;
 	always @(pc) pcplus1 &lt;= pc + 1;
-	parameter PC_SELECT_PCPLUS1 = 3&#39;b000;
-	parameter PC_SELECT_K = 3&#39;b001;
-	parameter PC_SELECT_STACK1 = 3&#39;b010;
-	parameter PC_SELECT_STACK2 = 3&#39;b011;
+	parameter PC_SELECT_PCPLUS1 = 3&#39;b0;
+	parameter PC_SELECT_K = 3&#39;b1;
+	parameter PC_SELECT_STACK1 = 3&#39;b10;
+	parameter PC_SELECT_STACK2 = 3&#39;b11;
 	parameter PC_SELECT_DBUS = 3&#39;b100;
 	parameter PC_SELECT_RESET_VECTOR = 3&#39;b101;
 	always @(posedge clk)
 		case (pcinsel)
-			3&#39;b000: pc &lt;= pcplus1;
-			3&#39;b001: pc &lt;= k;
-			3&#39;b010: pc &lt;= stack1;
-			3&#39;b011: pc &lt;= stack2;
+			3&#39;b0: pc &lt;= pcplus1;
+			3&#39;b1: pc &lt;= k;
+			3&#39;b10: pc &lt;= stack1;
+			3&#39;b11: pc &lt;= stack2;
 			3&#39;b100: pc &lt;= dbus;
 			3&#39;b101: pc &lt;= RESET_VECTOR;
 			3&#39;b110: pc &lt;= pc;
@@ -422,25 +416,25 @@ module piccpu (
 			pcinsel &lt;= PC_SELECT_RESET_VECTOR;
 		else
 			casex ({inst, stacklevel})
-				14&#39;b101?_????_????_??: pcinsel &lt;= PC_SELECT_K;
-				14&#39;b1001_????_????_??: pcinsel &lt;= PC_SELECT_K;
-				14&#39;b1000_????_????_00: pcinsel &lt;= PC_SELECT_STACK1;
-				14&#39;b1000_????_????_01: pcinsel &lt;= PC_SELECT_STACK1;
-				14&#39;b1000_????_????_10: pcinsel &lt;= PC_SELECT_STACK2;
-				14&#39;b1000_????_????_11: pcinsel &lt;= PC_SELECT_STACK2;
-				14&#39;b0010_0010_0010_??: pcinsel &lt;= PC_SELECT_DBUS;
+				14&#39;b101zzzzzzzzzzz: pcinsel &lt;= PC_SELECT_K;
+				14&#39;b1001zzzzzzzzzz: pcinsel &lt;= PC_SELECT_K;
+				14&#39;b1000zzzzzzzz00: pcinsel &lt;= PC_SELECT_STACK1;
+				14&#39;b1000zzzzzzzz01: pcinsel &lt;= PC_SELECT_STACK1;
+				14&#39;b1000zzzzzzzz10: pcinsel &lt;= PC_SELECT_STACK2;
+				14&#39;b1000zzzzzzzz11: pcinsel &lt;= PC_SELECT_STACK2;
+				14&#39;b1000100010zz: pcinsel &lt;= PC_SELECT_DBUS;
 				default: pcinsel &lt;= PC_SELECT_PCPLUS1;
 			endcase
 	always @(posedge clk)
 		if (reset)
-			stack1 &lt;= 9&#39;h000;
+			stack1 &lt;= 9&#39;h0;
 		else if (inst[11:8] == 4&#39;b1001)
 			case (stacklevel)
-				2&#39;b00: begin
+				2&#39;b0: begin
 					stack1 &lt;= pc;
 					$display(&#34;Write to STACK1: %0h&#34;, pc);
 				end
-				2&#39;b01: begin
+				2&#39;b1: begin
 					stack2 &lt;= pc;
 					$display(&#34;Write to STACK2: %0h&#34;, pc);
 				end
@@ -451,24 +445,24 @@ module piccpu (
 			endcase
 	always @(posedge clk)
 		if (reset == 1&#39;b1)
-			stacklevel &lt;= 2&#39;b00;
+			stacklevel &lt;= 2&#39;b0;
 		else
 			casex ({inst, stacklevel})
-				14&#39;b1001_????_????_00: stacklevel &lt;= 2&#39;b01;
-				14&#39;b1001_????_????_01: stacklevel &lt;= 2&#39;b10;
-				14&#39;b1001_????_????_10: stacklevel &lt;= 2&#39;b10;
-				14&#39;b1001_????_????_11: stacklevel &lt;= 2&#39;b00;
-				14&#39;b1000_????_????_00: stacklevel &lt;= 2&#39;b00;
-				14&#39;b1000_????_????_01: stacklevel &lt;= 2&#39;b00;
-				14&#39;b1000_????_????_10: stacklevel &lt;= 2&#39;b01;
-				14&#39;b1000_????_????_11: stacklevel &lt;= 2&#39;b10;
+				14&#39;b1001zzzzzzzz00: stacklevel &lt;= 2&#39;b1;
+				14&#39;b1001zzzzzzzz01: stacklevel &lt;= 2&#39;b10;
+				14&#39;b1001zzzzzzzz10: stacklevel &lt;= 2&#39;b10;
+				14&#39;b1001zzzzzzzz11: stacklevel &lt;= 2&#39;b0;
+				14&#39;b1000zzzzzzzz00: stacklevel &lt;= 2&#39;b0;
+				14&#39;b1000zzzzzzzz01: stacklevel &lt;= 2&#39;b0;
+				14&#39;b1000zzzzzzzz10: stacklevel &lt;= 2&#39;b1;
+				14&#39;b1000zzzzzzzz11: stacklevel &lt;= 2&#39;b10;
 				default: stacklevel &lt;= stacklevel;
 			endcase
 	reg [3:0] special_peripheral_writeable_bits;
 	reg [3:0] special_peripheral_readeable_bits;
 	always @(posedge clk)
 		if (reset)
-			special_peripheral_writeable_bits &lt;= 4&#39;b0000;
+			special_peripheral_writeable_bits &lt;= 4&#39;b0;
 		else if ((fwe &amp; expsel) &amp; (fileaddr == EXPADDRESS_LILADDER))
 			special_peripheral_writeable_bits &lt;= dbus;
 	always @(special_peripheral_writeable_bits) special_peripheral_readeable_bits &lt;= special_peripheral_writeable_bits + 1;
@@ -506,56 +500,56 @@ module picidec (
 	assign {aluasel, alubsel, aluop, wwe, fwe, zwe, cwe, bdpol, tris, option} = decodes;
 	always @(inst)
 		casex (inst)
-			12&#39;b0000_0000_0000: decodes &lt;= 15&#39;b00_00_0000_0_0_0_0_0_0_0;
-			12&#39;b0000_001X_XXXX: decodes &lt;= 15&#39;b00_00_0010_0_1_0_0_0_0_0;
-			12&#39;b0000_0100_0000: decodes &lt;= 15&#39;b00_00_0011_1_0_1_0_0_0_0;
-			12&#39;b0000_011X_XXXX: decodes &lt;= 15&#39;b00_00_0011_0_1_1_0_0_0_0;
-			12&#39;b0000_100X_XXXX: decodes &lt;= 15&#39;b01_00_1000_1_0_1_1_0_0_0;
-			12&#39;b0000_101X_XXXX: decodes &lt;= 15&#39;b01_00_1000_0_1_1_1_0_0_0;
-			12&#39;b0000_110X_XXXX: decodes &lt;= 15&#39;b01_11_1000_1_0_1_0_0_0_0;
-			12&#39;b0000_111X_XXXX: decodes &lt;= 15&#39;b01_11_1000_0_1_1_0_0_0_0;
-			12&#39;b0001_000X_XXXX: decodes &lt;= 15&#39;b00_01_0010_1_0_1_0_0_0_0;
-			12&#39;b0001_001X_XXXX: decodes &lt;= 15&#39;b00_01_0010_0_1_1_0_0_0_0;
-			12&#39;b0001_010X_XXXX: decodes &lt;= 15&#39;b00_01_0001_1_0_1_0_0_0_0;
-			12&#39;b0001_011X_XXXX: decodes &lt;= 15&#39;b00_01_0001_0_1_1_0_0_0_0;
-			12&#39;b0001_100X_XXXX: decodes &lt;= 15&#39;b00_01_0011_1_0_1_0_0_0_0;
-			12&#39;b0001_101X_XXXX: decodes &lt;= 15&#39;b00_01_0011_0_1_1_0_0_0_0;
-			12&#39;b0001_110X_XXXX: decodes &lt;= 15&#39;b00_01_0000_1_0_1_1_0_0_0;
-			12&#39;b0001_111X_XXXX: decodes &lt;= 15&#39;b00_01_0000_0_1_1_1_0_0_0;
-			12&#39;b0010_000X_XXXX: decodes &lt;= 15&#39;b01_01_0010_1_0_1_0_0_0_0;
-			12&#39;b0010_001X_XXXX: decodes &lt;= 15&#39;b01_01_0010_0_1_1_0_0_0_0;
-			12&#39;b0010_010X_XXXX: decodes &lt;= 15&#39;b01_01_0100_1_0_1_0_0_0_0;
-			12&#39;b0010_011X_XXXX: decodes &lt;= 15&#39;b01_01_0100_0_1_1_0_0_0_0;
-			12&#39;b0010_100X_XXXX: decodes &lt;= 15&#39;b01_11_0000_1_0_1_0_0_0_0;
-			12&#39;b0010_101X_XXXX: decodes &lt;= 15&#39;b01_11_0000_0_1_1_0_0_0_0;
-			12&#39;b0010_110X_XXXX: decodes &lt;= 15&#39;b01_11_1000_1_0_0_0_0_0_0;
-			12&#39;b0010_111X_XXXX: decodes &lt;= 15&#39;b01_11_1000_0_1_0_0_0_0_0;
-			12&#39;b0011_000X_XXXX: decodes &lt;= 15&#39;b01_01_0101_1_0_0_1_0_0_0;
-			12&#39;b0011_001X_XXXX: decodes &lt;= 15&#39;b01_01_0101_0_1_0_1_0_0_0;
-			12&#39;b0011_010X_XXXX: decodes &lt;= 15&#39;b01_01_0110_1_0_0_1_0_0_0;
-			12&#39;b0011_011X_XXXX: decodes &lt;= 15&#39;b01_01_0110_0_1_0_1_0_0_0;
-			12&#39;b0011_100X_XXXX: decodes &lt;= 15&#39;b01_01_0111_1_0_0_0_0_0_0;
-			12&#39;b0011_101X_XXXX: decodes &lt;= 15&#39;b01_01_0111_0_1_0_0_0_0_0;
-			12&#39;b0011_110X_XXXX: decodes &lt;= 15&#39;b01_11_0000_1_0_0_0_0_0_0;
-			12&#39;b0011_111X_XXXX: decodes &lt;= 15&#39;b01_11_0000_0_1_0_0_0_0_0;
-			12&#39;b0100_XXXX_XXXX: decodes &lt;= 15&#39;b11_01_0001_0_1_0_0_1_0_0;
-			12&#39;b0101_XXXX_XXXX: decodes &lt;= 15&#39;b11_01_0010_0_1_0_0_0_0_0;
-			12&#39;b0110_XXXX_XXXX: decodes &lt;= 15&#39;b11_01_0001_0_0_0_0_0_0_0;
-			12&#39;b0111_XXXX_XXXX: decodes &lt;= 15&#39;b11_01_0001_0_0_0_0_0_0_0;
-			12&#39;b0000_0000_0010: decodes &lt;= 15&#39;b00_00_0010_0_1_0_0_0_0_1;
-			12&#39;b0000_0000_0011: decodes &lt;= 15&#39;b00_00_0000_0_0_0_0_0_0_0;
-			12&#39;b0000_0000_0100: decodes &lt;= 15&#39;b00_00_0000_0_0_0_0_0_0_0;
-			12&#39;b0000_0000_0101: decodes &lt;= 15&#39;b00_00_0000_0_1_0_0_0_1_0;
-			12&#39;b0000_0000_0110: decodes &lt;= 15&#39;b00_00_0010_0_1_0_0_0_1_0;
-			12&#39;b0000_0000_0111: decodes &lt;= 15&#39;b00_00_0010_0_1_0_0_0_1_0;
-			12&#39;b1000_XXXX_XXXX: decodes &lt;= 15&#39;b10_10_0010_1_0_0_0_0_0_0;
-			12&#39;b1001_XXXX_XXXX: decodes &lt;= 15&#39;b10_10_0010_0_0_0_0_0_0_0;
-			12&#39;b101X_XXXX_XXXX: decodes &lt;= 15&#39;b10_10_0010_0_0_0_0_0_0_0;
-			12&#39;b1100_XXXX_XXXX: decodes &lt;= 15&#39;b10_10_0010_1_0_0_0_0_0_0;
-			12&#39;b1101_XXXX_XXXX: decodes &lt;= 15&#39;b00_10_0010_1_0_1_0_0_0_0;
-			12&#39;b1110_XXXX_XXXX: decodes &lt;= 15&#39;b00_10_0001_1_0_1_0_0_0_0;
-			12&#39;b1111_XXXX_XXXX: decodes &lt;= 15&#39;b00_10_0011_1_0_1_0_0_0_0;
-			default: decodes &lt;= 15&#39;b00_00_0000_0_0_0_0_0_0_0;
+			12&#39;b0: decodes &lt;= 15&#39;b0;
+			12&#39;b1xxxxx: decodes &lt;= 15&#39;b100100000;
+			12&#39;b1000000: decodes &lt;= 15&#39;b111010000;
+			12&#39;b11xxxxx: decodes &lt;= 15&#39;b110110000;
+			12&#39;b100xxxxx: decodes &lt;= 15&#39;b10010001011000;
+			12&#39;b101xxxxx: decodes &lt;= 15&#39;b10010000111000;
+			12&#39;b110xxxxx: decodes &lt;= 15&#39;b11110001010000;
+			12&#39;b111xxxxx: decodes &lt;= 15&#39;b11110000110000;
+			12&#39;b1000xxxxx: decodes &lt;= 15&#39;b100101010000;
+			12&#39;b1001xxxxx: decodes &lt;= 15&#39;b100100110000;
+			12&#39;b1010xxxxx: decodes &lt;= 15&#39;b100011010000;
+			12&#39;b1011xxxxx: decodes &lt;= 15&#39;b100010110000;
+			12&#39;b1100xxxxx: decodes &lt;= 15&#39;b100111010000;
+			12&#39;b1101xxxxx: decodes &lt;= 15&#39;b100110110000;
+			12&#39;b1110xxxxx: decodes &lt;= 15&#39;b100001011000;
+			12&#39;b1111xxxxx: decodes &lt;= 15&#39;b100000111000;
+			12&#39;b10000xxxxx: decodes &lt;= 15&#39;b10100101010000;
+			12&#39;b10001xxxxx: decodes &lt;= 15&#39;b10100100110000;
+			12&#39;b10010xxxxx: decodes &lt;= 15&#39;b10101001010000;
+			12&#39;b10011xxxxx: decodes &lt;= 15&#39;b10101000110000;
+			12&#39;b10100xxxxx: decodes &lt;= 15&#39;b11100001010000;
+			12&#39;b10101xxxxx: decodes &lt;= 15&#39;b11100000110000;
+			12&#39;b10110xxxxx: decodes &lt;= 15&#39;b11110001000000;
+			12&#39;b10111xxxxx: decodes &lt;= 15&#39;b11110000100000;
+			12&#39;b11000xxxxx: decodes &lt;= 15&#39;b10101011001000;
+			12&#39;b11001xxxxx: decodes &lt;= 15&#39;b10101010101000;
+			12&#39;b11010xxxxx: decodes &lt;= 15&#39;b10101101001000;
+			12&#39;b11011xxxxx: decodes &lt;= 15&#39;b10101100101000;
+			12&#39;b11100xxxxx: decodes &lt;= 15&#39;b10101111000000;
+			12&#39;b11101xxxxx: decodes &lt;= 15&#39;b10101110100000;
+			12&#39;b11110xxxxx: decodes &lt;= 15&#39;b11100001000000;
+			12&#39;b11111xxxxx: decodes &lt;= 15&#39;b11100000100000;
+			12&#39;b100xxxxxxxx: decodes &lt;= 15&#39;b110100010100100;
+			12&#39;b101xxxxxxxx: decodes &lt;= 15&#39;b110100100100000;
+			12&#39;b110xxxxxxxx: decodes &lt;= 15&#39;b110100010000000;
+			12&#39;b111xxxxxxxx: decodes &lt;= 15&#39;b110100010000000;
+			12&#39;b10: decodes &lt;= 15&#39;b100100001;
+			12&#39;b11: decodes &lt;= 15&#39;b0;
+			12&#39;b100: decodes &lt;= 15&#39;b0;
+			12&#39;b101: decodes &lt;= 15&#39;b100010;
+			12&#39;b110: decodes &lt;= 15&#39;b100100010;
+			12&#39;b111: decodes &lt;= 15&#39;b100100010;
+			12&#39;b1000xxxxxxxx: decodes &lt;= 15&#39;b101000101000000;
+			12&#39;b1001xxxxxxxx: decodes &lt;= 15&#39;b101000100000000;
+			12&#39;b101xxxxxxxxx: decodes &lt;= 15&#39;b101000100000000;
+			12&#39;b1100xxxxxxxx: decodes &lt;= 15&#39;b101000101000000;
+			12&#39;b1101xxxxxxxx: decodes &lt;= 15&#39;b1000101010000;
+			12&#39;b1110xxxxxxxx: decodes &lt;= 15&#39;b1000011010000;
+			12&#39;b1111xxxxxxxx: decodes &lt;= 15&#39;b1000111010000;
+			default: decodes &lt;= 15&#39;b0;
 		endcase
 endmodule
 module picregs (
@@ -576,7 +570,6 @@ module picregs (
 	input [4:0] location;
 	input [7:0] din;
 	output [7:0] dout;
-	reg [7:0] dout;
 	integer index;
 	reg [7:0] commonblockout;
 	reg [7:0] highblock0out;
@@ -605,12 +598,12 @@ module picregs (
 	end
 	always @(bank or location or re or commonblockout or highblock0out or highblock1out or highblock2out or highblock3out)
 		if (re) begin
-			if (location[4:3] == 2&#39;b01)
+			if (location[4:3] == 2&#39;b1)
 				dout &lt;= commonblockout;
 			else if (location[4])
 				case (bank)
-					2&#39;b00: dout &lt;= highblock0out;
-					2&#39;b01: dout &lt;= highblock1out;
+					2&#39;b0: dout &lt;= highblock0out;
+					2&#39;b1: dout &lt;= highblock1out;
 					2&#39;b10: dout &lt;= highblock2out;
 					2&#39;b11: dout &lt;= highblock3out;
 				endcase
@@ -628,7 +621,7 @@ module picregs (
 			highblock3sel &lt;= 1&#39;b0;
 		end
 		else if (we) begin
-			if (location[4:3] == 2&#39;b01) begin
+			if (location[4:3] == 2&#39;b1) begin
 				commonblocksel &lt;= 1&#39;b1;
 				highblock0sel &lt;= 1&#39;b0;
 				highblock1sel &lt;= 1&#39;b0;
@@ -638,10 +631,10 @@ module picregs (
 			else if (location[4]) begin
 				commonblocksel &lt;= 1&#39;b0;
 				case (bank)
-					2&#39;b00: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b1000;
-					2&#39;b01: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b0100;
-					2&#39;b10: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b0010;
-					2&#39;b11: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b0001;
+					2&#39;b0: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b1000;
+					2&#39;b1: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b100;
+					2&#39;b10: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b10;
+					2&#39;b11: {highblock0sel, highblock1sel, highblock2sel, highblock3sel} &lt;= 4&#39;b1;
 				endcase
 			end
 			else begin
@@ -723,12 +716,12 @@ module picregs (
 			4&#39;h7: highblock0out &lt;= r23;
 			4&#39;h8: highblock0out &lt;= r24;
 			4&#39;h9: highblock0out &lt;= r25;
-			4&#39;hA: highblock0out &lt;= r26;
-			4&#39;hB: highblock0out &lt;= r27;
-			4&#39;hC: highblock0out &lt;= r28;
-			4&#39;hD: highblock0out &lt;= r29;
-			4&#39;hE: highblock0out &lt;= r30;
-			4&#39;hF: highblock0out &lt;= r31;
+			4&#39;ha: highblock0out &lt;= r26;
+			4&#39;hb: highblock0out &lt;= r27;
+			4&#39;hc: highblock0out &lt;= r28;
+			4&#39;hd: highblock0out &lt;= r29;
+			4&#39;he: highblock0out &lt;= r30;
+			4&#39;hf: highblock0out &lt;= r31;
 		endcase
 	always @(posedge clk)
 		if (we &amp; highblock0sel)
@@ -743,12 +736,12 @@ module picregs (
 				4&#39;h7: r23 &lt;= highblock0in;
 				4&#39;h8: r24 &lt;= highblock0in;
 				4&#39;h9: r25 &lt;= highblock0in;
-				4&#39;hA: r26 &lt;= highblock0in;
-				4&#39;hB: r27 &lt;= highblock0in;
-				4&#39;hC: r28 &lt;= highblock0in;
-				4&#39;hD: r29 &lt;= highblock0in;
-				4&#39;hE: r30 &lt;= highblock0in;
-				4&#39;hF: r31 &lt;= highblock0in;
+				4&#39;ha: r26 &lt;= highblock0in;
+				4&#39;hb: r27 &lt;= highblock0in;
+				4&#39;hc: r28 &lt;= highblock0in;
+				4&#39;hd: r29 &lt;= highblock0in;
+				4&#39;he: r30 &lt;= highblock0in;
+				4&#39;hf: r31 &lt;= highblock0in;
 			endcase
 	reg [7:0] r48;
 	reg [7:0] r49;
@@ -778,12 +771,12 @@ module picregs (
 			4&#39;h7: highblock1out &lt;= r55;
 			4&#39;h8: highblock1out &lt;= r56;
 			4&#39;h9: highblock1out &lt;= r57;
-			4&#39;hA: highblock1out &lt;= r58;
-			4&#39;hB: highblock1out &lt;= r59;
-			4&#39;hC: highblock1out &lt;= r60;
-			4&#39;hD: highblock1out &lt;= r61;
-			4&#39;hE: highblock1out &lt;= r62;
-			4&#39;hF: highblock1out &lt;= r63;
+			4&#39;ha: highblock1out &lt;= r58;
+			4&#39;hb: highblock1out &lt;= r59;
+			4&#39;hc: highblock1out &lt;= r60;
+			4&#39;hd: highblock1out &lt;= r61;
+			4&#39;he: highblock1out &lt;= r62;
+			4&#39;hf: highblock1out &lt;= r63;
 		endcase
 	always @(posedge clk)
 		if (we &amp; highblock1sel)
@@ -798,12 +791,12 @@ module picregs (
 				4&#39;h7: r55 &lt;= highblock1in;
 				4&#39;h8: r56 &lt;= highblock1in;
 				4&#39;h9: r57 &lt;= highblock1in;
-				4&#39;hA: r58 &lt;= highblock1in;
-				4&#39;hB: r59 &lt;= highblock1in;
-				4&#39;hC: r60 &lt;= highblock1in;
-				4&#39;hD: r61 &lt;= highblock1in;
-				4&#39;hE: r62 &lt;= highblock1in;
-				4&#39;hF: r63 &lt;= highblock1in;
+				4&#39;ha: r58 &lt;= highblock1in;
+				4&#39;hb: r59 &lt;= highblock1in;
+				4&#39;hc: r60 &lt;= highblock1in;
+				4&#39;hd: r61 &lt;= highblock1in;
+				4&#39;he: r62 &lt;= highblock1in;
+				4&#39;hf: r63 &lt;= highblock1in;
 			endcase
 	reg [7:0] r80;
 	reg [7:0] r81;
@@ -833,12 +826,12 @@ module picregs (
 			4&#39;h7: highblock2out &lt;= r87;
 			4&#39;h8: highblock2out &lt;= r88;
 			4&#39;h9: highblock2out &lt;= r89;
-			4&#39;hA: highblock2out &lt;= r90;
-			4&#39;hB: highblock2out &lt;= r91;
-			4&#39;hC: highblock2out &lt;= r92;
-			4&#39;hD: highblock2out &lt;= r93;
-			4&#39;hE: highblock2out &lt;= r94;
-			4&#39;hF: highblock2out &lt;= r95;
+			4&#39;ha: highblock2out &lt;= r90;
+			4&#39;hb: highblock2out &lt;= r91;
+			4&#39;hc: highblock2out &lt;= r92;
+			4&#39;hd: highblock2out &lt;= r93;
+			4&#39;he: highblock2out &lt;= r94;
+			4&#39;hf: highblock2out &lt;= r95;
 		endcase
 	always @(posedge clk)
 		if (we &amp; highblock2sel)
@@ -853,12 +846,12 @@ module picregs (
 				4&#39;h7: r87 &lt;= highblock2in;
 				4&#39;h8: r88 &lt;= highblock2in;
 				4&#39;h9: r89 &lt;= highblock2in;
-				4&#39;hA: r90 &lt;= highblock2in;
-				4&#39;hB: r91 &lt;= highblock2in;
-				4&#39;hC: r92 &lt;= highblock2in;
-				4&#39;hD: r93 &lt;= highblock2in;
-				4&#39;hE: r94 &lt;= highblock2in;
-				4&#39;hF: r95 &lt;= highblock2in;
+				4&#39;ha: r90 &lt;= highblock2in;
+				4&#39;hb: r91 &lt;= highblock2in;
+				4&#39;hc: r92 &lt;= highblock2in;
+				4&#39;hd: r93 &lt;= highblock2in;
+				4&#39;he: r94 &lt;= highblock2in;
+				4&#39;hf: r95 &lt;= highblock2in;
 			endcase
 	reg [7:0] r112;
 	reg [7:0] r113;
@@ -887,12 +880,12 @@ module picregs (
 			4&#39;h7: highblock3out &lt;= r119;
 			4&#39;h8: highblock3out &lt;= r120;
 			4&#39;h9: highblock3out &lt;= r121;
-			4&#39;hA: highblock3out &lt;= r122;
-			4&#39;hB: highblock3out &lt;= r123;
-			4&#39;hC: highblock3out &lt;= r124;
-			4&#39;hD: highblock3out &lt;= r125;
-			4&#39;hE: highblock3out &lt;= r126;
-			4&#39;hF: highblock3out &lt;= 8&#39;hff;
+			4&#39;ha: highblock3out &lt;= r122;
+			4&#39;hb: highblock3out &lt;= r123;
+			4&#39;hc: highblock3out &lt;= r124;
+			4&#39;hd: highblock3out &lt;= r125;
+			4&#39;he: highblock3out &lt;= r126;
+			4&#39;hf: highblock3out &lt;= 8&#39;hff;
 		endcase
 	always @(posedge clk)
 		if (we &amp; highblock3sel)
@@ -907,18 +900,14 @@ module picregs (
 				4&#39;h7: r119 &lt;= highblock3in;
 				4&#39;h8: r120 &lt;= highblock3in;
 				4&#39;h9: r121 &lt;= highblock3in;
-				4&#39;hA: r122 &lt;= highblock3in;
-				4&#39;hB: r123 &lt;= highblock3in;
-				4&#39;hC: r124 &lt;= highblock3in;
-				4&#39;hD: r125 &lt;= highblock3in;
-				4&#39;hE: r126 &lt;= highblock3in;
-				4&#39;hF:
+				4&#39;ha: r122 &lt;= highblock3in;
+				4&#39;hb: r123 &lt;= highblock3in;
+				4&#39;hc: r124 &lt;= highblock3in;
+				4&#39;hd: r125 &lt;= highblock3in;
+				4&#39;he: r126 &lt;= highblock3in;
+				4&#39;hf:
 					;
 			endcase
-	initial begin
-		$display(&#34;Clearing SRAM.&#34;);
-		clear_memory;
-	end
 	task clear_memory;
 		
 		begin
@@ -968,6 +957,10 @@ module picregs (
 			r126 = 0;
 		end
 	endtask
+	initial begin
+		$display(&#34;Clearing SRAM.&#34;);
+		clear_memory;
+	end
 endmodule
 module pictest;
 	parameter TEST_NUMBER = 9;
@@ -1037,30 +1030,6 @@ module pictest;
 		dbg_limitcycles = 1;
 		dbg_maxcycles = 50000;
 	end
-	initial case (TEST_NUMBER)
-		1:
-			test1;
-		2:
-			test2;
-		3:
-			test3;
-		4:
-			test4;
-		5:
-			test5;
-		6:
-			test6;
-		7:
-			test7;
-		8:
-			test8;
-		9:
-			test9;
-		default: begin
-			$display(&#34;ERROR: Unknown Test Number: %0d&#34;, TEST_NUMBER);
-			$finish;
-		end
-	endcase
 	task test1;
 		
 		begin
@@ -1181,6 +1150,30 @@ module pictest;
 			dbg_maxcycles = 2000;
 		end
 	endtask
+	initial case (TEST_NUMBER)
+		1:
+			test1;
+		2:
+			test2;
+		3:
+			test3;
+		4:
+			test4;
+		5:
+			test5;
+		6:
+			test6;
+		7:
+			test7;
+		8:
+			test8;
+		9:
+			test9;
+		default: begin
+			$display(&#34;ERROR: Unknown Test Number: %0d&#34;, TEST_NUMBER);
+			$finish;
+		end
+	endcase
 	initial begin
 		cycles = 0;
 		#(1)
@@ -1233,121 +1226,121 @@ module pictest;
 		forever begin
 			@(negedge clk)
 				;
-			if (debuginst[11:0] == 12&#39;b0000_0000_0000)
+			if (debuginst[11:0] == 12&#39;b0)
 				$display(&#34;%h NOP&#34;, last_pc);
-			else if (debuginst[11:5] == 7&#39;b0000_001)
+			else if (debuginst[11:5] == 7&#39;b1)
 				$display(&#34;%h MOVWF  f=0x%0h&#34;, last_pc, debuginst[4:0]);
-			else if (debuginst == 12&#39;b0000_0100_0000)
+			else if (debuginst == 12&#39;b1000000)
 				$display(&#34;%h CLRW&#34;, last_pc);
-			else if (debuginst[11:5] == 7&#39;b0000_011)
+			else if (debuginst[11:5] == 7&#39;b11)
 				$display(&#34;%h CLRF  f=0x%0h&#34;, last_pc, debuginst[4:0]);
-			else if (debuginst[11:6] == 7&#39;b0000_10) begin
+			else if (debuginst[11:6] == 7&#39;b10) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h SUBWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h SUBWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0000_11) begin
+			else if (debuginst[11:6] == 7&#39;b11) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h DECF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h DECF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0001_00) begin
+			else if (debuginst[11:6] == 7&#39;b100) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h IORWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h IORWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0001_01) begin
+			else if (debuginst[11:6] == 7&#39;b101) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h ANDWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h ANDWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0001_10) begin
+			else if (debuginst[11:6] == 7&#39;b110) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;XORWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h XORWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0001_11) begin
+			else if (debuginst[11:6] == 7&#39;b111) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h ADDWF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h ADDWF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0010_00) begin
+			else if (debuginst[11:6] == 7&#39;b1000) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h MOVF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h MOVF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0010_01) begin
+			else if (debuginst[11:6] == 7&#39;b1001) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h COMF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h COMF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0010_10) begin
+			else if (debuginst[11:6] == 7&#39;b1010) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h INCF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h INCF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0010_11) begin
+			else if (debuginst[11:6] == 7&#39;b1011) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h DECFSZ  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h DECFSZ  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0011_00) begin
+			else if (debuginst[11:6] == 7&#39;b1100) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h RRF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h RRF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0011_01) begin
+			else if (debuginst[11:6] == 7&#39;b1101) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h RLF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h RLF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0011_10) begin
+			else if (debuginst[11:6] == 7&#39;b1110) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h SWAPF  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h SWAPF  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:6] == 7&#39;b0011_11) begin
+			else if (debuginst[11:6] == 7&#39;b1111) begin
 				if (piccpu_inst.d == 0)
 					$display(&#34;%h INCFSZ  f=0x%0h, W&#34;, last_pc, debuginst[4:0]);
 				else
 					$display(&#34;%h INCFSZ  f=0x%0h, f&#34;, last_pc, debuginst[4:0]);
 			end
-			else if (debuginst[11:8] == 4&#39;b0100)
+			else if (debuginst[11:8] == 4&#39;b100)
 				$display(&#34;%h BCF  f=0x%0h, bit=%0d&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
-			else if (debuginst[11:8] == 4&#39;b0101)
+			else if (debuginst[11:8] == 4&#39;b101)
 				$display(&#34;%h BCF  f=0x%0h, bit=%0d&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
-			else if (debuginst[11:8] == 4&#39;b0110) begin
+			else if (debuginst[11:8] == 4&#39;b110) begin
 				if (piccpu_inst.skip)
 					$display(&#34;%h BTFSC  f=0x%0h, bit=%0d  {Will Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 				else
 					$display(&#34;%h BTFSC  f=0x%0h, bit=%0d  {Will NOT Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 			end
-			else if (debuginst[11:8] == 4&#39;b0111) begin
+			else if (debuginst[11:8] == 4&#39;b111) begin
 				if (piccpu_inst.skip)
 					$display(&#34;%h BTFSS  f=0x%0h, bit=%0d  {Will Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 				else
 					$display(&#34;%h BTFSS  f=0x%0h, bit=%0d  {Will NOT Skip..}&#34;, last_pc, debuginst[4:0], piccpu_inst.b);
 			end
-			else if (debuginst[11:0] == 16&#39;b0000_0000_0010)
+			else if (debuginst[11:0] == 16&#39;b10)
 				$display(&#34;%h OPTION&#34;, last_pc);
-			else if (debuginst[11:0] == 16&#39;b0000_0000_0011)
+			else if (debuginst[11:0] == 16&#39;b11)
 				$display(&#34;%h SLEEP&#34;, last_pc);
-			else if (debuginst[11:0] == 16&#39;b0000_0000_0100)
+			else if (debuginst[11:0] == 16&#39;b100)
 				$display(&#34;%h CLRWDT&#34;, last_pc);
-			else if (debuginst[11:3] == 13&#39;b0000_0000_0)
+			else if (debuginst[11:3] == 13&#39;b0)
 				$display(&#34;%h TRIS,  f=0x%0h&#34;, last_pc, debuginst[2:0]);
 			else if (debuginst[11:8] == 4&#39;b1000)
 				$display(&#34;%h RETLW,  k=0x%0h&#34;, last_pc, debuginst[7:0]);

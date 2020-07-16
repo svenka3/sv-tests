@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2800985a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2800985a.v</a>
 defines: 
-time_elapsed: 0.424s
-ram usage: 17016 KB
+time_elapsed: 0.352s
+ram usage: 18492 KB
 </pre>
 <pre class="log">
 
@@ -33,16 +33,6 @@ module top;
 	integer res;
 	reg [639:0] result;
 	reg [639:0] str;
-	task check_error;
-		
-		begin
-			if (errno == 0) begin
-				$display(&#34;  FAILED: expected an error!&#34;);
-				pass = 1&#39;b0;
-			end
-			clear_error;
-		end
-	endtask
 	task clear_error;
 		
 		begin
@@ -52,6 +42,16 @@ module top;
 				$display(&#34;Failed to clear error state (%0s)&#34;, result);
 				$finish;
 			end
+		end
+	endtask
+	task check_error;
+		
+		begin
+			if (errno == 0) begin
+				$display(&#34;  FAILED: expected an error!&#34;);
+				pass = 1&#39;b0;
+			end
+			clear_error;
 		end
 	endtask
 	initial begin

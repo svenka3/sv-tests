@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pullupdown.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pullupdown.v</a>
 defines: 
-time_elapsed: 0.080s
-ram usage: 10288 KB
+time_elapsed: 0.128s
+ram usage: 12328 KB
 </pre>
 <pre class="log">
 
@@ -32,15 +32,20 @@ module pullupdown;
 	assign (pull0, pull1) pull_up_1 = 1&#39;b1;
 	assign (pull0, pull1) pull_down_1 = 1&#39;b0;
 	assign (pull0, pull1) pull_up_8 = 8&#39;hff;
-	assign (pull0, pull1) pull_down_8 = 8&#39;h00;
+	assign (pull0, pull1) pull_down_8 = 8&#39;h0;
 	reg driver_1;
 	reg [7:0] driver_8;
 	reg driver_1_en;
 	reg driver_8_en;
 	assign pull_up_1 = (driver_1_en ? driver_1 : 1&#39;bz);
 	assign pull_down_1 = (driver_1_en ? driver_1 : 1&#39;bz);
-	assign pull_up_8 = (driver_8_en ? driver_8 : 8&#39;bz);
-	assign pull_down_8 = (driver_8_en ? driver_8 : 8&#39;bz);
+	assign pull_up_8 = (driver_8_en ? driver_8 : 8&#39;bzzzzzzzz);
+	assign pull_down_8 = (driver_8_en ? driver_8 : 8&#39;bzzzzzzzz);
+	task check_drivers;
+		
+		if ((((pull_up_1 !== driver_1) || (pull_down_1 !== driver_1)) || (pull_up_8 !== driver_8)) || (pull_down_8 !== driver_8))
+			error = 1;
+	endtask
 	initial begin : test_block
 		integer i;
 		driver_1_en = 0;
@@ -48,7 +53,7 @@ module pullupdown;
 		error = 0;
 		#(1)
 			;
-		if ((((pull_up_1 !== 1&#39;b1) || (pull_down_1 !== 1&#39;b0)) || (pull_up_8 !== 8&#39;hFF)) || (pull_down_8 !== 8&#39;h00))
+		if ((((pull_up_1 !== 1&#39;b1) || (pull_down_1 !== 1&#39;b0)) || (pull_up_8 !== 8&#39;hff)) || (pull_down_8 !== 8&#39;h0))
 			error = 1;
 		driver_1_en = 1;
 		driver_8_en = 1;
@@ -68,11 +73,6 @@ module pullupdown;
 		else
 			$display(&#34;PASSED&#34;);
 	end
-	task check_drivers;
-		
-		if ((((pull_up_1 !== driver_1) || (pull_down_1 !== driver_1)) || (pull_up_8 !== driver_8)) || (pull_down_8 !== driver_8))
-			error = 1;
-	endtask
 endmodule
 
 </pre>

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html" target="file-frame">third_party/tests/ivtest/contrib/div16.v</a>
 defines: 
-time_elapsed: 0.216s
-ram usage: 13164 KB
+time_elapsed: 0.268s
+ram usage: 13424 KB
 </pre>
 <pre class="log">
 
@@ -42,8 +42,6 @@ module div16 (
 	output [N - 1:0] q;
 	output [N - 1:0] r;
 	output done;
-	reg [N - 1:0] q;
-	reg done;
 	reg [N - 1:0] power;
 	reg [N - 1:0] accum;
 	reg [(2 * N) - 1:0] bpower;
@@ -95,28 +93,6 @@ module test_div16;
 		.r(r),
 		.done(done)
 	);
-	initial begin
-		num_errors = 0;
-		start = 0;
-		#(200)
-			;
-		$display(&#34;16-bit Dividend, 8-bit divisor&#34;);
-		repeat (25) do_divide($random, $random &amp; 255);
-		$display(&#34;\n16-bit Dividend, 12-bit divisor&#34;);
-		repeat (25) do_divide($random, $random &amp; 4095);
-		$display(&#34;\n16-bit Dividend, 16-bit divisor&#34;);
-		repeat (25) do_divide($random, $random);
-		$display(&#34;\nSpecial Cases:&#34;);
-		do_divide(16&#39;hFFFF, 16&#39;hFFFF);
-		do_divide(312, 1);
-		do_divide(0, 42);
-		do_divide(312, 0);
-		if (num_errors === 0)
-			$display(&#34;\n\nPASSED&#34;);
-		else
-			$display(&#34;\n\nFAILED - There were %0d Errors.&#34;, num_errors);
-		$finish;
-	end
 	task do_divide;
 		input reg [15:0] arga;
 		input reg [15:0] argb;
@@ -146,6 +122,28 @@ module test_div16;
 			end
 		end
 	endtask
+	initial begin
+		num_errors = 0;
+		start = 0;
+		#(200)
+			;
+		$display(&#34;16-bit Dividend, 8-bit divisor&#34;);
+		repeat (25) do_divide($random, $random &amp; 255);
+		$display(&#34;\n16-bit Dividend, 12-bit divisor&#34;);
+		repeat (25) do_divide($random, $random &amp; 4095);
+		$display(&#34;\n16-bit Dividend, 16-bit divisor&#34;);
+		repeat (25) do_divide($random, $random);
+		$display(&#34;\nSpecial Cases:&#34;);
+		do_divide(16&#39;hffff, 16&#39;hffff);
+		do_divide(312, 1);
+		do_divide(0, 42);
+		do_divide(312, 0);
+		if (num_errors === 0)
+			$display(&#34;\n\nPASSED&#34;);
+		else
+			$display(&#34;\n\nFAILED - There were %0d Errors.&#34;, num_errors);
+		$finish;
+	end
 	initial begin
 		clk = 0;
 		forever begin

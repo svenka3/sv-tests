@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_dynamic.v</a>
 defines: 
-time_elapsed: 0.508s
-ram usage: 16196 KB
+time_elapsed: 0.532s
+ram usage: 14820 KB
 </pre>
 <pre class="log">
 
@@ -46,7 +46,7 @@ module bsg_serial_in_parallel_out_dynamic (
 	output ready_o;
 	output len_ready_o;
 	output v_o;
-	output [(max_els_p &gt;= 1 ? (width_p &gt;= 1 ? (max_els_p * width_p) + -1 : (max_els_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - max_els_p) * width_p) + (((max_els_p - 1) * width_p) - 1) : ((2 - max_els_p) * (2 - width_p)) + (((width_p - 1) + ((max_els_p - 1) * (2 - width_p))) - 1))):(max_els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (max_els_p - 1) * width_p : (width_p - 1) + ((max_els_p - 1) * (2 - width_p))))] data_o;
+	output [(max_els_p &gt;= 1 ? (width_p &gt;= 1 ? (max_els_p * width_p) - 1 : (max_els_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - max_els_p) * width_p) + (((max_els_p - 1) * width_p) - 1) : ((2 - max_els_p) * (2 - width_p)) + (((width_p - 1) + ((max_els_p - 1) * (2 - width_p))) - 1))):(max_els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (max_els_p - 1) * width_p : (width_p - 1) + ((max_els_p - 1) * (2 - width_p))))] data_o;
 	input yumi_i;
 	genvar i;
 	wire yumi_lo;
@@ -131,7 +131,7 @@ module bsg_serial_in_parallel_out_dynamic (
 					.data_i(data_i),
 					.v_i(fifo_valid_li[i]),
 					.v_o(fifo_valid_lo[i]),
-					.data_o(data_o[(width_p &gt;= 1 ? 0 : width_p - 1) + ((max_els_p &gt;= 1 ? i : 0 - (i - (max_els_p - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]),
+					.data_o(data_o[(width_p &gt;= 1 ? 0 : width_p - 1) + ((max_els_p &gt;= 1 ? i : (max_els_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]),
 					.yumi_i(fifo_yumi_li[i])
 				);
 			end
@@ -143,7 +143,7 @@ module bsg_serial_in_parallel_out_dynamic (
 					.data_i(data_i),
 					.v_i(fifo_valid_li[i]),
 					.v_o(fifo_valid_lo[i]),
-					.data_o(data_o[(width_p &gt;= 1 ? 0 : width_p - 1) + ((max_els_p &gt;= 1 ? i : 0 - (i - (max_els_p - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]),
+					.data_o(data_o[(width_p &gt;= 1 ? 0 : width_p - 1) + ((max_els_p &gt;= 1 ? i : (max_els_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]),
 					.yumi_i(fifo_yumi_li[i])
 				);
 			end

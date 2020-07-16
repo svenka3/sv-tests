@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v</a>
 defines: 
-time_elapsed: 0.764s
-ram usage: 18048 KB
+time_elapsed: 0.736s
+ram usage: 18128 KB
 </pre>
 <pre class="log">
 
@@ -62,7 +62,7 @@ module bsg_source_sync_channel_control_slave (
 	endgenerate
 	generate
 		if (width_p &lt;= 4) assign out_active_mismatch = 1&#39;b0;
-		else assign out_active_mismatch = |(out_active_pattern[width_p + -5:0] ^ in_snoop_valid_data_i[width_p + -5:0]);
+		else assign out_active_mismatch = |(out_active_pattern[width_p - 5:0] ^ in_snoop_valid_data_i[width_p - 5:0]);
 	endgenerate
 	reg [3:0] out_state_n;
 	reg [3:0] out_state_r;
@@ -83,17 +83,17 @@ module bsg_source_sync_channel_control_slave (
 		out_state_n = out_state_r;
 		if (out_state_r == sBegin)
 			casez (out_snoop_valid_data)
-				5&#39;b0_?111: out_state_n = sResetClock;
-				5&#39;b0_1?10: out_state_n = sResetClock;
-				5&#39;b0_1011: out_state_n = sResetClock;
-				5&#39;b0_1101: out_state_n = sResetClock;
-				5&#39;b1_1111: out_state_n = sResetClock;
-				5&#39;b0_0100: out_state_n = sPhase1;
-				5&#39;b0_0101: out_state_n = sPhase2;
-				5&#39;b0_0010: out_state_n = sPhase3;
-				5&#39;b0_0011: out_state_n = sPhase4;
-				5&#39;b0_0110: out_state_n = (out_active_mismatch ? sInactive : sActive);
-				5&#39;b0_100?: out_state_n = sInactive;
+				5&#39;b0z111: out_state_n = sResetClock;
+				5&#39;b1z10: out_state_n = sResetClock;
+				5&#39;b1011: out_state_n = sResetClock;
+				5&#39;b1101: out_state_n = sResetClock;
+				5&#39;b11111: out_state_n = sResetClock;
+				5&#39;b100: out_state_n = sPhase1;
+				5&#39;b101: out_state_n = sPhase2;
+				5&#39;b10: out_state_n = sPhase3;
+				5&#39;b11: out_state_n = sPhase4;
+				5&#39;b110: out_state_n = (out_active_mismatch ? sInactive : sActive);
+				5&#39;b100z: out_state_n = sInactive;
 				default: out_state_n = sPhase3;
 			endcase
 	end
@@ -127,7 +127,7 @@ module bsg_source_sync_channel_control_slave (
 			out_override_valid_data_r &lt;= out_override_valid_data_n;
 		end
 		if (out_state_r == sBegin)
-			out_rot_r &lt;= 8&#39;b1010_0101;
+			out_rot_r &lt;= 8&#39;b10100101;
 		else
 			out_rot_r &lt;= out_rot_n;
 	end

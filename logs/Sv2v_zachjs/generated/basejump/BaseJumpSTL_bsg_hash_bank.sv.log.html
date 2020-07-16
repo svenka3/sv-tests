@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_hash_bank.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_hash_bank.v</a>
 defines: 
-time_elapsed: 0.436s
-ram usage: 20736 KB
+time_elapsed: 0.532s
+ram usage: 17112 KB
 </pre>
 <pre class="log">
 
@@ -71,7 +71,7 @@ module bsg_hash_bank (
 			end
 			else begin : even
 				localparam frac_width_lp = width_p / lg_banks_lp;
-				wire [(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? (lg_banks_lp * frac_width_lp) + -1 : (lg_banks_lp * (2 - frac_width_lp)) + ((frac_width_lp - 1) - 1)) : (frac_width_lp &gt;= 1 ? ((2 - lg_banks_lp) * frac_width_lp) + (((lg_banks_lp - 1) * frac_width_lp) - 1) : ((2 - lg_banks_lp) * (2 - frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))) - 1))):(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) : (frac_width_lp &gt;= 1 ? (lg_banks_lp - 1) * frac_width_lp : (frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))))] unzippered;
+				wire [(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? (lg_banks_lp * frac_width_lp) - 1 : (lg_banks_lp * (2 - frac_width_lp)) + (frac_width_lp - 2)) : (frac_width_lp &gt;= 1 ? ((2 - lg_banks_lp) * frac_width_lp) + (((lg_banks_lp - 1) * frac_width_lp) - 1) : ((2 - lg_banks_lp) * (2 - frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))) - 1))):(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) : (frac_width_lp &gt;= 1 ? (lg_banks_lp - 1) * frac_width_lp : (frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))))] unzippered;
 				wire [frac_width_lp - 1:0] one_one;
 				bsg_reduce_segmented #(
 					.segments_p(frac_width_lp),
@@ -101,9 +101,9 @@ module bsg_hash_bank (
 				if (frac_width_lp &gt; 1) assign shifty = {1&#39;b1, one_one_and_scan[frac_width_lp - 1:1]};
 				else assign shifty = 1&#39;b1;
 				wire [frac_width_lp - 1:0] border = not_one_one_and_scan &amp; shifty;
-				wire [(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? (lg_banks_lp * frac_width_lp) + -1 : (lg_banks_lp * (2 - frac_width_lp)) + ((frac_width_lp - 1) - 1)) : (frac_width_lp &gt;= 1 ? ((2 - lg_banks_lp) * frac_width_lp) + (((lg_banks_lp - 1) * frac_width_lp) - 1) : ((2 - lg_banks_lp) * (2 - frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))) - 1))):(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) : (frac_width_lp &gt;= 1 ? (lg_banks_lp - 1) * frac_width_lp : (frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))))] bits;
+				wire [(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? (lg_banks_lp * frac_width_lp) - 1 : (lg_banks_lp * (2 - frac_width_lp)) + (frac_width_lp - 2)) : (frac_width_lp &gt;= 1 ? ((2 - lg_banks_lp) * frac_width_lp) + (((lg_banks_lp - 1) * frac_width_lp) - 1) : ((2 - lg_banks_lp) * (2 - frac_width_lp)) + (((frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))) - 1))):(lg_banks_lp &gt;= 1 ? (frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) : (frac_width_lp &gt;= 1 ? (lg_banks_lp - 1) * frac_width_lp : (frac_width_lp - 1) + ((lg_banks_lp - 1) * (2 - frac_width_lp))))] bits;
 				for (j = 1; j &lt; lg_banks_lp; j = j + 1) begin : rof2
-					assign bits[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? j : 0 - (j - (lg_banks_lp - 1))) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)] = unzippered[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? j : 0 - (j - (lg_banks_lp - 1))) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)] &amp; ~(border | one_one_and_scan);
+					assign bits[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? j : (lg_banks_lp - 1) - j) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)] = unzippered[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? j : (lg_banks_lp - 1) - j) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)] &amp; ~(border | one_one_and_scan);
 				end
 				assign bits[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? 0 : lg_banks_lp - 1) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)] = one_one_and_scan | ((unzippered[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? 0 : lg_banks_lp - 1) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)] &amp; ~one_one_and_scan) &amp; ~border);
 				wire [width_p - 1:0] transpose_lo;
@@ -116,7 +116,7 @@ module bsg_hash_bank (
 				);
 				assign index_o = transpose_lo[index_width_lp - 1:0];
 				for (j = 0; j &lt; lg_banks_lp; j = j + 1) begin : rof1
-					assign bank_o[j] = |(border &amp; unzippered[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? j : 0 - (j - (lg_banks_lp - 1))) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)]);
+					assign bank_o[j] = |(border &amp; unzippered[(frac_width_lp &gt;= 1 ? 0 : frac_width_lp - 1) + ((lg_banks_lp &gt;= 1 ? j : (lg_banks_lp - 1) - j) * (frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp))+:(frac_width_lp &gt;= 1 ? frac_width_lp : 2 - frac_width_lp)]);
 				end
 			end
 		end

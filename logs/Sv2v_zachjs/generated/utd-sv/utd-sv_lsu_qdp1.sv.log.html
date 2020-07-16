@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/lsu_qdp1.v.html" target="file-frame">third_party/tests/utd-sv/lsu_qdp1.v</a>
 defines: 
-time_elapsed: 1.788s
-ram usage: 30168 KB
+time_elapsed: 1.804s
+ram usage: 30308 KB
 </pre>
 <pre class="log">
 
@@ -332,7 +332,7 @@ module lsu_qdp1 (
 	);
 	assign lsu_ldst_va_way_g[1:0] = ldst_va_g[12:11];
 	wire [64:0] ld_pcx_pkt_g_tmp;
-	assign ld_pcx_pkt_g_tmp[64:0] = {ld_pcx_pkt_g[64:44], 2&#39;b00, ld_pcx_pkt_g[41:40], tlb_pgnum[39:13], ldst_va_g[12:0]};
+	assign ld_pcx_pkt_g_tmp[64:0] = {ld_pcx_pkt_g[64:44], 2&#39;b0, ld_pcx_pkt_g[41:40], tlb_pgnum[39:13], ldst_va_g[12:0]};
 	wire lmq0_clk;
 	clken_buf lmq0_clkbuf(
 		.rclk(clk),
@@ -509,7 +509,6 @@ module lsu_qdp1 (
 	assign dtag_wr_parity = ((dtag_wr_parity_7_0_m ^ dtag_wr_parity_15_8_m) ^ dtag_wr_parity_23_16_m) ^ dtag_wr_parity_28_24_m;
 	wire dtag_wr_parity_with_invrt;
 	assign dtag_wr_parity_with_invrt = ((dtag_wr_parity_7_0_m ^ dtag_wr_parity_15_8_m) ^ dtag_wr_parity_23_16_m) ^ dtag_wr_parity_28_24_with_invrt_m;
-	wire [29:0] dtag_wdata_m;
 	assign dtag_wdata_m[29] = (~(lsu_dfq_ld_vld_m | sehold) ? dtag_wr_parity_with_invrt : dtag_wr_parity);
 	wire [28:0] dtag_wdata_e_din;
 	assign dtag_wdata_e_din[28:0] = (sehold ? dtag_wdata_m[28:0] : dtag_wdata_e[28:0]);
@@ -532,7 +531,6 @@ module lsu_qdp1 (
 	wire [7:0] rs3_byte7;
 	wire [63:0] atm_byte_g;
 	wire [63:0] st_rs3_data_m;
-	wire [63:0] st_rs3_data_g;
 	dff_s #(64) rs3_stgm(
 		.din(exu_lsu_rs3_data_e[63:0]),
 		.q(st_rs3_data_m[63:0]),
@@ -910,9 +908,9 @@ module lsu_qdp1 (
 	assign ifu_full_pcx_pkt_e[116:114] = const_cpuid[2:0];
 	assign ifu_full_pcx_pkt_e[113:112] = ifu_pcx_pkt_e[41:40];
 	assign ifu_full_pcx_pkt_e[111] = ifu_pcx_pkt_e[50];
-	assign ifu_full_pcx_pkt_e[110:109] = 2&#39;b00;
+	assign ifu_full_pcx_pkt_e[110:109] = 2&#39;b0;
 	assign ifu_full_pcx_pkt_e[108:107] = ifu_pcx_pkt_e[43:42];
-	assign ifu_full_pcx_pkt_e[106:104] = 3&#39;b000;
+	assign ifu_full_pcx_pkt_e[106:104] = 3&#39;b0;
 	assign ifu_full_pcx_pkt_e[103:64] = ifu_pcx_pkt_e[39:0];
 	assign ifu_full_pcx_pkt_e[63:0] = 64&#39;d0;
 	assign intrpt_full_pcxpkt[123] = tlu_lsu_pcxpkt[25];
@@ -920,20 +918,20 @@ module lsu_qdp1 (
 	assign intrpt_full_pcxpkt[117] = 1&#39;b0;
 	assign intrpt_full_pcxpkt[116:114] = tlu_lsu_pcxpkt[12:10];
 	assign intrpt_full_pcxpkt[113:112] = tlu_lsu_pcxpkt[19:18];
-	assign intrpt_full_pcxpkt[111:109] = 3&#39;b000;
-	assign intrpt_full_pcxpkt[108:107] = 2&#39;b00;
-	assign intrpt_full_pcxpkt[106:104] = 3&#39;b000;
+	assign intrpt_full_pcxpkt[111:109] = 3&#39;b0;
+	assign intrpt_full_pcxpkt[108:107] = 2&#39;b0;
+	assign intrpt_full_pcxpkt[106:104] = 3&#39;b0;
 	assign intrpt_full_pcxpkt[103:64] = 40&#39;d0;
 	assign intrpt_full_pcxpkt[63:0] = {46&#39;d0, tlu_lsu_pcxpkt[17:0]};
 	assign fpop_full_pcxpkt[123] = ffu_lsu_data[80];
-	assign fpop_full_pcxpkt[122:118] = {4&#39;b0101, ffu_lsu_data[78]};
+	assign fpop_full_pcxpkt[122:118] = {4&#39;b101, ffu_lsu_data[78]};
 	assign fpop_full_pcxpkt[117] = 1&#39;b0;
 	assign fpop_full_pcxpkt[116:114] = const_cpuid[2:0];
 	assign fpop_full_pcxpkt[113:112] = ffu_lsu_data[77:76];
 	assign fpop_full_pcxpkt[111:104] = 8&#39;d0;
 	assign fpop_full_pcxpkt[103:80] = 24&#39;d0;
 	assign fpop_full_pcxpkt[79:72] = ffu_lsu_data[75:68];
-	assign fpop_full_pcxpkt[71:68] = 4&#39;b0000;
+	assign fpop_full_pcxpkt[71:68] = 4&#39;b0;
 	assign fpop_full_pcxpkt[67:64] = ffu_lsu_data[67:64];
 	assign fpop_full_pcxpkt[63:0] = ffu_lsu_data[63:0];
 	wire cacherd_clk;
@@ -961,11 +959,11 @@ module lsu_qdp1 (
 		.so()
 	);
 	assign fwd_full_pcxpkt[123] = 1&#39;b1;
-	assign fwd_full_pcxpkt[122:118] = {3&#39;b011, lsu_pcx_fwd_reply, ~lsu_pcx_fwd_reply};
+	assign fwd_full_pcxpkt[122:118] = {3&#39;b11, lsu_pcx_fwd_reply, ~lsu_pcx_fwd_reply};
 	assign fwd_full_pcxpkt[117] = lsu_pcx_fwd_pkt[107];
 	assign fwd_full_pcxpkt[116:114] = lsu_pcx_fwd_pkt[106:104];
-	assign fwd_full_pcxpkt[113:112] = 2&#39;b00;
-	assign fwd_full_pcxpkt[111:104] = {6&#39;b000000, lsu_fwd_rply_sz1_unc, 1&#39;b1};
+	assign fwd_full_pcxpkt[113:112] = 2&#39;b0;
+	assign fwd_full_pcxpkt[111:104] = {6&#39;b0, lsu_fwd_rply_sz1_unc, 1&#39;b1};
 	assign fwd_full_pcxpkt[103:64] = lsu_pcx_fwd_pkt[103:64];
 	mux3ds #(64) mx_fwd_full_pcxpkt(
 		.in0({20&#39;d0, lsu_iobrdge_rd_data[43:0]}),
@@ -1009,8 +1007,8 @@ module lsu_qdp1 (
 	wire [1:0] bld_addr_b54;
 	assign bld_addr_b54[1:0] = (lsu_bld_pcx_rq ? lsu_bld_rq_addr[1:0] : load_pcx_pkt[5:4]);
 	mux4ds #(124) pcx_pkt_src(
-		.in0({load_pcx_pkt[64], 2&#39;b00, load_pcx_pkt[47:45], load_pcx_pkt[44], const_cpuid[2:0], ld_pcx_thrd[1:0], lsu_pcx_ld_dtag_perror_w2, load_pcx_pkt[62], load_pcx_pkt[63], load_pcx_pkt[43:42], lsu_pcx_rq_sz_b3, load_pcx_pkt[41:6], bld_addr_b54[1:0], load_pcx_pkt[3:0], cas_pkt2_data[63:0]}),
-		.in1({store_pcx_pkt[114], 1&#39;b0, store_pcx_pkt[107], store_pcx_pkt[113:111], store_pcx_pkt[110], const_cpuid[2:0], store_pcx_pkt[109:108], 1&#39;b0, stb_rdata_ramd[70], stb_rdata_ramd[75], 2&#39;b00, 1&#39;b0, store_pcx_pkt[105:0]}),
+		.in0({load_pcx_pkt[64], 2&#39;b0, load_pcx_pkt[47:45], load_pcx_pkt[44], const_cpuid[2:0], ld_pcx_thrd[1:0], lsu_pcx_ld_dtag_perror_w2, load_pcx_pkt[62], load_pcx_pkt[63], load_pcx_pkt[43:42], lsu_pcx_rq_sz_b3, load_pcx_pkt[41:6], bld_addr_b54[1:0], load_pcx_pkt[3:0], cas_pkt2_data[63:0]}),
+		.in1({store_pcx_pkt[114], 1&#39;b0, store_pcx_pkt[107], store_pcx_pkt[113:111], store_pcx_pkt[110], const_cpuid[2:0], store_pcx_pkt[109:108], 1&#39;b0, stb_rdata_ramd[70], stb_rdata_ramd[75], 2&#39;b0, 1&#39;b0, store_pcx_pkt[105:0]}),
 		.in2(imiss_strm_pcx_pkt[123:0]),
 		.in3(fwd_int_fp_pcx_pkt[123:0]),
 		.sel0(pcx_pkt_src_sel[0]),

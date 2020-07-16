@@ -17,28 +17,18 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v</a>
 defines: 
-time_elapsed: 0.032s
-ram usage: 9920 KB
+time_elapsed: 0.052s
+ram usage: 13856 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests <a href="../../../../third_party/tests/ivtest/ivltests/concat4.v.html" target="file-frame">third_party/tests/ivtest/ivltests/concat4.v</a>
 module top;
-	wire [31:0] var1 = ufunc(0);
-	wire [31:0] var2 = ufunc(0);
 	integer fres;
-	initial begin
-		#(1)
-			;
-		if (fres != 4)
-			$display(&#34;FAILED, expected fres = 4, got %0d&#34;, fres);
-		else
-			$display(&#34;PASSED&#34;);
-	end
 	function integer ufunc;
 		input reg in;
 		begin
-			if (fres === 32&#39;bx)
+			if (fres === 32&#39;bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
 				fres = 0;
 			if (in)
 				fres = fres - 1;
@@ -47,6 +37,16 @@ module top;
 			ufunc = fres;
 		end
 	endfunction
+	wire [31:0] var1 = ufunc(0);
+	wire [31:0] var2 = ufunc(0);
+	initial begin
+		#(1)
+			;
+		if (fres != 4)
+			$display(&#34;FAILED, expected fres = 4, got %0d&#34;, fres);
+		else
+			$display(&#34;PASSED&#34;);
+	end
 endmodule
 
 </pre>

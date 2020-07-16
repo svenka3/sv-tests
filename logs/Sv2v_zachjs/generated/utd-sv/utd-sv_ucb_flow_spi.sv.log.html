@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/ucb_flow_spi.v.html" target="file-frame">third_party/tests/utd-sv/ucb_flow_spi.v</a>
 defines: 
-time_elapsed: 0.584s
-ram usage: 18000 KB
+time_elapsed: 0.628s
+ram usage: 15472 KB
 </pre>
 <pre class="log">
 
@@ -154,19 +154,19 @@ module ucb_flow_spi (
 		.indata_buf(indata_buf),
 		.stall_a1(ucb_iob_stall_a1)
 	);
-	assign read_pending = (indata_buf[3:0] == 4&#39;b0100) &amp; indata_buf_vld;
-	assign write_pending = (indata_buf[3:0] == 4&#39;b0101) &amp; indata_buf_vld;
-	assign ifill_pending = (indata_buf[3:0] == 4&#39;b0110) &amp; indata_buf_vld;
+	assign read_pending = (indata_buf[3:0] == 4&#39;b100) &amp; indata_buf_vld;
+	assign write_pending = (indata_buf[3:0] == 4&#39;b101) &amp; indata_buf_vld;
+	assign ifill_pending = (indata_buf[3:0] == 4&#39;b110) &amp; indata_buf_vld;
 	assign ucb_iob_stall_a1 = ((read_pending | write_pending) | ifill_pending) &amp; buf_full;
 	assign rd_buf = req_acpted;
-	assign buf_head_next = (~rst_l ? 2&#39;b01 : (rd_buf ? {buf_head[0:0], buf_head[1]} : buf_head));
+	assign buf_head_next = (~rst_l ? 2&#39;b1 : (rd_buf ? {buf_head[0:0], buf_head[1]} : buf_head));
 	dff_ns #(2) buf_head_ff(
 		.din(buf_head_next),
 		.clk(clk),
 		.q(buf_head)
 	);
 	assign wr_buf = ((read_pending | write_pending) | ifill_pending) &amp; ~buf_full;
-	assign buf_tail_next = (~rst_l ? 2&#39;b01 : (wr_buf ? {buf_tail[0:0], buf_tail[1]} : buf_tail));
+	assign buf_tail_next = (~rst_l ? 2&#39;b1 : (wr_buf ? {buf_tail[0:0], buf_tail[1]} : buf_tail));
 	dff_ns #(2) buf_tail_ff(
 		.din(buf_tail_next),
 		.clk(clk),
@@ -227,9 +227,9 @@ module ucb_flow_spi (
 		.clk(clk),
 		.q(ack_buf_is_data128)
 	);
-	assign ack_typ_out = (rd_ack_vld ? 4&#39;b0001 : (rd_nack_vld ? 4&#39;b0000 : (ifill_ack_vld ? 4&#39;b0011 : 4&#39;b0111)));
+	assign ack_typ_out = (rd_ack_vld ? 4&#39;b1 : (rd_nack_vld ? 4&#39;b0 : (ifill_ack_vld ? 4&#39;b11 : 4&#39;b111)));
 	assign ack_buf_in = {data_out, buf_id_out, thr_id_out, ack_typ_out};
-	dffe_ns #(REG_WIDTH + 12) ack_buf_ff(
+	dffe_ns #((REG_WIDTH + 11) + 1) ack_buf_ff(
 		.din(ack_buf_in),
 		.en(ack_buf_wr),
 		.clk(clk),

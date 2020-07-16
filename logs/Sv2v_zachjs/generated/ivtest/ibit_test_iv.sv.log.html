@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ibit_test.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ibit_test.v</a>
 defines: 
 time_elapsed: 0.176s
-ram usage: 12228 KB
+ram usage: 12776 KB
 </pre>
 <pre class="log">
 
@@ -34,6 +34,33 @@ module ibit_test;
 	integer i;
 	assign bu = ar;
 	assign bu_xz = ar_xz;
+	function [15:0] xz_expected;
+		input reg [15:0] value_xz;
+		integer i;
+		begin
+			for (i = 0; i &lt; 15; i = i + 1)
+				if ((value_xz[i] === 1&#39;bx) || (value_xz[i] === 1&#39;bz))
+					value_xz[i] = 1&#39;b0;
+			xz_expected = value_xz;
+		end
+	endfunction
+	function [15:0] xz_inject;
+		input reg [15:0] value;
+		integer i;
+		integer temp;
+		begin
+			temp = $random % MAX;
+			for (i = 0; i &lt; 15; i = i + 1)
+				if (temp[i] == 1&#39;b1) begin
+					temp = $random % MAX;
+					if (temp &lt;= 0)
+						value[i] = 1&#39;bx;
+					else
+						value[i] = 1&#39;bz;
+				end
+			xz_inject = value;
+		end
+	endfunction
 	initial begin
 		if ((bu !== 15&#39;b0) | (bu_xz != 15&#39;b0)) begin
 			$display(&#34;FAILED - time zero initialisation incorrect: %b %b&#34;, bu, bu_xz);
@@ -71,33 +98,6 @@ module ibit_test;
 			;
 		$display(&#34;PASSED&#34;);
 	end
-	function [15:0] xz_inject;
-		input reg [15:0] value;
-		integer i;
-		integer temp;
-		begin
-			temp = $random % MAX;
-			for (i = 0; i &lt; 15; i = i + 1)
-				if (temp[i] == 1&#39;b1) begin
-					temp = $random % MAX;
-					if (temp &lt;= 0)
-						value[i] = 1&#39;bx;
-					else
-						value[i] = 1&#39;bz;
-				end
-			xz_inject = value;
-		end
-	endfunction
-	function [15:0] xz_expected;
-		input reg [15:0] value_xz;
-		integer i;
-		begin
-			for (i = 0; i &lt; 15; i = i + 1)
-				if ((value_xz[i] === 1&#39;bx) || (value_xz[i] === 1&#39;bz))
-					value_xz[i] = 1&#39;b0;
-			xz_expected = value_xz;
-		end
-	endfunction
 endmodule
 
 </pre>

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh112e.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh112e.v</a>
 defines: 
-time_elapsed: 0.192s
-ram usage: 14412 KB
+time_elapsed: 0.100s
+ram usage: 10628 KB
 </pre>
 <pre class="log">
 
@@ -44,8 +44,8 @@ module bug;
 		for (i = 0; i &lt; 16; i = i + 1)
 			begin
 				index = i[3:0];
-				array[-1 + ((-16 + (-5&#39;sd1 + index)) * 8)+:8] = {4&#39;d0, index[3:0]};
-				array[-1 + ((-5&#39;sd1 + index) * 8)+:8] = {4&#39;d1, index[3:0]};
+				array[((index - (5&#39;sd1 + 16)) * 8) - 1+:8] = {4&#39;d0, index[3:0]};
+				array[((index - 5&#39;sd1) * 8) - 1+:8] = {4&#39;d1, index[3:0]};
 			end
 		$display(&#34;%h&#34;, array);
 		if (array !== 256&#39;h1f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100)
@@ -53,10 +53,10 @@ module bug;
 		for (i = 0; i &lt; 16; i = i + 1)
 			begin
 				index = i[3:0];
-				$display(&#34;%h : %h %h&#34;, index, array[-1 + ((-16 + (-5&#39;sd1 + index)) * 8)+:8], array[-1 + ((-5&#39;sd1 + index) * 8)+:8]);
-				if (array[-1 + ((-16 + (-5&#39;sd1 + index)) * 8)+:8] !== {4&#39;d0, index[3:0]})
+				$display(&#34;%h : %h %h&#34;, index, array[((index - (5&#39;sd1 + 16)) * 8) - 1+:8], array[((index - 5&#39;sd1) * 8) - 1+:8]);
+				if (array[((index - (5&#39;sd1 + 16)) * 8) - 1+:8] !== {4&#39;d0, index[3:0]})
 					failed = 1;
-				if (array[-1 + ((-5&#39;sd1 + index) * 8)+:8] !== {4&#39;d1, index[3:0]})
+				if (array[((index - 5&#39;sd1) * 8) - 1+:8] !== {4&#39;d1, index[3:0]})
 					failed = 1;
 			end
 		if (failed)

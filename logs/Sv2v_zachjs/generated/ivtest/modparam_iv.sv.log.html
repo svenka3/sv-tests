@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/modparam.v.html" target="file-frame">third_party/tests/ivtest/ivltests/modparam.v</a>
 defines: 
-time_elapsed: 0.208s
-ram usage: 12532 KB
+time_elapsed: 0.184s
+ram usage: 11240 KB
 </pre>
 <pre class="log">
 
@@ -53,7 +53,6 @@ module memory (
 	input [1:0] addr;
 	input [WIDTH - 1:0] din;
 	output [WIDTH - 1:0] dout;
-	reg [WIDTH - 1:0] dout;
 	wire [WIDTH - 1:0] dout0;
 	wire [WIDTH - 1:0] dout1;
 	wire [WIDTH - 1:0] dout2;
@@ -88,13 +87,13 @@ module memory (
 	);
 	always @(addr or we)
 		case (addr)
-			2&#39;b00: begin
+			2&#39;b0: begin
 				we0 = we;
 				we1 = 0;
 				we2 = 0;
 				we3 = 0;
 			end
-			2&#39;b01: begin
+			2&#39;b1: begin
 				we0 = 0;
 				we1 = we;
 				we2 = 0;
@@ -115,8 +114,8 @@ module memory (
 		endcase
 	always @(addr or dout0 or dout1 or dout2 or dout3)
 		case (addr)
-			2&#39;b00: dout = dout0;
-			2&#39;b01: dout = dout1;
+			2&#39;b0: dout = dout0;
+			2&#39;b1: dout = dout1;
 			2&#39;b10: dout = dout2;
 			2&#39;b11: dout = dout3;
 		endcase
@@ -143,7 +142,7 @@ module top;
 			;
 		we = 1;
 		addr = 0;
-		din = 32&#39;b0_00;
+		din = 32&#39;b0;
 		#(10)
 			;
 		addr = 1;
@@ -162,7 +161,7 @@ module top;
 		addr = 0;
 		#(1)
 			;
-		if (dout[7:0] !== 8&#39;h00) begin
+		if (dout[7:0] !== 8&#39;h0) begin
 			$display(&#34;FAILED - Ram[0] not 0, is %h&#34;, dout[7:0]);
 			error = 1;
 		end

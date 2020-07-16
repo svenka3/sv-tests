@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/rotate.v.html" target="file-frame">third_party/tools/yosys/tests/simple/rotate.v</a>
 defines: 
-time_elapsed: 0.048s
-ram usage: 10212 KB
+time_elapsed: 0.060s
+ram usage: 12348 KB
 </pre>
 <pre class="log">
 
@@ -33,6 +33,15 @@ module a23_barrel_shift_fpga_rotate (
 	input direction;
 	input [4:0] shift_amount;
 	output [31:0] rot_prod;
+	function [4:0] wrap;
+		input integer pos;
+		input integer level;
+		integer out;
+		begin
+			out = pos - (1 &lt;&lt; level);
+			wrap = out[4:0];
+		end
+	endfunction
 	generate
 		genvar i;
 		genvar j;
@@ -49,15 +58,6 @@ module a23_barrel_shift_fpga_rotate (
 		end
 	endgenerate
 	assign rot_prod = netgen[0].out;
-	function [4:0] wrap;
-		input integer pos;
-		input integer level;
-		integer out;
-		begin
-			out = pos - (1 &lt;&lt; level);
-			wrap = out[4:0];
-		end
-	endfunction
 endmodule
 
 </pre>

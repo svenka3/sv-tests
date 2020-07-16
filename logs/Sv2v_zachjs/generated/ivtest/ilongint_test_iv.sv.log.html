@@ -17,15 +17,15 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/ilongint_test.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ilongint_test.v</a>
 defines: 
-time_elapsed: 0.092s
-ram usage: 12708 KB
+time_elapsed: 0.240s
+ram usage: 11100 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest -I/tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests <a href="../../../../third_party/tests/ivtest/ivltests/ilongint_test.v.html" target="file-frame">third_party/tests/ivtest/ivltests/ilongint_test.v</a>
 module ibyte_test;
 	parameter TRIALS = 100;
-	parameter MAX = &#39;h7fffffff_ffffffff;
+	parameter MAX = &#39;h7fffffffffffffff;
 	reg [63:0] ar;
 	reg [63:0] ar_xz;
 	reg [63:0] ar_expected;
@@ -34,6 +34,33 @@ module ibyte_test;
 	integer i;
 	always @(*) bu = ar;
 	always @(*) bu_xz = ar_xz;
+	function [63:0] xz_expected;
+		input reg [63:0] value_xz;
+		integer i;
+		begin
+			for (i = 0; i &lt; 64; i = i + 1)
+				if ((value_xz[i] === 1&#39;bx) || (value_xz[i] === 1&#39;bz))
+					value_xz[i] = 1&#39;b0;
+			xz_expected = value_xz;
+		end
+	endfunction
+	function [63:0] xz_inject;
+		input reg [63:0] value;
+		integer i;
+		integer temp;
+		begin
+			temp = $random % MAX;
+			for (i = 0; i &lt; 64; i = i + 1)
+				if (temp[i] == 1&#39;b1) begin
+					temp = $random % MAX;
+					if (temp &lt;= 0)
+						value[i] = 1&#39;bx;
+					else
+						value[i] = 1&#39;bz;
+				end
+			xz_inject = value;
+		end
+	endfunction
 	initial begin
 		if ((bu !== 64&#39;b0) | (bu_xz != 64&#39;b0)) begin
 			$display(&#34;FAILED - time zero initialisation incorrect: %b %b&#34;, bu, bu_xz);
@@ -71,33 +98,6 @@ module ibyte_test;
 			;
 		$display(&#34;PASSED&#34;);
 	end
-	function [63:0] xz_inject;
-		input reg [63:0] value;
-		integer i;
-		integer temp;
-		begin
-			temp = $random % MAX;
-			for (i = 0; i &lt; 64; i = i + 1)
-				if (temp[i] == 1&#39;b1) begin
-					temp = $random % MAX;
-					if (temp &lt;= 0)
-						value[i] = 1&#39;bx;
-					else
-						value[i] = 1&#39;bz;
-				end
-			xz_inject = value;
-		end
-	endfunction
-	function [63:0] xz_expected;
-		input reg [63:0] value_xz;
-		integer i;
-		begin
-			for (i = 0; i &lt; 64; i = i + 1)
-				if ((value_xz[i] === 1&#39;bx) || (value_xz[i] === 1&#39;bz))
-					value_xz[i] = 1&#39;b0;
-			xz_expected = value_xz;
-		end
-	endfunction
 endmodule
 
 </pre>

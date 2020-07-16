@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_out.v</a>
 defines: 
-time_elapsed: 0.372s
-ram usage: 16256 KB
+time_elapsed: 0.480s
+ram usage: 16304 KB
 </pre>
 <pre class="log">
 
@@ -49,12 +49,12 @@ module bsg_assembler_out (
 	input [(($clog2(num_in_p) - 1) &gt; 0 ? $clog2(num_in_p) - 1 : 0):0] in_top_channel_i;
 	input [(($clog2(num_out_p) - 1) &gt; 0 ? $clog2(num_out_p) - 1 : 0):0] out_top_channel_i;
 	output [num_out_p - 1:0] valid_o;
-	output [(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? (num_out_p * width_p) + -1 : (num_out_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o;
+	output [(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? (num_out_p * width_p) - 1 : (num_out_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o;
 	input [num_out_p - 1:0] ready_i;
 	wire [num_in_p - 1:0] fifo_valid_vec;
 	wire [num_in_p - 1:0] fifo_not_full_vec;
 	wire [num_in_p - 1:0] fifo_deq_vec;
-	wire [(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? (num_in_p * width_p) + -1 : (num_in_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] fifo_data_vec;
+	wire [(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? (num_in_p * width_p) - 1 : (num_in_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - num_in_p) * width_p) + (((num_in_p - 1) * width_p) - 1) : ((2 - num_in_p) * (2 - width_p)) + (((width_p - 1) + ((num_in_p - 1) * (2 - width_p))) - 1))):(num_in_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_in_p - 1) * width_p : (width_p - 1) + ((num_in_p - 1) * (2 - width_p))))] fifo_data_vec;
 	wire ready_o_tmp = &amp;fifo_not_full_vec &amp; calibration_done_i;
 	assign ready_o = ready_o_tmp;
 	genvar i;
@@ -70,7 +70,7 @@ module bsg_assembler_out (
 				.v_i(valid_i &amp; ready_o_tmp),
 				.data_i(data_i[width_p * i+:width_p]),
 				.v_o(fifo_valid_vec[i]),
-				.data_o(fifo_data_vec[(width_p &gt;= 1 ? 0 : width_p - 1) + ((num_in_p &gt;= 1 ? i : 0 - (i - (num_in_p - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]),
+				.data_o(fifo_data_vec[(width_p &gt;= 1 ? 0 : width_p - 1) + ((num_in_p &gt;= 1 ? i : (num_in_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]),
 				.yumi_i(fifo_deq_vec[i])
 			);
 		end

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/talu.v.html" target="file-frame">third_party/tests/ivtest/ivltests/talu.v</a>
 defines: 
-time_elapsed: 0.132s
-ram usage: 12900 KB
+time_elapsed: 0.240s
+ram usage: 12940 KB
 </pre>
 <pre class="log">
 
@@ -41,19 +41,19 @@ module talu;
 	);
 	initial begin
 		error = 0;
-		op = &#39;b00;
+		op = &#39;b0;
 		cin = &#39;b0;
 		a = &#39;h0;
 		b = &#39;h0;
 		#(2)
-			if ({cout, aluout} != 9&#39;h000) begin
+			if ({cout, aluout} != 9&#39;h0) begin
 				$display($time, &#34; FAILED %b  %b %h %h  %b %h&#34;, op, cin, a, b, cout, aluout);
 				error = 1;
 			end
-		op = &#39;b01;
+		op = &#39;b1;
 		cin = &#39;b0;
-		a = &#39;h01;
-		b = &#39;h01;
+		a = &#39;h1;
+		b = &#39;h1;
 		#(2)
 			if ({cout, aluout} != 9&#39;h103) begin
 				$display($time, &#34; FAILED %b  %b %h %h  %b %h&#34;, op, cin, a, b, cout, aluout);
@@ -62,36 +62,36 @@ module talu;
 		op = &#39;b10;
 		cin = &#39;b0;
 		a = &#39;h16;
-		b = &#39;h0F;
+		b = &#39;hf;
 		#(2)
-			if ({cout, aluout} != 9&#39;h006) begin
+			if ({cout, aluout} != 9&#39;h6) begin
 				$display($time, &#34; FAILED %b  %b %h %h  %b %h&#34;, op, cin, a, b, cout, aluout);
 				error = 1;
 			end
 		op = &#39;b10;
 		cin = &#39;b0;
 		a = &#39;h28;
-		b = &#39;hF7;
+		b = &#39;hf7;
 		#(2)
-			if ({cout, aluout} != 9&#39;h020) begin
+			if ({cout, aluout} != 9&#39;h20) begin
 				$display($time, &#34; FAILED %b  %b %h %h  %b %h&#34;, op, cin, a, b, cout, aluout);
 				error = 1;
 			end
 		op = &#39;b11;
 		cin = &#39;b0;
-		a = &#39;h00;
-		b = &#39;h03;
+		a = &#39;h0;
+		b = &#39;h3;
 		#(2)
-			if ({cout, aluout} != 9&#39;h008) begin
+			if ({cout, aluout} != 9&#39;h8) begin
 				$display($time, &#34; FAILED %b  %b %h %h  %b %h&#34;, op, cin, a, b, cout, aluout);
 				error = 1;
 			end
 		op = &#39;b11;
 		cin = &#39;b0;
-		a = &#39;h00;
-		b = &#39;h00;
+		a = &#39;h0;
+		b = &#39;h0;
 		#(2)
-			if ({cout, aluout} != 9&#39;h001) begin
+			if ({cout, aluout} != 9&#39;h1) begin
 				$display($time, &#34; FAILED %b  %b %h %h  %b %h&#34;, op, cin, a, b, cout, aluout);
 				error = 1;
 			end
@@ -114,13 +114,11 @@ module alu (
 	input [1:0] op;
 	output cout;
 	output [7:0] ALUout;
-	reg cout;
-	reg [7:0] ALUout;
 	always @(Aval or Bval or cin or op)
 		case (op)
-			2&#39;b00: {cout, ALUout} = Aval + Bval;
+			2&#39;b0: {cout, ALUout} = Aval + Bval;
 			2&#39;b10: {cout, ALUout} = {1&#39;b0, Aval &amp; Bval};
-			2&#39;b01: {cout, ALUout} = 9&#39;h100 ^ ((Aval + Bval) + 9&#39;h001);
+			2&#39;b1: {cout, ALUout} = 9&#39;h100 ^ ((Aval + Bval) + 9&#39;h1);
 			2&#39;b11: {cout, ALUout} = {1&#39;b0, 8&#39;b1 &lt;&lt; Bval};
 		endcase
 endmodule

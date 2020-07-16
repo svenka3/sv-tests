@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_one_hot.v</a>
 defines: 
-time_elapsed: 0.240s
-ram usage: 16088 KB
+time_elapsed: 0.368s
+ram usage: 15580 KB
 </pre>
 <pre class="log">
 
@@ -39,7 +39,7 @@ module bsg_mem_1r1w_one_hot (
 	input [width_p - 1:0] w_data_i;
 	input [els_p - 1:0] r_v_i;
 	output wire [width_p - 1:0] r_data_o;
-	wire [(els_p &gt;= 1 ? (width_p &gt;= 1 ? (els_p * width_p) + -1 : (els_p * (2 - width_p)) + ((width_p - 1) - 1)) : (width_p &gt;= 1 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):(els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] data_r;
+	wire [(els_p &gt;= 1 ? (width_p &gt;= 1 ? (els_p * width_p) - 1 : (els_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):(els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] data_r;
 	wire unused0 = w_reset_i;
 	generate
 		genvar i;
@@ -48,7 +48,7 @@ module bsg_mem_1r1w_one_hot (
 				.clk_i(w_clk_i),
 				.en_i(w_v_i[i]),
 				.data_i(w_data_i),
-				.data_o(data_r[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? i : 0 - (i - (els_p - 1))) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)])
+				.data_o(data_r[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? i : (els_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)])
 			);
 		end
 	endgenerate
