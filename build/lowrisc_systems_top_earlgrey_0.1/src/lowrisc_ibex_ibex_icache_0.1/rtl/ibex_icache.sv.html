@@ -1027,7 +1027,25 @@
 <a href="#l-1019">1019</a>
 <a href="#l-1020">1020</a>
 <a href="#l-1021">1021</a>
-<a href="#l-1022">1022</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-1022">1022</a>
+<a href="#l-1023">1023</a>
+<a href="#l-1024">1024</a>
+<a href="#l-1025">1025</a>
+<a href="#l-1026">1026</a>
+<a href="#l-1027">1027</a>
+<a href="#l-1028">1028</a>
+<a href="#l-1029">1029</a>
+<a href="#l-1030">1030</a>
+<a href="#l-1031">1031</a>
+<a href="#l-1032">1032</a>
+<a href="#l-1033">1033</a>
+<a href="#l-1034">1034</a>
+<a href="#l-1035">1035</a>
+<a href="#l-1036">1036</a>
+<a href="#l-1037">1037</a>
+<a href="#l-1038">1038</a>
+<a href="#l-1039">1039</a>
+<a href="#l-1040">1040</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a>
@@ -1085,379 +1103,379 @@
 <a name="l-56"></a>    <span class="k">input</span>  <span class="k">logic</span>                <span class="n">icache_inval_i</span><span class="p">,</span>
 <a name="l-57"></a>    <span class="k">output</span> <span class="k">logic</span>                <span class="n">busy_o</span>
 <a name="l-58"></a><span class="p">);</span>
-<a name="l-59"></a>
-<a name="l-60"></a>  <span class="c1">// NOTE RTL IS DRAFT</span>
-<a name="l-61"></a>
-<a name="l-62"></a>  <span class="c1">// Local constants</span>
-<a name="l-63"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">ADDR_W</span>       <span class="o">=</span> <span class="mh">32</span><span class="p">;</span>
-<a name="l-64"></a>  <span class="c1">// Number of fill buffers (must be &gt;= 2)</span>
-<a name="l-65"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">NUM_FB</span>       <span class="o">=</span> <span class="mh">4</span><span class="p">;</span>
-<a name="l-66"></a>  <span class="c1">// Request throttling threshold</span>
-<a name="l-67"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">FB_THRESHOLD</span> <span class="o">=</span> <span class="n">NUM_FB</span> <span class="o">-</span> <span class="mh">2</span><span class="p">;</span>
-<a name="l-68"></a>  <span class="c1">// Derived parameters</span>
-<a name="l-69"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_SIZE_ECC</span>   <span class="o">=</span> <span class="n">ICacheECC</span> <span class="o">?</span> <span class="p">(</span><span class="n">LineSize</span> <span class="o">+</span> <span class="mh">8</span><span class="p">)</span> <span class="o">:</span> <span class="n">LineSize</span><span class="p">;</span>
-<a name="l-70"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_SIZE_BYTES</span> <span class="o">=</span> <span class="n">LineSize</span><span class="o">/</span><span class="mh">8</span><span class="p">;</span>
-<a name="l-71"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_W</span>          <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">LINE_SIZE_BYTES</span><span class="p">);</span>
-<a name="l-72"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">BUS_BYTES</span>       <span class="o">=</span> <span class="n">BusWidth</span><span class="o">/</span><span class="mh">8</span><span class="p">;</span>
-<a name="l-73"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">BUS_W</span>           <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">BUS_BYTES</span><span class="p">);</span>
-<a name="l-74"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_BEATS</span>      <span class="o">=</span> <span class="n">LINE_SIZE_BYTES</span> <span class="o">/</span> <span class="n">BUS_BYTES</span><span class="p">;</span>
-<a name="l-75"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_BEATS_W</span>    <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">LINE_BEATS</span><span class="p">);</span>
-<a name="l-76"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">NUM_LINES</span>       <span class="o">=</span> <span class="n">CacheSizeBytes</span> <span class="o">/</span> <span class="n">NumWays</span> <span class="o">/</span> <span class="n">LINE_SIZE_BYTES</span><span class="p">;</span>
-<a name="l-77"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">INDEX_W</span>         <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_LINES</span><span class="p">);</span>
-<a name="l-78"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">INDEX_HI</span>        <span class="o">=</span> <span class="n">INDEX_W</span> <span class="o">+</span> <span class="n">LINE_W</span> <span class="o">-</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-79"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">TAG_SIZE</span>        <span class="o">=</span> <span class="n">ADDR_W</span> <span class="o">-</span> <span class="n">INDEX_W</span> <span class="o">-</span> <span class="n">LINE_W</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span> <span class="c1">// 1 valid bit</span>
-<a name="l-80"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">TAG_SIZE_ECC</span>    <span class="o">=</span> <span class="n">ICacheECC</span> <span class="o">?</span> <span class="p">(</span><span class="n">TAG_SIZE</span> <span class="o">+</span> <span class="mh">6</span><span class="p">)</span> <span class="o">:</span> <span class="n">TAG_SIZE</span><span class="p">;</span>
-<a name="l-81"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">OUTPUT_BEATS</span>    <span class="o">=</span> <span class="p">(</span><span class="n">BUS_BYTES</span> <span class="o">/</span> <span class="mh">2</span><span class="p">);</span> <span class="c1">// number of halfwords</span>
-<a name="l-82"></a>
-<a name="l-83"></a>  <span class="c1">// Prefetch signals</span>
-<a name="l-84"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">lookup_addr_aligned</span><span class="p">;</span>
-<a name="l-85"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">prefetch_addr_d</span><span class="p">,</span> <span class="n">prefetch_addr_q</span><span class="p">;</span>
-<a name="l-86"></a>  <span class="k">logic</span>                                <span class="n">prefetch_addr_en</span><span class="p">;</span>
-<a name="l-87"></a>  <span class="c1">// Cache pipelipe IC0 signals</span>
-<a name="l-88"></a>  <span class="k">logic</span>                                <span class="n">branch_suppress</span><span class="p">;</span>
-<a name="l-89"></a>  <span class="k">logic</span>                                <span class="n">lookup_throttle</span><span class="p">;</span>
-<a name="l-90"></a>  <span class="k">logic</span>                                <span class="n">lookup_req_ic0</span><span class="p">;</span>
-<a name="l-91"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">lookup_addr_ic0</span><span class="p">;</span>
-<a name="l-92"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">lookup_index_ic0</span><span class="p">;</span>
-<a name="l-93"></a>  <span class="k">logic</span>                                <span class="n">fill_req_ic0</span><span class="p">;</span>
-<a name="l-94"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">fill_index_ic0</span><span class="p">;</span>
-<a name="l-95"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_tag_ic0</span><span class="p">;</span>
-<a name="l-96"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_wdata_ic0</span><span class="p">;</span>
-<a name="l-97"></a>  <span class="k">logic</span>                                <span class="n">lookup_grant_ic0</span><span class="p">;</span>
-<a name="l-98"></a>  <span class="k">logic</span>                                <span class="n">lookup_actual_ic0</span><span class="p">;</span>
-<a name="l-99"></a>  <span class="k">logic</span>                                <span class="n">fill_grant_ic0</span><span class="p">;</span>
-<a name="l-100"></a>  <span class="k">logic</span>                                <span class="n">tag_req_ic0</span><span class="p">;</span>
-<a name="l-101"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_index_ic0</span><span class="p">;</span>
-<a name="l-102"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_banks_ic0</span><span class="p">;</span>
-<a name="l-103"></a>  <span class="k">logic</span>                                <span class="n">tag_write_ic0</span><span class="p">;</span>
-<a name="l-104"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TAG_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">tag_wdata_ic0</span><span class="p">;</span>
-<a name="l-105"></a>  <span class="k">logic</span>                                <span class="n">data_req_ic0</span><span class="p">;</span>
-<a name="l-106"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">data_index_ic0</span><span class="p">;</span>
-<a name="l-107"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">data_banks_ic0</span><span class="p">;</span>
-<a name="l-108"></a>  <span class="k">logic</span>                                <span class="n">data_write_ic0</span><span class="p">;</span>
-<a name="l-109"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">data_wdata_ic0</span><span class="p">;</span>
-<a name="l-110"></a>  <span class="c1">// Cache pipelipe IC1 signals</span>
-<a name="l-111"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TAG_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">tag_rdata_ic1</span>  <span class="p">[</span><span class="n">NumWays</span><span class="p">];</span>
-<a name="l-112"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">data_rdata_ic1</span> <span class="p">[</span><span class="n">NumWays</span><span class="p">];</span>
-<a name="l-113"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">hit_data_ic1</span><span class="p">;</span>
-<a name="l-114"></a>  <span class="k">logic</span>                                <span class="n">lookup_valid_ic1</span><span class="p">;</span>
-<a name="l-115"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">]</span>          <span class="n">lookup_addr_ic1</span><span class="p">;</span>
-<a name="l-116"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_match_ic1</span><span class="p">;</span>
-<a name="l-117"></a>  <span class="k">logic</span>                                <span class="n">tag_hit_ic1</span><span class="p">;</span>
-<a name="l-118"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_invalid_ic1</span><span class="p">;</span>
-<a name="l-119"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">lowest_invalid_way_ic1</span><span class="p">;</span>
-<a name="l-120"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">round_robin_way_ic1</span><span class="p">,</span> <span class="n">round_robin_way_q</span><span class="p">;</span>
-<a name="l-121"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">sel_way_ic1</span><span class="p">;</span>
-<a name="l-122"></a>  <span class="k">logic</span>                                <span class="n">ecc_err_ic1</span><span class="p">;</span>
-<a name="l-123"></a>  <span class="k">logic</span>                                <span class="n">ecc_write_req</span><span class="p">;</span>
-<a name="l-124"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">ecc_write_ways</span><span class="p">;</span>
-<a name="l-125"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">ecc_write_index</span><span class="p">;</span>
-<a name="l-126"></a>  <span class="c1">// Fill buffer signals</span>
-<a name="l-127"></a>  <span class="k">logic</span>                                <span class="n">gnt_or_pmp_err</span><span class="p">,</span> <span class="n">gnt_not_pmp_err</span><span class="p">;</span>
-<a name="l-128"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_FB</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">fb_fill_level</span><span class="p">;</span>
-<a name="l-129"></a>  <span class="k">logic</span>                                <span class="n">fill_cache_new</span><span class="p">;</span>
-<a name="l-130"></a>  <span class="k">logic</span>                                <span class="n">fill_new_alloc</span><span class="p">;</span>
-<a name="l-131"></a>  <span class="k">logic</span>                                <span class="n">fill_spec_req</span><span class="p">,</span> <span class="n">fill_spec_done</span><span class="p">,</span> <span class="n">fill_spec_hold</span><span class="p">;</span>
-<a name="l-132"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>       <span class="n">fill_older_d</span><span class="p">,</span> <span class="n">fill_older_q</span><span class="p">;</span>
-<a name="l-133"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_alloc_sel</span><span class="p">,</span> <span class="n">fill_alloc</span><span class="p">;</span>
-<a name="l-134"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_busy_d</span><span class="p">,</span> <span class="n">fill_busy_q</span><span class="p">;</span>
-<a name="l-135"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_done</span><span class="p">;</span>
-<a name="l-136"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_in_ic1</span><span class="p">;</span>
-<a name="l-137"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_stale_d</span><span class="p">,</span> <span class="n">fill_stale_q</span><span class="p">;</span>
-<a name="l-138"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_cache_d</span><span class="p">,</span> <span class="n">fill_cache_q</span><span class="p">;</span>
-<a name="l-139"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_hit_ic1</span><span class="p">,</span> <span class="n">fill_hit_d</span><span class="p">,</span> <span class="n">fill_hit_q</span><span class="p">;</span>
-<a name="l-140"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_ext_cnt_d</span><span class="p">,</span> <span class="n">fill_ext_cnt_q</span><span class="p">;</span>
-<a name="l-141"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_hold_d</span><span class="p">,</span> <span class="n">fill_ext_hold_q</span><span class="p">;</span>
-<a name="l-142"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_done</span><span class="p">;</span>
-<a name="l-143"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_rvd_cnt_d</span><span class="p">,</span> <span class="n">fill_rvd_cnt_q</span><span class="p">;</span>
-<a name="l-144"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_rvd_done</span><span class="p">;</span>
-<a name="l-145"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ram_done_d</span><span class="p">,</span> <span class="n">fill_ram_done_q</span><span class="p">;</span>
-<a name="l-146"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_out_grant</span><span class="p">;</span>
-<a name="l-147"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_out_cnt_d</span><span class="p">,</span> <span class="n">fill_out_cnt_q</span><span class="p">;</span>
-<a name="l-148"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_out_done</span><span class="p">;</span>
-<a name="l-149"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_req</span><span class="p">,</span> <span class="n">fill_rvd_exp</span><span class="p">,</span> <span class="n">fill_ram_req</span><span class="p">,</span> <span class="n">fill_out_req</span><span class="p">;</span>
-<a name="l-150"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_data_sel</span><span class="p">,</span> <span class="n">fill_data_reg</span><span class="p">,</span> <span class="n">fill_data_hit</span><span class="p">,</span> <span class="n">fill_data_rvd</span><span class="p">;</span>
-<a name="l-151"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">LINE_BEATS_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">fill_ext_off</span><span class="p">,</span> <span class="n">fill_rvd_off</span><span class="p">;</span>
-<a name="l-152"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_rvd_beat</span><span class="p">;</span>
-<a name="l-153"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_arb</span><span class="p">,</span> <span class="n">fill_ram_arb</span><span class="p">,</span> <span class="n">fill_out_arb</span><span class="p">;</span>
-<a name="l-154"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_rvd_arb</span><span class="p">;</span>
-<a name="l-155"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_entry_en</span><span class="p">;</span>
-<a name="l-156"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_addr_en</span><span class="p">;</span>
-<a name="l-157"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_way_en</span><span class="p">;</span>
-<a name="l-158"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_data_en</span><span class="p">;</span>
-<a name="l-159"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_err_d</span><span class="p">,</span> <span class="n">fill_err_q</span><span class="p">;</span>
-<a name="l-160"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_addr_q</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
-<a name="l-161"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">fill_way_q</span>  <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
-<a name="l-162"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_data_d</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
-<a name="l-163"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_data_q</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
-<a name="l-164"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">BUS_W</span><span class="p">]</span>               <span class="n">fill_ext_req_addr</span><span class="p">;</span>
-<a name="l-165"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ram_req_addr</span><span class="p">;</span>
-<a name="l-166"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">fill_ram_req_way</span><span class="p">;</span>
-<a name="l-167"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_ram_req_data</span><span class="p">;</span>
-<a name="l-168"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_out_data</span><span class="p">;</span>
-<a name="l-169"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">fill_out_err</span><span class="p">;</span>
-<a name="l-170"></a>  <span class="c1">// External req signals</span>
-<a name="l-171"></a>  <span class="k">logic</span>                                <span class="n">instr_req</span><span class="p">;</span>
-<a name="l-172"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">BUS_W</span><span class="p">]</span>               <span class="n">instr_addr</span><span class="p">;</span>
-<a name="l-173"></a>  <span class="c1">// Data output signals</span>
-<a name="l-174"></a>  <span class="k">logic</span>                                <span class="n">skid_complete_instr</span><span class="p">;</span>
-<a name="l-175"></a>  <span class="k">logic</span>                                <span class="n">skid_ready</span><span class="p">;</span>
-<a name="l-176"></a>  <span class="k">logic</span>                                <span class="n">output_compressed</span><span class="p">;</span>
-<a name="l-177"></a>  <span class="k">logic</span>                                <span class="n">skid_valid_d</span><span class="p">,</span> <span class="n">skid_valid_q</span><span class="p">,</span> <span class="n">skid_en</span><span class="p">;</span>
-<a name="l-178"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">skid_data_d</span><span class="p">,</span> <span class="n">skid_data_q</span><span class="p">;</span>
-<a name="l-179"></a>  <span class="k">logic</span>                                <span class="n">skid_err_q</span><span class="p">;</span>
-<a name="l-180"></a>  <span class="k">logic</span>                                <span class="n">output_valid</span><span class="p">;</span>
-<a name="l-181"></a>  <span class="k">logic</span>                                <span class="n">addr_incr_two</span><span class="p">;</span>
-<a name="l-182"></a>  <span class="k">logic</span>                                <span class="n">output_addr_en</span><span class="p">;</span>
-<a name="l-183"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span>                   <span class="n">output_addr_d</span><span class="p">,</span> <span class="n">output_addr_q</span><span class="p">;</span>
-<a name="l-184"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">output_data_lo</span><span class="p">,</span> <span class="n">output_data_hi</span><span class="p">;</span>
-<a name="l-185"></a>  <span class="k">logic</span>                                <span class="n">data_valid</span><span class="p">,</span> <span class="n">output_ready</span><span class="p">;</span>
-<a name="l-186"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">line_data</span><span class="p">;</span>
-<a name="l-187"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">line_err</span><span class="p">;</span>
-<a name="l-188"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">line_data_muxed</span><span class="p">;</span>
-<a name="l-189"></a>  <span class="k">logic</span>                                <span class="n">line_err_muxed</span><span class="p">;</span>
-<a name="l-190"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">output_data</span><span class="p">;</span>
-<a name="l-191"></a>  <span class="k">logic</span>                                <span class="n">output_err</span><span class="p">;</span>
-<a name="l-192"></a>  <span class="c1">// Invalidations</span>
-<a name="l-193"></a>  <span class="k">logic</span>                                <span class="n">start_inval</span><span class="p">,</span> <span class="n">inval_done</span><span class="p">;</span>
-<a name="l-194"></a>  <span class="k">logic</span>                                <span class="n">reset_inval_q</span><span class="p">;</span>
-<a name="l-195"></a>  <span class="k">logic</span>                                <span class="n">inval_prog_d</span><span class="p">,</span> <span class="n">inval_prog_q</span><span class="p">;</span>
-<a name="l-196"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">inval_index_d</span><span class="p">,</span> <span class="n">inval_index_q</span><span class="p">;</span>
-<a name="l-197"></a>
-<a name="l-198"></a>  <span class="c1">//////////////////////////</span>
-<a name="l-199"></a>  <span class="c1">// Instruction prefetch //</span>
-<a name="l-200"></a>  <span class="c1">//////////////////////////</span>
-<a name="l-201"></a>
-<a name="l-202"></a>  <span class="k">assign</span> <span class="n">lookup_addr_aligned</span> <span class="o">=</span> <span class="p">{</span><span class="n">lookup_addr_ic0</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">LINE_W</span><span class="p">],{</span><span class="n">LINE_W</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}}};</span>
-<a name="l-203"></a>
-<a name="l-204"></a>  <span class="c1">// The prefetch address increments by one cache line for each granted request.</span>
-<a name="l-205"></a>  <span class="c1">// This address is also updated if there is a branch that is not granted, since the target</span>
-<a name="l-206"></a>  <span class="c1">// address (addr_i) is only valid for one cycle while branch_i is high.</span>
-<a name="l-207"></a>
-<a name="l-208"></a>  <span class="c1">// The captured branch target address is not forced to be aligned since the offset in the cache</span>
-<a name="l-209"></a>  <span class="c1">// line must also be recorded for later use by the fill buffers.</span>
-<a name="l-210"></a>  <span class="k">assign</span> <span class="n">prefetch_addr_d</span>     <span class="o">=</span>
-<a name="l-211"></a>      <span class="n">lookup_grant_ic0</span> <span class="o">?</span> <span class="p">(</span><span class="n">lookup_addr_aligned</span> <span class="o">+</span> <span class="p">{{</span><span class="n">ADDR_W</span><span class="o">-</span><span class="n">LINE_W</span><span class="o">-</span><span class="mh">1</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">,{</span><span class="n">LINE_W</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}}})</span> <span class="o">:</span>
-<a name="l-212"></a>                         <span class="n">addr_i</span><span class="p">;</span>
-<a name="l-213"></a>
-<a name="l-214"></a>  <span class="k">assign</span> <span class="n">prefetch_addr_en</span>    <span class="o">=</span> <span class="n">branch_i</span> <span class="o">|</span> <span class="n">lookup_grant_ic0</span><span class="p">;</span>
-<a name="l-215"></a>
-<a name="l-216"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-217"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">prefetch_addr_en</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-218"></a>      <span class="n">prefetch_addr_q</span> <span class="o">&lt;=</span> <span class="n">prefetch_addr_d</span><span class="p">;</span>
-<a name="l-219"></a>    <span class="k">end</span>
-<a name="l-220"></a>  <span class="k">end</span>
-<a name="l-221"></a>
-<a name="l-222"></a>  <span class="c1">////////////////////////</span>
-<a name="l-223"></a>  <span class="c1">// Pipeline stage IC0 //</span>
-<a name="l-224"></a>  <span class="c1">////////////////////////</span>
+<a name="l-59"></a>  <span class="c1">// Local constants</span>
+<a name="l-60"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">ADDR_W</span>       <span class="o">=</span> <span class="mh">32</span><span class="p">;</span>
+<a name="l-61"></a>  <span class="c1">// Number of fill buffers (must be &gt;= 2)</span>
+<a name="l-62"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">NUM_FB</span>       <span class="o">=</span> <span class="mh">4</span><span class="p">;</span>
+<a name="l-63"></a>  <span class="c1">// Request throttling threshold</span>
+<a name="l-64"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">FB_THRESHOLD</span> <span class="o">=</span> <span class="n">NUM_FB</span> <span class="o">-</span> <span class="mh">2</span><span class="p">;</span>
+<a name="l-65"></a>  <span class="c1">// Derived parameters</span>
+<a name="l-66"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_SIZE_ECC</span>   <span class="o">=</span> <span class="n">ICacheECC</span> <span class="o">?</span> <span class="p">(</span><span class="n">LineSize</span> <span class="o">+</span> <span class="mh">8</span><span class="p">)</span> <span class="o">:</span> <span class="n">LineSize</span><span class="p">;</span>
+<a name="l-67"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_SIZE_BYTES</span> <span class="o">=</span> <span class="n">LineSize</span><span class="o">/</span><span class="mh">8</span><span class="p">;</span>
+<a name="l-68"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_W</span>          <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">LINE_SIZE_BYTES</span><span class="p">);</span>
+<a name="l-69"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">BUS_BYTES</span>       <span class="o">=</span> <span class="n">BusWidth</span><span class="o">/</span><span class="mh">8</span><span class="p">;</span>
+<a name="l-70"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">BUS_W</span>           <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">BUS_BYTES</span><span class="p">);</span>
+<a name="l-71"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_BEATS</span>      <span class="o">=</span> <span class="n">LINE_SIZE_BYTES</span> <span class="o">/</span> <span class="n">BUS_BYTES</span><span class="p">;</span>
+<a name="l-72"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LINE_BEATS_W</span>    <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">LINE_BEATS</span><span class="p">);</span>
+<a name="l-73"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">NUM_LINES</span>       <span class="o">=</span> <span class="n">CacheSizeBytes</span> <span class="o">/</span> <span class="n">NumWays</span> <span class="o">/</span> <span class="n">LINE_SIZE_BYTES</span><span class="p">;</span>
+<a name="l-74"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">INDEX_W</span>         <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_LINES</span><span class="p">);</span>
+<a name="l-75"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">INDEX_HI</span>        <span class="o">=</span> <span class="n">INDEX_W</span> <span class="o">+</span> <span class="n">LINE_W</span> <span class="o">-</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-76"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">TAG_SIZE</span>        <span class="o">=</span> <span class="n">ADDR_W</span> <span class="o">-</span> <span class="n">INDEX_W</span> <span class="o">-</span> <span class="n">LINE_W</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span> <span class="c1">// 1 valid bit</span>
+<a name="l-77"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">TAG_SIZE_ECC</span>    <span class="o">=</span> <span class="n">ICacheECC</span> <span class="o">?</span> <span class="p">(</span><span class="n">TAG_SIZE</span> <span class="o">+</span> <span class="mh">6</span><span class="p">)</span> <span class="o">:</span> <span class="n">TAG_SIZE</span><span class="p">;</span>
+<a name="l-78"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">OUTPUT_BEATS</span>    <span class="o">=</span> <span class="p">(</span><span class="n">BUS_BYTES</span> <span class="o">/</span> <span class="mh">2</span><span class="p">);</span> <span class="c1">// number of halfwords</span>
+<a name="l-79"></a>
+<a name="l-80"></a>  <span class="c1">// Prefetch signals</span>
+<a name="l-81"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">lookup_addr_aligned</span><span class="p">;</span>
+<a name="l-82"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">prefetch_addr_d</span><span class="p">,</span> <span class="n">prefetch_addr_q</span><span class="p">;</span>
+<a name="l-83"></a>  <span class="k">logic</span>                                <span class="n">prefetch_addr_en</span><span class="p">;</span>
+<a name="l-84"></a>  <span class="c1">// Cache pipelipe IC0 signals</span>
+<a name="l-85"></a>  <span class="k">logic</span>                                <span class="n">branch_suppress</span><span class="p">;</span>
+<a name="l-86"></a>  <span class="k">logic</span>                                <span class="n">lookup_throttle</span><span class="p">;</span>
+<a name="l-87"></a>  <span class="k">logic</span>                                <span class="n">lookup_req_ic0</span><span class="p">;</span>
+<a name="l-88"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">lookup_addr_ic0</span><span class="p">;</span>
+<a name="l-89"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">lookup_index_ic0</span><span class="p">;</span>
+<a name="l-90"></a>  <span class="k">logic</span>                                <span class="n">fill_req_ic0</span><span class="p">;</span>
+<a name="l-91"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">fill_index_ic0</span><span class="p">;</span>
+<a name="l-92"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_tag_ic0</span><span class="p">;</span>
+<a name="l-93"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_wdata_ic0</span><span class="p">;</span>
+<a name="l-94"></a>  <span class="k">logic</span>                                <span class="n">lookup_grant_ic0</span><span class="p">;</span>
+<a name="l-95"></a>  <span class="k">logic</span>                                <span class="n">lookup_actual_ic0</span><span class="p">;</span>
+<a name="l-96"></a>  <span class="k">logic</span>                                <span class="n">fill_grant_ic0</span><span class="p">;</span>
+<a name="l-97"></a>  <span class="k">logic</span>                                <span class="n">tag_req_ic0</span><span class="p">;</span>
+<a name="l-98"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_index_ic0</span><span class="p">;</span>
+<a name="l-99"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_banks_ic0</span><span class="p">;</span>
+<a name="l-100"></a>  <span class="k">logic</span>                                <span class="n">tag_write_ic0</span><span class="p">;</span>
+<a name="l-101"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TAG_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">tag_wdata_ic0</span><span class="p">;</span>
+<a name="l-102"></a>  <span class="k">logic</span>                                <span class="n">data_req_ic0</span><span class="p">;</span>
+<a name="l-103"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">data_index_ic0</span><span class="p">;</span>
+<a name="l-104"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">data_banks_ic0</span><span class="p">;</span>
+<a name="l-105"></a>  <span class="k">logic</span>                                <span class="n">data_write_ic0</span><span class="p">;</span>
+<a name="l-106"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">data_wdata_ic0</span><span class="p">;</span>
+<a name="l-107"></a>  <span class="c1">// Cache pipelipe IC1 signals</span>
+<a name="l-108"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TAG_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">tag_rdata_ic1</span>  <span class="p">[</span><span class="n">NumWays</span><span class="p">];</span>
+<a name="l-109"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">data_rdata_ic1</span> <span class="p">[</span><span class="n">NumWays</span><span class="p">];</span>
+<a name="l-110"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">hit_data_ic1</span><span class="p">;</span>
+<a name="l-111"></a>  <span class="k">logic</span>                                <span class="n">lookup_valid_ic1</span><span class="p">;</span>
+<a name="l-112"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">]</span>          <span class="n">lookup_addr_ic1</span><span class="p">;</span>
+<a name="l-113"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_match_ic1</span><span class="p">;</span>
+<a name="l-114"></a>  <span class="k">logic</span>                                <span class="n">tag_hit_ic1</span><span class="p">;</span>
+<a name="l-115"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">tag_invalid_ic1</span><span class="p">;</span>
+<a name="l-116"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">lowest_invalid_way_ic1</span><span class="p">;</span>
+<a name="l-117"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">round_robin_way_ic1</span><span class="p">,</span> <span class="n">round_robin_way_q</span><span class="p">;</span>
+<a name="l-118"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">sel_way_ic1</span><span class="p">;</span>
+<a name="l-119"></a>  <span class="k">logic</span>                                <span class="n">ecc_err_ic1</span><span class="p">;</span>
+<a name="l-120"></a>  <span class="k">logic</span>                                <span class="n">ecc_write_req</span><span class="p">;</span>
+<a name="l-121"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">ecc_write_ways</span><span class="p">;</span>
+<a name="l-122"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">ecc_write_index</span><span class="p">;</span>
+<a name="l-123"></a>  <span class="c1">// Fill buffer signals</span>
+<a name="l-124"></a>  <span class="k">logic</span>                                <span class="n">gnt_or_pmp_err</span><span class="p">,</span> <span class="n">gnt_not_pmp_err</span><span class="p">;</span>
+<a name="l-125"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_FB</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">fb_fill_level</span><span class="p">;</span>
+<a name="l-126"></a>  <span class="k">logic</span>                                <span class="n">fill_cache_new</span><span class="p">;</span>
+<a name="l-127"></a>  <span class="k">logic</span>                                <span class="n">fill_new_alloc</span><span class="p">;</span>
+<a name="l-128"></a>  <span class="k">logic</span>                                <span class="n">fill_spec_req</span><span class="p">,</span> <span class="n">fill_spec_done</span><span class="p">,</span> <span class="n">fill_spec_hold</span><span class="p">;</span>
+<a name="l-129"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>       <span class="n">fill_older_d</span><span class="p">,</span> <span class="n">fill_older_q</span><span class="p">;</span>
+<a name="l-130"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_alloc_sel</span><span class="p">,</span> <span class="n">fill_alloc</span><span class="p">;</span>
+<a name="l-131"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_busy_d</span><span class="p">,</span> <span class="n">fill_busy_q</span><span class="p">;</span>
+<a name="l-132"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_done</span><span class="p">;</span>
+<a name="l-133"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_in_ic1</span><span class="p">;</span>
+<a name="l-134"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_stale_d</span><span class="p">,</span> <span class="n">fill_stale_q</span><span class="p">;</span>
+<a name="l-135"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_cache_d</span><span class="p">,</span> <span class="n">fill_cache_q</span><span class="p">;</span>
+<a name="l-136"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_hit_ic1</span><span class="p">,</span> <span class="n">fill_hit_d</span><span class="p">,</span> <span class="n">fill_hit_q</span><span class="p">;</span>
+<a name="l-137"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_ext_cnt_d</span><span class="p">,</span> <span class="n">fill_ext_cnt_q</span><span class="p">;</span>
+<a name="l-138"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_hold_d</span><span class="p">,</span> <span class="n">fill_ext_hold_q</span><span class="p">;</span>
+<a name="l-139"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_done</span><span class="p">;</span>
+<a name="l-140"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_rvd_cnt_d</span><span class="p">,</span> <span class="n">fill_rvd_cnt_q</span><span class="p">;</span>
+<a name="l-141"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_rvd_done</span><span class="p">;</span>
+<a name="l-142"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ram_done_d</span><span class="p">,</span> <span class="n">fill_ram_done_q</span><span class="p">;</span>
+<a name="l-143"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_out_grant</span><span class="p">;</span>
+<a name="l-144"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_out_cnt_d</span><span class="p">,</span> <span class="n">fill_out_cnt_q</span><span class="p">;</span>
+<a name="l-145"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_out_done</span><span class="p">;</span>
+<a name="l-146"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_req</span><span class="p">,</span> <span class="n">fill_rvd_exp</span><span class="p">,</span> <span class="n">fill_ram_req</span><span class="p">,</span> <span class="n">fill_out_req</span><span class="p">;</span>
+<a name="l-147"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_data_sel</span><span class="p">,</span> <span class="n">fill_data_reg</span><span class="p">,</span> <span class="n">fill_data_hit</span><span class="p">,</span> <span class="n">fill_data_rvd</span><span class="p">;</span>
+<a name="l-148"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">LINE_BEATS_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">fill_ext_off</span><span class="p">,</span> <span class="n">fill_rvd_off</span><span class="p">;</span>
+<a name="l-149"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="nl">LINE_BEATS_W:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_rvd_beat</span><span class="p">;</span>
+<a name="l-150"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ext_arb</span><span class="p">,</span> <span class="n">fill_ram_arb</span><span class="p">,</span> <span class="n">fill_out_arb</span><span class="p">;</span>
+<a name="l-151"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_rvd_arb</span><span class="p">;</span>
+<a name="l-152"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_entry_en</span><span class="p">;</span>
+<a name="l-153"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_addr_en</span><span class="p">;</span>
+<a name="l-154"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_way_en</span><span class="p">;</span>
+<a name="l-155"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_data_en</span><span class="p">;</span>
+<a name="l-156"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">fill_err_d</span><span class="p">,</span> <span class="n">fill_err_q</span><span class="p">;</span>
+<a name="l-157"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_addr_q</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
+<a name="l-158"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">fill_way_q</span>  <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
+<a name="l-159"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_data_d</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
+<a name="l-160"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_data_q</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="p">];</span>
+<a name="l-161"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">BUS_W</span><span class="p">]</span>               <span class="n">fill_ext_req_addr</span><span class="p">;</span>
+<a name="l-162"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                   <span class="n">fill_ram_req_addr</span><span class="p">;</span>
+<a name="l-163"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">fill_ram_req_way</span><span class="p">;</span>
+<a name="l-164"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_ram_req_data</span><span class="p">;</span>
+<a name="l-165"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">fill_out_data</span><span class="p">;</span>
+<a name="l-166"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">fill_out_err</span><span class="p">;</span>
+<a name="l-167"></a>  <span class="c1">// External req signals</span>
+<a name="l-168"></a>  <span class="k">logic</span>                                <span class="n">instr_req</span><span class="p">;</span>
+<a name="l-169"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">BUS_W</span><span class="p">]</span>               <span class="n">instr_addr</span><span class="p">;</span>
+<a name="l-170"></a>  <span class="c1">// Data output signals</span>
+<a name="l-171"></a>  <span class="k">logic</span>                                <span class="n">skid_complete_instr</span><span class="p">;</span>
+<a name="l-172"></a>  <span class="k">logic</span>                                <span class="n">skid_ready</span><span class="p">;</span>
+<a name="l-173"></a>  <span class="k">logic</span>                                <span class="n">output_compressed</span><span class="p">;</span>
+<a name="l-174"></a>  <span class="k">logic</span>                                <span class="n">skid_valid_d</span><span class="p">,</span> <span class="n">skid_valid_q</span><span class="p">,</span> <span class="n">skid_en</span><span class="p">;</span>
+<a name="l-175"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">skid_data_d</span><span class="p">,</span> <span class="n">skid_data_q</span><span class="p">;</span>
+<a name="l-176"></a>  <span class="k">logic</span>                                <span class="n">skid_err_q</span><span class="p">;</span>
+<a name="l-177"></a>  <span class="k">logic</span>                                <span class="n">output_valid</span><span class="p">;</span>
+<a name="l-178"></a>  <span class="k">logic</span>                                <span class="n">addr_incr_two</span><span class="p">;</span>
+<a name="l-179"></a>  <span class="k">logic</span>                                <span class="n">output_addr_en</span><span class="p">;</span>
+<a name="l-180"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span>                   <span class="n">output_addr_d</span><span class="p">,</span> <span class="n">output_addr_q</span><span class="p">;</span>
+<a name="l-181"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">output_data_lo</span><span class="p">,</span> <span class="n">output_data_hi</span><span class="p">;</span>
+<a name="l-182"></a>  <span class="k">logic</span>                                <span class="n">data_valid</span><span class="p">,</span> <span class="n">output_ready</span><span class="p">;</span>
+<a name="l-183"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LineSize</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">line_data</span><span class="p">;</span>
+<a name="l-184"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LINE_BEATS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">line_err</span><span class="p">;</span>
+<a name="l-185"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">line_data_muxed</span><span class="p">;</span>
+<a name="l-186"></a>  <span class="k">logic</span>                                <span class="n">line_err_muxed</span><span class="p">;</span>
+<a name="l-187"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                         <span class="n">output_data</span><span class="p">;</span>
+<a name="l-188"></a>  <span class="k">logic</span>                                <span class="n">output_err</span><span class="p">;</span>
+<a name="l-189"></a>  <span class="c1">// Invalidations</span>
+<a name="l-190"></a>  <span class="k">logic</span>                                <span class="n">start_inval</span><span class="p">,</span> <span class="n">inval_done</span><span class="p">;</span>
+<a name="l-191"></a>  <span class="k">logic</span>                                <span class="n">reset_inval_q</span><span class="p">;</span>
+<a name="l-192"></a>  <span class="k">logic</span>                                <span class="n">inval_prog_d</span><span class="p">,</span> <span class="n">inval_prog_q</span><span class="p">;</span>
+<a name="l-193"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">inval_index_d</span><span class="p">,</span> <span class="n">inval_index_q</span><span class="p">;</span>
+<a name="l-194"></a>
+<a name="l-195"></a>  <span class="c1">//////////////////////////</span>
+<a name="l-196"></a>  <span class="c1">// Instruction prefetch //</span>
+<a name="l-197"></a>  <span class="c1">//////////////////////////</span>
+<a name="l-198"></a>
+<a name="l-199"></a>  <span class="k">assign</span> <span class="n">lookup_addr_aligned</span> <span class="o">=</span> <span class="p">{</span><span class="n">lookup_addr_ic0</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">LINE_W</span><span class="p">],{</span><span class="n">LINE_W</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}}};</span>
+<a name="l-200"></a>
+<a name="l-201"></a>  <span class="c1">// The prefetch address increments by one cache line for each granted request.</span>
+<a name="l-202"></a>  <span class="c1">// This address is also updated if there is a branch that is not granted, since the target</span>
+<a name="l-203"></a>  <span class="c1">// address (addr_i) is only valid for one cycle while branch_i is high.</span>
+<a name="l-204"></a>
+<a name="l-205"></a>  <span class="c1">// The captured branch target address is not forced to be aligned since the offset in the cache</span>
+<a name="l-206"></a>  <span class="c1">// line must also be recorded for later use by the fill buffers.</span>
+<a name="l-207"></a>  <span class="k">assign</span> <span class="n">prefetch_addr_d</span>     <span class="o">=</span>
+<a name="l-208"></a>      <span class="n">lookup_grant_ic0</span> <span class="o">?</span> <span class="p">(</span><span class="n">lookup_addr_aligned</span> <span class="o">+</span> <span class="p">{{</span><span class="n">ADDR_W</span><span class="o">-</span><span class="n">LINE_W</span><span class="o">-</span><span class="mh">1</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">,{</span><span class="n">LINE_W</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}}})</span> <span class="o">:</span>
+<a name="l-209"></a>                         <span class="n">addr_i</span><span class="p">;</span>
+<a name="l-210"></a>
+<a name="l-211"></a>  <span class="k">assign</span> <span class="n">prefetch_addr_en</span>    <span class="o">=</span> <span class="n">branch_i</span> <span class="o">|</span> <span class="n">lookup_grant_ic0</span><span class="p">;</span>
+<a name="l-212"></a>
+<a name="l-213"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-214"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">prefetch_addr_en</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-215"></a>      <span class="n">prefetch_addr_q</span> <span class="o">&lt;=</span> <span class="n">prefetch_addr_d</span><span class="p">;</span>
+<a name="l-216"></a>    <span class="k">end</span>
+<a name="l-217"></a>  <span class="k">end</span>
+<a name="l-218"></a>
+<a name="l-219"></a>  <span class="c1">////////////////////////</span>
+<a name="l-220"></a>  <span class="c1">// Pipeline stage IC0 //</span>
+<a name="l-221"></a>  <span class="c1">////////////////////////</span>
+<a name="l-222"></a>
+<a name="l-223"></a>  <span class="c1">// Cache lookup</span>
+<a name="l-224"></a>  <span class="k">assign</span> <span class="n">lookup_throttle</span>  <span class="o">=</span> <span class="p">(</span><span class="n">fb_fill_level</span> <span class="o">&gt;</span> <span class="n">FB_THRESHOLD</span><span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_FB</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
 <a name="l-225"></a>
-<a name="l-226"></a>  <span class="c1">// Cache lookup</span>
-<a name="l-227"></a>  <span class="k">assign</span> <span class="n">lookup_throttle</span>  <span class="o">=</span> <span class="p">(</span><span class="n">fb_fill_level</span> <span class="o">&gt;</span> <span class="n">FB_THRESHOLD</span><span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_FB</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
-<a name="l-228"></a>
-<a name="l-229"></a>  <span class="k">assign</span> <span class="n">lookup_req_ic0</span>   <span class="o">=</span> <span class="n">req_i</span> <span class="o">&amp;</span> <span class="o">~&amp;</span><span class="n">fill_busy_q</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">branch_i</span> <span class="o">|</span> <span class="o">~</span><span class="n">lookup_throttle</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ecc_write_req</span><span class="p">;</span>
-<a name="l-230"></a>  <span class="k">assign</span> <span class="n">lookup_addr_ic0</span>  <span class="o">=</span> <span class="n">branch_spec_i</span> <span class="o">?</span> <span class="n">addr_i</span> <span class="o">:</span>
-<a name="l-231"></a>                                            <span class="n">prefetch_addr_q</span><span class="p">;</span>
-<a name="l-232"></a>  <span class="k">assign</span> <span class="n">lookup_index_ic0</span> <span class="o">=</span> <span class="n">lookup_addr_ic0</span><span class="p">[</span><span class="nl">INDEX_HI:</span><span class="n">LINE_W</span><span class="p">];</span>
-<a name="l-233"></a>
-<a name="l-234"></a>  <span class="c1">// Cache write</span>
-<a name="l-235"></a>  <span class="k">assign</span> <span class="n">fill_req_ic0</span>   <span class="o">=</span> <span class="p">(</span><span class="o">|</span><span class="n">fill_ram_req</span><span class="p">);</span>
-<a name="l-236"></a>  <span class="k">assign</span> <span class="n">fill_index_ic0</span> <span class="o">=</span> <span class="n">fill_ram_req_addr</span><span class="p">[</span><span class="nl">INDEX_HI:</span><span class="n">LINE_W</span><span class="p">];</span>
-<a name="l-237"></a>  <span class="k">assign</span> <span class="n">fill_tag_ic0</span>   <span class="o">=</span> <span class="p">{(</span><span class="o">~</span><span class="n">inval_prog_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ecc_write_req</span><span class="p">),</span><span class="n">fill_ram_req_addr</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">]};</span>
-<a name="l-238"></a>  <span class="k">assign</span> <span class="n">fill_wdata_ic0</span> <span class="o">=</span> <span class="n">fill_ram_req_data</span><span class="p">;</span>
+<a name="l-226"></a>  <span class="k">assign</span> <span class="n">lookup_req_ic0</span>   <span class="o">=</span> <span class="n">req_i</span> <span class="o">&amp;</span> <span class="o">~&amp;</span><span class="n">fill_busy_q</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">branch_i</span> <span class="o">|</span> <span class="o">~</span><span class="n">lookup_throttle</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ecc_write_req</span><span class="p">;</span>
+<a name="l-227"></a>  <span class="k">assign</span> <span class="n">lookup_addr_ic0</span>  <span class="o">=</span> <span class="n">branch_spec_i</span> <span class="o">?</span> <span class="n">addr_i</span> <span class="o">:</span>
+<a name="l-228"></a>                                            <span class="n">prefetch_addr_q</span><span class="p">;</span>
+<a name="l-229"></a>  <span class="k">assign</span> <span class="n">lookup_index_ic0</span> <span class="o">=</span> <span class="n">lookup_addr_ic0</span><span class="p">[</span><span class="nl">INDEX_HI:</span><span class="n">LINE_W</span><span class="p">];</span>
+<a name="l-230"></a>
+<a name="l-231"></a>  <span class="c1">// Cache write</span>
+<a name="l-232"></a>  <span class="k">assign</span> <span class="n">fill_req_ic0</span>   <span class="o">=</span> <span class="p">(</span><span class="o">|</span><span class="n">fill_ram_req</span><span class="p">);</span>
+<a name="l-233"></a>  <span class="k">assign</span> <span class="n">fill_index_ic0</span> <span class="o">=</span> <span class="n">fill_ram_req_addr</span><span class="p">[</span><span class="nl">INDEX_HI:</span><span class="n">LINE_W</span><span class="p">];</span>
+<a name="l-234"></a>  <span class="k">assign</span> <span class="n">fill_tag_ic0</span>   <span class="o">=</span> <span class="p">{(</span><span class="o">~</span><span class="n">inval_prog_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">ecc_write_req</span><span class="p">),</span><span class="n">fill_ram_req_addr</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">]};</span>
+<a name="l-235"></a>  <span class="k">assign</span> <span class="n">fill_wdata_ic0</span> <span class="o">=</span> <span class="n">fill_ram_req_data</span><span class="p">;</span>
+<a name="l-236"></a>
+<a name="l-237"></a>  <span class="c1">// Suppress a new lookup on a not-taken branch (as the address will be incorrect)</span>
+<a name="l-238"></a>  <span class="k">assign</span> <span class="n">branch_suppress</span>   <span class="o">=</span> <span class="n">branch_spec_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">branch_i</span><span class="p">;</span>
 <a name="l-239"></a>
-<a name="l-240"></a>  <span class="c1">// Suppress a new lookup on a not-taken branch (as the address will be incorrect)</span>
-<a name="l-241"></a>  <span class="k">assign</span> <span class="n">branch_suppress</span>   <span class="o">=</span> <span class="n">branch_spec_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">branch_i</span><span class="p">;</span>
-<a name="l-242"></a>
-<a name="l-243"></a>  <span class="c1">// Arbitrated signals - lookups have highest priority</span>
-<a name="l-244"></a>  <span class="k">assign</span> <span class="n">lookup_grant_ic0</span>  <span class="o">=</span> <span class="n">lookup_req_ic0</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">branch_suppress</span><span class="p">;</span>
-<a name="l-245"></a>  <span class="k">assign</span> <span class="n">fill_grant_ic0</span>    <span class="o">=</span> <span class="n">fill_req_ic0</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">lookup_req_ic0</span> <span class="o">|</span> <span class="n">branch_suppress</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">inval_prog_q</span> <span class="o">&amp;</span>
-<a name="l-246"></a>                             <span class="o">~</span><span class="n">ecc_write_req</span><span class="p">;</span>
-<a name="l-247"></a>  <span class="c1">// Qualified lookup grant to mask ram signals in IC1 if access was not made</span>
-<a name="l-248"></a>  <span class="k">assign</span> <span class="n">lookup_actual_ic0</span> <span class="o">=</span> <span class="n">lookup_grant_ic0</span> <span class="o">&amp;</span> <span class="n">icache_enable_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">inval_prog_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">start_inval</span><span class="p">;</span>
-<a name="l-249"></a>
-<a name="l-250"></a>  <span class="c1">// Tagram</span>
-<a name="l-251"></a>  <span class="k">assign</span> <span class="n">tag_req_ic0</span>   <span class="o">=</span> <span class="n">lookup_req_ic0</span> <span class="o">|</span> <span class="n">fill_req_ic0</span> <span class="o">|</span> <span class="n">inval_prog_q</span> <span class="o">|</span> <span class="n">ecc_write_req</span><span class="p">;</span>
-<a name="l-252"></a>  <span class="k">assign</span> <span class="n">tag_index_ic0</span> <span class="o">=</span> <span class="n">inval_prog_q</span>   <span class="o">?</span> <span class="n">inval_index_q</span> <span class="o">:</span>
-<a name="l-253"></a>                         <span class="n">ecc_write_req</span>  <span class="o">?</span> <span class="n">ecc_write_index</span> <span class="o">:</span>
-<a name="l-254"></a>                         <span class="n">fill_grant_ic0</span> <span class="o">?</span> <span class="n">fill_index_ic0</span> <span class="o">:</span>
-<a name="l-255"></a>                                          <span class="n">lookup_index_ic0</span><span class="p">;</span>
-<a name="l-256"></a>  <span class="k">assign</span> <span class="n">tag_banks_ic0</span> <span class="o">=</span> <span class="n">ecc_write_req</span>  <span class="o">?</span> <span class="n">ecc_write_ways</span> <span class="o">:</span>
-<a name="l-257"></a>                         <span class="n">fill_grant_ic0</span> <span class="o">?</span> <span class="n">fill_ram_req_way</span> <span class="o">:</span>
-<a name="l-258"></a>                                          <span class="p">{</span><span class="n">NumWays</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}};</span>
-<a name="l-259"></a>  <span class="k">assign</span> <span class="n">tag_write_ic0</span> <span class="o">=</span> <span class="n">fill_grant_ic0</span> <span class="o">|</span> <span class="n">inval_prog_q</span> <span class="o">|</span> <span class="n">ecc_write_req</span><span class="p">;</span>
-<a name="l-260"></a>
-<a name="l-261"></a>  <span class="c1">// Dataram</span>
-<a name="l-262"></a>  <span class="k">assign</span> <span class="n">data_req_ic0</span>   <span class="o">=</span> <span class="n">lookup_req_ic0</span> <span class="o">|</span> <span class="n">fill_req_ic0</span><span class="p">;</span>
-<a name="l-263"></a>  <span class="k">assign</span> <span class="n">data_index_ic0</span> <span class="o">=</span> <span class="n">tag_index_ic0</span><span class="p">;</span>
-<a name="l-264"></a>  <span class="k">assign</span> <span class="n">data_banks_ic0</span> <span class="o">=</span> <span class="n">tag_banks_ic0</span><span class="p">;</span>
-<a name="l-265"></a>  <span class="k">assign</span> <span class="n">data_write_ic0</span> <span class="o">=</span> <span class="n">tag_write_ic0</span><span class="p">;</span>
+<a name="l-240"></a>  <span class="c1">// Arbitrated signals - lookups have highest priority</span>
+<a name="l-241"></a>  <span class="k">assign</span> <span class="n">lookup_grant_ic0</span>  <span class="o">=</span> <span class="n">lookup_req_ic0</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">branch_suppress</span><span class="p">;</span>
+<a name="l-242"></a>  <span class="k">assign</span> <span class="n">fill_grant_ic0</span>    <span class="o">=</span> <span class="n">fill_req_ic0</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">lookup_req_ic0</span> <span class="o">|</span> <span class="n">branch_suppress</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">inval_prog_q</span> <span class="o">&amp;</span>
+<a name="l-243"></a>                             <span class="o">~</span><span class="n">ecc_write_req</span><span class="p">;</span>
+<a name="l-244"></a>  <span class="c1">// Qualified lookup grant to mask ram signals in IC1 if access was not made</span>
+<a name="l-245"></a>  <span class="k">assign</span> <span class="n">lookup_actual_ic0</span> <span class="o">=</span> <span class="n">lookup_grant_ic0</span> <span class="o">&amp;</span> <span class="n">icache_enable_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">inval_prog_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">start_inval</span><span class="p">;</span>
+<a name="l-246"></a>
+<a name="l-247"></a>  <span class="c1">// Tagram</span>
+<a name="l-248"></a>  <span class="k">assign</span> <span class="n">tag_req_ic0</span>   <span class="o">=</span> <span class="n">lookup_req_ic0</span> <span class="o">|</span> <span class="n">fill_req_ic0</span> <span class="o">|</span> <span class="n">inval_prog_q</span> <span class="o">|</span> <span class="n">ecc_write_req</span><span class="p">;</span>
+<a name="l-249"></a>  <span class="k">assign</span> <span class="n">tag_index_ic0</span> <span class="o">=</span> <span class="n">inval_prog_q</span>   <span class="o">?</span> <span class="n">inval_index_q</span> <span class="o">:</span>
+<a name="l-250"></a>                         <span class="n">ecc_write_req</span>  <span class="o">?</span> <span class="n">ecc_write_index</span> <span class="o">:</span>
+<a name="l-251"></a>                         <span class="n">fill_grant_ic0</span> <span class="o">?</span> <span class="n">fill_index_ic0</span> <span class="o">:</span>
+<a name="l-252"></a>                                          <span class="n">lookup_index_ic0</span><span class="p">;</span>
+<a name="l-253"></a>  <span class="k">assign</span> <span class="n">tag_banks_ic0</span> <span class="o">=</span> <span class="n">ecc_write_req</span>  <span class="o">?</span> <span class="n">ecc_write_ways</span> <span class="o">:</span>
+<a name="l-254"></a>                         <span class="n">fill_grant_ic0</span> <span class="o">?</span> <span class="n">fill_ram_req_way</span> <span class="o">:</span>
+<a name="l-255"></a>                                          <span class="p">{</span><span class="n">NumWays</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}};</span>
+<a name="l-256"></a>  <span class="k">assign</span> <span class="n">tag_write_ic0</span> <span class="o">=</span> <span class="n">fill_grant_ic0</span> <span class="o">|</span> <span class="n">inval_prog_q</span> <span class="o">|</span> <span class="n">ecc_write_req</span><span class="p">;</span>
+<a name="l-257"></a>
+<a name="l-258"></a>  <span class="c1">// Dataram</span>
+<a name="l-259"></a>  <span class="k">assign</span> <span class="n">data_req_ic0</span>   <span class="o">=</span> <span class="n">lookup_req_ic0</span> <span class="o">|</span> <span class="n">fill_req_ic0</span><span class="p">;</span>
+<a name="l-260"></a>  <span class="k">assign</span> <span class="n">data_index_ic0</span> <span class="o">=</span> <span class="n">tag_index_ic0</span><span class="p">;</span>
+<a name="l-261"></a>  <span class="k">assign</span> <span class="n">data_banks_ic0</span> <span class="o">=</span> <span class="n">tag_banks_ic0</span><span class="p">;</span>
+<a name="l-262"></a>  <span class="k">assign</span> <span class="n">data_write_ic0</span> <span class="o">=</span> <span class="n">tag_write_ic0</span><span class="p">;</span>
+<a name="l-263"></a>
+<a name="l-264"></a>  <span class="c1">// Append ECC checkbits to write data if required</span>
+<a name="l-265"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">ICacheECC</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_ecc_wdata</span>
 <a name="l-266"></a>
-<a name="l-267"></a>  <span class="c1">// Append ECC checkbits to write data if required</span>
-<a name="l-268"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">ICacheECC</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_ecc_wdata</span>
-<a name="l-269"></a>
-<a name="l-270"></a>    <span class="c1">// Tagram ECC</span>
-<a name="l-271"></a>    <span class="c1">// Reuse the same ecc encoding module for larger cache sizes by padding with zeros</span>
-<a name="l-272"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">21</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">tag_ecc_input_padded</span><span class="p">;</span>
-<a name="l-273"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">27</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">tag_ecc_output_padded</span><span class="p">;</span>
-<a name="l-274"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">22</span><span class="o">-</span><span class="nl">TAG_SIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tag_ecc_output_unused</span><span class="p">;</span>
+<a name="l-267"></a>    <span class="c1">// Tagram ECC</span>
+<a name="l-268"></a>    <span class="c1">// Reuse the same ecc encoding module for larger cache sizes by padding with zeros</span>
+<a name="l-269"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">21</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">tag_ecc_input_padded</span><span class="p">;</span>
+<a name="l-270"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">27</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">tag_ecc_output_padded</span><span class="p">;</span>
+<a name="l-271"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">22</span><span class="o">-</span><span class="nl">TAG_SIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tag_ecc_output_unused</span><span class="p">;</span>
+<a name="l-272"></a>
+<a name="l-273"></a>    <span class="k">assign</span> <span class="n">tag_ecc_input_padded</span>  <span class="o">=</span> <span class="p">{{</span><span class="mh">22</span><span class="o">-</span><span class="n">TAG_SIZE</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span><span class="n">fill_tag_ic0</span><span class="p">};</span>
+<a name="l-274"></a>    <span class="k">assign</span> <span class="n">tag_ecc_output_unused</span> <span class="o">=</span> <span class="n">tag_ecc_output_padded</span><span class="p">[</span><span class="mh">21</span><span class="o">:</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
 <a name="l-275"></a>
-<a name="l-276"></a>    <span class="k">assign</span> <span class="n">tag_ecc_input_padded</span>  <span class="o">=</span> <span class="p">{{</span><span class="mh">22</span><span class="o">-</span><span class="n">TAG_SIZE</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span><span class="n">fill_tag_ic0</span><span class="p">};</span>
-<a name="l-277"></a>    <span class="k">assign</span> <span class="n">tag_ecc_output_unused</span> <span class="o">=</span> <span class="n">tag_ecc_output_padded</span><span class="p">[</span><span class="mh">21</span><span class="o">:</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-278"></a>
-<a name="l-279"></a>    <span class="n">prim_secded_28_22_enc</span> <span class="n">tag_ecc_enc</span> <span class="p">(</span>
-<a name="l-280"></a>      <span class="p">.</span><span class="n">in</span>  <span class="p">(</span><span class="n">tag_ecc_input_padded</span><span class="p">),</span>
-<a name="l-281"></a>      <span class="p">.</span><span class="n">out</span> <span class="p">(</span><span class="n">tag_ecc_output_padded</span><span class="p">)</span>
-<a name="l-282"></a>    <span class="p">);</span>
-<a name="l-283"></a>
-<a name="l-284"></a>    <span class="k">assign</span> <span class="n">tag_wdata_ic0</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag_ecc_output_padded</span><span class="p">[</span><span class="mh">27</span><span class="o">:</span><span class="mh">22</span><span class="p">],</span><span class="n">tag_ecc_output_padded</span><span class="p">[</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-285"></a>
-<a name="l-286"></a>    <span class="c1">// Dataram ECC</span>
-<a name="l-287"></a>    <span class="n">prim_secded_72_64_enc</span> <span class="n">data_ecc_enc</span> <span class="p">(</span>
-<a name="l-288"></a>      <span class="p">.</span><span class="n">in</span>  <span class="p">(</span><span class="n">fill_wdata_ic0</span><span class="p">),</span>
-<a name="l-289"></a>      <span class="p">.</span><span class="n">out</span> <span class="p">(</span><span class="n">data_wdata_ic0</span><span class="p">)</span>
-<a name="l-290"></a>    <span class="p">);</span>
-<a name="l-291"></a>
-<a name="l-292"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_noecc_wdata</span>
-<a name="l-293"></a>    <span class="k">assign</span> <span class="n">tag_wdata_ic0</span>  <span class="o">=</span> <span class="n">fill_tag_ic0</span><span class="p">;</span>
-<a name="l-294"></a>    <span class="k">assign</span> <span class="n">data_wdata_ic0</span> <span class="o">=</span> <span class="n">fill_wdata_ic0</span><span class="p">;</span>
-<a name="l-295"></a>  <span class="k">end</span>
-<a name="l-296"></a>
-<a name="l-297"></a>  <span class="c1">////////////////</span>
-<a name="l-298"></a>  <span class="c1">// IC0 -&gt; IC1 //</span>
-<a name="l-299"></a>  <span class="c1">////////////////</span>
-<a name="l-300"></a>
-<a name="l-301"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_rams</span>
-<a name="l-302"></a>    <span class="c1">// Tag RAM instantiation</span>
-<a name="l-303"></a>    <span class="n">prim_ram_1p</span> <span class="p">#(</span>
-<a name="l-304"></a>      <span class="p">.</span><span class="n">Width</span>           <span class="p">(</span><span class="n">TAG_SIZE_ECC</span><span class="p">),</span>
-<a name="l-305"></a>      <span class="p">.</span><span class="n">Depth</span>           <span class="p">(</span><span class="n">NUM_LINES</span><span class="p">),</span>
-<a name="l-306"></a>      <span class="p">.</span><span class="n">DataBitsPerMask</span> <span class="p">(</span><span class="n">TAG_SIZE_ECC</span><span class="p">)</span>
-<a name="l-307"></a>    <span class="p">)</span> <span class="n">tag_bank</span> <span class="p">(</span>
-<a name="l-308"></a>      <span class="p">.</span><span class="n">clk_i</span>    <span class="p">(</span><span class="n">clk_i</span><span class="p">),</span>
-<a name="l-309"></a>      <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">tag_req_ic0</span> <span class="o">&amp;</span> <span class="n">tag_banks_ic0</span><span class="p">[</span><span class="n">way</span><span class="p">]),</span>
-<a name="l-310"></a>      <span class="p">.</span><span class="n">write_i</span>  <span class="p">(</span><span class="n">tag_write_ic0</span><span class="p">),</span>
-<a name="l-311"></a>      <span class="p">.</span><span class="n">wmask_i</span>  <span class="p">({</span><span class="n">TAG_SIZE_ECC</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}}),</span>
-<a name="l-312"></a>      <span class="p">.</span><span class="n">addr_i</span>   <span class="p">(</span><span class="n">tag_index_ic0</span><span class="p">),</span>
-<a name="l-313"></a>      <span class="p">.</span><span class="n">wdata_i</span>  <span class="p">(</span><span class="n">tag_wdata_ic0</span><span class="p">),</span>
-<a name="l-314"></a>      <span class="p">.</span><span class="n">rdata_o</span>  <span class="p">(</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">])</span>
-<a name="l-315"></a>    <span class="p">);</span>
-<a name="l-316"></a>    <span class="c1">// Data RAM instantiation</span>
-<a name="l-317"></a>    <span class="n">prim_ram_1p</span> <span class="p">#(</span>
-<a name="l-318"></a>      <span class="p">.</span><span class="n">Width</span>           <span class="p">(</span><span class="n">LINE_SIZE_ECC</span><span class="p">),</span>
-<a name="l-319"></a>      <span class="p">.</span><span class="n">Depth</span>           <span class="p">(</span><span class="n">NUM_LINES</span><span class="p">),</span>
-<a name="l-320"></a>      <span class="p">.</span><span class="n">DataBitsPerMask</span> <span class="p">(</span><span class="n">LINE_SIZE_ECC</span><span class="p">)</span>
-<a name="l-321"></a>    <span class="p">)</span> <span class="n">data_bank</span> <span class="p">(</span>
-<a name="l-322"></a>      <span class="p">.</span><span class="n">clk_i</span>    <span class="p">(</span><span class="n">clk_i</span><span class="p">),</span>
-<a name="l-323"></a>      <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">data_req_ic0</span> <span class="o">&amp;</span> <span class="n">data_banks_ic0</span><span class="p">[</span><span class="n">way</span><span class="p">]),</span>
-<a name="l-324"></a>      <span class="p">.</span><span class="n">write_i</span>  <span class="p">(</span><span class="n">data_write_ic0</span><span class="p">),</span>
-<a name="l-325"></a>      <span class="p">.</span><span class="n">wmask_i</span>  <span class="p">({</span><span class="n">LINE_SIZE_ECC</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}}),</span>
-<a name="l-326"></a>      <span class="p">.</span><span class="n">addr_i</span>   <span class="p">(</span><span class="n">data_index_ic0</span><span class="p">),</span>
-<a name="l-327"></a>      <span class="p">.</span><span class="n">wdata_i</span>  <span class="p">(</span><span class="n">data_wdata_ic0</span><span class="p">),</span>
-<a name="l-328"></a>      <span class="p">.</span><span class="n">rdata_o</span>  <span class="p">(</span><span class="n">data_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">])</span>
-<a name="l-329"></a>    <span class="p">);</span>
-<a name="l-330"></a>  <span class="k">end</span>
-<a name="l-331"></a>
-<a name="l-332"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-333"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-334"></a>      <span class="n">lookup_valid_ic1</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-335"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-336"></a>      <span class="n">lookup_valid_ic1</span> <span class="o">&lt;=</span> <span class="n">lookup_actual_ic0</span><span class="p">;</span>
-<a name="l-337"></a>    <span class="k">end</span>
-<a name="l-338"></a>  <span class="k">end</span>
-<a name="l-339"></a>
-<a name="l-340"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-341"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">lookup_grant_ic0</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-342"></a>      <span class="n">lookup_addr_ic1</span> <span class="o">&lt;=</span> <span class="n">lookup_addr_ic0</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-343"></a>      <span class="n">fill_in_ic1</span>     <span class="o">&lt;=</span> <span class="n">fill_alloc_sel</span><span class="p">;</span>
-<a name="l-344"></a>    <span class="k">end</span>
-<a name="l-345"></a>  <span class="k">end</span>
-<a name="l-346"></a>
-<a name="l-347"></a>  <span class="c1">////////////////////////</span>
-<a name="l-348"></a>  <span class="c1">// Pipeline stage IC1 //</span>
-<a name="l-349"></a>  <span class="c1">////////////////////////</span>
-<a name="l-350"></a>
-<a name="l-351"></a>  <span class="c1">// Tag matching</span>
-<a name="l-352"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tag_match</span>
-<a name="l-353"></a>    <span class="k">assign</span> <span class="n">tag_match_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span>   <span class="o">=</span> <span class="p">(</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span>
-<a name="l-354"></a>                                   <span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">,</span><span class="n">lookup_addr_ic1</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">]});</span>
-<a name="l-355"></a>    <span class="k">assign</span> <span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-356"></a>  <span class="k">end</span>
-<a name="l-357"></a>
-<a name="l-358"></a>  <span class="k">assign</span> <span class="n">tag_hit_ic1</span> <span class="o">=</span> <span class="o">|</span><span class="n">tag_match_ic1</span><span class="p">;</span>
-<a name="l-359"></a>
-<a name="l-360"></a>  <span class="c1">// Hit data mux</span>
-<a name="l-361"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-362"></a>    <span class="n">hit_data_ic1</span> <span class="o">=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-363"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-364"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">tag_match_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">])</span> <span class="k">begin</span>
-<a name="l-365"></a>        <span class="n">hit_data_ic1</span> <span class="o">|=</span> <span class="n">data_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">];</span>
-<a name="l-366"></a>      <span class="k">end</span>
-<a name="l-367"></a>    <span class="k">end</span>
-<a name="l-368"></a>  <span class="k">end</span>
-<a name="l-369"></a>
-<a name="l-370"></a>  <span class="c1">// Way selection for allocations to the cache (onehot signals)</span>
-<a name="l-371"></a>  <span class="c1">// 1 first invalid way</span>
-<a name="l-372"></a>  <span class="c1">// 2 global round-robin (pseudorandom) way</span>
-<a name="l-373"></a>  <span class="k">assign</span> <span class="n">lowest_invalid_way_ic1</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-374"></a>  <span class="k">assign</span> <span class="n">round_robin_way_ic1</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span>    <span class="o">=</span> <span class="n">round_robin_way_q</span><span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-375"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_lowest_way</span>
-<a name="l-376"></a>    <span class="k">assign</span> <span class="n">lowest_invalid_way_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~|</span><span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="n">way</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-377"></a>    <span class="k">assign</span> <span class="n">round_robin_way_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span>    <span class="o">=</span> <span class="n">round_robin_way_q</span><span class="p">[</span><span class="n">way</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-378"></a>  <span class="k">end</span>
-<a name="l-379"></a>
-<a name="l-380"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-381"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-382"></a>      <span class="n">round_robin_way_q</span> <span class="o">&lt;=</span> <span class="p">{{</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">};</span>
-<a name="l-383"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lookup_valid_ic1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-384"></a>      <span class="n">round_robin_way_q</span> <span class="o">&lt;=</span> <span class="n">round_robin_way_ic1</span><span class="p">;</span>
-<a name="l-385"></a>    <span class="k">end</span>
-<a name="l-386"></a>  <span class="k">end</span>
+<a name="l-276"></a>    <span class="n">prim_secded_28_22_enc</span> <span class="n">tag_ecc_enc</span> <span class="p">(</span>
+<a name="l-277"></a>      <span class="p">.</span><span class="n">in</span>  <span class="p">(</span><span class="n">tag_ecc_input_padded</span><span class="p">),</span>
+<a name="l-278"></a>      <span class="p">.</span><span class="n">out</span> <span class="p">(</span><span class="n">tag_ecc_output_padded</span><span class="p">)</span>
+<a name="l-279"></a>    <span class="p">);</span>
+<a name="l-280"></a>
+<a name="l-281"></a>    <span class="k">assign</span> <span class="n">tag_wdata_ic0</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag_ecc_output_padded</span><span class="p">[</span><span class="mh">27</span><span class="o">:</span><span class="mh">22</span><span class="p">],</span><span class="n">tag_ecc_output_padded</span><span class="p">[</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-282"></a>
+<a name="l-283"></a>    <span class="c1">// Dataram ECC</span>
+<a name="l-284"></a>    <span class="n">prim_secded_72_64_enc</span> <span class="n">data_ecc_enc</span> <span class="p">(</span>
+<a name="l-285"></a>      <span class="p">.</span><span class="n">in</span>  <span class="p">(</span><span class="n">fill_wdata_ic0</span><span class="p">),</span>
+<a name="l-286"></a>      <span class="p">.</span><span class="n">out</span> <span class="p">(</span><span class="n">data_wdata_ic0</span><span class="p">)</span>
+<a name="l-287"></a>    <span class="p">);</span>
+<a name="l-288"></a>
+<a name="l-289"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_noecc_wdata</span>
+<a name="l-290"></a>    <span class="k">assign</span> <span class="n">tag_wdata_ic0</span>  <span class="o">=</span> <span class="n">fill_tag_ic0</span><span class="p">;</span>
+<a name="l-291"></a>    <span class="k">assign</span> <span class="n">data_wdata_ic0</span> <span class="o">=</span> <span class="n">fill_wdata_ic0</span><span class="p">;</span>
+<a name="l-292"></a>  <span class="k">end</span>
+<a name="l-293"></a>
+<a name="l-294"></a>  <span class="c1">////////////////</span>
+<a name="l-295"></a>  <span class="c1">// IC0 -&gt; IC1 //</span>
+<a name="l-296"></a>  <span class="c1">////////////////</span>
+<a name="l-297"></a>
+<a name="l-298"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_rams</span>
+<a name="l-299"></a>    <span class="c1">// Tag RAM instantiation</span>
+<a name="l-300"></a>    <span class="n">prim_ram_1p</span> <span class="p">#(</span>
+<a name="l-301"></a>      <span class="p">.</span><span class="n">Width</span>           <span class="p">(</span><span class="n">TAG_SIZE_ECC</span><span class="p">),</span>
+<a name="l-302"></a>      <span class="p">.</span><span class="n">Depth</span>           <span class="p">(</span><span class="n">NUM_LINES</span><span class="p">),</span>
+<a name="l-303"></a>      <span class="p">.</span><span class="n">DataBitsPerMask</span> <span class="p">(</span><span class="n">TAG_SIZE_ECC</span><span class="p">)</span>
+<a name="l-304"></a>    <span class="p">)</span> <span class="n">tag_bank</span> <span class="p">(</span>
+<a name="l-305"></a>      <span class="p">.</span><span class="n">clk_i</span>    <span class="p">(</span><span class="n">clk_i</span><span class="p">),</span>
+<a name="l-306"></a>      <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">tag_req_ic0</span> <span class="o">&amp;</span> <span class="n">tag_banks_ic0</span><span class="p">[</span><span class="n">way</span><span class="p">]),</span>
+<a name="l-307"></a>      <span class="p">.</span><span class="n">write_i</span>  <span class="p">(</span><span class="n">tag_write_ic0</span><span class="p">),</span>
+<a name="l-308"></a>      <span class="p">.</span><span class="n">wmask_i</span>  <span class="p">({</span><span class="n">TAG_SIZE_ECC</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}}),</span>
+<a name="l-309"></a>      <span class="p">.</span><span class="n">addr_i</span>   <span class="p">(</span><span class="n">tag_index_ic0</span><span class="p">),</span>
+<a name="l-310"></a>      <span class="p">.</span><span class="n">wdata_i</span>  <span class="p">(</span><span class="n">tag_wdata_ic0</span><span class="p">),</span>
+<a name="l-311"></a>      <span class="p">.</span><span class="n">rdata_o</span>  <span class="p">(</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">])</span>
+<a name="l-312"></a>    <span class="p">);</span>
+<a name="l-313"></a>    <span class="c1">// Data RAM instantiation</span>
+<a name="l-314"></a>    <span class="n">prim_ram_1p</span> <span class="p">#(</span>
+<a name="l-315"></a>      <span class="p">.</span><span class="n">Width</span>           <span class="p">(</span><span class="n">LINE_SIZE_ECC</span><span class="p">),</span>
+<a name="l-316"></a>      <span class="p">.</span><span class="n">Depth</span>           <span class="p">(</span><span class="n">NUM_LINES</span><span class="p">),</span>
+<a name="l-317"></a>      <span class="p">.</span><span class="n">DataBitsPerMask</span> <span class="p">(</span><span class="n">LINE_SIZE_ECC</span><span class="p">)</span>
+<a name="l-318"></a>    <span class="p">)</span> <span class="n">data_bank</span> <span class="p">(</span>
+<a name="l-319"></a>      <span class="p">.</span><span class="n">clk_i</span>    <span class="p">(</span><span class="n">clk_i</span><span class="p">),</span>
+<a name="l-320"></a>      <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">data_req_ic0</span> <span class="o">&amp;</span> <span class="n">data_banks_ic0</span><span class="p">[</span><span class="n">way</span><span class="p">]),</span>
+<a name="l-321"></a>      <span class="p">.</span><span class="n">write_i</span>  <span class="p">(</span><span class="n">data_write_ic0</span><span class="p">),</span>
+<a name="l-322"></a>      <span class="p">.</span><span class="n">wmask_i</span>  <span class="p">({</span><span class="n">LINE_SIZE_ECC</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}}),</span>
+<a name="l-323"></a>      <span class="p">.</span><span class="n">addr_i</span>   <span class="p">(</span><span class="n">data_index_ic0</span><span class="p">),</span>
+<a name="l-324"></a>      <span class="p">.</span><span class="n">wdata_i</span>  <span class="p">(</span><span class="n">data_wdata_ic0</span><span class="p">),</span>
+<a name="l-325"></a>      <span class="p">.</span><span class="n">rdata_o</span>  <span class="p">(</span><span class="n">data_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">])</span>
+<a name="l-326"></a>    <span class="p">);</span>
+<a name="l-327"></a>  <span class="k">end</span>
+<a name="l-328"></a>
+<a name="l-329"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-330"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-331"></a>      <span class="n">lookup_valid_ic1</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-332"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-333"></a>      <span class="n">lookup_valid_ic1</span> <span class="o">&lt;=</span> <span class="n">lookup_actual_ic0</span><span class="p">;</span>
+<a name="l-334"></a>    <span class="k">end</span>
+<a name="l-335"></a>  <span class="k">end</span>
+<a name="l-336"></a>
+<a name="l-337"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-338"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">lookup_grant_ic0</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-339"></a>      <span class="n">lookup_addr_ic1</span> <span class="o">&lt;=</span> <span class="n">lookup_addr_ic0</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">];</span>
+<a name="l-340"></a>      <span class="n">fill_in_ic1</span>     <span class="o">&lt;=</span> <span class="n">fill_alloc_sel</span><span class="p">;</span>
+<a name="l-341"></a>    <span class="k">end</span>
+<a name="l-342"></a>  <span class="k">end</span>
+<a name="l-343"></a>
+<a name="l-344"></a>  <span class="c1">////////////////////////</span>
+<a name="l-345"></a>  <span class="c1">// Pipeline stage IC1 //</span>
+<a name="l-346"></a>  <span class="c1">////////////////////////</span>
+<a name="l-347"></a>
+<a name="l-348"></a>  <span class="c1">// Tag matching</span>
+<a name="l-349"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tag_match</span>
+<a name="l-350"></a>    <span class="k">assign</span> <span class="n">tag_match_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span>   <span class="o">=</span> <span class="p">(</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span>
+<a name="l-351"></a>                                   <span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">,</span><span class="n">lookup_addr_ic1</span><span class="p">[</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="n">INDEX_HI</span><span class="o">+</span><span class="mh">1</span><span class="p">]});</span>
+<a name="l-352"></a>    <span class="k">assign</span> <span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
+<a name="l-353"></a>  <span class="k">end</span>
+<a name="l-354"></a>
+<a name="l-355"></a>  <span class="k">assign</span> <span class="n">tag_hit_ic1</span> <span class="o">=</span> <span class="o">|</span><span class="n">tag_match_ic1</span><span class="p">;</span>
+<a name="l-356"></a>
+<a name="l-357"></a>  <span class="c1">// Hit data mux</span>
+<a name="l-358"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-359"></a>    <span class="n">hit_data_ic1</span> <span class="o">=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-360"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-361"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">tag_match_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">])</span> <span class="k">begin</span>
+<a name="l-362"></a>        <span class="n">hit_data_ic1</span> <span class="o">|=</span> <span class="n">data_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">];</span>
+<a name="l-363"></a>      <span class="k">end</span>
+<a name="l-364"></a>    <span class="k">end</span>
+<a name="l-365"></a>  <span class="k">end</span>
+<a name="l-366"></a>
+<a name="l-367"></a>  <span class="c1">// Way selection for allocations to the cache (onehot signals)</span>
+<a name="l-368"></a>  <span class="c1">// 1 first invalid way</span>
+<a name="l-369"></a>  <span class="c1">// 2 global round-robin (pseudorandom) way</span>
+<a name="l-370"></a>  <span class="k">assign</span> <span class="n">lowest_invalid_way_ic1</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-371"></a>  <span class="k">assign</span> <span class="n">round_robin_way_ic1</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span>    <span class="o">=</span> <span class="n">round_robin_way_q</span><span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
+<a name="l-372"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_lowest_way</span>
+<a name="l-373"></a>    <span class="k">assign</span> <span class="n">lowest_invalid_way_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~|</span><span class="n">tag_invalid_ic1</span><span class="p">[</span><span class="n">way</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-374"></a>    <span class="k">assign</span> <span class="n">round_robin_way_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span>    <span class="o">=</span> <span class="n">round_robin_way_q</span><span class="p">[</span><span class="n">way</span><span class="o">-</span><span class="mh">1</span><span class="p">];</span>
+<a name="l-375"></a>  <span class="k">end</span>
+<a name="l-376"></a>
+<a name="l-377"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-378"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-379"></a>      <span class="n">round_robin_way_q</span> <span class="o">&lt;=</span> <span class="p">{{</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">};</span>
+<a name="l-380"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lookup_valid_ic1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-381"></a>      <span class="n">round_robin_way_q</span> <span class="o">&lt;=</span> <span class="n">round_robin_way_ic1</span><span class="p">;</span>
+<a name="l-382"></a>    <span class="k">end</span>
+<a name="l-383"></a>  <span class="k">end</span>
+<a name="l-384"></a>
+<a name="l-385"></a>  <span class="k">assign</span> <span class="n">sel_way_ic1</span> <span class="o">=</span> <span class="o">|</span><span class="n">tag_invalid_ic1</span> <span class="o">?</span> <span class="n">lowest_invalid_way_ic1</span> <span class="o">:</span>
+<a name="l-386"></a>                                          <span class="n">round_robin_way_q</span><span class="p">;</span>
 <a name="l-387"></a>
-<a name="l-388"></a>  <span class="k">assign</span> <span class="n">sel_way_ic1</span> <span class="o">=</span> <span class="o">|</span><span class="n">tag_invalid_ic1</span> <span class="o">?</span> <span class="n">lowest_invalid_way_ic1</span> <span class="o">:</span>
-<a name="l-389"></a>                                          <span class="n">round_robin_way_q</span><span class="p">;</span>
-<a name="l-390"></a>
-<a name="l-391"></a>  <span class="c1">// ECC checking logic</span>
-<a name="l-392"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">ICacheECC</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_data_ecc_checking</span>
-<a name="l-393"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tag_err_ic1</span><span class="p">;</span>
-<a name="l-394"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>         <span class="n">data_err_ic1</span><span class="p">;</span>
-<a name="l-395"></a>    <span class="k">logic</span>               <span class="n">ecc_correction_write_d</span><span class="p">,</span> <span class="n">ecc_correction_write_q</span><span class="p">;</span>
-<a name="l-396"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ecc_correction_ways_d</span><span class="p">,</span> <span class="n">ecc_correction_ways_q</span><span class="p">;</span>
-<a name="l-397"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">lookup_index_ic1</span><span class="p">,</span> <span class="n">ecc_correction_index_q</span><span class="p">;</span>
-<a name="l-398"></a>
-<a name="l-399"></a>    <span class="c1">// Tag ECC checking</span>
-<a name="l-400"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tag_ecc</span>
-<a name="l-401"></a>      <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">tag_err_bank_ic1</span><span class="p">;</span>
-<a name="l-402"></a>      <span class="k">logic</span> <span class="p">[</span><span class="mh">27</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tag_rdata_padded_ic1</span><span class="p">;</span>
-<a name="l-403"></a>
-<a name="l-404"></a>      <span class="c1">// Expand the tag rdata with extra padding if the tag size is less than the maximum</span>
-<a name="l-405"></a>      <span class="k">assign</span> <span class="n">tag_rdata_padded_ic1</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">-:</span><span class="mh">6</span><span class="p">],</span>
-<a name="l-406"></a>                                     <span class="p">{</span><span class="mh">22</span><span class="o">-</span><span class="n">TAG_SIZE</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span>
-<a name="l-407"></a>                                     <span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
-<a name="l-408"></a>
-<a name="l-409"></a>      <span class="n">prim_secded_28_22_dec</span> <span class="n">data_ecc_dec</span> <span class="p">(</span>
-<a name="l-410"></a>        <span class="p">.</span><span class="n">in</span>         <span class="p">(</span><span class="n">tag_rdata_padded_ic1</span><span class="p">),</span>
-<a name="l-411"></a>        <span class="p">.</span><span class="n">d_o</span>        <span class="p">(),</span>
-<a name="l-412"></a>        <span class="p">.</span><span class="n">syndrome_o</span> <span class="p">(),</span>
-<a name="l-413"></a>        <span class="p">.</span><span class="n">err_o</span>      <span class="p">(</span><span class="n">tag_err_bank_ic1</span><span class="p">)</span>
-<a name="l-414"></a>      <span class="p">);</span>
-<a name="l-415"></a>      <span class="k">assign</span> <span class="n">tag_err_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">=</span> <span class="o">|</span><span class="n">tag_err_bank_ic1</span><span class="p">;</span>
-<a name="l-416"></a>    <span class="k">end</span>
-<a name="l-417"></a>
-<a name="l-418"></a>    <span class="c1">// Data ECC checking</span>
-<a name="l-419"></a>    <span class="c1">// Note - could generate for all ways and mux after</span>
-<a name="l-420"></a>    <span class="n">prim_secded_72_64_dec</span> <span class="n">data_ecc_dec</span> <span class="p">(</span>
-<a name="l-421"></a>      <span class="p">.</span><span class="n">in</span>         <span class="p">(</span><span class="n">hit_data_ic1</span><span class="p">),</span>
-<a name="l-422"></a>      <span class="p">.</span><span class="n">d_o</span>        <span class="p">(),</span>
-<a name="l-423"></a>      <span class="p">.</span><span class="n">syndrome_o</span> <span class="p">(),</span>
-<a name="l-424"></a>      <span class="p">.</span><span class="n">err_o</span>      <span class="p">(</span><span class="n">data_err_ic1</span><span class="p">)</span>
-<a name="l-425"></a>    <span class="p">);</span>
-<a name="l-426"></a>
-<a name="l-427"></a>    <span class="k">assign</span> <span class="n">ecc_err_ic1</span> <span class="o">=</span> <span class="n">lookup_valid_ic1</span> <span class="o">&amp;</span> <span class="p">((</span><span class="o">|</span><span class="n">data_err_ic1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="o">|</span><span class="n">tag_err_ic1</span><span class="p">));</span>
-<a name="l-428"></a>
-<a name="l-429"></a>    <span class="c1">// Error correction</span>
-<a name="l-430"></a>    <span class="c1">// The way(s) producing the error will be invalidated in the next cycle.</span>
-<a name="l-431"></a>    <span class="k">assign</span> <span class="n">ecc_correction_ways_d</span>  <span class="o">=</span> <span class="n">tag_err_ic1</span> <span class="o">|</span> <span class="p">(</span><span class="n">tag_match_ic1</span> <span class="o">&amp;</span> <span class="p">{</span><span class="n">NumWays</span><span class="p">{</span><span class="o">|</span><span class="n">data_err_ic1</span><span class="p">}});</span>
+<a name="l-388"></a>  <span class="c1">// ECC checking logic</span>
+<a name="l-389"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">ICacheECC</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_data_ecc_checking</span>
+<a name="l-390"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tag_err_ic1</span><span class="p">;</span>
+<a name="l-391"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>         <span class="n">data_err_ic1</span><span class="p">;</span>
+<a name="l-392"></a>    <span class="k">logic</span>               <span class="n">ecc_correction_write_d</span><span class="p">,</span> <span class="n">ecc_correction_write_q</span><span class="p">;</span>
+<a name="l-393"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">NumWays</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ecc_correction_ways_d</span><span class="p">,</span> <span class="n">ecc_correction_ways_q</span><span class="p">;</span>
+<a name="l-394"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">lookup_index_ic1</span><span class="p">,</span> <span class="n">ecc_correction_index_q</span><span class="p">;</span>
+<a name="l-395"></a>
+<a name="l-396"></a>    <span class="c1">// Tag ECC checking</span>
+<a name="l-397"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">way</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">way</span> <span class="o">&lt;</span> <span class="n">NumWays</span><span class="p">;</span> <span class="n">way</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tag_ecc</span>
+<a name="l-398"></a>      <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">tag_err_bank_ic1</span><span class="p">;</span>
+<a name="l-399"></a>      <span class="k">logic</span> <span class="p">[</span><span class="mh">27</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tag_rdata_padded_ic1</span><span class="p">;</span>
+<a name="l-400"></a>
+<a name="l-401"></a>      <span class="c1">// Expand the tag rdata with extra padding if the tag size is less than the maximum</span>
+<a name="l-402"></a>      <span class="k">assign</span> <span class="n">tag_rdata_padded_ic1</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE_ECC</span><span class="o">-</span><span class="mh">1</span><span class="o">-:</span><span class="mh">6</span><span class="p">],</span>
+<a name="l-403"></a>                                     <span class="p">{</span><span class="mh">22</span><span class="o">-</span><span class="n">TAG_SIZE</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span>
+<a name="l-404"></a>                                     <span class="n">tag_rdata_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">][</span><span class="n">TAG_SIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]};</span>
+<a name="l-405"></a>
+<a name="l-406"></a>      <span class="n">prim_secded_28_22_dec</span> <span class="n">data_ecc_dec</span> <span class="p">(</span>
+<a name="l-407"></a>        <span class="p">.</span><span class="n">in</span>         <span class="p">(</span><span class="n">tag_rdata_padded_ic1</span><span class="p">),</span>
+<a name="l-408"></a>        <span class="p">.</span><span class="n">d_o</span>        <span class="p">(),</span>
+<a name="l-409"></a>        <span class="p">.</span><span class="n">syndrome_o</span> <span class="p">(),</span>
+<a name="l-410"></a>        <span class="p">.</span><span class="n">err_o</span>      <span class="p">(</span><span class="n">tag_err_bank_ic1</span><span class="p">)</span>
+<a name="l-411"></a>      <span class="p">);</span>
+<a name="l-412"></a>      <span class="k">assign</span> <span class="n">tag_err_ic1</span><span class="p">[</span><span class="n">way</span><span class="p">]</span> <span class="o">=</span> <span class="o">|</span><span class="n">tag_err_bank_ic1</span><span class="p">;</span>
+<a name="l-413"></a>    <span class="k">end</span>
+<a name="l-414"></a>
+<a name="l-415"></a>    <span class="c1">// Data ECC checking</span>
+<a name="l-416"></a>    <span class="c1">// Note - could generate for all ways and mux after</span>
+<a name="l-417"></a>    <span class="n">prim_secded_72_64_dec</span> <span class="n">data_ecc_dec</span> <span class="p">(</span>
+<a name="l-418"></a>      <span class="p">.</span><span class="n">in</span>         <span class="p">(</span><span class="n">hit_data_ic1</span><span class="p">),</span>
+<a name="l-419"></a>      <span class="p">.</span><span class="n">d_o</span>        <span class="p">(),</span>
+<a name="l-420"></a>      <span class="p">.</span><span class="n">syndrome_o</span> <span class="p">(),</span>
+<a name="l-421"></a>      <span class="p">.</span><span class="n">err_o</span>      <span class="p">(</span><span class="n">data_err_ic1</span><span class="p">)</span>
+<a name="l-422"></a>    <span class="p">);</span>
+<a name="l-423"></a>
+<a name="l-424"></a>    <span class="k">assign</span> <span class="n">ecc_err_ic1</span> <span class="o">=</span> <span class="n">lookup_valid_ic1</span> <span class="o">&amp;</span> <span class="p">((</span><span class="o">|</span><span class="n">data_err_ic1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="o">|</span><span class="n">tag_err_ic1</span><span class="p">));</span>
+<a name="l-425"></a>
+<a name="l-426"></a>    <span class="c1">// Error correction</span>
+<a name="l-427"></a>    <span class="c1">// All ways will be invalidated on a tag error to prevent X-propagation from data_err_ic1 on</span>
+<a name="l-428"></a>    <span class="c1">// spurious hits. Also prevents the same line being allocated twice when there was a true</span>
+<a name="l-429"></a>    <span class="c1">// hit and a spurious hit.</span>
+<a name="l-430"></a>    <span class="k">assign</span> <span class="n">ecc_correction_ways_d</span>  <span class="o">=</span> <span class="p">{</span><span class="n">NumWays</span><span class="p">{</span><span class="o">|</span><span class="n">tag_err_ic1</span><span class="p">}}</span> <span class="o">|</span>
+<a name="l-431"></a>                                    <span class="p">(</span><span class="n">tag_match_ic1</span> <span class="o">&amp;</span> <span class="p">{</span><span class="n">NumWays</span><span class="p">{</span><span class="o">|</span><span class="n">data_err_ic1</span><span class="p">}});</span>
 <a name="l-432"></a>    <span class="k">assign</span> <span class="n">ecc_correction_write_d</span> <span class="o">=</span> <span class="n">ecc_err_ic1</span><span class="p">;</span>
 <a name="l-433"></a>
 <a name="l-434"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
@@ -2048,7 +2066,25 @@
 <a name="l-1019"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TagHitKnown</span><span class="p">,</span>     <span class="n">lookup_valid_ic1</span> <span class="o">&amp;</span> <span class="n">tag_hit_ic1</span><span class="p">)</span>
 <a name="l-1020"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TagInvalidKnown</span><span class="p">,</span> <span class="n">lookup_valid_ic1</span> <span class="o">&amp;</span> <span class="n">tag_invalid_ic1</span><span class="p">)</span>
 <a name="l-1021"></a>
-<a name="l-1022"></a><span class="k">endmodule</span>
+<a name="l-1022"></a>  <span class="c1">// This is only used for the Yosys-based formal flow. Once we have working bind support, we can</span>
+<a name="l-1023"></a>  <span class="c1">// get rid of it.</span>
+<a name="l-1024"></a><span class="no">`ifdef</span> <span class="n">FORMAL</span>
+<a name="l-1025"></a> <span class="no">`ifdef</span> <span class="n">YOSYS</span>
+<a name="l-1026"></a>  <span class="c1">// Unfortunately, Yosys doesn&#39;t support passing unpacked arrays as ports. Explicitly pack up the</span>
+<a name="l-1027"></a>  <span class="c1">// signals we need.</span>
+<a name="l-1028"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NUM_FB</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">packed_fill_addr_q</span><span class="p">;</span>
+<a name="l-1029"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-1030"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_FB</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-1031"></a>      <span class="n">packed_fill_addr_q</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">ADDR_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_addr_q</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<a name="l-1032"></a>    <span class="k">end</span>
+<a name="l-1033"></a>  <span class="k">end</span>
+<a name="l-1034"></a>
+<a name="l-1035"></a>  <span class="no">`include</span> <span class="s">&quot;formal_tb_frag.svh&quot;</span>
+<a name="l-1036"></a> <span class="no">`endif</span>
+<a name="l-1037"></a><span class="no">`endif</span>
+<a name="l-1038"></a>
+<a name="l-1039"></a>
+<a name="l-1040"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

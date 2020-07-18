@@ -1,0 +1,80 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+rc: 0 (means success: 1)
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_pg_tree.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_pg_tree.v</a>
+defines: 
+time_elapsed: 0.472s
+ram usage: 15752 KB
+</pre>
+<pre class="log">
+
+zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_pg_tree.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_pg_tree.v</a>
+module bsg_pg_tree (
+	p_i,
+	g_i,
+	p_o,
+	g_o
+);
+	parameter input_width_p = &#34;inv&#34;;
+	parameter output_width_p = &#34;inv&#34;;
+	parameter nodes_p = 1;
+	parameter edges_lp = nodes_p * 3;
+	function automatic signed [31:0] sv2v_cast_32_signed;
+		input reg signed [31:0] inp;
+		sv2v_cast_32_signed = inp;
+	endfunction
+	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] l_edge_p = sv2v_cast_32_signed(0);
+	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] r_edge_p = sv2v_cast_32_signed(0);
+	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] o_edge_p = sv2v_cast_32_signed(0);
+	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] node_type_p = sv2v_cast_32_signed(0);
+	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] row_p = sv2v_cast_32_signed(0);
+	input [input_width_p - 1:0] p_i;
+	input [input_width_p - 1:0] g_i;
+	output [output_width_p - 1:0] p_o;
+	output [output_width_p - 1:0] g_o;
+	wire [edges_lp - 1:0] p;
+	wire [edges_lp - 1:0] g;
+	assign p[input_width_p - 1:0] = p_i;
+	assign g[input_width_p - 1:0] = g_i;
+	assign p_o = p[edges_lp - 1-:output_width_p];
+	assign g_o = g[edges_lp - 1-:output_width_p];
+	genvar i;
+	generate
+		for (i = 0; i &lt; nodes_p; i = i + 1) begin : rof
+			if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 0) begin : blk
+				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = p[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] | p[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
+				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] | (g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] &amp; p[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]]);
+			end
+			else if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 1) begin : gry
+				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = 1&#39;sbx;
+				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] | (g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] &amp; p[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]]);
+			end
+			else if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 2) begin : bbuf
+				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = p[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
+				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
+			end
+			else if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 3) begin : gbuf
+				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = 1&#39;sbx;
+				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
+			end
+			else initial $error(&#34;unknown node_type: &#34;, node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]);
+		end
+	endgenerate
+endmodule
+
+</pre>
+</body>

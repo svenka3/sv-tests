@@ -139,7 +139,7 @@
 <a name="l-4"></a><span class="c1">//</span>
 <a name="l-5"></a><span class="c1">// RISC-V Platform-Level Interrupt Generator for Target</span>
 <a name="l-6"></a><span class="c1">//</span>
-<a name="l-7"></a><span class="c1">// This module basically doing IE &amp; IP based on priority and threshold.</span>
+<a name="l-7"></a><span class="c1">// This module basically doing IE &amp; IP based on priority and threshold_i.</span>
 <a name="l-8"></a><span class="c1">// Keep in mind that increasing MAX_PRIO affects logic size a lot.</span>
 <a name="l-9"></a><span class="c1">//</span>
 <a name="l-10"></a><span class="c1">// The module implements a binary tree to find the maximal entry. the solution</span>
@@ -160,14 +160,14 @@
 <a name="l-25"></a>  <span class="k">input</span> <span class="n">clk_i</span><span class="p">,</span>
 <a name="l-26"></a>  <span class="k">input</span> <span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-27"></a>
-<a name="l-28"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">N_SOURCE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">ip</span><span class="p">,</span>
-<a name="l-29"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">N_SOURCE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">ie</span><span class="p">,</span>
+<a name="l-28"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">N_SOURCE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">ip_i</span><span class="p">,</span>
+<a name="l-29"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">N_SOURCE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">ie_i</span><span class="p">,</span>
 <a name="l-30"></a>
-<a name="l-31"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PrioWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">prio</span> <span class="p">[</span><span class="n">N_SOURCE</span><span class="p">],</span>
-<a name="l-32"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PrioWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">threshold</span><span class="p">,</span>
+<a name="l-31"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PrioWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">prio_i</span> <span class="p">[</span><span class="n">N_SOURCE</span><span class="p">],</span>
+<a name="l-32"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PrioWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">threshold_i</span><span class="p">,</span>
 <a name="l-33"></a>
-<a name="l-34"></a>  <span class="k">output</span> <span class="k">logic</span>            <span class="n">irq</span><span class="p">,</span>
-<a name="l-35"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">SrcWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">irq_id</span>
+<a name="l-34"></a>  <span class="k">output</span> <span class="k">logic</span>            <span class="n">irq_o</span><span class="p">,</span>
+<a name="l-35"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">SrcWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">irq_id_o</span>
 <a name="l-36"></a><span class="p">);</span>
 <a name="l-37"></a>
 <a name="l-38"></a>  <span class="c1">// this only works with 2 or more sources</span>
@@ -204,9 +204,9 @@
 <a name="l-69"></a>      <span class="c1">// corresponding IDs and priorities to the tree leafs</span>
 <a name="l-70"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">level</span> <span class="o">==</span> <span class="n">NumLevels</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_leafs</span>
 <a name="l-71"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">offset</span> <span class="o">&lt;</span> <span class="n">N_SOURCE</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_assign</span>
-<a name="l-72"></a>          <span class="k">assign</span> <span class="n">is_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ie</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
+<a name="l-72"></a>          <span class="k">assign</span> <span class="n">is_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="n">ip_i</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">ie_i</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
 <a name="l-73"></a>          <span class="k">assign</span> <span class="n">id_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="n">offset</span><span class="p">;</span>
-<a name="l-74"></a>          <span class="k">assign</span> <span class="n">max_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">=</span> <span class="n">prio</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
+<a name="l-74"></a>          <span class="k">assign</span> <span class="n">max_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">=</span> <span class="n">prio_i</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
 <a name="l-75"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tie_off</span>
 <a name="l-76"></a>          <span class="k">assign</span> <span class="n">is_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-77"></a>          <span class="k">assign</span> <span class="n">id_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
@@ -228,7 +228,7 @@
 <a name="l-93"></a>        <span class="c1">// https://forums.xilinx.com/t5/Synthesis/Simulation-Synthesis-Mismatch-with-Vivado-2018-3/m-p/1065923#M33849</span>
 <a name="l-94"></a>
 <a name="l-95"></a>        <span class="k">logic</span> <span class="n">sel</span><span class="p">;</span> <span class="c1">// local helper variable</span>
-<a name="l-96"></a>        <span class="c1">// in case only one of the parent has a pending irq, forward that one</span>
+<a name="l-96"></a>        <span class="c1">// in case only one of the parent has a pending irq_o, forward that one</span>
 <a name="l-97"></a>        <span class="c1">// in case both irqs are pending, forward the one with higher priority</span>
 <a name="l-98"></a>        <span class="k">assign</span> <span class="n">sel</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">is_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">is_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">])</span> <span class="o">|</span>
 <a name="l-99"></a>                     <span class="p">(</span><span class="n">is_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">is_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="k">logic</span><span class="p">&#39;(</span><span class="n">max_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">]));</span>
@@ -244,7 +244,7 @@
 <a name="l-109"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">SrcWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">irq_id_d</span><span class="p">,</span> <span class="n">irq_id_q</span><span class="p">;</span>
 <a name="l-110"></a>
 <a name="l-111"></a>  <span class="c1">// the results can be found at the tree root</span>
-<a name="l-112"></a>  <span class="k">assign</span> <span class="n">irq_d</span>    <span class="o">=</span> <span class="p">(</span><span class="n">max_tree</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">?</span> <span class="n">is_tree</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-112"></a>  <span class="k">assign</span> <span class="n">irq_d</span>    <span class="o">=</span> <span class="p">(</span><span class="n">max_tree</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">threshold_i</span><span class="p">)</span> <span class="o">?</span> <span class="n">is_tree</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-113"></a>  <span class="k">assign</span> <span class="n">irq_id_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">is_tree</span><span class="p">[</span><span class="mh">0</span><span class="p">])</span> <span class="o">?</span> <span class="n">id_tree</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">:</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-114"></a>
 <a name="l-115"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_regs</span>
@@ -257,8 +257,8 @@
 <a name="l-122"></a>    <span class="k">end</span>
 <a name="l-123"></a>  <span class="k">end</span>
 <a name="l-124"></a>
-<a name="l-125"></a>  <span class="k">assign</span> <span class="n">irq</span>    <span class="o">=</span> <span class="n">irq_q</span><span class="p">;</span>
-<a name="l-126"></a>  <span class="k">assign</span> <span class="n">irq_id</span> <span class="o">=</span> <span class="n">irq_id_q</span><span class="p">;</span>
+<a name="l-125"></a>  <span class="k">assign</span> <span class="n">irq_o</span>    <span class="o">=</span> <span class="n">irq_q</span><span class="p">;</span>
+<a name="l-126"></a>  <span class="k">assign</span> <span class="n">irq_id_o</span> <span class="o">=</span> <span class="n">irq_id_q</span><span class="p">;</span>
 <a name="l-127"></a>
 <a name="l-128"></a><span class="k">endmodule</span>
 </pre></div>

@@ -612,9 +612,9 @@
 <a name="l-22"></a>  <span class="c1">// SPI Interface</span>
 <a name="l-23"></a>  <span class="k">input</span>              <span class="n">cio_sck_i</span><span class="p">,</span>
 <a name="l-24"></a>  <span class="k">input</span>              <span class="n">cio_csb_i</span><span class="p">,</span>
-<a name="l-25"></a>  <span class="k">output</span> <span class="k">logic</span>       <span class="n">cio_miso_o</span><span class="p">,</span>
-<a name="l-26"></a>  <span class="k">output</span> <span class="k">logic</span>       <span class="n">cio_miso_en_o</span><span class="p">,</span>
-<a name="l-27"></a>  <span class="k">input</span>              <span class="n">cio_mosi_i</span><span class="p">,</span>
+<a name="l-25"></a>  <span class="k">output</span> <span class="k">logic</span>       <span class="n">cio_sdo_o</span><span class="p">,</span>
+<a name="l-26"></a>  <span class="k">output</span> <span class="k">logic</span>       <span class="n">cio_sdo_en_o</span><span class="p">,</span>
+<a name="l-27"></a>  <span class="k">input</span>              <span class="n">cio_sdi_i</span><span class="p">,</span>
 <a name="l-28"></a>
 <a name="l-29"></a>  <span class="c1">// Interrupts</span>
 <a name="l-30"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="n">intr_rxf_o</span><span class="p">,</span>         <span class="c1">// RX FIFO Full</span>
@@ -636,8 +636,8 @@
 <a name="l-46"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">PtrW</span> <span class="o">=</span> <span class="n">SramAw</span> <span class="o">+</span> <span class="mh">1</span> <span class="o">+</span> <span class="n">SDW</span><span class="p">;</span>
 <a name="l-47"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">AsFifoDepthW</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">FifoDepth</span><span class="o">+</span><span class="mh">1</span><span class="p">);</span>
 <a name="l-48"></a>
-<a name="l-49"></a>  <span class="k">logic</span> <span class="n">clk_spi_in</span><span class="p">;</span>   <span class="c1">// clock for latch MOSI</span>
-<a name="l-50"></a>  <span class="k">logic</span> <span class="n">clk_spi_out</span><span class="p">;</span>  <span class="c1">// clock for driving MISO</span>
+<a name="l-49"></a>  <span class="k">logic</span> <span class="n">clk_spi_in</span><span class="p">;</span>   <span class="c1">// clock for latch SDI</span>
+<a name="l-50"></a>  <span class="k">logic</span> <span class="n">clk_spi_out</span><span class="p">;</span>  <span class="c1">// clock for driving SDO</span>
 <a name="l-51"></a>
 <a name="l-52"></a>  <span class="n">spi_device_reg2hw_t</span> <span class="n">reg2hw</span><span class="p">;</span>
 <a name="l-53"></a>  <span class="n">spi_device_hw2reg_t</span> <span class="n">hw2reg</span><span class="p">;</span>
@@ -774,8 +774,8 @@
 <a name="l-184"></a>  <span class="n">prim_flop_2sync</span> <span class="p">#(.</span><span class="n">Width</span><span class="p">(</span><span class="mh">1</span><span class="p">))</span> <span class="n">u_sync_csb</span> <span class="p">(</span>
 <a name="l-185"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-186"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-187"></a>    <span class="p">.</span><span class="n">d</span><span class="p">(</span><span class="n">cio_csb_i</span><span class="p">),</span>
-<a name="l-188"></a>    <span class="p">.</span><span class="n">q</span><span class="p">(</span><span class="n">csb_syncd</span><span class="p">)</span>
+<a name="l-187"></a>    <span class="p">.</span><span class="n">d_i</span><span class="p">(</span><span class="n">cio_csb_i</span><span class="p">),</span>
+<a name="l-188"></a>    <span class="p">.</span><span class="n">q_o</span><span class="p">(</span><span class="n">csb_syncd</span><span class="p">)</span>
 <a name="l-189"></a>  <span class="p">);</span>
 <a name="l-190"></a>
 <a name="l-191"></a>  <span class="k">logic</span> <span class="n">rxf_full_q</span><span class="p">,</span> <span class="n">txf_empty_q</span><span class="p">;</span>
@@ -790,14 +790,14 @@
 <a name="l-200"></a>  <span class="n">prim_flop_2sync</span> <span class="p">#(.</span><span class="n">Width</span><span class="p">(</span><span class="mh">1</span><span class="p">))</span> <span class="n">u_sync_rxf</span> <span class="p">(</span>
 <a name="l-201"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-202"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-203"></a>    <span class="p">.</span><span class="n">d</span><span class="p">(</span><span class="n">rxf_full_q</span><span class="p">),</span>
-<a name="l-204"></a>    <span class="p">.</span><span class="n">q</span><span class="p">(</span><span class="n">rxf_full_syncd</span><span class="p">)</span>
+<a name="l-203"></a>    <span class="p">.</span><span class="n">d_i</span><span class="p">(</span><span class="n">rxf_full_q</span><span class="p">),</span>
+<a name="l-204"></a>    <span class="p">.</span><span class="n">q_o</span><span class="p">(</span><span class="n">rxf_full_syncd</span><span class="p">)</span>
 <a name="l-205"></a>  <span class="p">);</span>
 <a name="l-206"></a>  <span class="n">prim_flop_2sync</span> <span class="p">#(.</span><span class="n">Width</span><span class="p">(</span><span class="mh">1</span><span class="p">),</span> <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">))</span> <span class="n">u_sync_txe</span> <span class="p">(</span>
 <a name="l-207"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-208"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-209"></a>    <span class="p">.</span><span class="n">d</span><span class="p">(</span><span class="n">txf_empty_q</span><span class="p">),</span>
-<a name="l-210"></a>    <span class="p">.</span><span class="n">q</span><span class="p">(</span><span class="n">txf_empty_syncd</span><span class="p">)</span>
+<a name="l-209"></a>    <span class="p">.</span><span class="n">d_i</span><span class="p">(</span><span class="n">txf_empty_q</span><span class="p">),</span>
+<a name="l-210"></a>    <span class="p">.</span><span class="n">q_o</span><span class="p">(</span><span class="n">txf_empty_syncd</span><span class="p">)</span>
 <a name="l-211"></a>  <span class="p">);</span>
 <a name="l-212"></a>
 <a name="l-213"></a>  <span class="k">assign</span> <span class="n">spi_mode</span> <span class="o">=</span> <span class="n">spi_mode_e</span><span class="p">&#39;(</span><span class="n">reg2hw</span><span class="p">.</span><span class="n">control</span><span class="p">.</span><span class="n">mode</span><span class="p">.</span><span class="n">q</span><span class="p">);</span>
@@ -900,11 +900,11 @@
 <a name="l-310"></a>  <span class="c1">//////////////////////////////</span>
 <a name="l-311"></a>  <span class="c1">//  clk_spi cannot use glitch-free clock mux as clock switching in glitch-free</span>
 <a name="l-312"></a>  <span class="c1">//  requires two clocks to propagate clock selection and enable but SPI clock</span>
-<a name="l-313"></a>  <span class="c1">//  doesn&#39;t exist until it transmits data through MOSI</span>
+<a name="l-313"></a>  <span class="c1">//  doesn&#39;t exist until it transmits data through SDI</span>
 <a name="l-314"></a>  <span class="k">logic</span> <span class="n">sck_n</span><span class="p">;</span>
 <a name="l-315"></a>  <span class="k">logic</span> <span class="n">rst_spi_n</span><span class="p">;</span>
 <a name="l-316"></a>
-<a name="l-317"></a>  <span class="n">prim_clock_inverter</span> <span class="n">u_clk_spi</span> <span class="p">(.</span><span class="n">clk_i</span><span class="p">(</span><span class="n">cio_sck_i</span><span class="p">),</span> <span class="p">.</span><span class="n">clk_no</span><span class="p">(</span><span class="n">sck_n</span><span class="p">),</span> <span class="p">.</span><span class="n">scanmode_i</span><span class="p">);</span>
+<a name="l-317"></a>  <span class="n">prim_clock_inv</span> <span class="n">u_clk_spi</span> <span class="p">(.</span><span class="n">clk_i</span><span class="p">(</span><span class="n">cio_sck_i</span><span class="p">),</span> <span class="p">.</span><span class="n">clk_no</span><span class="p">(</span><span class="n">sck_n</span><span class="p">),</span> <span class="p">.</span><span class="n">scanmode_i</span><span class="p">);</span>
 <a name="l-318"></a>  <span class="k">assign</span> <span class="n">clk_spi_in</span>  <span class="o">=</span> <span class="p">(</span><span class="n">cpha</span> <span class="o">^</span> <span class="n">cpol</span><span class="p">)</span> <span class="o">?</span> <span class="n">sck_n</span>    <span class="o">:</span> <span class="n">cio_sck_i</span>   <span class="p">;</span>
 <a name="l-319"></a>  <span class="k">assign</span> <span class="n">clk_spi_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">cpha</span> <span class="o">^</span> <span class="n">cpol</span><span class="p">)</span> <span class="o">?</span> <span class="n">cio_sck_i</span>    <span class="o">:</span> <span class="n">sck_n</span>   <span class="p">;</span>
 <a name="l-320"></a>
@@ -943,9 +943,9 @@
 <a name="l-353"></a>
 <a name="l-354"></a>    <span class="c1">// SPI signal</span>
 <a name="l-355"></a>    <span class="p">.</span><span class="n">csb_i</span>         <span class="p">(</span><span class="n">cio_csb_i</span><span class="p">),</span>
-<a name="l-356"></a>    <span class="p">.</span><span class="n">mosi</span>          <span class="p">(</span><span class="n">cio_mosi_i</span><span class="p">),</span>
-<a name="l-357"></a>    <span class="p">.</span><span class="n">miso</span>          <span class="p">(</span><span class="n">cio_miso_o</span><span class="p">),</span>
-<a name="l-358"></a>    <span class="p">.</span><span class="n">miso_oe</span>       <span class="p">(</span><span class="n">cio_miso_en_o</span><span class="p">)</span>
+<a name="l-356"></a>    <span class="p">.</span><span class="n">sdi_i</span>         <span class="p">(</span><span class="n">cio_sdi_i</span><span class="p">),</span>
+<a name="l-357"></a>    <span class="p">.</span><span class="n">sdo_o</span>         <span class="p">(</span><span class="n">cio_sdo_o</span><span class="p">),</span>
+<a name="l-358"></a>    <span class="p">.</span><span class="n">sdo_oe_o</span>      <span class="p">(</span><span class="n">cio_sdo_en_o</span><span class="p">)</span>
 <a name="l-359"></a>  <span class="p">);</span>
 <a name="l-360"></a>
 <a name="l-361"></a>  <span class="c1">// FIFO: Connecting FwMode to SRAM CTRLs</span>
@@ -959,16 +959,16 @@
 <a name="l-369"></a>    <span class="p">.</span><span class="n">clk_rd_i</span>     <span class="p">(</span><span class="n">clk_i</span><span class="p">),</span>
 <a name="l-370"></a>    <span class="p">.</span><span class="n">rst_rd_ni</span>    <span class="p">(</span><span class="n">rst_rxfifo_n</span><span class="p">),</span>
 <a name="l-371"></a>
-<a name="l-372"></a>    <span class="p">.</span><span class="n">wvalid</span>       <span class="p">(</span><span class="n">rxf_wvalid</span><span class="p">),</span>
-<a name="l-373"></a>    <span class="p">.</span><span class="n">wready</span>       <span class="p">(</span><span class="n">rxf_wready</span><span class="p">),</span>
-<a name="l-374"></a>    <span class="p">.</span><span class="n">wdata</span>        <span class="p">(</span><span class="n">rxf_wdata</span><span class="p">),</span>
+<a name="l-372"></a>    <span class="p">.</span><span class="n">wvalid_i</span>     <span class="p">(</span><span class="n">rxf_wvalid</span><span class="p">),</span>
+<a name="l-373"></a>    <span class="p">.</span><span class="n">wready_o</span>     <span class="p">(</span><span class="n">rxf_wready</span><span class="p">),</span>
+<a name="l-374"></a>    <span class="p">.</span><span class="n">wdata_i</span>      <span class="p">(</span><span class="n">rxf_wdata</span><span class="p">),</span>
 <a name="l-375"></a>
-<a name="l-376"></a>    <span class="p">.</span><span class="n">rvalid</span>       <span class="p">(</span><span class="n">rxf_rvalid</span><span class="p">),</span>
-<a name="l-377"></a>    <span class="p">.</span><span class="n">rready</span>       <span class="p">(</span><span class="n">rxf_rready</span><span class="p">),</span>
-<a name="l-378"></a>    <span class="p">.</span><span class="n">rdata</span>        <span class="p">(</span><span class="n">rxf_rdata</span><span class="p">),</span>
+<a name="l-376"></a>    <span class="p">.</span><span class="n">rvalid_o</span>     <span class="p">(</span><span class="n">rxf_rvalid</span><span class="p">),</span>
+<a name="l-377"></a>    <span class="p">.</span><span class="n">rready_i</span>     <span class="p">(</span><span class="n">rxf_rready</span><span class="p">),</span>
+<a name="l-378"></a>    <span class="p">.</span><span class="n">rdata_o</span>      <span class="p">(</span><span class="n">rxf_rdata</span><span class="p">),</span>
 <a name="l-379"></a>
-<a name="l-380"></a>    <span class="p">.</span><span class="n">wdepth</span>       <span class="p">(),</span>
-<a name="l-381"></a>    <span class="p">.</span><span class="n">rdepth</span>       <span class="p">(</span><span class="n">as_rxfifo_depth</span><span class="p">)</span>
+<a name="l-380"></a>    <span class="p">.</span><span class="n">wdepth_o</span>     <span class="p">(),</span>
+<a name="l-381"></a>    <span class="p">.</span><span class="n">rdepth_o</span>     <span class="p">(</span><span class="n">as_rxfifo_depth</span><span class="p">)</span>
 <a name="l-382"></a>  <span class="p">);</span>
 <a name="l-383"></a>
 <a name="l-384"></a>  <span class="n">prim_fifo_async</span> <span class="p">#(</span>
@@ -981,16 +981,16 @@
 <a name="l-391"></a>    <span class="p">.</span><span class="n">clk_rd_i</span>     <span class="p">(</span><span class="n">clk_spi_out</span><span class="p">),</span>
 <a name="l-392"></a>    <span class="p">.</span><span class="n">rst_rd_ni</span>    <span class="p">(</span><span class="n">rst_txfifo_n</span><span class="p">),</span>
 <a name="l-393"></a>
-<a name="l-394"></a>    <span class="p">.</span><span class="n">wvalid</span>       <span class="p">(</span><span class="n">txf_wvalid</span><span class="p">),</span>
-<a name="l-395"></a>    <span class="p">.</span><span class="n">wready</span>       <span class="p">(</span><span class="n">txf_wready</span><span class="p">),</span>
-<a name="l-396"></a>    <span class="p">.</span><span class="n">wdata</span>        <span class="p">(</span><span class="n">txf_wdata</span><span class="p">),</span>
+<a name="l-394"></a>    <span class="p">.</span><span class="n">wvalid_i</span>     <span class="p">(</span><span class="n">txf_wvalid</span><span class="p">),</span>
+<a name="l-395"></a>    <span class="p">.</span><span class="n">wready_o</span>     <span class="p">(</span><span class="n">txf_wready</span><span class="p">),</span>
+<a name="l-396"></a>    <span class="p">.</span><span class="n">wdata_i</span>      <span class="p">(</span><span class="n">txf_wdata</span><span class="p">),</span>
 <a name="l-397"></a>
-<a name="l-398"></a>    <span class="p">.</span><span class="n">rvalid</span>       <span class="p">(</span><span class="n">txf_rvalid</span><span class="p">),</span>
-<a name="l-399"></a>    <span class="p">.</span><span class="n">rready</span>       <span class="p">(</span><span class="n">txf_rready</span><span class="p">),</span>
-<a name="l-400"></a>    <span class="p">.</span><span class="n">rdata</span>        <span class="p">(</span><span class="n">txf_rdata</span><span class="p">),</span>
+<a name="l-398"></a>    <span class="p">.</span><span class="n">rvalid_o</span>     <span class="p">(</span><span class="n">txf_rvalid</span><span class="p">),</span>
+<a name="l-399"></a>    <span class="p">.</span><span class="n">rready_i</span>     <span class="p">(</span><span class="n">txf_rready</span><span class="p">),</span>
+<a name="l-400"></a>    <span class="p">.</span><span class="n">rdata_o</span>      <span class="p">(</span><span class="n">txf_rdata</span><span class="p">),</span>
 <a name="l-401"></a>
-<a name="l-402"></a>    <span class="p">.</span><span class="n">wdepth</span>       <span class="p">(</span><span class="n">as_txfifo_depth</span><span class="p">),</span>
-<a name="l-403"></a>    <span class="p">.</span><span class="n">rdepth</span>       <span class="p">()</span>
+<a name="l-402"></a>    <span class="p">.</span><span class="n">wdepth_o</span>     <span class="p">(</span><span class="n">as_txfifo_depth</span><span class="p">),</span>
+<a name="l-403"></a>    <span class="p">.</span><span class="n">rdepth_o</span>     <span class="p">()</span>
 <a name="l-404"></a>  <span class="p">);</span>
 <a name="l-405"></a>
 <a name="l-406"></a>  <span class="c1">// RX Fifo control (FIFO Read port --&gt; SRAM request)</span>
@@ -1057,31 +1057,31 @@
 <a name="l-467"></a>
 <a name="l-468"></a>  <span class="c1">// Arbiter for FIFOs : Connecting between SRAM Ctrls and SRAM interface</span>
 <a name="l-469"></a>  <span class="n">prim_sram_arbiter</span> <span class="p">#(</span>
-<a name="l-470"></a>    <span class="p">.</span><span class="n">N</span>       <span class="p">(</span><span class="mh">2</span><span class="p">),</span>  <span class="c1">// RXF, TXF</span>
-<a name="l-471"></a>    <span class="p">.</span><span class="n">SramDw</span> <span class="p">(</span><span class="n">SramDw</span><span class="p">),</span>
-<a name="l-472"></a>    <span class="p">.</span><span class="n">SramAw</span> <span class="p">(</span><span class="n">SramAw</span><span class="p">)</span>   <span class="c1">// 2kB</span>
+<a name="l-470"></a>    <span class="p">.</span><span class="n">N</span>            <span class="p">(</span><span class="mh">2</span><span class="p">),</span>  <span class="c1">// RXF, TXF</span>
+<a name="l-471"></a>    <span class="p">.</span><span class="n">SramDw</span>       <span class="p">(</span><span class="n">SramDw</span><span class="p">),</span>
+<a name="l-472"></a>    <span class="p">.</span><span class="n">SramAw</span>       <span class="p">(</span><span class="n">SramAw</span><span class="p">)</span>   <span class="c1">// 2kB</span>
 <a name="l-473"></a>  <span class="p">)</span> <span class="n">u_fwmode_arb</span> <span class="p">(</span>
 <a name="l-474"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-475"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-476"></a>
-<a name="l-477"></a>    <span class="p">.</span><span class="n">req</span>          <span class="p">(</span><span class="n">fwm_sram_req</span><span class="p">),</span>
-<a name="l-478"></a>    <span class="p">.</span><span class="n">req_addr</span>     <span class="p">(</span><span class="n">fwm_sram_addr</span><span class="p">),</span>
-<a name="l-479"></a>    <span class="p">.</span><span class="n">req_write</span>    <span class="p">(</span><span class="n">fwm_sram_write</span><span class="p">),</span>
-<a name="l-480"></a>    <span class="p">.</span><span class="n">req_wdata</span>    <span class="p">(</span><span class="n">fwm_sram_wdata</span><span class="p">),</span>
-<a name="l-481"></a>    <span class="p">.</span><span class="n">gnt</span>          <span class="p">(</span><span class="n">fwm_sram_gnt</span><span class="p">),</span>
+<a name="l-477"></a>    <span class="p">.</span><span class="n">req_i</span>        <span class="p">(</span><span class="n">fwm_sram_req</span><span class="p">),</span>
+<a name="l-478"></a>    <span class="p">.</span><span class="n">req_addr_i</span>   <span class="p">(</span><span class="n">fwm_sram_addr</span><span class="p">),</span>
+<a name="l-479"></a>    <span class="p">.</span><span class="n">req_write_i</span>  <span class="p">(</span><span class="n">fwm_sram_write</span><span class="p">),</span>
+<a name="l-480"></a>    <span class="p">.</span><span class="n">req_wdata_i</span>  <span class="p">(</span><span class="n">fwm_sram_wdata</span><span class="p">),</span>
+<a name="l-481"></a>    <span class="p">.</span><span class="n">gnt_o</span>        <span class="p">(</span><span class="n">fwm_sram_gnt</span><span class="p">),</span>
 <a name="l-482"></a>
-<a name="l-483"></a>    <span class="p">.</span><span class="n">rsp_rvalid</span>   <span class="p">(</span><span class="n">fwm_sram_rvalid</span><span class="p">),</span>
-<a name="l-484"></a>    <span class="p">.</span><span class="n">rsp_rdata</span>    <span class="p">(</span><span class="n">fwm_sram_rdata</span><span class="p">),</span>
-<a name="l-485"></a>    <span class="p">.</span><span class="n">rsp_error</span>    <span class="p">(</span><span class="n">fwm_sram_error</span><span class="p">),</span>
+<a name="l-483"></a>    <span class="p">.</span><span class="n">rsp_rvalid_o</span> <span class="p">(</span><span class="n">fwm_sram_rvalid</span><span class="p">),</span>
+<a name="l-484"></a>    <span class="p">.</span><span class="n">rsp_rdata_o</span>  <span class="p">(</span><span class="n">fwm_sram_rdata</span><span class="p">),</span>
+<a name="l-485"></a>    <span class="p">.</span><span class="n">rsp_error_o</span>  <span class="p">(</span><span class="n">fwm_sram_error</span><span class="p">),</span>
 <a name="l-486"></a>
-<a name="l-487"></a>    <span class="p">.</span><span class="n">sram_req</span>     <span class="p">(</span><span class="n">mem_b_req</span><span class="p">),</span>
-<a name="l-488"></a>    <span class="p">.</span><span class="n">sram_addr</span>    <span class="p">(</span><span class="n">mem_b_addr</span><span class="p">),</span>
-<a name="l-489"></a>    <span class="p">.</span><span class="n">sram_write</span>   <span class="p">(</span><span class="n">mem_b_write</span><span class="p">),</span>
-<a name="l-490"></a>    <span class="p">.</span><span class="n">sram_wdata</span>   <span class="p">(</span><span class="n">mem_b_wdata</span><span class="p">),</span>
+<a name="l-487"></a>    <span class="p">.</span><span class="n">sram_req_o</span>   <span class="p">(</span><span class="n">mem_b_req</span><span class="p">),</span>
+<a name="l-488"></a>    <span class="p">.</span><span class="n">sram_addr_o</span>  <span class="p">(</span><span class="n">mem_b_addr</span><span class="p">),</span>
+<a name="l-489"></a>    <span class="p">.</span><span class="n">sram_write_o</span> <span class="p">(</span><span class="n">mem_b_write</span><span class="p">),</span>
+<a name="l-490"></a>    <span class="p">.</span><span class="n">sram_wdata_o</span> <span class="p">(</span><span class="n">mem_b_wdata</span><span class="p">),</span>
 <a name="l-491"></a>
-<a name="l-492"></a>    <span class="p">.</span><span class="n">sram_rvalid</span>  <span class="p">(</span><span class="n">mem_b_rvalid</span><span class="p">),</span>
-<a name="l-493"></a>    <span class="p">.</span><span class="n">sram_rdata</span>   <span class="p">(</span><span class="n">mem_b_rdata</span><span class="p">),</span>
-<a name="l-494"></a>    <span class="p">.</span><span class="n">sram_rerror</span>  <span class="p">(</span><span class="n">mem_b_rerror</span><span class="p">)</span>
+<a name="l-492"></a>    <span class="p">.</span><span class="n">sram_rvalid_i</span><span class="p">(</span><span class="n">mem_b_rvalid</span><span class="p">),</span>
+<a name="l-493"></a>    <span class="p">.</span><span class="n">sram_rdata_i</span> <span class="p">(</span><span class="n">mem_b_rdata</span><span class="p">),</span>
+<a name="l-494"></a>    <span class="p">.</span><span class="n">sram_rerror_i</span><span class="p">(</span><span class="n">mem_b_rerror</span><span class="p">)</span>
 <a name="l-495"></a>  <span class="p">);</span>
 <a name="l-496"></a>
 <a name="l-497"></a>  <span class="n">tlul_adapter_sram</span> <span class="p">#(</span>
@@ -1161,7 +1161,7 @@
 <a name="l-571"></a>
 <a name="l-572"></a>  <span class="c1">// make sure scanmode_i is never X (including during reset)</span>
 <a name="l-573"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">scanmodeKnown</span><span class="p">,</span> <span class="n">scanmode_i</span><span class="p">,</span> <span class="n">clk_i</span><span class="p">,</span> <span class="mh">0</span><span class="p">)</span>
-<a name="l-574"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">CioMisoEnOKnown</span><span class="p">,</span> <span class="n">cio_miso_en_o</span><span class="p">)</span>
+<a name="l-574"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">CioSdoEnOKnown</span><span class="p">,</span> <span class="n">cio_sdo_en_o</span><span class="p">)</span>
 <a name="l-575"></a>
 <a name="l-576"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntrRxfOKnown</span><span class="p">,</span>         <span class="n">intr_rxf_o</span>        <span class="p">)</span>
 <a name="l-577"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntrRxlvlOKnown</span><span class="p">,</span>       <span class="n">intr_rxlvl_o</span>      <span class="p">)</span>

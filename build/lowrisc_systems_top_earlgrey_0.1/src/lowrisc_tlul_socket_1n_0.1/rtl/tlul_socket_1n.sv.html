@@ -248,13 +248,13 @@
 <a name="l-23"></a><span class="c1">//   DRspDepth:     (one per device_count) Depth of device i response FIFO,</span>
 <a name="l-24"></a><span class="c1">//                  default 2</span>
 <a name="l-25"></a><span class="c1">//</span>
-<a name="l-26"></a><span class="c1">// Requests must stall to one slave until all responses from other slaves</span>
+<a name="l-26"></a><span class="c1">// Requests must stall to one device until all responses from other devices</span>
 <a name="l-27"></a><span class="c1">// have returned.  Need to keep a counter of all outstanding requests and</span>
-<a name="l-28"></a><span class="c1">// wait until that counter is zero before switching slaves.</span>
+<a name="l-28"></a><span class="c1">// wait until that counter is zero before switching devices.</span>
 <a name="l-29"></a><span class="c1">//</span>
-<a name="l-30"></a><span class="c1">// This module will return a request error if the input value of &#39;dev_select&#39;</span>
+<a name="l-30"></a><span class="c1">// This module will return a request error if the input value of &#39;dev_select_i&#39;</span>
 <a name="l-31"></a><span class="c1">// is not within the range 0..N-1. Thus the instantiator of the socket</span>
-<a name="l-32"></a><span class="c1">// can indicate error by any illegal value of dev_select. 4&#39;b1111 is</span>
+<a name="l-32"></a><span class="c1">// can indicate error by any illegal value of dev_select_i. 4&#39;b1111 is</span>
 <a name="l-33"></a><span class="c1">// recommended for visibility</span>
 <a name="l-34"></a><span class="c1">//</span>
 <a name="l-35"></a><span class="c1">// The maximum value of N is 15</span>
@@ -279,7 +279,7 @@
 <a name="l-54"></a>  <span class="k">output</span> <span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_d2h_t</span> <span class="n">tl_h_o</span><span class="p">,</span>
 <a name="l-55"></a>  <span class="k">output</span> <span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_h2d_t</span> <span class="n">tl_d_o</span>    <span class="p">[</span><span class="n">N</span><span class="p">],</span>
 <a name="l-56"></a>  <span class="k">input</span>  <span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_d2h_t</span> <span class="n">tl_d_i</span>    <span class="p">[</span><span class="n">N</span><span class="p">],</span>
-<a name="l-57"></a>  <span class="k">input</span>  <span class="p">[</span><span class="n">NWD</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">dev_select</span>
+<a name="l-57"></a>  <span class="k">input</span>  <span class="p">[</span><span class="n">NWD</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">dev_select_i</span>
 <a name="l-58"></a><span class="p">);</span>
 <a name="l-59"></a>
 <a name="l-60"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">maxN</span><span class="p">,</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="mh">16</span><span class="p">)</span>
@@ -308,7 +308,7 @@
 <a name="l-83"></a>    <span class="p">.</span><span class="n">tl_h_o</span><span class="p">,</span>
 <a name="l-84"></a>    <span class="p">.</span><span class="n">tl_d_o</span>     <span class="p">(</span><span class="n">tl_t_o</span><span class="p">),</span>
 <a name="l-85"></a>    <span class="p">.</span><span class="n">tl_d_i</span>     <span class="p">(</span><span class="n">tl_t_i</span><span class="p">),</span>
-<a name="l-86"></a>    <span class="p">.</span><span class="n">spare_req_i</span> <span class="p">(</span><span class="n">dev_select</span><span class="p">),</span>
+<a name="l-86"></a>    <span class="p">.</span><span class="n">spare_req_i</span> <span class="p">(</span><span class="n">dev_select_i</span><span class="p">),</span>
 <a name="l-87"></a>    <span class="p">.</span><span class="n">spare_req_o</span> <span class="p">(</span><span class="n">dev_select_t</span><span class="p">),</span>
 <a name="l-88"></a>    <span class="p">.</span><span class="n">spare_rsp_i</span> <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">),</span>
 <a name="l-89"></a>    <span class="p">.</span><span class="n">spare_rsp_o</span> <span class="p">());</span>
@@ -367,7 +367,7 @@
 <a name="l-142"></a>
 <a name="l-143"></a>  <span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_d2h_t</span> <span class="n">tl_t_p</span> <span class="p">;</span>
 <a name="l-144"></a>
-<a name="l-145"></a>  <span class="c1">// for the returning reqready, only look at the slave we&#39;re addressing</span>
+<a name="l-145"></a>  <span class="c1">// for the returning reqready, only look at the device we&#39;re addressing</span>
 <a name="l-146"></a>  <span class="k">logic</span> <span class="n">hfifo_reqready</span><span class="p">;</span>
 <a name="l-147"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-148"></a>    <span class="n">hfifo_reqready</span> <span class="o">=</span> <span class="n">tl_u_i</span><span class="p">[</span><span class="n">N</span><span class="p">].</span><span class="n">a_ready</span><span class="p">;</span> <span class="c1">// default to error</span>

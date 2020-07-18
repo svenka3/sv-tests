@@ -1,0 +1,135 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from basejump
+rc: 0 (means success: 1)
+tags: basejump
+incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_router_crossbar_o_by_i.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_router_crossbar_o_by_i.v</a>
+defines: 
+time_elapsed: 0.672s
+ram usage: 16416 KB
+</pre>
+<pre class="log">
+
+zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_router_crossbar_o_by_i.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_router_crossbar_o_by_i.v</a>
+module bsg_router_crossbar_o_by_i (
+	clk_i,
+	reset_i,
+	valid_i,
+	data_i,
+	credit_ready_and_o,
+	valid_o,
+	data_o,
+	ready_and_i
+);
+	parameter i_els_p = 2;
+	parameter o_els_p = &#34;inv&#34;;
+	parameter i_width_p = &#34;inv&#34;;
+	parameter [i_els_p - 1:0] i_use_credits_p = {i_els_p {1&#39;b0}};
+	function automatic signed [31:0] sv2v_cast_32_signed;
+		input reg signed [31:0] inp;
+		sv2v_cast_32_signed = inp;
+	endfunction
+	parameter signed [(i_els_p &gt;= 1 ? (i_els_p * 32) - 1 : ((2 - i_els_p) * 32) + (((i_els_p - 1) * 32) - 1)):(i_els_p &gt;= 1 ? 0 : (i_els_p - 1) * 32)] i_fifo_els_p = {sv2v_cast_32_signed(2), sv2v_cast_32_signed(2)};
+	parameter lg_o_els_lp = (o_els_p == 1 ? 1 : $clog2(o_els_p));
+	parameter drop_header_p = 0;
+	parameter o_width_lp = i_width_p - (drop_header_p * lg_o_els_lp);
+	input clk_i;
+	input reset_i;
+	input [i_els_p - 1:0] valid_i;
+	input [(i_els_p &gt;= 1 ? (i_width_p &gt;= 1 ? (i_els_p * i_width_p) - 1 : (i_els_p * (2 - i_width_p)) + (i_width_p - 2)) : (i_width_p &gt;= 1 ? ((2 - i_els_p) * i_width_p) + (((i_els_p - 1) * i_width_p) - 1) : ((2 - i_els_p) * (2 - i_width_p)) + (((i_width_p - 1) + ((i_els_p - 1) * (2 - i_width_p))) - 1))):(i_els_p &gt;= 1 ? (i_width_p &gt;= 1 ? 0 : i_width_p - 1) : (i_width_p &gt;= 1 ? (i_els_p - 1) * i_width_p : (i_width_p - 1) + ((i_els_p - 1) * (2 - i_width_p))))] data_i;
+	output [i_els_p - 1:0] credit_ready_and_o;
+	output [o_els_p - 1:0] valid_o;
+	output [(o_els_p &gt;= 1 ? (o_width_lp &gt;= 1 ? (o_els_p * o_width_lp) - 1 : (o_els_p * (2 - o_width_lp)) + (o_width_lp - 2)) : (o_width_lp &gt;= 1 ? ((2 - o_els_p) * o_width_lp) + (((o_els_p - 1) * o_width_lp) - 1) : ((2 - o_els_p) * (2 - o_width_lp)) + (((o_width_lp - 1) + ((o_els_p - 1) * (2 - o_width_lp))) - 1))):(o_els_p &gt;= 1 ? (o_width_lp &gt;= 1 ? 0 : o_width_lp - 1) : (o_width_lp &gt;= 1 ? (o_els_p - 1) * o_width_lp : (o_width_lp - 1) + ((o_els_p - 1) * (2 - o_width_lp))))] data_o;
+	input [o_els_p - 1:0] ready_and_i;
+	wire [i_els_p - 1:0] fifo_ready_lo;
+	wire [i_els_p - 1:0] fifo_v_lo;
+	wire [(i_els_p &gt;= 1 ? (i_width_p &gt;= 1 ? (i_els_p * i_width_p) - 1 : (i_els_p * (2 - i_width_p)) + (i_width_p - 2)) : (i_width_p &gt;= 1 ? ((2 - i_els_p) * i_width_p) + (((i_els_p - 1) * i_width_p) - 1) : ((2 - i_els_p) * (2 - i_width_p)) + (((i_width_p - 1) + ((i_els_p - 1) * (2 - i_width_p))) - 1))):(i_els_p &gt;= 1 ? (i_width_p &gt;= 1 ? 0 : i_width_p - 1) : (i_width_p &gt;= 1 ? (i_els_p - 1) * i_width_p : (i_width_p - 1) + ((i_els_p - 1) * (2 - i_width_p))))] fifo_data_lo;
+	wire [i_els_p - 1:0] fifo_yumi_li;
+	generate
+		genvar i;
+		for (i = 0; i &lt; i_els_p; i = i + 1) begin : fifo
+			bsg_fifo_1r1w_small #(
+				.width_p(i_width_p),
+				.els_p(i_fifo_els_p[(i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * 32+:32])
+			) fifo0(
+				.clk_i(clk_i),
+				.reset_i(reset_i),
+				.v_i(valid_i[i]),
+				.ready_o(fifo_ready_lo[i]),
+				.data_i(data_i[(i_width_p &gt;= 1 ? 0 : i_width_p - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p))+:(i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p)]),
+				.v_o(fifo_v_lo[i]),
+				.data_o(fifo_data_lo[(i_width_p &gt;= 1 ? 0 : i_width_p - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p))+:(i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p)]),
+				.yumi_i(fifo_yumi_li[i])
+			);
+		end
+	endgenerate
+	generate
+		for (i = 0; i &lt; i_els_p; i = i + 1) begin : intf
+			if (i_use_credits_p[i]) begin : cr
+				bsg_dff_reset #(
+					.width_p(1),
+					.reset_val_p(0)
+				) dff0(
+					.clk_i(clk_i),
+					.reset_i(reset_i),
+					.data_i(fifo_yumi_li[i]),
+					.data_o(credit_ready_and_o[i])
+				);
+			end
+			else begin : rd
+				assign credit_ready_and_o[i] = fifo_ready_lo[i];
+			end
+		end
+	endgenerate
+	wire [(i_els_p &gt;= 1 ? (lg_o_els_lp &gt;= 1 ? (i_els_p * lg_o_els_lp) - 1 : (i_els_p * (2 - lg_o_els_lp)) + (lg_o_els_lp - 2)) : (lg_o_els_lp &gt;= 1 ? ((2 - i_els_p) * lg_o_els_lp) + (((i_els_p - 1) * lg_o_els_lp) - 1) : ((2 - i_els_p) * (2 - lg_o_els_lp)) + (((lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))) - 1))):(i_els_p &gt;= 1 ? (lg_o_els_lp &gt;= 1 ? 0 : lg_o_els_lp - 1) : (lg_o_els_lp &gt;= 1 ? (i_els_p - 1) * lg_o_els_lp : (lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))))] ctrl_sel_io_li;
+	wire [i_els_p - 1:0] ctrl_yumi_lo;
+	wire [(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? (o_els_p * i_els_p) - 1 : (o_els_p * (2 - i_els_p)) + (i_els_p - 2)) : (i_els_p &gt;= 1 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? 0 : i_els_p - 1) : (i_els_p &gt;= 1 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] grants_lo;
+	bsg_crossbar_control_basic_o_by_i #(
+		.i_els_p(i_els_p),
+		.o_els_p(o_els_p)
+	) ctrl0(
+		.clk_i(clk_i),
+		.reset_i(reset_i),
+		.valid_i(fifo_v_lo),
+		.sel_io_i(ctrl_sel_io_li),
+		.yumi_o(fifo_yumi_li),
+		.ready_and_i(ready_and_i),
+		.valid_o(valid_o),
+		.grants_oi_one_hot_o(grants_lo)
+	);
+	generate
+		for (i = 0; i &lt; i_els_p; i = i + 1) assign ctrl_sel_io_li[(lg_o_els_lp &gt;= 1 ? 0 : lg_o_els_lp - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (lg_o_els_lp &gt;= 1 ? lg_o_els_lp : 2 - lg_o_els_lp))+:(lg_o_els_lp &gt;= 1 ? lg_o_els_lp : 2 - lg_o_els_lp)] = fifo_data_lo[(i_width_p &gt;= 1 ? ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p)) + (i_width_p &gt;= 1 ? 0 : i_width_p - 1) : ((((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p)) + (i_width_p &gt;= 1 ? 0 : i_width_p - 1)) - lg_o_els_lp) + 1)+:lg_o_els_lp];
+	endgenerate
+	wire [(i_els_p &gt;= 1 ? (o_width_lp &gt;= 1 ? (i_els_p * o_width_lp) - 1 : (i_els_p * (2 - o_width_lp)) + (o_width_lp - 2)) : (o_width_lp &gt;= 1 ? ((2 - i_els_p) * o_width_lp) + (((i_els_p - 1) * o_width_lp) - 1) : ((2 - i_els_p) * (2 - o_width_lp)) + (((o_width_lp - 1) + ((i_els_p - 1) * (2 - o_width_lp))) - 1))):(i_els_p &gt;= 1 ? (o_width_lp &gt;= 1 ? 0 : o_width_lp - 1) : (o_width_lp &gt;= 1 ? (i_els_p - 1) * o_width_lp : (o_width_lp - 1) + ((i_els_p - 1) * (2 - o_width_lp))))] odata;
+	generate
+		for (i = 0; i &lt; i_els_p; i = i + 1) if (drop_header_p) assign odata[(o_width_lp &gt;= 1 ? 0 : o_width_lp - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (o_width_lp &gt;= 1 ? o_width_lp : 2 - o_width_lp))+:(o_width_lp &gt;= 1 ? o_width_lp : 2 - o_width_lp)] = fifo_data_lo[(i_width_p &gt;= 1 ? ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p)) + (i_width_p &gt;= 1 ? ((i_width_p - 1) &gt;= lg_o_els_lp ? i_width_p - 1 : ((i_width_p - 1) + ((i_width_p - 1) &gt;= lg_o_els_lp ? ((i_width_p - 1) - lg_o_els_lp) + 1 : (lg_o_els_lp - (i_width_p - 1)) + 1)) - 1) : (i_width_p - 1) - ((i_width_p - 1) &gt;= lg_o_els_lp ? i_width_p - 1 : ((i_width_p - 1) + ((i_width_p - 1) &gt;= lg_o_els_lp ? ((i_width_p - 1) - lg_o_els_lp) + 1 : (lg_o_els_lp - (i_width_p - 1)) + 1)) - 1)) : ((((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p)) + (i_width_p &gt;= 1 ? ((i_width_p - 1) &gt;= lg_o_els_lp ? i_width_p - 1 : ((i_width_p - 1) + ((i_width_p - 1) &gt;= lg_o_els_lp ? ((i_width_p - 1) - lg_o_els_lp) + 1 : (lg_o_els_lp - (i_width_p - 1)) + 1)) - 1) : (i_width_p - 1) - ((i_width_p - 1) &gt;= lg_o_els_lp ? i_width_p - 1 : ((i_width_p - 1) + ((i_width_p - 1) &gt;= lg_o_els_lp ? ((i_width_p - 1) - lg_o_els_lp) + 1 : (lg_o_els_lp - (i_width_p - 1)) + 1)) - 1))) + ((i_width_p - 1) &gt;= lg_o_els_lp ? ((i_width_p - 1) - lg_o_els_lp) + 1 : (lg_o_els_lp - (i_width_p - 1)) + 1)) - 1)-:((i_width_p - 1) &gt;= lg_o_els_lp ? ((i_width_p - 1) - lg_o_els_lp) + 1 : (lg_o_els_lp - (i_width_p - 1)) + 1)];
+		else assign odata[(o_width_lp &gt;= 1 ? 0 : o_width_lp - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (o_width_lp &gt;= 1 ? o_width_lp : 2 - o_width_lp))+:(o_width_lp &gt;= 1 ? o_width_lp : 2 - o_width_lp)] = fifo_data_lo[(i_width_p &gt;= 1 ? 0 : i_width_p - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p))+:(i_width_p &gt;= 1 ? i_width_p : 2 - i_width_p)];
+	endgenerate
+	generate
+		for (i = 0; i &lt; o_els_p; i = i + 1) begin : mux
+			bsg_mux_one_hot #(
+				.width_p(o_width_lp),
+				.els_p(i_els_p)
+			) mux0(
+				.data_i(odata),
+				.sel_one_hot_i(grants_lo[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : (o_els_p - 1) - i) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
+				.data_o(data_o[(o_width_lp &gt;= 1 ? 0 : o_width_lp - 1) + ((o_els_p &gt;= 1 ? i : (o_els_p - 1) - i) * (o_width_lp &gt;= 1 ? o_width_lp : 2 - o_width_lp))+:(o_width_lp &gt;= 1 ? o_width_lp : 2 - o_width_lp)])
+			);
+		end
+	endgenerate
+endmodule
+
+</pre>
+</body>

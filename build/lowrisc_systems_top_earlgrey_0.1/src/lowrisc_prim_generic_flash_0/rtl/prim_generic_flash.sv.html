@@ -402,20 +402,20 @@
 <a name="l-77"></a>  <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">flash_part_e</span> <span class="n">part_q</span><span class="p">;</span>
 <a name="l-78"></a>
 <a name="l-79"></a>  <span class="n">prim_fifo_sync</span> <span class="p">#(</span>
-<a name="l-80"></a>      <span class="p">.</span><span class="n">Width</span>  <span class="p">(</span><span class="n">AddrW</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">flash_part_e</span><span class="p">)),</span>
-<a name="l-81"></a>      <span class="p">.</span><span class="n">Pass</span>   <span class="p">(</span><span class="mh">0</span><span class="p">),</span>
-<a name="l-82"></a>      <span class="p">.</span><span class="n">Depth</span>  <span class="p">(</span><span class="mh">2</span><span class="p">)</span>
+<a name="l-80"></a>    <span class="p">.</span><span class="n">Width</span>   <span class="p">(</span><span class="n">AddrW</span> <span class="o">+</span> <span class="n">$bits</span><span class="p">(</span><span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">flash_part_e</span><span class="p">)),</span>
+<a name="l-81"></a>    <span class="p">.</span><span class="n">Pass</span>    <span class="p">(</span><span class="mh">0</span><span class="p">),</span>
+<a name="l-82"></a>    <span class="p">.</span><span class="n">Depth</span>   <span class="p">(</span><span class="mh">2</span><span class="p">)</span>
 <a name="l-83"></a>  <span class="p">)</span> <span class="n">i_slice</span> <span class="p">(</span>
 <a name="l-84"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-85"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-86"></a>    <span class="p">.</span><span class="n">clr_i</span>  <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">),</span>
-<a name="l-87"></a>    <span class="p">.</span><span class="n">wvalid</span> <span class="p">(</span><span class="n">rd_i</span><span class="p">),</span>
-<a name="l-88"></a>    <span class="p">.</span><span class="n">wready</span> <span class="p">(),</span>
-<a name="l-89"></a>    <span class="p">.</span><span class="n">wdata</span>  <span class="p">({</span><span class="n">part_i</span><span class="p">,</span> <span class="n">addr_i</span><span class="p">}),</span>
-<a name="l-90"></a>    <span class="p">.</span><span class="n">depth</span>  <span class="p">(),</span>
-<a name="l-91"></a>    <span class="p">.</span><span class="n">rvalid</span> <span class="p">(</span><span class="n">rd_q</span><span class="p">),</span>
-<a name="l-92"></a>    <span class="p">.</span><span class="n">rready</span> <span class="p">(</span><span class="n">hold_cmd</span><span class="p">),</span> <span class="c1">//whenver command is held, pop</span>
-<a name="l-93"></a>    <span class="p">.</span><span class="n">rdata</span>  <span class="p">({</span><span class="n">part_q</span><span class="p">,</span> <span class="n">addr_q</span><span class="p">})</span>
+<a name="l-86"></a>    <span class="p">.</span><span class="n">clr_i</span>   <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">),</span>
+<a name="l-87"></a>    <span class="p">.</span><span class="n">wvalid_i</span><span class="p">(</span><span class="n">rd_i</span><span class="p">),</span>
+<a name="l-88"></a>    <span class="p">.</span><span class="n">wready_o</span><span class="p">(),</span>
+<a name="l-89"></a>    <span class="p">.</span><span class="n">wdata_i</span> <span class="p">({</span><span class="n">part_i</span><span class="p">,</span> <span class="n">addr_i</span><span class="p">}),</span>
+<a name="l-90"></a>    <span class="p">.</span><span class="n">depth_o</span> <span class="p">(),</span>
+<a name="l-91"></a>    <span class="p">.</span><span class="n">rvalid_o</span><span class="p">(</span><span class="n">rd_q</span><span class="p">),</span>
+<a name="l-92"></a>    <span class="p">.</span><span class="n">rready_i</span><span class="p">(</span><span class="n">hold_cmd</span><span class="p">),</span> <span class="c1">//whenver command is held, pop</span>
+<a name="l-93"></a>    <span class="p">.</span><span class="n">rdata_o</span> <span class="p">({</span><span class="n">part_q</span><span class="p">,</span> <span class="n">addr_q</span><span class="p">})</span>
 <a name="l-94"></a>  <span class="p">);</span>
 <a name="l-95"></a>
 <a name="l-96"></a>
@@ -427,7 +427,7 @@
 <a name="l-102"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-103"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-104"></a>      <span class="n">held_addr</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-105"></a>      <span class="n">held_part</span> <span class="o">&lt;=</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">DataPart</span><span class="p">;</span>
+<a name="l-105"></a>      <span class="n">held_part</span> <span class="o">&lt;=</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">FlashPartData</span><span class="p">;</span>
 <a name="l-106"></a>      <span class="n">held_wdata</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-107"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">hold_cmd</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-108"></a>      <span class="n">held_addr</span> <span class="o">&lt;=</span> <span class="n">rd_q</span> <span class="o">?</span> <span class="n">addr_q</span> <span class="o">:</span> <span class="n">addr_i</span><span class="p">;</span>
@@ -480,7 +480,7 @@
 <a name="l-155"></a>    <span class="n">mem_req</span>          <span class="o">=</span> <span class="mh">&#39;h0</span><span class="p">;</span>
 <a name="l-156"></a>    <span class="n">mem_wr</span>           <span class="o">=</span> <span class="mh">&#39;h0</span><span class="p">;</span>
 <a name="l-157"></a>    <span class="n">mem_addr</span>         <span class="o">=</span> <span class="mh">&#39;h0</span><span class="p">;</span>
-<a name="l-158"></a>    <span class="n">mem_part</span>         <span class="o">=</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">DataPart</span><span class="p">;</span>
+<a name="l-158"></a>    <span class="n">mem_part</span>         <span class="o">=</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">FlashPartData</span><span class="p">;</span>
 <a name="l-159"></a>    <span class="n">mem_wdata</span>        <span class="o">=</span> <span class="mh">&#39;h0</span><span class="p">;</span>
 <a name="l-160"></a>    <span class="n">time_cnt_inc</span>     <span class="o">=</span> <span class="mh">1&#39;h0</span><span class="p">;</span>
 <a name="l-161"></a>    <span class="n">time_cnt_clr</span>     <span class="o">=</span> <span class="mh">1&#39;h0</span><span class="p">;</span>
@@ -616,7 +616,7 @@
 <a name="l-291"></a>    <span class="p">.</span><span class="n">DataBitsPerMask</span><span class="p">(</span><span class="n">DataWidth</span><span class="p">)</span>
 <a name="l-292"></a>  <span class="p">)</span> <span class="n">u_mem</span> <span class="p">(</span>
 <a name="l-293"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
-<a name="l-294"></a>    <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">mem_req</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mem_part</span> <span class="o">==</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">DataPart</span><span class="p">)),</span>
+<a name="l-294"></a>    <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">mem_req</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mem_part</span> <span class="o">==</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">FlashPartData</span><span class="p">)),</span>
 <a name="l-295"></a>    <span class="p">.</span><span class="n">write_i</span>  <span class="p">(</span><span class="n">mem_wr</span><span class="p">),</span>
 <a name="l-296"></a>    <span class="p">.</span><span class="n">addr_i</span>   <span class="p">(</span><span class="n">mem_addr</span><span class="p">),</span>
 <a name="l-297"></a>    <span class="p">.</span><span class="n">wdata_i</span>  <span class="p">(</span><span class="n">mem_wdata</span><span class="p">),</span>
@@ -630,7 +630,7 @@
 <a name="l-305"></a>    <span class="p">.</span><span class="n">DataBitsPerMask</span><span class="p">(</span><span class="n">DataWidth</span><span class="p">)</span>
 <a name="l-306"></a>  <span class="p">)</span> <span class="n">u_info_mem</span> <span class="p">(</span>
 <a name="l-307"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
-<a name="l-308"></a>    <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">mem_req</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mem_part</span> <span class="o">==</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">InfoPart</span><span class="p">)),</span>
+<a name="l-308"></a>    <span class="p">.</span><span class="n">req_i</span>    <span class="p">(</span><span class="n">mem_req</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mem_part</span> <span class="o">==</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">FlashPartInfo</span><span class="p">)),</span>
 <a name="l-309"></a>    <span class="p">.</span><span class="n">write_i</span>  <span class="p">(</span><span class="n">mem_wr</span><span class="p">),</span>
 <a name="l-310"></a>    <span class="p">.</span><span class="n">addr_i</span>   <span class="p">(</span><span class="n">mem_addr</span><span class="p">[</span><span class="mh">0</span> <span class="o">+:</span> <span class="n">InfoAddrW</span><span class="p">]),</span>
 <a name="l-311"></a>    <span class="p">.</span><span class="n">wdata_i</span>  <span class="p">(</span><span class="n">mem_wdata</span><span class="p">),</span>
@@ -638,7 +638,7 @@
 <a name="l-313"></a>    <span class="p">.</span><span class="n">rdata_o</span>  <span class="p">(</span><span class="n">rd_data_info</span><span class="p">)</span>
 <a name="l-314"></a>  <span class="p">);</span>
 <a name="l-315"></a>
-<a name="l-316"></a>  <span class="k">assign</span> <span class="n">rd_data_o</span> <span class="o">=</span> <span class="n">held_part</span> <span class="o">==</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">DataPart</span> <span class="o">?</span> <span class="n">rd_data_main</span> <span class="o">:</span> <span class="n">rd_data_info</span><span class="p">;</span>
+<a name="l-316"></a>  <span class="k">assign</span> <span class="n">rd_data_o</span> <span class="o">=</span> <span class="n">held_part</span> <span class="o">==</span> <span class="n">flash_ctrl_pkg</span><span class="o">::</span><span class="n">FlashPartData</span> <span class="o">?</span> <span class="n">rd_data_main</span> <span class="o">:</span> <span class="n">rd_data_info</span><span class="p">;</span>
 <a name="l-317"></a>
 <a name="l-318"></a><span class="k">endmodule</span> <span class="c1">// prim_generic_flash</span>
 </pre></div>

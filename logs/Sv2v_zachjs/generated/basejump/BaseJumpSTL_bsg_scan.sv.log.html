@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v</a>
 defines: 
 time_elapsed: 0.680s
-ram usage: 14824 KB
+ram usage: 16600 KB
 </pre>
 <pre class="log">
 
@@ -32,11 +32,22 @@ module bsg_scan (
 	parameter and_p = 0;
 	parameter or_p = 0;
 	parameter lo_to_hi_p = 0;
+	parameter debug_p = 0;
 	input [width_p - 1:0] i;
 	output wire [width_p - 1:0] o;
 	genvar j;
 	wire [($clog2(width_p) &gt;= 0 ? (width_p &gt;= 1 ? (($clog2(width_p) + 1) * width_p) - 1 : (($clog2(width_p) + 1) * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((1 - $clog2(width_p)) * width_p) + (($clog2(width_p) * width_p) - 1) : ((1 - $clog2(width_p)) * (2 - width_p)) + (((width_p - 1) + ($clog2(width_p) * (2 - width_p))) - 1))):($clog2(width_p) &gt;= 0 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? $clog2(width_p) * width_p : (width_p - 1) + ($clog2(width_p) * (2 - width_p))))] t;
 	wire [width_p - 1:0] fill;
+	generate
+		if (debug_p) always @(o) begin
+			#(1) begin : sv2v_autoblock_1
+				integer k;
+				for (k = 0; k &lt;= $clog2(width_p); k = k + 1)
+					$display(&#34;%b&#34;, t[(width_p &gt;= 1 ? 0 : width_p - 1) + (($clog2(width_p) &gt;= 0 ? k : $clog2(width_p) - k) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]);
+			end
+			$display(&#34;i=%b, o=%b&#34;, i, o);
+		end
+	endgenerate
 	generate
 		if (lo_to_hi_p) assign t[(width_p &gt;= 1 ? 0 : width_p - 1) + (($clog2(width_p) &gt;= 0 ? 0 : $clog2(width_p)) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = {&lt;&lt; 1{i}};
 		else assign t[(width_p &gt;= 1 ? 0 : width_p - 1) + (($clog2(width_p) &gt;= 0 ? 0 : $clog2(width_p)) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = i;

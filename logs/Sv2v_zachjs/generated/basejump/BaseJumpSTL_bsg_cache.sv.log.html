@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache.v</a>
 defines: 
-time_elapsed: 4.052s
-ram usage: 21020 KB
+time_elapsed: 4.648s
+ram usage: 21248 KB
 </pre>
 <pre class="log">
 
@@ -339,6 +339,7 @@ module bsg_cache (
 	wire [(ways_p &gt;= 1 ? ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (ways_p * (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1 : (ways_p * (2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 2)) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((2 - ways_p) * (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) + (((ways_p - 1) * (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1) : ((2 - ways_p) * (2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) + ((ways_p - 1) * (2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))))) - 1))):(ways_p &gt;= 1 ? ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 0 : (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (ways_p - 1) * (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) + ((ways_p - 1) * (2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))))))] miss_tag_mem_w_mask_lo;
 	wire sbuf_empty_li;
 	wire [lg_ways_lp - 1:0] chosen_way_lo;
+	wire select_snoop_data_r_lo;
 	bsg_cache_miss #(
 		.addr_width_p(addr_width_p),
 		.data_width_p(data_width_p),
@@ -355,6 +356,7 @@ module bsg_cache (
 		.valid_v_i(valid_v_r),
 		.lock_v_i(lock_v_r),
 		.tag_hit_way_id_i(tag_hit_way_id),
+		.tag_hit_v_i(tag_hit_v),
 		.tag_hit_found_i(tag_hit_found),
 		.sbuf_empty_i(sbuf_empty_li),
 		.dma_cmd_o(dma_cmd_lo),
@@ -375,7 +377,8 @@ module bsg_cache (
 		.recover_o(recover_lo),
 		.done_o(miss_done_lo),
 		.chosen_way_o(chosen_way_lo),
-		.ack_i(v_o &amp; yumi_i)
+		.ack_i(v_o &amp; yumi_i),
+		.select_snoop_data_r_o(select_snoop_data_r_lo)
 	);
 	wire [data_width_p - 1:0] snoop_word_lo;
 	wire dma_data_mem_v_lo;
@@ -571,7 +574,7 @@ module bsg_cache (
 		.sel_i(bypass_mask_lo),
 		.data_o(bypass_data_masked)
 	);
-	assign snoop_or_ld_data = (miss_v ? snoop_word_lo : bypass_data_masked);
+	assign snoop_or_ld_data = (select_snoop_data_r_lo ? snoop_word_lo : bypass_data_masked);
 	wire [data_width_p - 1:0] expanded_mask_v;
 	bsg_expand_bitmask #(
 		.in_width_p(data_mask_width_lp),

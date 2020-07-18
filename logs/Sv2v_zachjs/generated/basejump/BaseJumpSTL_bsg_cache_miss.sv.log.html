@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_miss.v</a>
 defines: 
-time_elapsed: 1.944s
-ram usage: 19988 KB
+time_elapsed: 2.452s
+ram usage: 16236 KB
 </pre>
 <pre class="log">
 
@@ -32,6 +32,7 @@ module bsg_cache_miss (
 	tag_v_i,
 	valid_v_i,
 	lock_v_i,
+	tag_hit_v_i,
 	tag_hit_way_id_i,
 	tag_hit_found_i,
 	sbuf_empty_i,
@@ -53,6 +54,7 @@ module bsg_cache_miss (
 	done_o,
 	recover_o,
 	chosen_way_o,
+	select_snoop_data_r_o,
 	ack_i
 );
 	localparam [5:0] LB = 6&#39;b0;
@@ -121,6 +123,7 @@ module bsg_cache_miss (
 	input [(ways_p &gt;= 1 ? (tag_width_lp &gt;= 1 ? (ways_p * tag_width_lp) - 1 : (ways_p * (2 - tag_width_lp)) + (tag_width_lp - 2)) : (tag_width_lp &gt;= 1 ? ((2 - ways_p) * tag_width_lp) + (((ways_p - 1) * tag_width_lp) - 1) : ((2 - ways_p) * (2 - tag_width_lp)) + (((tag_width_lp - 1) + ((ways_p - 1) * (2 - tag_width_lp))) - 1))):(ways_p &gt;= 1 ? (tag_width_lp &gt;= 1 ? 0 : tag_width_lp - 1) : (tag_width_lp &gt;= 1 ? (ways_p - 1) * tag_width_lp : (tag_width_lp - 1) + ((ways_p - 1) * (2 - tag_width_lp))))] tag_v_i;
 	input [ways_p - 1:0] valid_v_i;
 	input [ways_p - 1:0] lock_v_i;
+	input [ways_p - 1:0] tag_hit_v_i;
 	input [lg_ways_lp - 1:0] tag_hit_way_id_i;
 	input tag_hit_found_i;
 	input sbuf_empty_i;
@@ -142,6 +145,7 @@ module bsg_cache_miss (
 	output reg done_o;
 	output reg recover_o;
 	output wire [lg_ways_lp - 1:0] chosen_way_o;
+	output wire select_snoop_data_r_o;
 	input ack_i;
 	wire [((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p)) - 1:0] stat_info_in;
 	assign stat_info_in = stat_info_i;
@@ -172,6 +176,10 @@ module bsg_cache_miss (
 	reg [3:0] miss_state_n;
 	reg [lg_ways_lp - 1:0] chosen_way_r;
 	reg [lg_ways_lp - 1:0] chosen_way_n;
+	reg [lg_ways_lp - 1:0] flush_way_r;
+	reg [lg_ways_lp - 1:0] flush_way_n;
+	reg select_snoop_data_r;
+	reg select_snoop_data_n;
 	wire goto_flush_op;
 	wire goto_lock_op;
 	assign goto_flush_op = ((decode_v_i[11] | decode_v_i[6]) | decode_v_i[8]) | decode_v_i[7];
@@ -186,12 +194,12 @@ module bsg_cache_miss (
 	assign addr_block_offset_v = addr_v_i[lg_data_mask_width_lp+:lg_block_size_in_words_lp];
 	assign stat_mem_addr_o = addr_index_v;
 	assign tag_mem_addr_o = addr_index_v;
-	assign chosen_way_o = chosen_way_n;
-	assign dma_way_o = chosen_way_r;
+	assign chosen_way_o = chosen_way_r;
+	assign dma_way_o = (goto_flush_op ? flush_way_r : chosen_way_r);
 	wire [ways_p - 2:0] chosen_way_lru_data;
 	wire [ways_p - 2:0] chosen_way_lru_mask;
 	bsg_lru_pseudo_tree_decode #(.ways_p(ways_p)) chosen_way_lru_decode(
-		.way_id_i(chosen_way_n),
+		.way_id_i(chosen_way_r),
 		.data_o(chosen_way_lru_data),
 		.mask_o(chosen_way_lru_mask)
 	);
@@ -209,6 +217,14 @@ module bsg_cache_miss (
 		.i(chosen_way_n),
 		.o(chosen_way_decode)
 	);
+	wire [ways_p - 1:0] addr_way_v_decode;
+	bsg_decode #(.num_out_p(ways_p)) addr_way_v_demux(
+		.i(addr_way_v),
+		.o(addr_way_v_decode)
+	);
+	wire [ways_p - 1:0] flush_way_decode;
+	assign flush_way_decode = (decode_v_i[11] ? addr_way_v_decode : tag_hit_v_i);
+	assign select_snoop_data_r_o = select_snoop_data_r;
 	localparam [3:0] DONE = 8;
 	localparam [3:0] FLUSH_OP = 1;
 	localparam [3:0] GET_FILL_DATA = 6;
@@ -240,10 +256,12 @@ module bsg_cache_miss (
 		tag_mem_data_out = {(ways_p &gt;= 1 ? ways_p : 2 - ways_p) {sv2v_cast_E4176(1&#39;sb0)}};
 		tag_mem_w_mask_out = {(ways_p &gt;= 1 ? ways_p : 2 - ways_p) {sv2v_cast_E4176(1&#39;sb0)}};
 		chosen_way_n = chosen_way_r;
+		flush_way_n = flush_way_r;
 		dma_addr_o = sv2v_cast_3860C(1&#39;sb0);
 		dma_cmd_o = e_dma_nop;
 		recover_o = 1&#39;sb0;
 		done_o = 1&#39;sb0;
+		select_snoop_data_n = select_snoop_data_r;
 		case (miss_state_r)
 			START: begin
 				stat_mem_v_o = miss_v_i;
@@ -253,6 +271,62 @@ module bsg_cache_miss (
 				chosen_way_n = (invalid_exist ? invalid_way_id : (lock_v_i[lru_way_id] ? backup_lru_way_id : lru_way_id));
 				dma_cmd_o = e_dma_send_fill_addr;
 				dma_addr_o = {addr_tag_v, addr_index_v, {lg_data_mask_width_lp + lg_block_size_in_words_lp {1&#39;b0}}};
+				miss_state_n = (dma_done_i ? (stat_info_in[(ways_p &gt;= 1 ? ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 1) - chosen_way_n) : ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - chosen_way_n)] &amp; valid_v_i[chosen_way_n] ? SEND_EVICT_ADDR : GET_FILL_DATA) : SEND_FILL_ADDR);
+			end
+			FLUSH_OP: begin
+				flush_way_n = (decode_v_i[11] ? addr_way_v : tag_hit_way_id_i);
+				stat_mem_v_o = 1&#39;b1;
+				stat_mem_w_o = 1&#39;b1;
+				stat_mem_data_out[(ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)-:(((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) &gt;= ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) ? (((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1))) + 1)] = {ways_p {1&#39;b0}};
+				stat_mem_data_out[((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1-:(((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) &gt;= 1 ? ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) : 2 - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p))] = {ways_p - 1 {1&#39;b0}};
+				stat_mem_w_mask_out[(ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)-:(((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) &gt;= ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) ? (((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1))) + 1)] = flush_way_decode;
+				stat_mem_w_mask_out[((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1-:(((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) &gt;= 1 ? ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) : 2 - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p))] = {ways_p - 1 {1&#39;b0}};
+				tag_mem_v_o = 1&#39;b1;
+				tag_mem_w_o = 1&#39;b1;
+				begin : sv2v_autoblock_1
+					integer i;
+					for (i = 0; i &lt; ways_p; i = i + 1)
+						begin
+							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = 1&#39;b0;
+							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = 1&#39;b0;
+							tag_mem_data_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
+							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = (decode_v_i[6] | decode_v_i[7]) &amp; flush_way_decode[i];
+							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = (decode_v_i[6] | decode_v_i[7]) &amp; flush_way_decode[i];
+							tag_mem_w_mask_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
+						end
+				end
+				miss_state_n = ((~decode_v_i[6] &amp; stat_info_in[(ways_p &gt;= 1 ? ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 1) - flush_way_n) : ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - flush_way_n)]) &amp; valid_v_i[flush_way_n] ? SEND_EVICT_ADDR : RECOVER);
+			end
+			LOCK_OP: begin
+				tag_mem_v_o = 1&#39;b1;
+				tag_mem_w_o = 1&#39;b1;
+				begin : sv2v_autoblock_2
+					integer i;
+					for (i = 0; i &lt; ways_p; i = i + 1)
+						begin
+							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = 1&#39;b0;
+							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = decode_v_i[5];
+							tag_mem_data_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
+							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = 1&#39;b0;
+							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = tag_hit_v_i[i];
+							tag_mem_w_mask_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
+						end
+				end
+				miss_state_n = RECOVER;
+			end
+			SEND_EVICT_ADDR: begin
+				dma_cmd_o = e_dma_send_evict_addr;
+				dma_addr_o = {tag_v_i[(tag_width_lp &gt;= 1 ? 0 : tag_width_lp - 1) + ((ways_p &gt;= 1 ? dma_way_o : (ways_p - 1) - dma_way_o) * (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))+:(tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)], addr_index_v, {lg_data_mask_width_lp + lg_block_size_in_words_lp {1&#39;b0}}};
+				miss_state_n = (dma_done_i ? SEND_EVICT_DATA : SEND_EVICT_ADDR);
+			end
+			SEND_EVICT_DATA: begin
+				dma_cmd_o = (sbuf_empty_i ? e_dma_send_evict_data : e_dma_nop);
+				dma_addr_o = {tag_v_i[(tag_width_lp &gt;= 1 ? 0 : tag_width_lp - 1) + ((ways_p &gt;= 1 ? dma_way_o : (ways_p - 1) - dma_way_o) * (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))+:(tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)], addr_index_v, {lg_data_mask_width_lp + lg_block_size_in_words_lp {1&#39;b0}}};
+				miss_state_n = (dma_done_i ? ((decode_v_i[11] | decode_v_i[7]) | decode_v_i[8] ? RECOVER : GET_FILL_DATA) : SEND_EVICT_DATA);
+			end
+			GET_FILL_DATA: begin
+				dma_cmd_o = (sbuf_empty_i ? e_dma_get_fill_data : e_dma_nop);
+				dma_addr_o = {addr_tag_v, addr_index_v, addr_block_offset_v, {lg_data_mask_width_lp {1&#39;b0}}};
 				stat_mem_v_o = dma_done_i;
 				stat_mem_w_o = dma_done_i;
 				stat_mem_data_out[(ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)-:(((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) &gt;= ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) ? (((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1))) + 1)] = {ways_p {decode_v_i[13] | decode_v_i[2]}};
@@ -261,7 +335,7 @@ module bsg_cache_miss (
 				stat_mem_w_mask_out[((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1-:(((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) &gt;= 1 ? ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) : 2 - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p))] = chosen_way_lru_mask;
 				tag_mem_v_o = dma_done_i;
 				tag_mem_w_o = dma_done_i;
-				begin : sv2v_autoblock_1
+				begin : sv2v_autoblock_3
 					integer i;
 					for (i = 0; i &lt; ways_p; i = i + 1)
 						begin
@@ -273,63 +347,7 @@ module bsg_cache_miss (
 							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = chosen_way_decode[i];
 						end
 				end
-				miss_state_n = (dma_done_i ? (stat_info_in[(ways_p &gt;= 1 ? ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 1) - chosen_way_n) : ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - chosen_way_n)] &amp; valid_v_i[chosen_way_n] ? SEND_EVICT_ADDR : GET_FILL_DATA) : SEND_FILL_ADDR);
-			end
-			FLUSH_OP: begin
-				chosen_way_n = (decode_v_i[11] ? addr_way_v : tag_hit_way_id_i);
-				stat_mem_v_o = 1&#39;b1;
-				stat_mem_w_o = 1&#39;b1;
-				stat_mem_data_out[(ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)-:(((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) &gt;= ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) ? (((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1))) + 1)] = {ways_p {1&#39;b0}};
-				stat_mem_data_out[((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1-:(((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) &gt;= 1 ? ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) : 2 - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p))] = {ways_p - 1 {1&#39;b0}};
-				stat_mem_w_mask_out[(ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)-:(((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) &gt;= ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) ? (((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p)) + 1 : (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1))) + 1)] = chosen_way_decode;
-				stat_mem_w_mask_out[((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1-:(((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) &gt;= 1 ? ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) : 2 - ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p))] = {ways_p - 1 {1&#39;b0}};
-				tag_mem_v_o = 1&#39;b1;
-				tag_mem_w_o = 1&#39;b1;
-				begin : sv2v_autoblock_2
-					integer i;
-					for (i = 0; i &lt; ways_p; i = i + 1)
-						begin
-							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = 1&#39;b0;
-							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = 1&#39;b0;
-							tag_mem_data_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
-							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = (decode_v_i[6] | decode_v_i[7]) &amp; chosen_way_decode[i];
-							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = (decode_v_i[6] | decode_v_i[7]) &amp; chosen_way_decode[i];
-							tag_mem_w_mask_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
-						end
-				end
-				miss_state_n = ((~decode_v_i[6] &amp; stat_info_in[(ways_p &gt;= 1 ? ((ways_p &gt;= 1 ? ways_p : 2 - ways_p) + (((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - 1)) - ((ways_p - 1) - chosen_way_n) : ((ways_p - 2) &gt;= 0 ? ways_p - 1 : 3 - ways_p) - chosen_way_n)]) &amp; valid_v_i[chosen_way_n] ? SEND_EVICT_ADDR : RECOVER);
-			end
-			LOCK_OP: begin
-				chosen_way_n = tag_hit_way_id_i;
-				tag_mem_v_o = 1&#39;b1;
-				tag_mem_w_o = 1&#39;b1;
-				begin : sv2v_autoblock_3
-					integer i;
-					for (i = 0; i &lt; ways_p; i = i + 1)
-						begin
-							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = 1&#39;b0;
-							tag_mem_data_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = decode_v_i[5];
-							tag_mem_data_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
-							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) + 1))] = 1&#39;b0;
-							tag_mem_w_mask_out[((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = chosen_way_decode[i];
-							tag_mem_w_mask_out[((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? ((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1)) : ((((ways_p &gt;= 1 ? i : (ways_p - 1) - i) * ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? 2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)))) + ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1 : ((2 + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)) - 1) - ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) - 1))) + ((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))) - 1)-:((tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) &gt;= 1 ? (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp) : 2 - (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))] = {tag_width_lp {1&#39;b0}};
-						end
-				end
-				miss_state_n = RECOVER;
-			end
-			SEND_EVICT_ADDR: begin
-				dma_cmd_o = e_dma_send_evict_addr;
-				dma_addr_o = {tag_v_i[(tag_width_lp &gt;= 1 ? 0 : tag_width_lp - 1) + ((ways_p &gt;= 1 ? chosen_way_r : (ways_p - 1) - chosen_way_r) * (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))+:(tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)], addr_index_v, {lg_data_mask_width_lp + lg_block_size_in_words_lp {1&#39;b0}}};
-				miss_state_n = (dma_done_i ? SEND_EVICT_DATA : SEND_EVICT_ADDR);
-			end
-			SEND_EVICT_DATA: begin
-				dma_cmd_o = (sbuf_empty_i ? e_dma_send_evict_data : e_dma_nop);
-				dma_addr_o = {tag_v_i[(tag_width_lp &gt;= 1 ? 0 : tag_width_lp - 1) + ((ways_p &gt;= 1 ? chosen_way_r : (ways_p - 1) - chosen_way_r) * (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp))+:(tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)], addr_index_v, {lg_data_mask_width_lp + lg_block_size_in_words_lp {1&#39;b0}}};
-				miss_state_n = (dma_done_i ? ((decode_v_i[11] | decode_v_i[7]) | decode_v_i[8] ? RECOVER : GET_FILL_DATA) : SEND_EVICT_DATA);
-			end
-			GET_FILL_DATA: begin
-				dma_cmd_o = (sbuf_empty_i ? e_dma_get_fill_data : e_dma_nop);
-				dma_addr_o = {addr_tag_v, addr_index_v, addr_block_offset_v, {lg_data_mask_width_lp {1&#39;b0}}};
+				select_snoop_data_n = (dma_done_i ? 1&#39;b1 : select_snoop_data_r);
 				miss_state_n = (dma_done_i ? RECOVER : GET_FILL_DATA);
 			end
 			RECOVER: begin
@@ -339,18 +357,27 @@ module bsg_cache_miss (
 			DONE: begin
 				done_o = 1&#39;b1;
 				miss_state_n = (ack_i ? START : DONE);
+				select_snoop_data_n = (ack_i ? 1&#39;b0 : select_snoop_data_r);
 			end
 			default: miss_state_n = START;
 		endcase
 	end
+	function automatic [(lg_ways_lp &gt;= 1 ? lg_ways_lp : 2 - lg_ways_lp) - 1:0] sv2v_cast_1AE62;
+		input reg [(lg_ways_lp &gt;= 1 ? lg_ways_lp : 2 - lg_ways_lp) - 1:0] inp;
+		sv2v_cast_1AE62 = inp;
+	endfunction
 	always @(posedge clk_i)
 		if (reset_i) begin
 			miss_state_r &lt;= START;
-			chosen_way_r &lt;= 1&#39;b0;
+			chosen_way_r &lt;= sv2v_cast_1AE62(1&#39;sb0);
+			flush_way_r &lt;= sv2v_cast_1AE62(1&#39;sb0);
+			select_snoop_data_r &lt;= 1&#39;b0;
 		end
 		else begin
 			miss_state_r &lt;= miss_state_n;
 			chosen_way_r &lt;= chosen_way_n;
+			flush_way_r &lt;= flush_way_n;
+			select_snoop_data_r &lt;= select_snoop_data_n;
 		end
 endmodule
 

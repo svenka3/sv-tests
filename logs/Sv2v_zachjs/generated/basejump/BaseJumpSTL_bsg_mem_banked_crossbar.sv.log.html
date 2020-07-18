@@ -17,13 +17,13 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_banked_crossbar.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_banked_crossbar.v</a>
 defines: 
-time_elapsed: 1.028s
-ram usage: 19224 KB
+time_elapsed: 1.056s
+ram usage: 19128 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I/tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_mem <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_banked_crossbar.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_banked_crossbar.v</a>
-module bsg_crossbar_control_o_by_i (
+module bsg_mem_banked_crossbar_control_o_by_i (
 	clk_i,
 	reset_i,
 	reverse_pr_i,
@@ -67,7 +67,7 @@ module bsg_crossbar_control_o_by_i (
 	);
 	generate
 		for (i = 0; i &lt; o_els_p; i = i + 1) begin : arb
-			if ((rr_lo_hi_p == 3) || (rr_lo_hi_p == 4)) begin : rr
+			if (((rr_lo_hi_p == 3) || (rr_lo_hi_p == 4)) || (rr_lo_hi_p == 2)) begin : rr
 				bsg_round_robin_arb #(
 					.inputs_p(i_els_p),
 					.hold_on_sr_p(rr_lo_hi_p == 3),
@@ -189,7 +189,7 @@ module bsg_mem_banked_crossbar (
 	reg [(num_banks_p &gt;= 1 ? (num_ports_p &gt;= 1 ? (num_banks_p * num_ports_p) - 1 : (num_banks_p * (2 - num_ports_p)) + (num_ports_p - 2)) : (num_ports_p &gt;= 1 ? ((2 - num_banks_p) * num_ports_p) + (((num_banks_p - 1) * num_ports_p) - 1) : ((2 - num_banks_p) * (2 - num_ports_p)) + (((num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))) - 1))):(num_banks_p &gt;= 1 ? (num_ports_p &gt;= 1 ? 0 : num_ports_p - 1) : (num_ports_p &gt;= 1 ? (num_banks_p - 1) * num_ports_p : (num_ports_p - 1) + ((num_banks_p - 1) * (2 - num_ports_p))))] bank_port_grants_one_hot_r;
 	wire [num_banks_p - 1:0] bank_v;
 	reg [num_banks_p - 1:0] bank_v_r;
-	bsg_crossbar_control_o_by_i #(
+	bsg_mem_banked_crossbar_control_o_by_i #(
 		.i_els_p(num_ports_p),
 		.o_els_p(num_banks_p),
 		.rr_lo_hi_p(rr_lo_hi_p)
