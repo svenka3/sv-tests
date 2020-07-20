@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_client.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_client.v</a>
 defines: 
-time_elapsed: 0.692s
-ram usage: 16300 KB
+time_elapsed: 0.504s
+ram usage: 13544 KB
 </pre>
 <pre class="log">
 
@@ -103,10 +103,6 @@ module bsg_tag_client (
 		recv_new_r &lt;= recv_new;
 		recv_new_r_r &lt;= recv_new_r | recv_reset_i;
 	end
-	function automatic [width_p - 1:0] sv2v_cast_89401;
-		input reg [width_p - 1:0] inp;
-		sv2v_cast_89401 = inp;
-	endfunction
 	generate
 		if (default_p == 0) begin : z
 			bsg_dff_reset_en #(
@@ -121,6 +117,10 @@ module bsg_tag_client (
 			);
 		end
 		else begin : z
+			function automatic [width_p - 1:0] sv2v_cast_89401;
+				input reg [width_p - 1:0] inp;
+				sv2v_cast_89401 = inp;
+			endfunction
 			always @(posedge recv_clk_i)
 				if (recv_reset_i) begin
 					recv_data_r &lt;= sv2v_cast_89401(default_p);
