@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv</a>
 defines: 
 time_elapsed: 0.000s
-ram usage: 9848 KB
+ram usage: 9768 KB
 </pre>
 <pre class="log">
 
@@ -26,9 +26,15 @@ slang-driver --single-unit -I/tmpfs/src/github/sv-tests/third_party/tests/hdlcon
 ../../src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv:4:7: warning: initializing a static variable in a procedural context requires an explicit &#39;static&#39; keyword [-Wexplicit-static]
 	byte b[] = { 1, 2, 3, 4 };
 	     ^
-../../src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv:4:8: error: dimension requires a constant range
+../../src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv:4:11: error: value of type &#39;bit[127:0]&#39; cannot be assigned to type &#39;dynamic array of byte&#39;
 	byte b[] = { 1, 2, 3, 4 };
-	      ^~
+	         ^ ~~~~~~~~~~~~~~
+../../src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv:6:7: error: invalid member access for type &#39;dynamic array of byte&#39;
+	y = b.sum ; // y becomes 10 =&gt; 1 + 2 + 3 + 4
+	    ~^~~~
+../../src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv:7:7: error: invalid member access for type &#39;dynamic array of byte&#39;
+	y = b.product ; // y becomes 24 =&gt; 1 * 2 * 3 * 4
+	    ~^~~~~~~~
 ../../src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017/p168.sv:8:6: error: language feature not yet supported
 	y = b.xor with ( item + 4 ); // y becomes 12 =&gt; 5 ^ 6 ^ 7 ^ 8
 	    ^~~~~~~~~~~~~~~~~~~~~~~

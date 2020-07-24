@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,18 +18,50 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99s.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99s.v</a>
 defines: 
 time_elapsed: 0.004s
-ram usage: 9748 KB
+ram usage: 10068 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99s.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99s.v</a>
-
-error: expected `)`, but found `weak0` instead
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99s.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99s.v:8</a>:15-20:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99s.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99s.v:11</a>:6-39:
    | 
-   | assign (weak1,weak0) value2 = value1;
-   |               ^^^^^                  
+   |   #2 $display(&#34;%b %b&#34;, value1, value2);
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99s.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99s.v:13</a>:5-23:
+   | 
+   |     $display(&#34;PASSED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br_gh99s.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/br_gh99s.v:15</a>:5-23:
+   | 
+   |     $display(&#34;FAILED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+proc %test.initial.76.0 (i8$ %value2) -&gt; () {
+0:
+    %1 = const i32 2
+    wait %2 for %1
+2:
+    halt
+}
+
+entity @test () -&gt; () {
+    %0 = const i8 0
+    %value1 = sig i8 %0
+    %value2 = sig i8 %0
+    %1 = exts i4$, i8$ %value1, 0, 4
+    %2 = const i4 2
+    %3 = const time 0s 1e
+    drv i4$ %1, %2, %3
+    %value1.prb = prb i8$ %value1
+    drv i8$ %value2, %value1.prb, %3
+    inst %test.initial.76.0 (i8$ %value2) -&gt; ()
+    halt
+}
 
 </pre>
 </body>

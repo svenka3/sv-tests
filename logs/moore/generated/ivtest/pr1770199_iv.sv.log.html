@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,18 +18,34 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1770199.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1770199.v</a>
 defines: 
 time_elapsed: 0.004s
-ram usage: 9832 KB
+ram usage: 10128 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr1770199.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1770199.v</a>
-
-error: expected `)`, but found `strong0` instead
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1770199.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1770199.v:4</a>:18-25:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1770199.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1770199.v:10</a>:5-42:
    | 
-   |   assign (pull1, strong0) net = 1&#39;b1;
-   |                  ^^^^^^^             
+   |     $display(&#34;The strength is: %v:&#34;, net);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+proc %top.initial.30.0 () -&gt; () {
+0:
+    %1 = const i32 1
+    wait %2 for %1
+2:
+    halt
+}
+
+entity @top () -&gt; () {
+    %0 = const i1 0
+    %net = sig i1 %0
+    %1 = const i1 1
+    %2 = const time 0s 1e
+    drv i1$ %net, %1, %2
+    inst %top.initial.30.0 () -&gt; ()
+    halt
+}
 
 </pre>
 </body>

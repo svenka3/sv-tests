@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,19 +17,74 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br918a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br918a.v</a>
 defines: 
-time_elapsed: 0.004s
-ram usage: 9792 KB
+time_elapsed: 0.008s
+ram usage: 10272 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e br918a <a href="../../../../third_party/tests/ivtest/ivltests/br918a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br918a.v</a>
-
-error: expected `)`, but found `strong0` instead
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br918a.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/br918a.v:10</a>:15-22:
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br918a.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/br918a.v:21</a>:6-23:
    | 
-   | assign (pull1,strong0) w[1:0] = v1;
-   |               ^^^^^^^              
+   |   #1 $display(&#34;%b&#34;, w);
+   |      ^^^^^^^^^^^^^^^^^ 
 
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br918a.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/br918a.v:23</a>:5-23:
+   | 
+   |     $display(&#34;PASSED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+warning: `$display` not supported; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br918a.v.html#l-25" target="file-frame">third_party/tests/ivtest/ivltests/br918a.v:25</a>:5-23:
+   | 
+   |     $display(&#34;FAILED&#34;);
+   |     ^^^^^^^^^^^^^^^^^^ 
+
+proc %br918a.initial.167.0 (i4$ %w) -&gt; (i2$ %v1, i2$ %v2, i2$ %v3, i2$ %v4) {
+0:
+    %1 = const i2 0
+    %2 = const time 0s 1e
+    drv i2$ %v1, %1, %2
+    %3 = const i2 2
+    drv i2$ %v2, %3, %2
+    %4 = const i2 3
+    drv i2$ %v3, %4, %2
+    drv i2$ %v4, %3, %2
+    %5 = const i32 1
+    wait %6 for %5
+6:
+    halt
+}
+
+entity @br918a () -&gt; () {
+    %0 = const i2 0
+    %v1 = sig i2 %0
+    %v2 = sig i2 %0
+    %v3 = sig i2 %0
+    %v4 = sig i2 %0
+    %1 = const i4 0
+    %w = sig i4 %1
+    %2 = exts i2$, i4$ %w, 0, 2
+    %v1.prb = prb i2$ %v1
+    %3 = const time 0s 1e
+    drv i2$ %2, %v1.prb, %3
+    %v2.prb = prb i2$ %v2
+    drv i2$ %2, %v2.prb, %3
+    %4 = const i2 2
+    %5 = sig i4 %1
+    %6 = shr i4$ %w, i4$ %5, i2 %4
+    %7 = exts i2$, i4$ %6, 0, 2
+    %v3.prb = prb i2$ %v3
+    drv i2$ %7, %v3.prb, %3
+    %8 = sig i4 %1
+    %9 = shr i4$ %w, i4$ %8, i2 %4
+    %10 = exts i2$, i4$ %9, 0, 2
+    %v4.prb = prb i2$ %v4
+    drv i2$ %10, %v4.prb, %3
+    inst %br918a.initial.167.0 (i4$ %w) -&gt; (i2$ %v1, i2$ %v2, i2$ %v3, i2$ %v4)
+    halt
+}
 
 </pre>
 </body>
