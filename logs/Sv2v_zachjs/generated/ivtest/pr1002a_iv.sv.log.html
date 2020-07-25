@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1002a.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1002a.v</a>
 defines: 
-time_elapsed: 0.028s
-ram usage: 11752 KB
+time_elapsed: 0.036s
+ram usage: 11860 KB
 </pre>
 <pre class="log">
 
@@ -30,8 +30,8 @@ module top;
 	reg test_failed;
 	initial begin
 		test_failed = 0;
-		#(1) datain = 14&#39;hfff;
-		#(1) datain = 14&#39;h0;
+		#(1) datain = 14&#39;h0fff;
+		#(1) datain = 14&#39;h0000;
 		#(1) datain = 14&#39;h1fff;
 		#(1) datain = 14&#39;h1000;
 		#(1) datain = 14&#39;h2fff;
@@ -46,7 +46,7 @@ module top;
 			$display(&#34;TEST PASSED :-)&#34;);
 	end
 	wire signed [15:0] expected_dataout;
-	assign expected_dataout = $signed({datain[13:0], 2&#39;b0});
+	assign expected_dataout = $signed({datain[13:0], 2&#39;b00});
 	always @(dataout)
 		if (expected_dataout != dataout) begin
 			$display(&#34;datain = %d dataout = %d expected = %d ... CHECK FAILED&#34;, datain, dataout, expected_dataout);

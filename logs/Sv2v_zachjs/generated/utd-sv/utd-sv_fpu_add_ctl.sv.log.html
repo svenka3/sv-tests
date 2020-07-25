@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/fpu_add_ctl.v.html" target="file-frame">third_party/tests/utd-sv/fpu_add_ctl.v</a>
 defines: 
-time_elapsed: 1.624s
-ram usage: 28136 KB
+time_elapsed: 1.988s
+ram usage: 30752 KB
 </pre>
 <pre class="log">
 
@@ -1523,7 +1523,7 @@ module fpu_add_ctl (
 	assign a1stg_exp_diff_add1 = a1stg_faddsub_dtosop &amp;&amp; !a1stg_expadd1[11];
 	assign a1stg_exp_diff_add2 = a1stg_faddsubop &amp;&amp; a1stg_expadd1[11];
 	assign a1stg_exp_diff_5 = !a1stg_expadd2[5] &amp;&amp; a1stg_fsdtox;
-	assign a1stg_exp_diff[10:0] = (({11 {a1stg_exp_diff_add1}} &amp; a1stg_expadd1[10:0]) | ({11 {a1stg_exp_diff_add2}} &amp; ~a1stg_expadd4_inv[10:0])) | ({11 {a1stg_fsdtoix}} &amp; {5&#39;b0, a1stg_exp_diff_5, ~a1stg_expadd2[4:0]});
+	assign a1stg_exp_diff[10:0] = (({11 {a1stg_exp_diff_add1}} &amp; a1stg_expadd1[10:0]) | ({11 {a1stg_exp_diff_add2}} &amp; ~a1stg_expadd4_inv[10:0])) | ({11 {a1stg_fsdtoix}} &amp; {5&#39;b00000, a1stg_exp_diff_5, ~a1stg_expadd2[4:0]});
 	assign a1stg_clamp63[5:0] = a1stg_exp_diff[5:0] | {6 {|a1stg_exp_diff[10:6]}};
 	assign a2stg_shr_cnt_in[5:0] = a1stg_clamp63[5:0];
 	assign a2stg_shr_cnt_5_inv_in = !a1stg_clamp63[5];
@@ -1549,23 +1549,23 @@ module fpu_add_ctl (
 	assign a3stg_exp_7ff = a2stg_fstod &amp;&amp; &amp;a2stg_exp[7:0];
 	assign a3stg_exp_ff = a2stg_fdtos &amp;&amp; &amp;a2stg_exp[10:0];
 	assign a3stg_exp_add = (a2stg_fstod &amp;&amp; !(&amp;a2stg_exp[7:0])) || (a2stg_fdtos &amp;&amp; !(&amp;a2stg_exp[10:0]));
-	assign a2stg_expdec_neq_0 = a2stg_faddsubop &amp;&amp; (a2stg_exp[10:0] &lt; 11&#39;h36);
-	assign a3stg_exp10_0_eq0 = a3stg_exp[10:0] == 11&#39;b0;
-	assign a3stg_exp10_1_eq0 = a3stg_exp[10:1] == 10&#39;b0;
+	assign a2stg_expdec_neq_0 = a2stg_faddsubop &amp;&amp; (a2stg_exp[10:0] &lt; 11&#39;h036);
+	assign a3stg_exp10_0_eq0 = a3stg_exp[10:0] == 11&#39;b00000000000;
+	assign a3stg_exp10_1_eq0 = a3stg_exp[10:1] == 10&#39;b0000000000;
 	assign a3stg_fdtos_inv = !a3stg_fdtos;
 	assign a4stg_fixtos_fxtod_inv = !a4stg_fixtos_fxtod;
 	assign a4stg_rnd_frac_add_inv = !(a3stg_fsdtoix || (a3stg_faddsubop &amp;&amp; a3stg_exp10_0_eq0));
-	assign a4stg_shl_cnt_in[9:0] = ({10 {a3stg_denorm}} &amp; {a3stg_exp[5:4] == 2&#39;b11, a3stg_exp[5:4] == 2&#39;b10, a3stg_exp[5:4] == 2&#39;b1, a3stg_exp[5:4] == 2&#39;b0, a3stg_exp[5:0]}) | ({10 {a3stg_denorm_inv}} &amp; {a3stg_lead0[5:4] == 2&#39;b11, a3stg_lead0[5:4] == 2&#39;b10, a3stg_lead0[5:4] == 2&#39;b1, a3stg_lead0[5:4] == 2&#39;b0, a3stg_lead0[5:0]});
+	assign a4stg_shl_cnt_in[9:0] = ({10 {a3stg_denorm}} &amp; {a3stg_exp[5:4] == 2&#39;b11, a3stg_exp[5:4] == 2&#39;b10, a3stg_exp[5:4] == 2&#39;b01, a3stg_exp[5:4] == 2&#39;b00, a3stg_exp[5:0]}) | ({10 {a3stg_denorm_inv}} &amp; {a3stg_lead0[5:4] == 2&#39;b11, a3stg_lead0[5:4] == 2&#39;b10, a3stg_lead0[5:4] == 2&#39;b01, a3stg_lead0[5:4] == 2&#39;b00, a3stg_lead0[5:0]});
 	assign a4stg_rnd_sng = a5stg_fixtos || a4stg_faddsubs_fdtos;
 	assign a4stg_rnd_dbl = a5stg_fxtod || a4stg_faddsubd;
-	assign a4stg_rndup_sng = ((((a4stg_rnd_mode == 2&#39;b10) &amp;&amp; !a4stg_sign) &amp;&amp; a4stg_frac_sng_nx) || (((a4stg_rnd_mode == 2&#39;b11) &amp;&amp; a4stg_sign) &amp;&amp; a4stg_frac_sng_nx)) || (((a4stg_rnd_mode == 2&#39;b0) &amp;&amp; a4stg_rnd_frac_39) &amp;&amp; (a4stg_frac_38_0_nx || a4stg_rnd_frac_40));
-	assign a4stg_rndup_dbl = ((((a4stg_rnd_mode == 2&#39;b10) &amp;&amp; !a4stg_sign) &amp;&amp; a4stg_frac_dbl_nx) || (((a4stg_rnd_mode == 2&#39;b11) &amp;&amp; a4stg_sign) &amp;&amp; a4stg_frac_dbl_nx)) || (((a4stg_rnd_mode == 2&#39;b0) &amp;&amp; a4stg_rnd_frac_10) &amp;&amp; (a4stg_frac_9_0_nx || a4stg_rnd_frac_11));
+	assign a4stg_rndup_sng = ((((a4stg_rnd_mode == 2&#39;b10) &amp;&amp; !a4stg_sign) &amp;&amp; a4stg_frac_sng_nx) || (((a4stg_rnd_mode == 2&#39;b11) &amp;&amp; a4stg_sign) &amp;&amp; a4stg_frac_sng_nx)) || (((a4stg_rnd_mode == 2&#39;b00) &amp;&amp; a4stg_rnd_frac_39) &amp;&amp; (a4stg_frac_38_0_nx || a4stg_rnd_frac_40));
+	assign a4stg_rndup_dbl = ((((a4stg_rnd_mode == 2&#39;b10) &amp;&amp; !a4stg_sign) &amp;&amp; a4stg_frac_dbl_nx) || (((a4stg_rnd_mode == 2&#39;b11) &amp;&amp; a4stg_sign) &amp;&amp; a4stg_frac_dbl_nx)) || (((a4stg_rnd_mode == 2&#39;b00) &amp;&amp; a4stg_rnd_frac_10) &amp;&amp; (a4stg_frac_9_0_nx || a4stg_rnd_frac_11));
 	assign a4stg_rndup = ((a4stg_faddsubd &amp;&amp; a4stg_rndup_dbl) || (a4stg_faddsubs &amp;&amp; a4stg_rndup_sng)) || ((a4stg_fdtos &amp;&amp; a4stg_rndup_sng) &amp;&amp; a4stg_of_mask);
 	assign a5stg_rndup = (a5stg_fxtod &amp;&amp; a4stg_rndup_dbl) || (a5stg_fixtos &amp;&amp; a4stg_rndup_sng);
 	assign add_frac_out_rndadd = ((((a4stg_faddsubop &amp;&amp; a4stg_round) &amp;&amp; a4stg_rndup) &amp;&amp; !a4stg_in_of) || ((a4stg_fdtos &amp;&amp; a4stg_rndup) &amp;&amp; !a4stg_in_of)) || (a5stg_fixtos_fxtod &amp;&amp; a5stg_rndup);
 	assign add_frac_out_rnd_frac = (((((a4stg_faddsubop &amp;&amp; a4stg_round) &amp;&amp; !a4stg_rndup) &amp;&amp; !a4stg_in_of) || ((a4stg_fdtos &amp;&amp; !a4stg_rndup) &amp;&amp; !a4stg_in_of)) || (a5stg_fixtos_fxtod &amp;&amp; !a5stg_rndup)) || a4stg_fsdtoix;
 	assign add_frac_out_shl = ((a4stg_faddsubop &amp;&amp; !a4stg_round) &amp;&amp; !a4stg_in_of) || a4stg_fistod;
-	assign a4stg_to_0 = !(((a4stg_rnd_mode == 2&#39;b0) || ((a4stg_rnd_mode == 2&#39;b10) &amp;&amp; !a4stg_sign)) || ((a4stg_rnd_mode == 2&#39;b11) &amp;&amp; a4stg_sign));
+	assign a4stg_to_0 = !(((a4stg_rnd_mode == 2&#39;b00) || ((a4stg_rnd_mode == 2&#39;b10) &amp;&amp; !a4stg_sign)) || ((a4stg_rnd_mode == 2&#39;b11) &amp;&amp; a4stg_sign));
 	assign add_exp_out_expinc = ((((a4stg_faddsubop &amp;&amp; a4stg_round) &amp;&amp; a4stg_rndup) &amp;&amp; !a4stg_in_of) || ((a4stg_fdtos &amp;&amp; a4stg_rndup) &amp;&amp; !a4stg_in_of)) || (a5stg_fixtos_fxtod &amp;&amp; a5stg_rndup);
 	assign add_exp_out_exp = (((a4stg_faddsubop &amp;&amp; a4stg_round) &amp;&amp; !a4stg_in_of) || (a4stg_fdtos &amp;&amp; !a4stg_in_of)) || a5stg_fixtos_fxtod;
 	assign add_exp_out_exp1 = ((((a4stg_faddsubop &amp;&amp; a4stg_round) &amp;&amp; !a4stg_rndup) &amp;&amp; !a4stg_in_of) || ((a4stg_fdtos &amp;&amp; !a4stg_rndup) &amp;&amp; !a4stg_in_of)) || (a5stg_fixtos_fxtod &amp;&amp; !a5stg_rndup);

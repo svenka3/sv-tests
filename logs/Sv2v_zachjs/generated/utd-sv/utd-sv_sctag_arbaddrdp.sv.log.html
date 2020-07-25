@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_arbaddrdp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_arbaddrdp.v</a>
 defines: 
-time_elapsed: 0.572s
-ram usage: 18208 KB
+time_elapsed: 0.332s
+ram usage: 16048 KB
 </pre>
 <pre class="log">
 
@@ -209,7 +209,7 @@ module sctag_arbaddrdp (
 	wire [9:0] vuad_acc_idx_px2;
 	wire [9:0] vuad_idx2_px2;
 	wire [9:0] bist_vuad_idx;
-	assign err_tag_c4 = {2&#39;b0, tagdp_evict_tag_c4[27:0]};
+	assign err_tag_c4 = {2&#39;b00, tagdp_evict_tag_c4[27:0]};
 	zzecc_sctag_30b_cor ecc_corr(
 		.din(err_tag_c4[29:6]),
 		.parity(err_tag_c4[5:1]),
@@ -224,7 +224,7 @@ module sctag_arbaddrdp (
 	assign cbit_err = |corr_bit[4:0];
 	zzpar32 par_bit(
 		.z(par_err_tag_c4),
-		.d({err_tag_c4[29:0], 2&#39;b0})
+		.d({err_tag_c4[29:0], 2&#39;b00})
 	);
 	assign tecc_corr_tag_c1[0] = (par_err_tag_c4 &amp; ~cbit_err) ^ err_tag_c4[0];
 	dff_s #(28) ff_tecc_corr_tag_c2(
@@ -258,7 +258,7 @@ module sctag_arbaddrdp (
 	);
 	assign arbdp_new_addr5to4_px2 = mux3_addr_px2[5:4];
 	assign arbdp_cam_addr_px2 = mux4_addr_px2[39:0];
-	assign data_ecc_idx_plus1 = data_ecc_idx + 10&#39;b1;
+	assign data_ecc_idx_plus1 = data_ecc_idx + 10&#39;b0000000001;
 	clken_buf ckbuf_data_ecc_idx(
 		.clk(clk_data_ecc_idx),
 		.rclk(rclk),
@@ -420,7 +420,7 @@ module sctag_arbaddrdp (
 	assign arbaddr_addr22_c2 = arbdp_addr_c2[22];
 	assign arbdp_addr5to4_c2 = arbdp_addr_c2[5:4];
 	assign arbdp_diag_wr_way_c2 = arbdp_addr_c2[21:18];
-	assign arbdp_addr_start_c2 = arbdp_addr_c2[5:0] == 6&#39;b0;
+	assign arbdp_addr_start_c2 = arbdp_addr_c2[5:0] == 6&#39;b000000;
 	dff_s #(40) ff_addr_c3(
 		.din(arbdp_addr_c2[39:0]),
 		.clk(rclk),

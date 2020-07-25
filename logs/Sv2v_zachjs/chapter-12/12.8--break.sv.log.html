@@ -17,8 +17,8 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../tests/chapter-12/12.8--break.sv.html" target="file-frame">tests/chapter-12/12.8--break.sv</a>
 defines: 
-time_elapsed: 0.044s
-ram usage: 9924 KB
+time_elapsed: 0.144s
+ram usage: 13744 KB
 </pre>
 <pre class="log">
 
@@ -26,16 +26,18 @@ zachjs-sv2v -I/tmpfs/src/github/sv-tests/tests/chapter-12 <a href="../../../test
 module jump_tb;
 	initial begin : sv2v_autoblock_1
 		reg [0:1] _sv2v_jump;
-		_sv2v_jump = 2&#39;b0;
+		_sv2v_jump = 2&#39;b00;
 		begin : sv2v_autoblock_2
 			reg signed [31:0] i;
 			for (i = 0; (i &lt; 256) &amp;&amp; (_sv2v_jump &lt; 2&#39;b10); i = i + 1)
 				begin
-					_sv2v_jump = 2&#39;b0;
+					_sv2v_jump = 2&#39;b00;
 					if (i &gt; 100)
 						_sv2v_jump = 2&#39;b10;
 				end
-			if (_sv2v_jump == 2&#39;b0)
+			if (_sv2v_jump != 2&#39;b11)
+				_sv2v_jump = 2&#39;b00;
+			if (_sv2v_jump == 2&#39;b00)
 				$display(&#34;:assert:(%d == 101)&#34;, i);
 		end
 	end

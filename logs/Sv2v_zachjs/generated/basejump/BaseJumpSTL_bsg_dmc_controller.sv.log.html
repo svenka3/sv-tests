@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_controller.v</a>
 defines: 
-time_elapsed: 1.792s
-ram usage: 22020 KB
+time_elapsed: 0.788s
+ram usage: 24320 KB
 </pre>
 <pre class="log">
 
@@ -112,14 +112,14 @@ module bsg_dmc_controller (
 	input [dfi_data_width_p - 1:0] dfi_rddata_i;
 	input dfi_rddata_valid_i;
 	input bsg_dmc_s dmc_p_i;
-	localparam LMR = 4&#39;b0;
-	localparam REF = 4&#39;b1;
-	localparam PRE = 4&#39;b10;
-	localparam ACT = 4&#39;b11;
-	localparam WRITE = 4&#39;b100;
-	localparam READ = 4&#39;b101;
-	localparam BST = 4&#39;b110;
-	localparam NOP = 4&#39;b111;
+	localparam LMR = 4&#39;b0000;
+	localparam REF = 4&#39;b0001;
+	localparam PRE = 4&#39;b0010;
+	localparam ACT = 4&#39;b0011;
+	localparam WRITE = 4&#39;b0100;
+	localparam READ = 4&#39;b0101;
+	localparam BST = 4&#39;b0110;
+	localparam NOP = 4&#39;b0111;
 	localparam ERROR = 4&#39;b1111;
 	integer i;
 	genvar k;
@@ -339,19 +339,19 @@ module bsg_dmc_controller (
 			case (init_tick)
 				&#39;d5: begin
 					push_init_cmd = cmd_sfifo_ready;
-					init_cmd = {4&#39;h2, NOP, 20&#39;h0};
+					init_cmd = {4&#39;h2, NOP, 20&#39;h00000};
 				end
 				&#39;d4: begin
 					push_init_cmd = cmd_sfifo_ready;
-					init_cmd = {4&#39;h2, PRE, 20&#39;h400};
+					init_cmd = {4&#39;h2, PRE, 20&#39;h00400};
 				end
 				&#39;d3: begin
 					push_init_cmd = cmd_sfifo_ready;
-					init_cmd = {4&#39;h2, REF, 20&#39;h0};
+					init_cmd = {4&#39;h2, REF, 20&#39;h00000};
 				end
 				&#39;d2: begin
 					push_init_cmd = cmd_sfifo_ready;
-					init_cmd = {4&#39;h2, REF, 20&#39;h0};
+					init_cmd = {4&#39;h2, REF, 20&#39;h00000};
 				end
 				&#39;d1: begin
 					push_init_cmd = cmd_sfifo_ready;
@@ -359,15 +359,15 @@ module bsg_dmc_controller (
 				end
 				&#39;d0: begin
 					push_init_cmd = cmd_sfifo_ready;
-					init_cmd = {4&#39;h2, LMR, 4&#39;h2, 16&#39;h0};
+					init_cmd = {4&#39;h2, LMR, 4&#39;h2, 16&#39;h0000};
 				end
 				default: begin
 					push_init_cmd = 0;
-					init_cmd = 28&#39;h0;
+					init_cmd = 28&#39;h0000000;
 				end
 			endcase
 		else begin
-			init_cmd = 28&#39;h0;
+			init_cmd = 28&#39;h0000000;
 			push_init_cmd = 0;
 		end
 	always @(posedge dfi_clk_i)
@@ -404,20 +404,20 @@ module bsg_dmc_controller (
 			case (refr_tick)
 				&#39;d1: begin
 					push_refr_cmd = cmd_sfifo_ready;
-					refr_cmd = {4&#39;h2, PRE, 20&#39;h400};
+					refr_cmd = {4&#39;h2, PRE, 20&#39;h00400};
 				end
 				&#39;d0: begin
 					push_refr_cmd = cmd_sfifo_ready;
-					refr_cmd = {4&#39;h2, REF, 20&#39;h0};
+					refr_cmd = {4&#39;h2, REF, 20&#39;h00000};
 				end
 				default: begin
 					push_refr_cmd = 0;
-					refr_cmd = 28&#39;h0;
+					refr_cmd = 28&#39;h0000000;
 				end
 			endcase
 		else begin
 			push_refr_cmd = 0;
-			refr_cmd = 28&#39;h0;
+			refr_cmd = 28&#39;h0000000;
 		end
 	always @(posedge dfi_clk_i)
 		if (dfi_clk_sync_rst_i)
@@ -452,11 +452,11 @@ module bsg_dmc_controller (
 				end
 				default: begin
 					push_ldst_cmd = 0;
-					ldst_cmd = 28&#39;h0;
+					ldst_cmd = 28&#39;h0000000;
 				end
 			endcase
 		else begin
-			ldst_cmd = 28&#39;h0;
+			ldst_cmd = 28&#39;h0000000;
 			push_ldst_cmd = 0;
 		end
 	always @(*) begin
@@ -601,9 +601,9 @@ module bsg_dmc_controller (
 		end
 		else if (shoot &amp;&amp; (cmd_sfifo_rdata[23:20] == WRITE)) begin
 			case (tbl)
-				8&#39;h1: wburst_tick &lt;= 0;
-				8&#39;h2: wburst_tick &lt;= 1;
-				8&#39;h3: wburst_tick &lt;= 3;
+				8&#39;h01: wburst_tick &lt;= 0;
+				8&#39;h02: wburst_tick &lt;= 1;
+				8&#39;h03: wburst_tick &lt;= 3;
 				default: wburst_tick &lt;= 0;
 			endcase
 			wburst_valid &lt;= 1;
@@ -634,9 +634,9 @@ module bsg_dmc_controller (
 		end
 		else if (cas_valid &amp;&amp; (cas_tick == 0)) begin
 			case (tbl)
-				8&#39;h1: rburst_tick &lt;= 0;
-				8&#39;h2: rburst_tick &lt;= 1;
-				8&#39;h3: rburst_tick &lt;= 3;
+				8&#39;h01: rburst_tick &lt;= 0;
+				8&#39;h02: rburst_tick &lt;= 1;
+				8&#39;h03: rburst_tick &lt;= 3;
 				default: rburst_tick &lt;= 0;
 			endcase
 			dfi_rddata_en_o &lt;= 1;
@@ -648,8 +648,8 @@ module bsg_dmc_controller (
 		end
 	always @(posedge dfi_clk_i)
 		if (dfi_clk_sync_rst_i) begin
-			dfi_bank_o &lt;= 3&#39;b0;
-			dfi_address_o &lt;= 16&#39;h0;
+			dfi_bank_o &lt;= 3&#39;b000;
+			dfi_address_o &lt;= 16&#39;h0000;
 			dfi_cke_o &lt;= 1&#39;b0;
 			dfi_cs_n_o &lt;= 1&#39;b1;
 			dfi_ras_n_o &lt;= 1&#39;b1;

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_mul.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fpu/bsg_fpu_mul.v</a>
 defines: 
-time_elapsed: 0.668s
-ram usage: 15348 KB
+time_elapsed: 0.956s
+ram usage: 17592 KB
 </pre>
 <pre class="log">
 
@@ -117,7 +117,7 @@ module bsg_fpu_mul (
 	wire final_sign;
 	assign final_sign = sign_a ^ sign_b;
 	wire [e_p:0] exp_sum;
-	assign exp_sum = ({1&#39;b0, exp_a} + {1&#39;b0, exp_b}) + 9&#39;b1;
+	assign exp_sum = ({1&#39;b0, exp_a} + {1&#39;b0, exp_b}) + 9&#39;b000000001;
 	wire [e_p - 1:0] exp_sum_unbiased;
 	assign exp_sum_unbiased = {~exp_sum[e_p - 1], exp_sum[e_p - 2:0]};
 	wire [m_p:0] man_a_norm;
@@ -331,7 +331,7 @@ module bsg_fpu_mul (
 			underflow_o = 1&#39;b0;
 			z_o = {1&#39;b0, {e_p {1&#39;b1}}, 1&#39;b1, {m_p - 1 {1&#39;b0}}};
 		end
-		else if (exp_sum_3_r[e_p - 1+:2] == 2&#39;b0) begin
+		else if (exp_sum_3_r[e_p - 1+:2] == 2&#39;b00) begin
 			unimplemented_o = 1&#39;b0;
 			invalid_o = 1&#39;b0;
 			overflow_o = 1&#39;b0;

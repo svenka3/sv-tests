@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_oqdp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_oqdp.v</a>
 defines: 
-time_elapsed: 0.696s
-ram usage: 19028 KB
+time_elapsed: 0.412s
+ram usage: 18544 KB
 </pre>
 <pre class="log">
 
@@ -301,7 +301,7 @@ module sctag_oqdp (
 	assign oqdp_tid_c8 = {cpuid_c8[2:0], tid_c8[1:0]};
 	mux2ds #(3) mux_inval_way_c7(
 		.dout(inval_way_c7[2:0]),
-		.in0({2&#39;b0, inst_l1way_c7[1]}),
+		.in0({2&#39;b00, inst_l1way_c7[1]}),
 		.sel0(~fwd_req_ret_c7),
 		.in1(cpuid_c7[2:0]),
 		.sel1(fwd_req_ret_c7)
@@ -438,11 +438,11 @@ module sctag_oqdp (
 		.dout(tmp_inval_data_c7[38:0]),
 		.in0(retdp_diag_data_c7[38:0]),
 		.sel0(mux1_sel_data_c7[0]),
-		.in1({11&#39;b0, tagdp_diag_data_c7[27:0]}),
+		.in1({11&#39;b00000000000, tagdp_diag_data_c7[27:0]}),
 		.sel1(mux1_sel_data_c7[1]),
-		.in2({5&#39;b0, vuad_dp_diag_data_c7[33:0]}),
+		.in2({5&#39;b00000, vuad_dp_diag_data_c7[33:0]}),
 		.sel2(mux1_sel_data_c7[2]),
-		.in3({21&#39;b0, arbdp_oqdp_int_ret_c7[17:0]}),
+		.in3({21&#39;b000000000000000000000, arbdp_oqdp_int_ret_c7[17:0]}),
 		.sel3(mux1_sel_data_c7[3])
 	);
 	mux2ds #(64) mux_csr_sel(
@@ -456,7 +456,7 @@ module sctag_oqdp (
 		.dout(ext_inval_data_c7[63:0]),
 		.in0(dir_or_csr_data[63:0]),
 		.sel0(~int_or_diag_sel_c7),
-		.in1({25&#39;b0, tmp_inval_data_c7[38:0]}),
+		.in1({25&#39;b0000000000000000000000000, tmp_inval_data_c7[38:0]}),
 		.sel1(int_or_diag_sel_c7)
 	);
 	dff_s #(64) ff_inval_data63to0_c8(
@@ -491,7 +491,7 @@ module sctag_oqdp (
 	assign ext_inval_data_c8[130:128] = inval_buf_c8;
 	mux2ds #(2) int_diag_sel127to126(
 		.dout(ext_inval_data_c7[127:126]),
-		.in0(2&#39;b0),
+		.in0(2&#39;b00),
 		.sel0(~csr_or_diag_sel_c7_127to112),
 		.in1(ext_inval_data_c7[63:62]),
 		.sel1(csr_or_diag_sel_c7_127to112)
