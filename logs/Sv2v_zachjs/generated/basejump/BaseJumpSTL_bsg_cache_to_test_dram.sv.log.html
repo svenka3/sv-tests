@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_test_dram.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_to_test_dram.v</a>
 defines: 
-time_elapsed: 0.776s
-ram usage: 14768 KB
+time_elapsed: 1.048s
+ram usage: 15800 KB
 </pre>
 <pre class="log">
 
@@ -48,6 +48,19 @@ module bsg_cache_to_test_dram (
 	dram_data_i,
 	dram_ch_addr_i
 );
+	localparam [3:0] e_cache_amo_swap = 4&#39;b0000;
+	localparam [3:0] e_cache_amo_add = 4&#39;b0001;
+	localparam [3:0] e_cache_amo_xor = 4&#39;b0010;
+	localparam [3:0] e_cache_amo_and = 4&#39;b0011;
+	localparam [3:0] e_cache_amo_or = 4&#39;b0100;
+	localparam [3:0] e_cache_amo_min = 4&#39;b0101;
+	localparam [3:0] e_cache_amo_max = 4&#39;b0110;
+	localparam [3:0] e_cache_amo_minu = 4&#39;b0111;
+	localparam [3:0] e_cache_amo_maxu = 4&#39;b1000;
+	localparam amo_support_level_none_lp = 1&#39;sb0;
+	localparam amo_support_level_swap_lp = amo_support_level_none_lp | (1 &lt;&lt; e_cache_amo_swap);
+	localparam amo_support_level_logical_lp = ((amo_support_level_swap_lp | (1 &lt;&lt; e_cache_amo_xor)) | (1 &lt;&lt; e_cache_amo_and)) | (1 &lt;&lt; e_cache_amo_or);
+	localparam amo_support_level_arithmetic_lp = ((((amo_support_level_logical_lp | (1 &lt;&lt; e_cache_amo_add)) | (1 &lt;&lt; e_cache_amo_min)) | (1 &lt;&lt; e_cache_amo_max)) | (1 &lt;&lt; e_cache_amo_minu)) | (1 &lt;&lt; e_cache_amo_maxu);
 	localparam [5:0] LB = 6&#39;b000000;
 	localparam [5:0] LH = 6&#39;b000001;
 	localparam [5:0] LW = 6&#39;b000010;
