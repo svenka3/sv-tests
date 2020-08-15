@@ -94,9 +94,7 @@
 <a href="#l-86">86</a>
 <a href="#l-87">87</a>
 <a href="#l-88">88</a>
-<a href="#l-89">89</a>
-<a href="#l-90">90</a>
-<a href="#l-91">91</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
+<a href="#l-89">89</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="cm">/*</span>
 <a name="l-2"></a><span class="cm"> * Copyright © 2019 Eric Matthews,  Lesley Shannon</span>
 <a name="l-3"></a><span class="cm"> *</span>
 <a name="l-4"></a><span class="cm"> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
@@ -119,8 +117,8 @@
 <a name="l-21"></a><span class="cm"> */</span>
 <a name="l-22"></a>
 <a name="l-23"></a><span class="kn">import</span> <span class="nn">taiga_config::*</span><span class="p">;</span>
-<a name="l-24"></a><span class="kn">import</span> <span class="nn">taiga_types::*</span><span class="p">;</span>
-<a name="l-25"></a>
+<a name="l-24"></a><span class="kn">import</span> <span class="nn">riscv_types::*</span><span class="p">;</span>
+<a name="l-25"></a><span class="kn">import</span> <span class="nn">taiga_types::*</span><span class="p">;</span>
 <a name="l-26"></a>
 <a name="l-27"></a><span class="k">module</span> <span class="n">wishbone_master</span>
 <a name="l-28"></a>        <span class="p">(</span>
@@ -146,47 +144,45 @@
 <a name="l-48"></a>        <span class="k">end</span>
 <a name="l-49"></a>    <span class="k">end</span>
 <a name="l-50"></a>
-<a name="l-51"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-52"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
-<a name="l-53"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">ready</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-54"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ls</span><span class="p">.</span><span class="n">new_request</span><span class="p">)</span>
-<a name="l-55"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">ready</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-56"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">)</span>
-<a name="l-57"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">ready</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-58"></a>    <span class="k">end</span>
-<a name="l-59"></a>
-<a name="l-60"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-61"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
-<a name="l-62"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">data_valid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-63"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">we</span> <span class="o">&amp;</span> <span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">)</span>
-<a name="l-64"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">data_valid</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-65"></a>        <span class="k">else</span>
-<a name="l-66"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">data_valid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-67"></a>    <span class="k">end</span>
-<a name="l-68"></a>
-<a name="l-69"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-70"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">)</span>
-<a name="l-71"></a>            <span class="n">data_out</span> <span class="o">&lt;=</span> <span class="n">m_wishbone</span><span class="p">.</span><span class="n">readdata</span><span class="p">;</span>
-<a name="l-72"></a>        <span class="k">else</span>
-<a name="l-73"></a>            <span class="n">data_out</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-74"></a>    <span class="k">end</span>
-<a name="l-75"></a>
-<a name="l-76"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-77"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-78"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">stb</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-79"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">cyc</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-80"></a>        <span class="k">end</span>
-<a name="l-81"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ls</span><span class="p">.</span><span class="n">new_request</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-82"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">stb</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-83"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">cyc</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
-<a name="l-84"></a>        <span class="k">end</span>
-<a name="l-85"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-86"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">stb</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-87"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">cyc</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
-<a name="l-88"></a>        <span class="k">end</span>
-<a name="l-89"></a>    <span class="k">end</span>
-<a name="l-90"></a>
-<a name="l-91"></a><span class="k">endmodule</span>
+<a name="l-51"></a>    <span class="n">set_clr_reg_with_rst</span> <span class="p">#(.</span><span class="n">SET_OVER_CLR</span><span class="p">(</span><span class="mh">0</span><span class="p">),</span> <span class="p">.</span><span class="n">WIDTH</span><span class="p">(</span><span class="mh">1</span><span class="p">),</span> <span class="p">.</span><span class="n">RST_VALUE</span><span class="p">(</span><span class="mh">1</span><span class="p">))</span> <span class="n">ready_m</span> <span class="p">(</span>
+<a name="l-52"></a>      <span class="p">.</span><span class="n">clk</span><span class="p">,</span> <span class="p">.</span><span class="n">rst</span><span class="p">,</span>
+<a name="l-53"></a>      <span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">),</span>
+<a name="l-54"></a>      <span class="p">.</span><span class="n">clr</span><span class="p">(</span><span class="n">ls</span><span class="p">.</span><span class="n">new_request</span><span class="p">),</span>
+<a name="l-55"></a>      <span class="p">.</span><span class="n">result</span><span class="p">(</span><span class="n">ls</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span>
+<a name="l-56"></a>    <span class="p">);</span>
+<a name="l-57"></a>
+<a name="l-58"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-59"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<a name="l-60"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">data_valid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-61"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">we</span> <span class="o">&amp;</span> <span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">)</span>
+<a name="l-62"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">data_valid</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-63"></a>        <span class="k">else</span>
+<a name="l-64"></a>            <span class="n">ls</span><span class="p">.</span><span class="n">data_valid</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-65"></a>    <span class="k">end</span>
+<a name="l-66"></a>
+<a name="l-67"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-68"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">)</span>
+<a name="l-69"></a>            <span class="n">data_out</span> <span class="o">&lt;=</span> <span class="n">m_wishbone</span><span class="p">.</span><span class="n">readdata</span><span class="p">;</span>
+<a name="l-70"></a>        <span class="k">else</span>
+<a name="l-71"></a>            <span class="n">data_out</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-72"></a>    <span class="k">end</span>
+<a name="l-73"></a>
+<a name="l-74"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-75"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-76"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">stb</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-77"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">cyc</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-78"></a>        <span class="k">end</span>
+<a name="l-79"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ls</span><span class="p">.</span><span class="n">new_request</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-80"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">stb</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-81"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">cyc</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-82"></a>        <span class="k">end</span>
+<a name="l-83"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">m_wishbone</span><span class="p">.</span><span class="n">ack</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-84"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">stb</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-85"></a>            <span class="n">m_wishbone</span><span class="p">.</span><span class="n">cyc</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-86"></a>        <span class="k">end</span>
+<a name="l-87"></a>    <span class="k">end</span>
+<a name="l-88"></a>
+<a name="l-89"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
