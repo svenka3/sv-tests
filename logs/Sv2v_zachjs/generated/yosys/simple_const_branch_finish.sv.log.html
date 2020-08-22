@@ -1,0 +1,88 @@
+<head>
+  <style>
+    .log { font-family: "Courier New", Consolas, monospace; font-size: 80%; }
+    .test-failed { background-color: #ffaaaa; }
+    .test-passed { background-color: #aaffaa; }
+  </style>
+</head>
+<body>
+<h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
+<pre class="test-passed">
+description: Tests imported from yosys
+rc: 0 (means success: 1)
+tags: yosys
+incdirs: /tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple
+top_module: 
+type: parsing
+mode: parsing
+files: <a href="../../../../third_party/tools/yosys/tests/simple/const_branch_finish.v.html" target="file-frame">third_party/tools/yosys/tests/simple/const_branch_finish.v</a>
+defines: 
+time_elapsed: 0.122s
+ram usage: 10264 KB
+</pre>
+<pre class="log">
+
+zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tools/yosys/tests/simple <a href="../../../../third_party/tools/yosys/tests/simple/const_branch_finish.v.html" target="file-frame">third_party/tools/yosys/tests/simple/const_branch_finish.v</a>
+module top;
+	parameter WIDTH = 32;
+	integer j;
+	initial begin
+		if (WIDTH === &#39;bx) begin
+			$display(&#34;FAIL&#34;);
+			$finish;
+		end
+		if (WIDTH == 32) begin : procedural_conditional_block
+			if (WIDTH === &#39;bx) begin
+				$display(&#34;FAIL&#34;);
+				$finish;
+			end
+		end
+		case (WIDTH)
+			32:
+				if (WIDTH === &#39;bx) begin
+					$display(&#34;FAIL&#34;);
+					$finish;
+				end
+			default:
+				;
+		endcase
+		for (j = 0; j &lt; 2; j = j + 1)
+			begin : procedural_loop_block
+				if (WIDTH === &#39;bx) begin
+					$display(&#34;FAIL&#34;);
+					$finish;
+				end
+			end
+	end
+	generate
+		begin : unconditional_block
+			initial if (WIDTH === &#39;bx) begin
+				$display(&#34;FAIL&#34;);
+				$finish;
+			end
+		end
+		if (WIDTH == 32) begin : conditional_block
+			initial if (WIDTH === &#39;bx) begin
+				$display(&#34;FAIL&#34;);
+				$finish;
+			end
+		end
+		case (WIDTH)
+			32: initial if (WIDTH === &#39;bx) begin
+				$display(&#34;FAIL&#34;);
+				$finish;
+			end
+			default: ;
+		endcase
+		genvar i;
+		for (i = 0; i &lt; 2; i = i + 1) begin : loop_block
+			initial if (WIDTH === &#39;bx) begin
+				$display(&#34;FAIL&#34;);
+				$finish;
+			end
+		end
+	endgenerate
+endmodule
+
+</pre>
+</body>
