@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_counter_set_down.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_counter_set_down.v</a>
 defines: 
-time_elapsed: 0.389s
-ram usage: 12848 KB
+time_elapsed: 0.236s
+ram usage: 13720 KB
 </pre>
 <pre class="log">
 
@@ -31,7 +31,8 @@ module bsg_counter_set_down (
 	down_i,
 	count_r_o
 );
-	parameter width_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
 	parameter init_val_p = 1&#39;sb0;
 	parameter set_and_down_exclusive_p = 0;
 	input clk_i;
@@ -73,7 +74,7 @@ module bsg_counter_set_down (
 	endgenerate
 	assign count_r_o = ctr_r;
 	always @(negedge clk_i) begin
-		if ((!reset_i &amp;&amp; down_i) &amp;&amp; (ctr_n == {(width_p &gt;= 1 ? width_p : 2 - width_p) {1&#39;sb1}}))
+		if ((!reset_i &amp;&amp; down_i) &amp;&amp; (ctr_n == {width_p {1&#39;sb1}}))
 			$display(&#34;%m error: counter underflow at time %t&#34;, $time);
 		if (((~reset_i &amp; set_and_down_exclusive_p) &amp; set_i) &amp; down_i)
 			$display(&#34;%m error: set and down non-exclusive at time %t&#34;, $time);

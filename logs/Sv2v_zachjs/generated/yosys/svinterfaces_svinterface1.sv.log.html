@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/svinterfaces/svinterface1.sv.html" target="file-frame">third_party/tools/yosys/tests/svinterfaces/svinterface1.sv</a>
 defines: 
-time_elapsed: 0.242s
-ram usage: 10984 KB
+time_elapsed: 0.246s
+ram usage: 10988 KB
 </pre>
 <pre class="log">
 
@@ -39,110 +39,66 @@ module TopModule (
 	input wire flip;
 	output wire [1:0] sig_out;
 	output wire [15:0] passThrough;
-	parameter MyInterfaceInstance_WIDTH = 4;
-	wire MyInterfaceInstance_setting;
-	wire [MyInterfaceInstance_WIDTH - 1:0] MyInterfaceInstance_other_setting;
-	wire [1:0] MyInterfaceInstance_mysig_out;
-	wire [15:0] MyInterfaceInstance_passThrough;
-	SubModule1 #(.u_MyInterface_WIDTH(MyInterfaceInstance_WIDTH)) u_SubModule1(
-		.clk(clk),
-		.rst(rst),
-		.u_MyInterface_setting(MyInterfaceInstance_setting),
-		.u_MyInterface_other_setting(MyInterfaceInstance_other_setting),
-		.u_MyInterface_mysig_out(MyInterfaceInstance_mysig_out),
-		.u_MyInterface_passThrough(MyInterfaceInstance_passThrough),
-		.outOther(outOther),
-		.sig(sig)
-	);
-	assign sig_out = MyInterfaceInstance_mysig_out;
-	assign MyInterfaceInstance_setting = flip;
-	assign passThrough = MyInterfaceInstance_passThrough;
-endmodule
-module SubModule1 (
-	clk,
-	rst,
-	u_MyInterface_setting,
-	u_MyInterface_other_setting,
-	u_MyInterface_mysig_out,
-	u_MyInterface_passThrough,
-	sig,
-	outOther
-);
-	input wire clk;
-	input wire rst;
-	parameter u_MyInterface_WIDTH = 3;
-	input wire u_MyInterface_setting;
-	output wire [u_MyInterface_WIDTH - 1:0] u_MyInterface_other_setting;
-	output reg [1:0] u_MyInterface_mysig_out;
-	output wire [15:0] u_MyInterface_passThrough;
-	input wire [1:0] sig;
-	output wire [21:0] outOther;
-	always @(posedge clk or posedge rst)
-		if (rst)
-			u_MyInterface_mysig_out &lt;= 0;
-		else if (u_MyInterface_setting)
-			u_MyInterface_mysig_out &lt;= sig;
-		else
-			u_MyInterface_mysig_out &lt;= ~sig;
-	parameter MyInterfaceInstanceInSub_WIDTH = 22;
-	wire MyInterfaceInstanceInSub_setting;
-	wire [MyInterfaceInstanceInSub_WIDTH - 1:0] MyInterfaceInstanceInSub_other_setting;
-	wire [1:0] MyInterfaceInstanceInSub_mysig_out;
-	wire [15:0] MyInterfaceInstanceInSub_passThrough;
-	SubModule2 #(
-		.u_MyInterfaceInSub2_WIDTH(u_MyInterface_WIDTH),
-		.u_MyInterfaceInSub3_WIDTH(MyInterfaceInstanceInSub_WIDTH)
-	) u_SubModule2(
-		.clk(clk),
-		.rst(rst),
-		.u_MyInterfaceInSub2_setting(u_MyInterface_setting),
-		.u_MyInterfaceInSub2_other_setting(u_MyInterface_other_setting),
-		.u_MyInterfaceInSub2_mysig_out(u_MyInterface_mysig_out),
-		.u_MyInterfaceInSub2_passThrough(u_MyInterface_passThrough),
-		.u_MyInterfaceInSub3_setting(MyInterfaceInstanceInSub_setting),
-		.u_MyInterfaceInSub3_other_setting(MyInterfaceInstanceInSub_other_setting),
-		.u_MyInterfaceInSub3_mysig_out(MyInterfaceInstanceInSub_mysig_out),
-		.u_MyInterfaceInSub3_passThrough(MyInterfaceInstanceInSub_passThrough)
-	);
-	assign outOther = MyInterfaceInstanceInSub_other_setting;
-	assign MyInterfaceInstanceInSub_setting = 0;
-	assign MyInterfaceInstanceInSub_mysig_out = sig;
-endmodule
-module SubModule2 (
-	clk,
-	rst,
-	u_MyInterfaceInSub2_setting,
-	u_MyInterfaceInSub2_other_setting,
-	u_MyInterfaceInSub2_mysig_out,
-	u_MyInterfaceInSub2_passThrough,
-	u_MyInterfaceInSub3_setting,
-	u_MyInterfaceInSub3_other_setting,
-	u_MyInterfaceInSub3_mysig_out,
-	u_MyInterfaceInSub3_passThrough
-);
-	input wire clk;
-	input wire rst;
-	parameter u_MyInterfaceInSub2_WIDTH = 3;
-	input wire u_MyInterfaceInSub2_setting;
-	output wire [u_MyInterfaceInSub2_WIDTH - 1:0] u_MyInterfaceInSub2_other_setting;
-	input wire [1:0] u_MyInterfaceInSub2_mysig_out;
-	output wire [15:0] u_MyInterfaceInSub2_passThrough;
-	parameter u_MyInterfaceInSub3_WIDTH = 3;
-	input wire u_MyInterfaceInSub3_setting;
-	output reg [u_MyInterfaceInSub3_WIDTH - 1:0] u_MyInterfaceInSub3_other_setting;
-	input wire [1:0] u_MyInterfaceInSub3_mysig_out;
-	output wire [15:0] u_MyInterfaceInSub3_passThrough;
-	always @(*)
-		if (u_MyInterfaceInSub3_mysig_out == 2&#39;b00)
-			u_MyInterfaceInSub3_other_setting[21:0] = 1000;
-		else if (u_MyInterfaceInSub3_mysig_out == 2&#39;b01)
-			u_MyInterfaceInSub3_other_setting[21:0] = 2000;
-		else if (u_MyInterfaceInSub3_mysig_out == 2&#39;b10)
-			u_MyInterfaceInSub3_other_setting[21:0] = 3000;
-		else
-			u_MyInterfaceInSub3_other_setting[21:0] = 4000;
-	assign u_MyInterfaceInSub2_passThrough[7:0] = 124;
-	assign u_MyInterfaceInSub2_passThrough[15:8] = 200;
+	generate
+		localparam signed [31:0] _tmp_D31FF_WIDTH = 4;
+		begin : MyInterfaceInstance
+			localparam WIDTH = _tmp_D31FF_WIDTH;
+			wire setting;
+			wire [_tmp_D31FF_WIDTH - 1:0] other_setting;
+			reg [1:0] mysig_out;
+			wire [15:0] passThrough;
+		end
+	endgenerate
+	generate
+		begin : u_SubModule1
+			wire clk;
+			wire rst;
+			wire [1:0] sig;
+			wire [21:0] outOther;
+			always @(posedge clk or posedge rst)
+				if (rst)
+					TopModule.MyInterfaceInstance.mysig_out &lt;= 0;
+				else if (TopModule.MyInterfaceInstance.setting)
+					TopModule.MyInterfaceInstance.mysig_out &lt;= sig;
+				else
+					TopModule.MyInterfaceInstance.mysig_out &lt;= ~sig;
+			localparam signed [31:0] _tmp_7E8EE_WIDTH = 22;
+			begin : MyInterfaceInstanceInSub
+				localparam WIDTH = _tmp_7E8EE_WIDTH;
+				wire setting;
+				reg [_tmp_7E8EE_WIDTH - 1:0] other_setting;
+				wire [1:0] mysig_out;
+				wire [15:0] passThrough;
+			end
+			begin : u_SubModule2
+				wire clk;
+				wire rst;
+				always @(*)
+					if (TopModule.u_SubModule1.MyInterfaceInstanceInSub.mysig_out == 2&#39;b00)
+						TopModule.u_SubModule1.MyInterfaceInstanceInSub.other_setting[21:0] = 1000;
+					else if (TopModule.u_SubModule1.MyInterfaceInstanceInSub.mysig_out == 2&#39;b01)
+						TopModule.u_SubModule1.MyInterfaceInstanceInSub.other_setting[21:0] = 2000;
+					else if (TopModule.u_SubModule1.MyInterfaceInstanceInSub.mysig_out == 2&#39;b10)
+						TopModule.u_SubModule1.MyInterfaceInstanceInSub.other_setting[21:0] = 3000;
+					else
+						TopModule.u_SubModule1.MyInterfaceInstanceInSub.other_setting[21:0] = 4000;
+				assign TopModule.MyInterfaceInstance.passThrough[7:0] = 124;
+				assign TopModule.MyInterfaceInstance.passThrough[15:8] = 200;
+			end
+			assign u_SubModule2.clk = clk;
+			assign u_SubModule2.rst = rst;
+			assign outOther = MyInterfaceInstanceInSub.other_setting;
+			assign MyInterfaceInstanceInSub.setting = 0;
+			assign MyInterfaceInstanceInSub.mysig_out = sig;
+		end
+		assign u_SubModule1.clk = clk;
+		assign u_SubModule1.rst = rst;
+		assign outOther = u_SubModule1.outOther;
+		assign u_SubModule1.sig = sig;
+	endgenerate
+	assign sig_out = MyInterfaceInstance.mysig_out;
+	assign MyInterfaceInstance.setting = flip;
+	assign passThrough = MyInterfaceInstance.passThrough;
 endmodule
 
 </pre>

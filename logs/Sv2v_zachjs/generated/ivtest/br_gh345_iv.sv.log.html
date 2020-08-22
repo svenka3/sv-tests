@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br_gh345.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br_gh345.v</a>
 defines: 
-time_elapsed: 0.084s
-ram usage: 10888 KB
+time_elapsed: 0.245s
+ram usage: 10916 KB
 </pre>
 <pre class="log">
 
@@ -29,7 +29,8 @@ module Example (
 	outC,
 	outD
 );
-	parameter OUTPUT = &#34;FOO&#34;;
+	parameter _sv2v_width_OUTPUT = 24;
+	parameter [_sv2v_width_OUTPUT - 1:0] OUTPUT = &#34;FOO&#34;;
 	output wire [23:0] outA;
 	output wire [23:0] outB;
 	output reg outC;
@@ -39,7 +40,6 @@ module Example (
 		flip = ~inp;
 	endfunction
 	generate
-		genvar i;
 		if (flip(OUTPUT) == flip(&#34;BAR&#34;)) assign outA = OUTPUT;
 		else assign outA = 0;
 		case (flip(OUTPUT))
@@ -47,6 +47,7 @@ module Example (
 			flip(&#34;BAR&#34;): assign outB = 0;
 			flip(&#34;BAZ&#34;): assign outB = &#34;HI&#34;;
 		endcase
+		genvar i;
 		initial outC = 0;
 		for (i = 0; i != flip(flip(OUTPUT[15:8])); i = i + 1) if ((i + 1) == flip(flip(&#34;O&#34;))) initial #(1) outC = 1;
 	endgenerate
@@ -76,28 +77,37 @@ module top (out);
 	wire d3;
 	wire d4;
 	Example e1(
-		.outA(a1),
-		.outB(b1),
-		.outC(c1),
-		.outD(d1)
+		a1,
+		b1,
+		c1,
+		d1
 	);
-	Example #(&#34;FOO&#34;) e2(
-		.outA(a2),
-		.outB(b2),
-		.outC(c2),
-		.outD(d2)
+	Example #(
+		24,
+		&#34;FOO&#34;
+	) e2(
+		a2,
+		b2,
+		c2,
+		d2
 	);
-	Example #(&#34;BAR&#34;) e3(
-		.outA(a3),
-		.outB(b3),
-		.outC(c3),
-		.outD(d3)
+	Example #(
+		24,
+		&#34;BAR&#34;
+	) e3(
+		a3,
+		b3,
+		c3,
+		d3
 	);
-	Example #(&#34;BAZ&#34;) e4(
-		.outA(a4),
-		.outB(b4),
-		.outC(c4),
-		.outD(d4)
+	Example #(
+		24,
+		&#34;BAZ&#34;
+	) e4(
+		a4,
+		b4,
+		c4,
+		d4
 	);
 	output wire [195:0] out;
 	assign out = {a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4};

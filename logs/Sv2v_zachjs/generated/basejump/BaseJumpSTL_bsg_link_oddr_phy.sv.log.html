@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_oddr_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_oddr_phy.v</a>
 defines: 
-time_elapsed: 0.257s
-ram usage: 12916 KB
+time_elapsed: 0.178s
+ram usage: 13604 KB
 </pre>
 <pre class="log">
 
@@ -31,17 +31,18 @@ module bsg_link_oddr_phy (
 	data_r_o,
 	clk_r_o
 );
-	parameter width_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
 	input reset_i;
 	input clk_i;
-	input [(width_p &gt;= 1 ? (2 * width_p) - 1 : (2 * (2 - width_p)) + (width_p - 2)):(width_p &gt;= 1 ? 0 : width_p - 1)] data_i;
+	input [(2 * width_p) - 1:0] data_i;
 	output ready_o;
 	output reg [width_p - 1:0] data_r_o;
 	output reg clk_r_o;
 	reg odd_r;
 	reg clk_r;
 	reg reset_i_r;
-	reg [(width_p &gt;= 1 ? (2 * width_p) - 1 : (2 * (2 - width_p)) + (width_p - 2)):(width_p &gt;= 1 ? 0 : width_p - 1)] data_i_r;
+	reg [(2 * width_p) - 1:0] data_i_r;
 	assign ready_o = ~odd_r;
 	always @(posedge clk_i)
 		if (~odd_r)
@@ -61,9 +62,9 @@ module bsg_link_oddr_phy (
 	end
 	always @(posedge clk_i)
 		if (odd_r)
-			data_r_o &lt;= data_i_r[(width_p &gt;= 1 ? 0 : width_p - 1)+:(width_p &gt;= 1 ? width_p : 2 - width_p)];
+			data_r_o &lt;= data_i_r[0+:width_p];
 		else
-			data_r_o &lt;= data_i_r[(width_p &gt;= 1 ? 0 : width_p - 1) + (width_p &gt;= 1 ? width_p : 2 - width_p)+:(width_p &gt;= 1 ? width_p : 2 - width_p)];
+			data_r_o &lt;= data_i_r[width_p+:width_p];
 endmodule
 
 </pre>

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_shift_reg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_shift_reg.v</a>
 defines: 
-time_elapsed: 0.397s
-ram usage: 13000 KB
+time_elapsed: 0.345s
+ram usage: 13528 KB
 </pre>
 <pre class="log">
 
@@ -31,23 +31,25 @@ module bsg_shift_reg (
 	valid_o,
 	data_o
 );
-	parameter width_p = &#34;inv&#34;;
-	parameter stages_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
+	parameter _sv2v_width_stages_p = 24;
+	parameter [_sv2v_width_stages_p - 1:0] stages_p = &#34;inv&#34;;
 	input clk;
 	input reset_i;
 	input valid_i;
 	input [width_p - 1:0] data_i;
 	output valid_o;
 	output [width_p - 1:0] data_o;
-	reg [(stages_p &gt;= 1 ? (width_p &gt;= 0 ? (stages_p * (width_p + 1)) - 1 : (stages_p * (1 - width_p)) + (width_p - 1)) : (width_p &gt;= 0 ? ((2 - stages_p) * (width_p + 1)) + (((stages_p - 1) * (width_p + 1)) - 1) : ((2 - stages_p) * (1 - width_p)) + ((width_p + ((stages_p - 1) * (1 - width_p))) - 1))):(stages_p &gt;= 1 ? (width_p &gt;= 0 ? 0 : width_p) : (width_p &gt;= 0 ? (stages_p - 1) * (width_p + 1) : width_p + ((stages_p - 1) * (1 - width_p))))] shift_r;
+	reg [(width_p &gt;= 0 ? (stages_p * (width_p + 1)) - 1 : (stages_p * (1 - width_p)) + (width_p - 1)):(width_p &gt;= 0 ? 0 : width_p)] shift_r;
 	always @(posedge clk)
 		if (reset_i)
-			shift_r &lt;= {(stages_p &gt;= 1 ? stages_p : 2 - stages_p) * (width_p &gt;= 0 ? width_p + 1 : 1 - width_p) {1&#39;sb0}};
+			shift_r &lt;= {stages_p * (width_p &gt;= 0 ? width_p + 1 : 1 - width_p) {1&#39;sb0}};
 		else begin
-			shift_r[(width_p &gt;= 0 ? 0 : width_p) + ((width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * (stages_p &gt;= 1 ? (stages_p &gt;= 1 ? ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? stages_p - 1 : ((stages_p - 1) + ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1)) - 1) - (((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1) - 1) : ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? stages_p - 1 : ((stages_p - 1) + ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1)) - 1)) : (stages_p - 1) - (stages_p &gt;= 1 ? ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? stages_p - 1 : ((stages_p - 1) + ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1)) - 1) - (((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1) - 1) : ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? stages_p - 1 : ((stages_p - 1) + ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1)) - 1))))+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1)] &lt;= shift_r[(width_p &gt;= 0 ? 0 : width_p) + ((width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * (stages_p &gt;= 1 ? (stages_p &gt;= 1 ? (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) : (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0))) - 1) - ((((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0)) - 1) : (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) : (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0))) - 1)) : (stages_p - 1) - (stages_p &gt;= 1 ? (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) : (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0))) - 1) - ((((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0)) - 1) : (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) : (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0))) - 1))))+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0))];
-			shift_r[(width_p &gt;= 0 ? 0 : width_p) + ((stages_p &gt;= 1 ? 0 : stages_p - 1) * (width_p &gt;= 0 ? width_p + 1 : 1 - width_p))+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p)] &lt;= {valid_i, data_i};
+			shift_r[(width_p &gt;= 0 ? 0 : width_p) + ((width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * (((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? stages_p - 1 : ((stages_p - 1) + ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1)) - 1) - (((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1) - 1)))+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * ((stages_p - 1) &gt;= ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) ? ((stages_p - 1) - ((stages_p - 1) &lt; 1 ? stages_p - 1 : 1)) + 1 : (((stages_p - 1) &lt; 1 ? stages_p - 1 : 1) - (stages_p - 1)) + 1)] &lt;= shift_r[(width_p &gt;= 0 ? 0 : width_p) + ((width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * ((((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) : (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0))) - 1) - ((((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0)) - 1)))+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p) * (((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) &gt;= 0 ? ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0) + 1 : 1 - ((stages_p - 2) &gt; 0 ? stages_p - 2 : 0))];
+			shift_r[(width_p &gt;= 0 ? 0 : width_p)+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p)] &lt;= {valid_i, data_i};
 		end
-	assign {valid_o, data_o} = shift_r[(width_p &gt;= 0 ? 0 : width_p) + ((stages_p &gt;= 1 ? stages_p - 1 : (stages_p - 1) - (stages_p - 1)) * (width_p &gt;= 0 ? width_p + 1 : 1 - width_p))+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p)];
+	assign {valid_o, data_o} = shift_r[(width_p &gt;= 0 ? 0 : width_p) + ((stages_p - 1) * (width_p &gt;= 0 ? width_p + 1 : 1 - width_p))+:(width_p &gt;= 0 ? width_p + 1 : 1 - width_p)];
 endmodule
 
 </pre>

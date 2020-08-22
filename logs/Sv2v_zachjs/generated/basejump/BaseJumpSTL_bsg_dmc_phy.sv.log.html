@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v</a>
 defines: 
-time_elapsed: 0.459s
-ram usage: 14676 KB
+time_elapsed: 0.736s
+ram usage: 16752 KB
 </pre>
 <pre class="log">
 
@@ -281,7 +281,8 @@ module bsg_dmc_phy (
 	dq_i,
 	dqs_sel_cal
 );
-	parameter dq_data_width_p = &#34;inv&#34;;
+	parameter _sv2v_width_dq_data_width_p = 24;
+	parameter [_sv2v_width_dq_data_width_p - 1:0] dq_data_width_p = &#34;inv&#34;;
 	localparam dq_group_lp = dq_data_width_p &gt;&gt; 3;
 	input dfi_clk_1x_i;
 	input dfi_clk_2x_i;
@@ -408,8 +409,8 @@ module bsg_dmc_phy (
 	assign dqs_n_ie_n = ~{dq_group_lp {dqs_select}};
 	assign dqs_p_ie_n_o = dqs_p_ie_n;
 	assign dqs_n_ie_n_o = dqs_n_ie_n;
-	wire [(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) - 1 : ((2 - ((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)) * 8) + (((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8) - 1)):(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? 0 : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8)] dfi_wrdata_array;
-	wire [(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) - 1 : ((2 - ((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)) * 8) + (((((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8) - 1)):(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? 0 : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) * 8)] dfi_rddata_array;
+	wire [(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) - 1:0] dfi_wrdata_array;
+	wire [(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) * 8) - 1:0] dfi_rddata_array;
 	bsg_make_2D_array #(
 		.width_p(8),
 		.items_p((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1)
@@ -431,7 +432,7 @@ module bsg_dmc_phy (
 				.clk_1x_i(clk_1x_p),
 				.clk_2x_i(clk_2x_p),
 				.wrdata_en_i(dfi_wrdata_en_i),
-				.wrdata_i({dfi_wrdata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? dq_group_lp + i : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) - (dq_group_lp + i)) * 8+:8], dfi_wrdata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? i : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) - i) * 8+:8]}),
+				.wrdata_i({dfi_wrdata_array[(dq_group_lp + i) * 8+:8], dfi_wrdata_array[i * 8+:8]}),
 				.wrdata_mask_i({dfi_wrdata_mask_i[dq_group_lp + i], dfi_wrdata_mask_i[i]}),
 				.dm_oe_n_o(dm_oe_n_o[i]),
 				.dm_o(dm_o[i]),
@@ -442,7 +443,7 @@ module bsg_dmc_phy (
 				.dqs_n_oe_n_o(dqs_n_oe_n_o[i]),
 				.dqs_n_o(dqs_n_o[i]),
 				.rp_inc_i(rp_inc),
-				.rddata_o({dfi_rddata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? dq_group_lp + i : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) - (dq_group_lp + i)) * 8+:8], dfi_rddata_array[(((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) &gt;= 1 ? i : (((dq_data_width_p &gt;&gt; 3) &lt;&lt; 1) - 1) - i) * 8+:8]}),
+				.rddata_o({dfi_rddata_array[(dq_group_lp + i) * 8+:8], dfi_rddata_array[i * 8+:8]}),
 				.dq_i(dq_i[8 * i+:8]),
 				.dqs_p_i(dqs_p_i[i]),
 				.dqs_n_i(dqs_n_i[i])

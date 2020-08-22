@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_front_side_bus_hop_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_front_side_bus_hop_out.v</a>
 defines: 
-time_elapsed: 0.230s
-ram usage: 12824 KB
+time_elapsed: 0.245s
+ram usage: 13524 KB
 </pre>
 <pre class="log">
 
@@ -34,11 +34,12 @@ module bsg_front_side_bus_hop_out (
 	data_o,
 	ready_i
 );
-	parameter width_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
 	input clk_i;
 	input reset_i;
 	input [1:0] v_i;
-	input [(width_p &gt;= 1 ? (2 * width_p) - 1 : (2 * (2 - width_p)) + (width_p - 2)):(width_p &gt;= 1 ? 0 : width_p - 1)] data_i;
+	input [(2 * width_p) - 1:0] data_i;
 	output ready_o;
 	output yumi_o;
 	output v_o;
@@ -54,7 +55,7 @@ module bsg_front_side_bus_hop_out (
 	bsg_two_fifo #(.width_p(width_p)) fifo(
 		.clk_i(clk_i),
 		.reset_i(reset_i),
-		.data_i(data_i[(width_p &gt;= 1 ? 0 : width_p - 1) + (source_sel * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)]),
+		.data_i(data_i[source_sel * width_p+:width_p]),
 		.data_o(data_o),
 		.v_o(fifo_v),
 		.yumi_i(fifo_v &amp; ready_i),

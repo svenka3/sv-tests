@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sp2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sp2.v</a>
 defines: 
-time_elapsed: 0.045s
-ram usage: 10144 KB
+time_elapsed: 0.050s
+ram usage: 10088 KB
 </pre>
 <pre class="log">
 
@@ -33,8 +33,10 @@ module write_sp_vectors (
 	input a;
 	input b;
 	input c;
-	parameter fname = &#34;PhCount.unnamed&#34;;
-	parameter source_id = &#34;(unknown source module RCSID)$&#34;;
+	parameter _sv2v_width_fname = 120;
+	parameter [_sv2v_width_fname - 1:0] fname = &#34;PhCount.unnamed&#34;;
+	parameter _sv2v_width_source_id = 240;
+	parameter [_sv2v_width_source_id - 1:0] source_id = &#34;(unknown source module RCSID)$&#34;;
 	integer fp;
 	initial begin
 		fp = $fopen({&#34;work/&#34;, fname, &#34;.inv&#34;});
@@ -42,19 +44,22 @@ module write_sp_vectors (
 	end
 endmodule
 module main;
-	parameter fname = &#34;PhCount.unnamed&#34;;
+	parameter _sv2v_width_fname = 120;
+	parameter [_sv2v_width_fname - 1:0] fname = &#34;PhCount.unnamed&#34;;
 	reg clk;
 	reg a;
 	reg b;
 	reg c;
 	write_sp_vectors #(
+		24,
 		&#34;sp2&#34;,
+		24,
 		&#34;foo&#34;
 	) v0(
-		.Clk(clk),
-		.a(a),
-		.b(b),
-		.c(c)
+		clk,
+		a,
+		b,
+		c
 	);
 	initial #(10)
 		$finish;

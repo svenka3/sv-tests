@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_1_to_n_tagged_fifo_shared.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_1_to_n_tagged_fifo_shared.v</a>
 defines: 
-time_elapsed: 0.835s
-ram usage: 14604 KB
+time_elapsed: 0.547s
+ram usage: 15628 KB
 </pre>
 <pre class="log">
 
@@ -34,10 +34,14 @@ module bsg_1_to_n_tagged_fifo_shared (
 	yumi_i,
 	data_o
 );
-	parameter width_p = &#34;inv&#34;;
-	parameter num_out_p = &#34;inv&#34;;
-	parameter els_p = &#34;inv&#34;;
-	parameter buffering_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
+	parameter _sv2v_width_num_out_p = 24;
+	parameter [_sv2v_width_num_out_p - 1:0] num_out_p = &#34;inv&#34;;
+	parameter _sv2v_width_els_p = 24;
+	parameter [_sv2v_width_els_p - 1:0] els_p = &#34;inv&#34;;
+	parameter _sv2v_width_buffering_p = 24;
+	parameter [_sv2v_width_buffering_p - 1:0] buffering_p = &#34;inv&#34;;
 	parameter unbuffered_mask_p = 0;
 	parameter sram_1rw_not_1r1w_p = 1;
 	parameter tag_width_lp = (num_out_p == 1 ? 1 : $clog2(num_out_p));
@@ -49,16 +53,16 @@ module bsg_1_to_n_tagged_fifo_shared (
 	output yumi_o;
 	output [num_out_p - 1:0] valid_o;
 	input [num_out_p - 1:0] yumi_i;
-	output [(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? (num_out_p * width_p) - 1 : (num_out_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o;
+	output [(num_out_p * width_p) - 1:0] data_o;
 	localparam ptr_width_lp = (els_p == 1 ? 1 : $clog2(els_p));
 	genvar i;
-	wire [(num_out_p &gt;= 1 ? (ptr_width_lp &gt;= 1 ? (num_out_p * ptr_width_lp) - 1 : (num_out_p * (2 - ptr_width_lp)) + (ptr_width_lp - 2)) : (ptr_width_lp &gt;= 1 ? ((2 - num_out_p) * ptr_width_lp) + (((num_out_p - 1) * ptr_width_lp) - 1) : ((2 - num_out_p) * (2 - ptr_width_lp)) + (((ptr_width_lp - 1) + ((num_out_p - 1) * (2 - ptr_width_lp))) - 1))):(num_out_p &gt;= 1 ? (ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) : (ptr_width_lp &gt;= 1 ? (num_out_p - 1) * ptr_width_lp : (ptr_width_lp - 1) + ((num_out_p - 1) * (2 - ptr_width_lp))))] rptr_r;
-	wire [(num_out_p &gt;= 1 ? (ptr_width_lp &gt;= 1 ? (num_out_p * ptr_width_lp) - 1 : (num_out_p * (2 - ptr_width_lp)) + (ptr_width_lp - 2)) : (ptr_width_lp &gt;= 1 ? ((2 - num_out_p) * ptr_width_lp) + (((num_out_p - 1) * ptr_width_lp) - 1) : ((2 - num_out_p) * (2 - ptr_width_lp)) + (((ptr_width_lp - 1) + ((num_out_p - 1) * (2 - ptr_width_lp))) - 1))):(num_out_p &gt;= 1 ? (ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) : (ptr_width_lp &gt;= 1 ? (num_out_p - 1) * ptr_width_lp : (ptr_width_lp - 1) + ((num_out_p - 1) * (2 - ptr_width_lp))))] wptr_r;
+	wire [(num_out_p * ptr_width_lp) - 1:0] rptr_r;
+	wire [(num_out_p * ptr_width_lp) - 1:0] wptr_r;
 	wire [num_out_p - 1:0] full;
 	wire [num_out_p - 1:0] empty;
 	wire [num_out_p - 1:0] enque;
 	wire [num_out_p - 1:0] deque;
-	wire [(num_out_p &gt;= 1 ? ((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (num_out_p * (buffering_p == 1 ? 1 : $clog2(buffering_p))) - 1 : (num_out_p * (2 - (buffering_p == 1 ? 1 : $clog2(buffering_p)))) + ((buffering_p == 1 ? 1 : $clog2(buffering_p)) - 2)) : ((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? ((2 - num_out_p) * (buffering_p == 1 ? 1 : $clog2(buffering_p))) + (((num_out_p - 1) * (buffering_p == 1 ? 1 : $clog2(buffering_p))) - 1) : ((2 - num_out_p) * (2 - (buffering_p == 1 ? 1 : $clog2(buffering_p)))) + ((((buffering_p == 1 ? 1 : $clog2(buffering_p)) - 1) + ((num_out_p - 1) * (2 - (buffering_p == 1 ? 1 : $clog2(buffering_p))))) - 1))):(num_out_p &gt;= 1 ? ((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? 0 : (buffering_p == 1 ? 1 : $clog2(buffering_p)) - 1) : ((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (num_out_p - 1) * (buffering_p == 1 ? 1 : $clog2(buffering_p)) : ((buffering_p == 1 ? 1 : $clog2(buffering_p)) - 1) + ((num_out_p - 1) * (2 - (buffering_p == 1 ? 1 : $clog2(buffering_p))))))] els;
+	wire [(num_out_p * (buffering_p == 1 ? 1 : $clog2(buffering_p))) - 1:0] els;
 	wire [num_out_p - 1:0] credits_avail;
 	wire read_req;
 	wire write_req = valid_i;
@@ -82,11 +86,11 @@ module bsg_1_to_n_tagged_fifo_shared (
 	generate
 		for (i = 0; i &lt; num_out_p; i = i + 1) begin : rof
 			if (unbuffered_mask_p[i]) begin : unbuf
-				assign wptr_r[(ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * (ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp))+:(ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp)] = 0;
-				assign rptr_r[(ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * (ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp))+:(ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp)] = 0;
+				assign wptr_r[i * ptr_width_lp+:ptr_width_lp] = 0;
+				assign rptr_r[i * ptr_width_lp+:ptr_width_lp] = 0;
 				assign full[i] = 1&#39;b0;
 				assign empty[i] = 1&#39;b1;
-				assign els[((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? 0 : (buffering_p == 1 ? 1 : $clog2(buffering_p)) - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * ((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (buffering_p == 1 ? 1 : $clog2(buffering_p)) : 2 - (buffering_p == 1 ? 1 : $clog2(buffering_p))))+:((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (buffering_p == 1 ? 1 : $clog2(buffering_p)) : 2 - (buffering_p == 1 ? 1 : $clog2(buffering_p)))] = 0;
+				assign els[i * (buffering_p == 1 ? 1 : $clog2(buffering_p))+:(buffering_p == 1 ? 1 : $clog2(buffering_p))] = 0;
 			end
 			else begin : bufd
 				bsg_fifo_tracker #(.els_p(els_p)) ft(
@@ -94,8 +98,8 @@ module bsg_1_to_n_tagged_fifo_shared (
 					.reset_i(reset_i),
 					.enq_i(enque[i]),
 					.deq_i(deque[i]),
-					.wptr_r_o(wptr_r[(ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * (ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp))+:(ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp)]),
-					.rptr_r_o(rptr_r[(ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * (ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp))+:(ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp)]),
+					.wptr_r_o(wptr_r[i * ptr_width_lp+:ptr_width_lp]),
+					.rptr_r_o(rptr_r[i * ptr_width_lp+:ptr_width_lp]),
 					.full_o(full[i]),
 					.empty_o(empty[i])
 				);
@@ -107,9 +111,9 @@ module bsg_1_to_n_tagged_fifo_shared (
 					.reset_i(reset_i),
 					.up_i(yumi_i[i]),
 					.down_i(read_req_tag_decoded[i] &amp; big_ram_re),
-					.count_o(els[((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? 0 : (buffering_p == 1 ? 1 : $clog2(buffering_p)) - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * ((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (buffering_p == 1 ? 1 : $clog2(buffering_p)) : 2 - (buffering_p == 1 ? 1 : $clog2(buffering_p))))+:((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (buffering_p == 1 ? 1 : $clog2(buffering_p)) : 2 - (buffering_p == 1 ? 1 : $clog2(buffering_p)))])
+					.count_o(els[i * (buffering_p == 1 ? 1 : $clog2(buffering_p))+:(buffering_p == 1 ? 1 : $clog2(buffering_p))])
 				);
-				assign credits_avail[i] = |els[((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? 0 : (buffering_p == 1 ? 1 : $clog2(buffering_p)) - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * ((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (buffering_p == 1 ? 1 : $clog2(buffering_p)) : 2 - (buffering_p == 1 ? 1 : $clog2(buffering_p))))+:((buffering_p == 1 ? 1 : $clog2(buffering_p)) &gt;= 1 ? (buffering_p == 1 ? 1 : $clog2(buffering_p)) : 2 - (buffering_p == 1 ? 1 : $clog2(buffering_p)))];
+				assign credits_avail[i] = |els[i * (buffering_p == 1 ? 1 : $clog2(buffering_p))+:(buffering_p == 1 ? 1 : $clog2(buffering_p))];
 			end
 		end
 	endgenerate
@@ -124,8 +128,8 @@ module bsg_1_to_n_tagged_fifo_shared (
 		.tag_o(read_req_tag),
 		.yumi_i(big_ram_re &amp; read_req)
 	);
-	wire [(tag_width_lp + ptr_width_lp) - 1:0] big_ram_wptr = {tag_i, wptr_r[(ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) + ((num_out_p &gt;= 1 ? tag_i : (num_out_p - 1) - tag_i) * (ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp))+:(ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp)]};
-	wire [(tag_width_lp + ptr_width_lp) - 1:0] big_ram_rptr = {read_req_tag, rptr_r[(ptr_width_lp &gt;= 1 ? 0 : ptr_width_lp - 1) + ((num_out_p &gt;= 1 ? read_req_tag : (num_out_p - 1) - read_req_tag) * (ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp))+:(ptr_width_lp &gt;= 1 ? ptr_width_lp : 2 - ptr_width_lp)]};
+	wire [(tag_width_lp + ptr_width_lp) - 1:0] big_ram_wptr = {tag_i, wptr_r[tag_i * ptr_width_lp+:ptr_width_lp]};
+	wire [(tag_width_lp + ptr_width_lp) - 1:0] big_ram_rptr = {read_req_tag, rptr_r[read_req_tag * ptr_width_lp+:ptr_width_lp]};
 	wire [width_p - 1:0] sram_data_lo;
 	wire tag_i_is_unbuffered = unbuffered_mask_p[tag_i];
 	generate
@@ -164,7 +168,7 @@ module bsg_1_to_n_tagged_fifo_shared (
 		end
 	endgenerate
 	bsg_dff_reset #(
-		.width_p(&#39;x + (tag_width_lp &gt;= 1 ? tag_width_lp : 2 - tag_width_lp)),
+		.width_p(&#39;x + tag_width_lp),
 		.init_val_p(0)
 	) dff(
 		.clk_i(clk_i),
@@ -175,7 +179,7 @@ module bsg_1_to_n_tagged_fifo_shared (
 	wire yumi_lo;
 	wire [num_out_p - 1:0] yumi_i_tmp = yumi_i &amp; ~unbuffered_mask_p;
 	wire [num_out_p - 1:0] valid_o_tmp;
-	wire [(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? (num_out_p * width_p) - 1 : (num_out_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - num_out_p) * width_p) + (((num_out_p - 1) * width_p) - 1) : ((2 - num_out_p) * (2 - width_p)) + (((width_p - 1) + ((num_out_p - 1) * (2 - width_p))) - 1))):(num_out_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_out_p - 1) * width_p : (width_p - 1) + ((num_out_p - 1) * (2 - width_p))))] data_o_tmp;
+	wire [(num_out_p * width_p) - 1:0] data_o_tmp;
 	bsg_1_to_n_tagged_fifo #(
 		.width_p(width_p),
 		.num_out_p(num_out_p),
@@ -195,7 +199,7 @@ module bsg_1_to_n_tagged_fifo_shared (
 	assign valid_o = valid_o_tmp | (unbuffered_mask_p[i] &amp; tag_one_hot_or_not[i]);
 	generate
 		for (i = 0; i &lt; num_out_p; i = i + 1) begin : rof
-			assign data_o[(width_p &gt;= 1 ? 0 : width_p - 1) + ((num_out_p &gt;= 1 ? i : (num_out_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = (unbuffered_mask_p[i] ? data_i : data_o_tmp);
+			assign data_o[i * width_p+:width_p] = (unbuffered_mask_p[i] ? data_i : data_o_tmp);
 		end
 	endgenerate
 	always @(negedge clk_i)

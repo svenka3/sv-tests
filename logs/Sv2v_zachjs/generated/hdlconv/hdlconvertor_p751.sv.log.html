@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="https://github.com/zachjs/sv2v" target="_blank">zachjs-sv2v</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from hdlconv
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: hdlconv
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017
 top_module: 
@@ -17,15 +17,103 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p751.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p751.sv</a>
 defines: 
-time_elapsed: 0.036s
-ram usage: 10292 KB
+time_elapsed: 0.119s
+ram usage: 10312 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017 <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p751.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p751.sv</a>
-zachjs-sv2v: can&#39;t deduce modport for interface simple_bus bound to port req of module memMod
-CallStack (from HasCallStack):
-  error, called at src/Convert/Interface.hs:199:34 in main:Convert.Interface
+module memMod (
+	req,
+	clk,
+	start,
+	mode,
+	addr,
+	data,
+	gnt,
+	rdy
+);
+	input wire req;
+	input wire clk;
+	input wire start;
+	input wire [1:0] mode;
+	input wire [7:0] addr;
+	inout wire [7:0] data;
+	output wire gnt;
+	output wire rdy;
+	wire avail;
+endmodule
+module cpuMod (
+	clk,
+	gnt,
+	rdy,
+	data,
+	req,
+	start,
+	addr,
+	mode
+);
+	input wire clk;
+	input wire gnt;
+	input wire rdy;
+	inout wire [7:0] data;
+	output wire req;
+	output wire start;
+	output wire [7:0] addr;
+	output wire [1:0] mode;
+endmodule
+module top;
+	wire req;
+	wire gnt;
+	wire start;
+	wire rdy;
+	wire clk = 0;
+	wire [1:0] mode;
+	wire [7:0] addr;
+	wire [7:0] data;
+	memMod mem(
+		req,
+		clk,
+		start,
+		mode,
+		addr,
+		data,
+		gnt,
+		rdy
+	);
+	cpuMod cpu(
+		clk,
+		gnt,
+		rdy,
+		data,
+		req,
+		start,
+		addr,
+		mode
+	);
+endmodule
+module top;
+	wire clk = 0;
+	generate
+		begin : sb_intf
+			wire req;
+			wire gnt;
+			wire [7:0] addr;
+			wire [7:0] data;
+			wire [1:0] mode;
+			wire start;
+			wire rdy;
+		end
+	endgenerate
+	memMod mem(
+		sb_intf,
+		clk
+	);
+	cpuMod cpu(
+		.b(sb_intf),
+		.clk(clk)
+	);
+endmodule
 
 </pre>
 </body>

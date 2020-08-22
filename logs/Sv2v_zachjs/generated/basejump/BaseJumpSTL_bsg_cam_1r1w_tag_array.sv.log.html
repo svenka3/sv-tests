@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w_tag_array.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_cam_1r1w_tag_array.v</a>
 defines: 
-time_elapsed: 0.288s
-ram usage: 13060 KB
+time_elapsed: 0.330s
+ram usage: 13472 KB
 </pre>
 <pre class="log">
 
@@ -34,8 +34,10 @@ module bsg_cam_1r1w_tag_array (
 	r_tag_i,
 	r_match_o
 );
-	parameter width_p = &#34;inv&#34;;
-	parameter els_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
+	parameter _sv2v_width_els_p = 24;
+	parameter [_sv2v_width_els_p - 1:0] els_p = &#34;inv&#34;;
 	parameter multiple_entries_p = 0;
 	input clk_i;
 	input reset_i;
@@ -46,7 +48,7 @@ module bsg_cam_1r1w_tag_array (
 	input r_v_i;
 	input [width_p - 1:0] r_tag_i;
 	output wire [els_p - 1:0] r_match_o;
-	wire [(els_p &gt;= 1 ? (width_p &gt;= 1 ? (els_p * width_p) - 1 : (els_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):(els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] tag_r;
+	wire [(els_p * width_p) - 1:0] tag_r;
 	wire [els_p - 1:0] v_r;
 	generate
 		genvar i;
@@ -62,9 +64,9 @@ module bsg_cam_1r1w_tag_array (
 				.clk_i(clk_i),
 				.en_i(w_v_i[i] &amp; w_set_not_clear_i),
 				.data_i(w_tag_i),
-				.data_o(tag_r[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? i : (els_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)])
+				.data_o(tag_r[i * width_p+:width_p])
 			);
-			assign r_match_o[i] = (r_v_i &amp; v_r[i]) &amp; (tag_r[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? i : (els_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] == r_tag_i);
+			assign r_match_o[i] = (r_v_i &amp; v_r[i]) &amp; (tag_r[i * width_p+:width_p] == r_tag_i);
 			assign w_empty_o[i] = ~v_r[i];
 		end
 	endgenerate

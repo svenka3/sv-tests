@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_ddr_downstream.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_ddr_downstream.v</a>
 defines: 
-time_elapsed: 0.308s
-ram usage: 13724 KB
+time_elapsed: 0.196s
+ram usage: 14324 KB
 </pre>
 <pre class="log">
 
@@ -35,7 +35,8 @@ module bsg_link_ddr_downstream (
 	io_valid_i,
 	core_token_r_o
 );
-	parameter width_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
 	parameter channel_width_p = 8;
 	parameter num_channels_p = 1;
 	parameter lg_fifo_depth_p = 6;
@@ -50,12 +51,12 @@ module bsg_link_ddr_downstream (
 	output core_valid_o;
 	input core_yumi_i;
 	input [num_channels_p - 1:0] io_clk_i;
-	input [(num_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? (num_channels_p * channel_width_p) - 1 : (num_channels_p * (2 - channel_width_p)) + (channel_width_p - 2)) : (channel_width_p &gt;= 1 ? ((2 - num_channels_p) * channel_width_p) + (((num_channels_p - 1) * channel_width_p) - 1) : ((2 - num_channels_p) * (2 - channel_width_p)) + (((channel_width_p - 1) + ((num_channels_p - 1) * (2 - channel_width_p))) - 1))):(num_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) : (channel_width_p &gt;= 1 ? (num_channels_p - 1) * channel_width_p : (channel_width_p - 1) + ((num_channels_p - 1) * (2 - channel_width_p))))] io_data_i;
+	input [(num_channels_p * channel_width_p) - 1:0] io_data_i;
 	input [num_channels_p - 1:0] io_valid_i;
 	output wire [num_channels_p - 1:0] core_token_r_o;
 	wire core_sipo_ready_lo;
 	wire core_sipo_yumi_lo;
-	wire [(num_channels_p &gt;= 1 ? (ddr_width_lp &gt;= 1 ? (num_channels_p * ddr_width_lp) - 1 : (num_channels_p * (2 - ddr_width_lp)) + (ddr_width_lp - 2)) : (ddr_width_lp &gt;= 1 ? ((2 - num_channels_p) * ddr_width_lp) + (((num_channels_p - 1) * ddr_width_lp) - 1) : ((2 - num_channels_p) * (2 - ddr_width_lp)) + (((ddr_width_lp - 1) + ((num_channels_p - 1) * (2 - ddr_width_lp))) - 1))):(num_channels_p &gt;= 1 ? (ddr_width_lp &gt;= 1 ? 0 : ddr_width_lp - 1) : (ddr_width_lp &gt;= 1 ? (num_channels_p - 1) * ddr_width_lp : (ddr_width_lp - 1) + ((num_channels_p - 1) * (2 - ddr_width_lp))))] core_sipo_data_li;
+	wire [(num_channels_p * ddr_width_lp) - 1:0] core_sipo_data_li;
 	wire [num_channels_p - 1:0] core_sipo_valid_li;
 	assign core_sipo_yumi_lo = &amp;core_sipo_valid_li &amp; core_sipo_ready_lo;
 	genvar i;
@@ -66,7 +67,7 @@ module bsg_link_ddr_downstream (
 			wire [channel_width_p:0] io_iddr_data_top;
 			bsg_link_iddr_phy #(.width_p(channel_width_p + 1)) iddr_data(
 				.clk_i(io_clk_i[i]),
-				.data_i({io_valid_i[i], io_data_i[(channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) + ((num_channels_p &gt;= 1 ? i : (num_channels_p - 1) - i) * (channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p))+:(channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p)]}),
+				.data_i({io_valid_i[i], io_data_i[i * channel_width_p+:channel_width_p]}),
 				.data_r_o({io_iddr_data_top, {io_iddr_v_lo, io_iddr_data_bottom}})
 			);
 			bsg_link_source_sync_downstream #(
@@ -81,7 +82,7 @@ module bsg_link_ddr_downstream (
 				.io_data_i({io_iddr_data_top[(ddr_width_lp - channel_width_p) - 1:0], io_iddr_data_bottom}),
 				.io_valid_i(io_iddr_v_lo),
 				.core_token_r_o(core_token_r_o[i]),
-				.core_data_o(core_sipo_data_li[(ddr_width_lp &gt;= 1 ? 0 : ddr_width_lp - 1) + ((num_channels_p &gt;= 1 ? i : (num_channels_p - 1) - i) * (ddr_width_lp &gt;= 1 ? ddr_width_lp : 2 - ddr_width_lp))+:(ddr_width_lp &gt;= 1 ? ddr_width_lp : 2 - ddr_width_lp)]),
+				.core_data_o(core_sipo_data_li[i * ddr_width_lp+:ddr_width_lp]),
 				.core_valid_o(core_sipo_valid_li[i]),
 				.core_yumi_i(core_sipo_yumi_lo)
 			);

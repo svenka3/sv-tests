@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_crossbar_control_basic_o_by_i.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_crossbar_control_basic_o_by_i.v</a>
 defines: 
-time_elapsed: 0.241s
-ram usage: 14048 KB
+time_elapsed: 0.184s
+ram usage: 13816 KB
 </pre>
 <pre class="log">
 
@@ -33,26 +33,28 @@ module bsg_crossbar_control_basic_o_by_i (
 	valid_o,
 	grants_oi_one_hot_o
 );
-	parameter i_els_p = &#34;inv&#34;;
-	parameter o_els_p = &#34;inv&#34;;
+	parameter _sv2v_width_i_els_p = 24;
+	parameter [_sv2v_width_i_els_p - 1:0] i_els_p = &#34;inv&#34;;
+	parameter _sv2v_width_o_els_p = 24;
+	parameter [_sv2v_width_o_els_p - 1:0] o_els_p = &#34;inv&#34;;
 	parameter lg_o_els_lp = (o_els_p == 1 ? 1 : $clog2(o_els_p));
 	input clk_i;
 	input reset_i;
 	input [i_els_p - 1:0] valid_i;
-	input [(i_els_p &gt;= 1 ? (lg_o_els_lp &gt;= 1 ? (i_els_p * lg_o_els_lp) - 1 : (i_els_p * (2 - lg_o_els_lp)) + (lg_o_els_lp - 2)) : (lg_o_els_lp &gt;= 1 ? ((2 - i_els_p) * lg_o_els_lp) + (((i_els_p - 1) * lg_o_els_lp) - 1) : ((2 - i_els_p) * (2 - lg_o_els_lp)) + (((lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))) - 1))):(i_els_p &gt;= 1 ? (lg_o_els_lp &gt;= 1 ? 0 : lg_o_els_lp - 1) : (lg_o_els_lp &gt;= 1 ? (i_els_p - 1) * lg_o_els_lp : (lg_o_els_lp - 1) + ((i_els_p - 1) * (2 - lg_o_els_lp))))] sel_io_i;
+	input [(i_els_p * lg_o_els_lp) - 1:0] sel_io_i;
 	output [i_els_p - 1:0] yumi_o;
 	input [o_els_p - 1:0] ready_and_i;
 	output [o_els_p - 1:0] valid_o;
-	output [(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? (o_els_p * i_els_p) - 1 : (o_els_p * (2 - i_els_p)) + (i_els_p - 2)) : (i_els_p &gt;= 1 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? 0 : i_els_p - 1) : (i_els_p &gt;= 1 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] grants_oi_one_hot_o;
-	wire [(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? (i_els_p * o_els_p) - 1 : (i_els_p * (2 - o_els_p)) + (o_els_p - 2)) : (o_els_p &gt;= 1 ? ((2 - i_els_p) * o_els_p) + (((i_els_p - 1) * o_els_p) - 1) : ((2 - i_els_p) * (2 - o_els_p)) + (((o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))) - 1))):(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? 0 : o_els_p - 1) : (o_els_p &gt;= 1 ? (i_els_p - 1) * o_els_p : (o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))))] o_select;
-	wire [(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? (o_els_p * i_els_p) - 1 : (o_els_p * (2 - i_els_p)) + (i_els_p - 2)) : (i_els_p &gt;= 1 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? 0 : i_els_p - 1) : (i_els_p &gt;= 1 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] o_select_t;
+	output [(o_els_p * i_els_p) - 1:0] grants_oi_one_hot_o;
+	wire [(i_els_p * o_els_p) - 1:0] o_select;
+	wire [(o_els_p * i_els_p) - 1:0] o_select_t;
 	generate
 		genvar i;
 		for (i = 0; i &lt; i_els_p; i = i + 1) begin : dv
 			bsg_decode_with_v #(.num_out_p(o_els_p)) dv0(
-				.i(sel_io_i[(lg_o_els_lp &gt;= 1 ? 0 : lg_o_els_lp - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (lg_o_els_lp &gt;= 1 ? lg_o_els_lp : 2 - lg_o_els_lp))+:(lg_o_els_lp &gt;= 1 ? lg_o_els_lp : 2 - lg_o_els_lp)]),
+				.i(sel_io_i[i * lg_o_els_lp+:lg_o_els_lp]),
 				.v_i(valid_i[i]),
-				.o(o_select[(o_els_p &gt;= 1 ? 0 : o_els_p - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p))+:(o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p)])
+				.o(o_select[i * o_els_p+:o_els_p])
 			);
 		end
 	endgenerate
@@ -64,20 +66,20 @@ module bsg_crossbar_control_basic_o_by_i (
 		.o(o_select_t)
 	);
 	wire [o_els_p - 1:0] rr_yumi_li;
-	wire [(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? (o_els_p * i_els_p) - 1 : (o_els_p * (2 - i_els_p)) + (i_els_p - 2)) : (i_els_p &gt;= 1 ? ((2 - o_els_p) * i_els_p) + (((o_els_p - 1) * i_els_p) - 1) : ((2 - o_els_p) * (2 - i_els_p)) + (((i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))) - 1))):(o_els_p &gt;= 1 ? (i_els_p &gt;= 1 ? 0 : i_els_p - 1) : (i_els_p &gt;= 1 ? (o_els_p - 1) * i_els_p : (i_els_p - 1) + ((o_els_p - 1) * (2 - i_els_p))))] rr_yumi_lo;
-	wire [(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? (i_els_p * o_els_p) - 1 : (i_els_p * (2 - o_els_p)) + (o_els_p - 2)) : (o_els_p &gt;= 1 ? ((2 - i_els_p) * o_els_p) + (((i_els_p - 1) * o_els_p) - 1) : ((2 - i_els_p) * (2 - o_els_p)) + (((o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))) - 1))):(i_els_p &gt;= 1 ? (o_els_p &gt;= 1 ? 0 : o_els_p - 1) : (o_els_p &gt;= 1 ? (i_els_p - 1) * o_els_p : (o_els_p - 1) + ((i_els_p - 1) * (2 - o_els_p))))] rr_yumi_lo_t;
+	wire [(o_els_p * i_els_p) - 1:0] rr_yumi_lo;
+	wire [(i_els_p * o_els_p) - 1:0] rr_yumi_lo_t;
 	generate
 		for (i = 0; i &lt; o_els_p; i = i + 1) begin : rr
-			assign valid_o[i] = |o_select_t[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : (o_els_p - 1) - i) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)];
+			assign valid_o[i] = |o_select_t[i * i_els_p+:i_els_p];
 			assign rr_yumi_li[i] = valid_o[i] &amp; ready_and_i[i];
 			bsg_arb_round_robin #(.width_p(i_els_p)) rr0(
 				.clk_i(clk_i),
 				.reset_i(reset_i),
-				.reqs_i(o_select_t[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : (o_els_p - 1) - i) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
-				.grants_o(grants_oi_one_hot_o[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : (o_els_p - 1) - i) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)]),
+				.reqs_i(o_select_t[i * i_els_p+:i_els_p]),
+				.grants_o(grants_oi_one_hot_o[i * i_els_p+:i_els_p]),
 				.yumi_i(rr_yumi_li[i])
 			);
-			assign rr_yumi_lo[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : (o_els_p - 1) - i) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)] = grants_oi_one_hot_o[(i_els_p &gt;= 1 ? 0 : i_els_p - 1) + ((o_els_p &gt;= 1 ? i : (o_els_p - 1) - i) * (i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p))+:(i_els_p &gt;= 1 ? i_els_p : 2 - i_els_p)] &amp; {i_els_p {rr_yumi_li[i]}};
+			assign rr_yumi_lo[i * i_els_p+:i_els_p] = grants_oi_one_hot_o[i * i_els_p+:i_els_p] &amp; {i_els_p {rr_yumi_li[i]}};
 		end
 	endgenerate
 	bsg_transpose #(
@@ -88,7 +90,7 @@ module bsg_crossbar_control_basic_o_by_i (
 		.o(rr_yumi_lo_t)
 	);
 	generate
-		for (i = 0; i &lt; i_els_p; i = i + 1) assign yumi_o[i] = |rr_yumi_lo_t[(o_els_p &gt;= 1 ? 0 : o_els_p - 1) + ((i_els_p &gt;= 1 ? i : (i_els_p - 1) - i) * (o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p))+:(o_els_p &gt;= 1 ? o_els_p : 2 - o_els_p)];
+		for (i = 0; i &lt; i_els_p; i = i + 1) assign yumi_o[i] = |rr_yumi_lo_t[i * o_els_p+:o_els_p];
 	endgenerate
 endmodule
 

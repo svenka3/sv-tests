@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_comm_link.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_comm_link.v</a>
 defines: 
-time_elapsed: 0.717s
-ram usage: 16820 KB
+time_elapsed: 0.696s
+ram usage: 21128 KB
 </pre>
 <pre class="log">
 
@@ -47,11 +47,16 @@ module bsg_comm_link (
 	token_clk_tline_i,
 	core_async_reset_danger_o
 );
-	parameter channel_width_p = &#34;inv&#34;;
-	parameter core_channels_p = &#34;inv&#34;;
-	parameter link_channels_p = &#34;inv&#34;;
-	parameter nodes_p = &#34;inv&#34;;
-	parameter master_p = &#34;inv&#34;;
+	parameter _sv2v_width_channel_width_p = 24;
+	parameter [_sv2v_width_channel_width_p - 1:0] channel_width_p = &#34;inv&#34;;
+	parameter _sv2v_width_core_channels_p = 24;
+	parameter [_sv2v_width_core_channels_p - 1:0] core_channels_p = &#34;inv&#34;;
+	parameter _sv2v_width_link_channels_p = 24;
+	parameter [_sv2v_width_link_channels_p - 1:0] link_channels_p = &#34;inv&#34;;
+	parameter _sv2v_width_nodes_p = 24;
+	parameter [_sv2v_width_nodes_p - 1:0] nodes_p = &#34;inv&#34;;
+	parameter _sv2v_width_master_p = 24;
+	parameter [_sv2v_width_master_p - 1:0] master_p = &#34;inv&#34;;
 	parameter channel_mask_p = (1 &lt;&lt; link_channels_p) - 1;
 	parameter master_to_slave_speedup_p = 100;
 	function automatic [nodes_p - 1:0] sv2v_cast_86548;
@@ -76,18 +81,18 @@ module bsg_comm_link (
 	output [nodes_p - 1:0] core_node_reset_r_o;
 	output [nodes_p - 1:0] core_node_en_r_o;
 	output [nodes_p - 1:0] core_node_v_o;
-	output [(nodes_p &gt;= 1 ? ((core_channels_p * channel_width_p) &gt;= 1 ? (nodes_p * (core_channels_p * channel_width_p)) - 1 : (nodes_p * (2 - (core_channels_p * channel_width_p))) + ((core_channels_p * channel_width_p) - 2)) : ((core_channels_p * channel_width_p) &gt;= 1 ? ((2 - nodes_p) * (core_channels_p * channel_width_p)) + (((nodes_p - 1) * (core_channels_p * channel_width_p)) - 1) : ((2 - nodes_p) * (2 - (core_channels_p * channel_width_p))) + ((((core_channels_p * channel_width_p) - 1) + ((nodes_p - 1) * (2 - (core_channels_p * channel_width_p)))) - 1))):(nodes_p &gt;= 1 ? ((core_channels_p * channel_width_p) &gt;= 1 ? 0 : (core_channels_p * channel_width_p) - 1) : ((core_channels_p * channel_width_p) &gt;= 1 ? (nodes_p - 1) * (core_channels_p * channel_width_p) : ((core_channels_p * channel_width_p) - 1) + ((nodes_p - 1) * (2 - (core_channels_p * channel_width_p)))))] core_node_data_o;
+	output [(nodes_p * (core_channels_p * channel_width_p)) - 1:0] core_node_data_o;
 	input [nodes_p - 1:0] core_node_ready_i;
 	input [nodes_p - 1:0] core_node_v_i;
-	input [(nodes_p &gt;= 1 ? ((core_channels_p * channel_width_p) &gt;= 1 ? (nodes_p * (core_channels_p * channel_width_p)) - 1 : (nodes_p * (2 - (core_channels_p * channel_width_p))) + ((core_channels_p * channel_width_p) - 2)) : ((core_channels_p * channel_width_p) &gt;= 1 ? ((2 - nodes_p) * (core_channels_p * channel_width_p)) + (((nodes_p - 1) * (core_channels_p * channel_width_p)) - 1) : ((2 - nodes_p) * (2 - (core_channels_p * channel_width_p))) + ((((core_channels_p * channel_width_p) - 1) + ((nodes_p - 1) * (2 - (core_channels_p * channel_width_p)))) - 1))):(nodes_p &gt;= 1 ? ((core_channels_p * channel_width_p) &gt;= 1 ? 0 : (core_channels_p * channel_width_p) - 1) : ((core_channels_p * channel_width_p) &gt;= 1 ? (nodes_p - 1) * (core_channels_p * channel_width_p) : ((core_channels_p * channel_width_p) - 1) + ((nodes_p - 1) * (2 - (core_channels_p * channel_width_p)))))] core_node_data_i;
+	input [(nodes_p * (core_channels_p * channel_width_p)) - 1:0] core_node_data_i;
 	output [nodes_p - 1:0] core_node_yumi_o;
 	output core_calib_reset_r_o;
 	input [link_channels_p - 1:0] io_valid_tline_i;
-	input [(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? (link_channels_p * channel_width_p) - 1 : (link_channels_p * (2 - channel_width_p)) + (channel_width_p - 2)) : (channel_width_p &gt;= 1 ? ((2 - link_channels_p) * channel_width_p) + (((link_channels_p - 1) * channel_width_p) - 1) : ((2 - link_channels_p) * (2 - channel_width_p)) + (((channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))) - 1))):(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) : (channel_width_p &gt;= 1 ? (link_channels_p - 1) * channel_width_p : (channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))))] io_data_tline_i;
+	input [(link_channels_p * channel_width_p) - 1:0] io_data_tline_i;
 	input [link_channels_p - 1:0] io_clk_tline_i;
 	output [link_channels_p - 1:0] io_token_clk_tline_o;
 	output [link_channels_p - 1:0] im_valid_tline_o;
-	output [(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? (link_channels_p * channel_width_p) - 1 : (link_channels_p * (2 - channel_width_p)) + (channel_width_p - 2)) : (channel_width_p &gt;= 1 ? ((2 - link_channels_p) * channel_width_p) + (((link_channels_p - 1) * channel_width_p) - 1) : ((2 - link_channels_p) * (2 - channel_width_p)) + (((channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))) - 1))):(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) : (channel_width_p &gt;= 1 ? (link_channels_p - 1) * channel_width_p : (channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))))] im_data_tline_o;
+	output [(link_channels_p * channel_width_p) - 1:0] im_data_tline_o;
 	output [link_channels_p - 1:0] im_clk_tline_o;
 	output reg im_slave_reset_tline_r_o;
 	input [link_channels_p - 1:0] token_clk_tline_i;
@@ -113,15 +118,15 @@ module bsg_comm_link (
 	);
 	always @(posedge io_master_clk_i) im_slave_reset_tline_r_o &lt;= im_slave_reset_tline_n;
 	wire [link_channels_p - 1:0] core_asm_to_sso_valid;
-	wire [(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? (link_channels_p * channel_width_p) - 1 : (link_channels_p * (2 - channel_width_p)) + (channel_width_p - 2)) : (channel_width_p &gt;= 1 ? ((2 - link_channels_p) * channel_width_p) + (((link_channels_p - 1) * channel_width_p) - 1) : ((2 - link_channels_p) * (2 - channel_width_p)) + (((channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))) - 1))):(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) : (channel_width_p &gt;= 1 ? (link_channels_p - 1) * channel_width_p : (channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))))] core_asm_to_sso_data;
+	wire [(link_channels_p * channel_width_p) - 1:0] core_asm_to_sso_data;
 	wire [link_channels_p - 1:0] core_asm_to_sso_ready;
 	wire [link_channels_p - 1:0] core_ssi_to_asm_valid;
-	wire [(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? (link_channels_p * channel_width_p) - 1 : (link_channels_p * (2 - channel_width_p)) + (channel_width_p - 2)) : (channel_width_p &gt;= 1 ? ((2 - link_channels_p) * channel_width_p) + (((link_channels_p - 1) * channel_width_p) - 1) : ((2 - link_channels_p) * (2 - channel_width_p)) + (((channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))) - 1))):(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) : (channel_width_p &gt;= 1 ? (link_channels_p - 1) * channel_width_p : (channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))))] core_ssi_to_asm_data;
+	wire [(link_channels_p * channel_width_p) - 1:0] core_ssi_to_asm_data;
 	wire [link_channels_p - 1:0] core_ssi_to_asm_yumi;
 	wire [link_channels_p - 1:0] core_asm_to_sso_valid_sbox;
 	wire [link_channels_p - 1:0] core_ssi_to_asm_valid_sbox;
-	wire [(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? (link_channels_p * channel_width_p) - 1 : (link_channels_p * (2 - channel_width_p)) + (channel_width_p - 2)) : (channel_width_p &gt;= 1 ? ((2 - link_channels_p) * channel_width_p) + (((link_channels_p - 1) * channel_width_p) - 1) : ((2 - link_channels_p) * (2 - channel_width_p)) + (((channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))) - 1))):(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) : (channel_width_p &gt;= 1 ? (link_channels_p - 1) * channel_width_p : (channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))))] core_asm_to_sso_data_sbox;
-	wire [(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? (link_channels_p * channel_width_p) - 1 : (link_channels_p * (2 - channel_width_p)) + (channel_width_p - 2)) : (channel_width_p &gt;= 1 ? ((2 - link_channels_p) * channel_width_p) + (((link_channels_p - 1) * channel_width_p) - 1) : ((2 - link_channels_p) * (2 - channel_width_p)) + (((channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))) - 1))):(link_channels_p &gt;= 1 ? (channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) : (channel_width_p &gt;= 1 ? (link_channels_p - 1) * channel_width_p : (channel_width_p - 1) + ((link_channels_p - 1) * (2 - channel_width_p))))] core_ssi_to_asm_data_sbox;
+	wire [(link_channels_p * channel_width_p) - 1:0] core_asm_to_sso_data_sbox;
+	wire [(link_channels_p * channel_width_p) - 1:0] core_ssi_to_asm_data_sbox;
 	wire [link_channels_p - 1:0] core_asm_to_sso_ready_sbox;
 	wire [link_channels_p - 1:0] core_ssi_to_asm_yumi_sbox;
 	wire [link_channels_p - 1:0] im_override_en;
@@ -192,7 +197,7 @@ module bsg_comm_link (
 	endgenerate
 	generate
 		if (master_p) begin : mstr
-			wire [(link_channels_p &gt;= 1 ? ((tests_p + 1) * link_channels_p) - 1 : ((tests_p + 1) * (2 - link_channels_p)) + (link_channels_p - 2)):(link_channels_p &gt;= 1 ? 0 : link_channels_p - 1)] im_test_scoreboard;
+			wire [((tests_p + 1) * link_channels_p) - 1:0] im_test_scoreboard;
 			wire [2:0] im_test_index;
 			wire im_prepare;
 			assign im_slave_reset_tline_n = im_prepare;
@@ -250,7 +255,7 @@ module bsg_comm_link (
 			if (master_p) begin : m
 				wire [tests_p:0] im_tests_gather;
 				for (j = 0; j &lt; (tests_p + 1); j = j + 1) begin : mpa
-					assign mstr.im_test_scoreboard[(j * (link_channels_p &gt;= 1 ? link_channels_p : 2 - link_channels_p)) + (link_channels_p &gt;= 1 ? i : (link_channels_p - 1) - i)] = im_tests_gather[j];
+					assign mstr.im_test_scoreboard[(j * link_channels_p) + i] = im_tests_gather[j];
 				end
 				bsg_source_sync_channel_control_master #(
 					.width_p(channel_width_p),
@@ -332,7 +337,7 @@ module bsg_comm_link (
 			) sso(
 				.core_clk_i(core_clk_i),
 				.core_reset_i(core_channel_reset),
-				.core_data_i((core_loopback_en[i] ? core_ssi_to_asm_data[(channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) + ((link_channels_p &gt;= 1 ? i : (link_channels_p - 1) - i) * (channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p))+:(channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p)] : core_asm_to_sso_data_sbox[(channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) + ((link_channels_p &gt;= 1 ? i : (link_channels_p - 1) - i) * (channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p))+:(channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p)])),
+				.core_data_i((core_loopback_en[i] ? core_ssi_to_asm_data[i * channel_width_p+:channel_width_p] : core_asm_to_sso_data_sbox[i * channel_width_p+:channel_width_p])),
 				.core_valid_i((core_loopback_en[i] ? core_ssi_to_asm_valid[i] : core_asm_to_sso_valid_sbox[i])),
 				.core_ready_o(core_asm_to_sso_ready[i]),
 				.io_master_clk_i(io_master_clk_i),
@@ -342,7 +347,7 @@ module bsg_comm_link (
 				.io_override_valid_data_i(im_override_valid_data[i]),
 				.io_override_is_posedge_o(im_override_is_posedge[i]),
 				.io_clk_r_o(im_clk_tline_o[i]),
-				.io_data_r_o(im_data_tline_o[(channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) + ((link_channels_p &gt;= 1 ? i : (link_channels_p - 1) - i) * (channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p))+:(channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p)]),
+				.io_data_r_o(im_data_tline_o[i * channel_width_p+:channel_width_p]),
 				.io_valid_r_o(im_valid_tline_o[i]),
 				.io_infinite_credits_i(im_infinite_credits_en[i]),
 				.token_clk_i(token_clk_tline_i[i]),
@@ -362,7 +367,7 @@ module bsg_comm_link (
 				.channel_width_p(channel_width_p)
 			) ssi(
 				.io_clk_i(io_clk_tline_i[i]),
-				.io_data_i(io_data_tline_i[(channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) + ((link_channels_p &gt;= 1 ? i : (link_channels_p - 1) - i) * (channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p))+:(channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p)]),
+				.io_data_i(io_data_tline_i[i * channel_width_p+:channel_width_p]),
 				.io_valid_i(io_valid_tline_i[i]),
 				.io_token_r_o(io_token_clk_tline_o[i]),
 				.io_reset_i((master_p ? ~io_calib_done[i] : io_reset[i])),
@@ -374,7 +379,7 @@ module bsg_comm_link (
 				.io_trigger_mode_alt_en_i(io_trigger_mode_alt_en[i]),
 				.core_clk_i(core_clk_i),
 				.core_reset_i(core_channel_reset),
-				.core_data_o(core_ssi_to_asm_data[(channel_width_p &gt;= 1 ? 0 : channel_width_p - 1) + ((link_channels_p &gt;= 1 ? i : (link_channels_p - 1) - i) * (channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p))+:(channel_width_p &gt;= 1 ? channel_width_p : 2 - channel_width_p)]),
+				.core_data_o(core_ssi_to_asm_data[i * channel_width_p+:channel_width_p]),
 				.core_valid_o(core_ssi_to_asm_valid[i]),
 				.core_yumi_i((core_loopback_en[i] ? core_asm_to_sso_ready[i] &amp; core_ssi_to_asm_valid[i] : core_ssi_to_asm_yumi_sbox[i]))
 			);
@@ -412,9 +417,9 @@ module bsg_comm_link (
 	wire core_asm_valid_lo;
 	wire [(core_channels_p * channel_width_p) - 1:0] core_asm_data_lo;
 	wire core_asm_yumi_li;
-	function automatic [(($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1) &gt;= 1 ? ($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1) : 2 - ($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1)) - 1:0] sv2v_cast_94329;
-		input reg [(($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1) &gt;= 1 ? ($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1) : 2 - ($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1)) - 1:0] inp;
-		sv2v_cast_94329 = inp;
+	function automatic [($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1) - 1:0] sv2v_cast_42473;
+		input reg [($clog2(core_channels_p / bao_narrow_lp) &gt; 1 ? $clog2(core_channels_p / bao_narrow_lp) : 1) - 1:0] inp;
+		sv2v_cast_42473 = inp;
 	endfunction
 	bsg_assembler_out #(
 		.width_p(channel_width_p),
@@ -428,7 +433,7 @@ module bsg_comm_link (
 		.valid_i(core_asm_valid_li),
 		.data_i(core_asm_data_li),
 		.ready_o(core_asm_ready_lo),
-		.in_top_channel_i(sv2v_cast_94329(core_channels_p / bao_narrow_lp) - 1&#39;b1),
+		.in_top_channel_i(sv2v_cast_42473(core_channels_p / bao_narrow_lp) - 1&#39;b1),
 		.out_top_channel_i(core_top_active_channel_bao_r),
 		.valid_o(core_asm_to_sso_valid),
 		.data_o(core_asm_to_sso_data),
@@ -436,9 +441,9 @@ module bsg_comm_link (
 	);
 	wire core_valid_tmp;
 	assign core_asm_valid_lo = core_valid_tmp &amp; core_calib_done_vec_r[2];
-	function automatic [(($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1) &gt;= 1 ? ($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1) : 2 - ($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1)) - 1:0] sv2v_cast_29533;
-		input reg [(($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1) &gt;= 1 ? ($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1) : 2 - ($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1)) - 1:0] inp;
-		sv2v_cast_29533 = inp;
+	function automatic [($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1) - 1:0] sv2v_cast_C1E21;
+		input reg [($clog2(core_channels_p) &gt; 1 ? $clog2(core_channels_p) : 1) - 1:0] inp;
+		sv2v_cast_C1E21 = inp;
 	endfunction
 	bsg_assembler_in #(
 		.width_p(channel_width_p),
@@ -453,7 +458,7 @@ module bsg_comm_link (
 		.data_i(core_ssi_to_asm_data_sbox),
 		.yumi_o(core_ssi_to_asm_yumi),
 		.in_top_channel_i(core_top_active_channel_bai_r),
-		.out_top_channel_i(sv2v_cast_29533(core_channels_p) - 1&#39;b1),
+		.out_top_channel_i(sv2v_cast_C1E21(core_channels_p) - 1&#39;b1),
 		.valid_o(core_valid_tmp),
 		.data_o(core_asm_data_lo),
 		.yumi_i(core_asm_yumi_li)

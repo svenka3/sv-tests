@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_legacy/bsg_murn_converter.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_legacy/bsg_murn_converter.v</a>
 defines: 
-time_elapsed: 0.262s
-ram usage: 13032 KB
+time_elapsed: 0.180s
+ram usage: 13688 KB
 </pre>
 <pre class="log">
 
@@ -39,22 +39,24 @@ module bsg_murn_converter (
 	yumi_i,
 	data_o
 );
-	parameter nodes_p = &#34;inv&#34;;
-	parameter ring_width_p = &#34;inv&#34;;
+	parameter _sv2v_width_nodes_p = 24;
+	parameter [_sv2v_width_nodes_p - 1:0] nodes_p = &#34;inv&#34;;
+	parameter _sv2v_width_ring_width_p = 24;
+	parameter [_sv2v_width_ring_width_p - 1:0] ring_width_p = &#34;inv&#34;;
 	input clk_i;
 	input [nodes_p - 1:0] reset_i;
 	input [nodes_p - 1:0] v_i;
 	output [nodes_p - 1:0] ready_o;
-	input [(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? (nodes_p * ring_width_p) - 1 : (nodes_p * (2 - ring_width_p)) + (ring_width_p - 2)) : (ring_width_p &gt;= 1 ? ((2 - nodes_p) * ring_width_p) + (((nodes_p - 1) * ring_width_p) - 1) : ((2 - nodes_p) * (2 - ring_width_p)) + (((ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))) - 1))):(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? 0 : ring_width_p - 1) : (ring_width_p &gt;= 1 ? (nodes_p - 1) * ring_width_p : (ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))))] data_i;
+	input [(nodes_p * ring_width_p) - 1:0] data_i;
 	output [nodes_p - 1:0] switch_2_blockValid;
 	input [nodes_p - 1:0] switch_2_blockRetry;
-	output [(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? (nodes_p * ring_width_p) - 1 : (nodes_p * (2 - ring_width_p)) + (ring_width_p - 2)) : (ring_width_p &gt;= 1 ? ((2 - nodes_p) * ring_width_p) + (((nodes_p - 1) * ring_width_p) - 1) : ((2 - nodes_p) * (2 - ring_width_p)) + (((ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))) - 1))):(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? 0 : ring_width_p - 1) : (ring_width_p &gt;= 1 ? (nodes_p - 1) * ring_width_p : (ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))))] switch_2_blockData;
+	output [(nodes_p * ring_width_p) - 1:0] switch_2_blockData;
 	input [nodes_p - 1:0] block_2_switchValid;
 	output [nodes_p - 1:0] block_2_switchRetry;
-	input [(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? (nodes_p * ring_width_p) - 1 : (nodes_p * (2 - ring_width_p)) + (ring_width_p - 2)) : (ring_width_p &gt;= 1 ? ((2 - nodes_p) * ring_width_p) + (((nodes_p - 1) * ring_width_p) - 1) : ((2 - nodes_p) * (2 - ring_width_p)) + (((ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))) - 1))):(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? 0 : ring_width_p - 1) : (ring_width_p &gt;= 1 ? (nodes_p - 1) * ring_width_p : (ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))))] block_2_switchData;
+	input [(nodes_p * ring_width_p) - 1:0] block_2_switchData;
 	output [nodes_p - 1:0] v_o;
 	input [nodes_p - 1:0] yumi_i;
-	output [(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? (nodes_p * ring_width_p) - 1 : (nodes_p * (2 - ring_width_p)) + (ring_width_p - 2)) : (ring_width_p &gt;= 1 ? ((2 - nodes_p) * ring_width_p) + (((nodes_p - 1) * ring_width_p) - 1) : ((2 - nodes_p) * (2 - ring_width_p)) + (((ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))) - 1))):(nodes_p &gt;= 1 ? (ring_width_p &gt;= 1 ? 0 : ring_width_p - 1) : (ring_width_p &gt;= 1 ? (nodes_p - 1) * ring_width_p : (ring_width_p - 1) + ((nodes_p - 1) * (2 - ring_width_p))))] data_o;
+	output [(nodes_p * ring_width_p) - 1:0] data_o;
 	bsg_flow_convert #(
 		.width_p(nodes_p),
 		.send_v_and_ready_p(1),
@@ -85,10 +87,10 @@ module bsg_murn_converter (
 				.clk_i(clk_i),
 				.reset_i(reset_i[i]),
 				.ready_o(block_2_switchReady[i]),
-				.data_i(block_2_switchData[(ring_width_p &gt;= 1 ? 0 : ring_width_p - 1) + ((nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * (ring_width_p &gt;= 1 ? ring_width_p : 2 - ring_width_p))+:(ring_width_p &gt;= 1 ? ring_width_p : 2 - ring_width_p)]),
+				.data_i(block_2_switchData[i * ring_width_p+:ring_width_p]),
 				.v_i(block_2_switchValid[i]),
 				.v_o(v_o[i]),
-				.data_o(data_o[(ring_width_p &gt;= 1 ? 0 : ring_width_p - 1) + ((nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * (ring_width_p &gt;= 1 ? ring_width_p : 2 - ring_width_p))+:(ring_width_p &gt;= 1 ? ring_width_p : 2 - ring_width_p)]),
+				.data_o(data_o[i * ring_width_p+:ring_width_p]),
 				.yumi_i(yumi_i[i])
 			);
 		end

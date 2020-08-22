@@ -17,112 +17,52 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv</a>
 defines: 
-time_elapsed: 0.057s
-ram usage: 10528 KB
+time_elapsed: 0.120s
+ram usage: 10128 KB
 </pre>
 <pre class="log">
 
 zachjs-sv2v -I/tmpfs/src/github/sv-tests/third_party/tests/hdlconvertor/tests/sv_test/std2017 <a href="../../../../third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv.html" target="file-frame">third_party/tests/hdlconvertor/tests/sv_test/std2017/p754.sv</a>
-module memMod (
-	a_clk,
-	a_req,
-	a_gnt,
-	a_addr,
-	a_data,
-	a_mode,
-	a_start,
-	a_rdy
-);
-	input wire a_clk;
-	inout wire a_req;
-	output reg a_gnt;
-	inout wire [7:0] a_addr;
-	inout wire [7:0] a_data;
-	inout wire [1:0] a_mode;
-	inout wire a_start;
-	inout wire a_rdy;
-	wire avail;
-	always @(posedge a_clk) a_gnt &lt;= a_req &amp; avail;
-endmodule
-module cpuMod (
-	b_clk,
-	b_req,
-	b_gnt,
-	b_addr,
-	b_data,
-	b_mode,
-	b_start,
-	b_rdy
-);
-	input wire b_clk;
-	inout wire b_req;
-	inout wire b_gnt;
-	inout wire [7:0] b_addr;
-	inout wire [7:0] b_data;
-	inout wire [1:0] b_mode;
-	inout wire b_start;
-	inout wire b_rdy;
-endmodule
 module top;
 	wire clk = 0;
-	wire sb_intf1_clk;
-	wire sb_intf1_req;
-	wire sb_intf1_gnt;
-	wire [7:0] sb_intf1_addr;
-	wire [7:0] sb_intf1_data;
-	wire [1:0] sb_intf1_mode;
-	wire sb_intf1_start;
-	wire sb_intf1_rdy;
-	assign sb_intf1_clk = clk;
-	wire sb_intf2_clk;
-	wire sb_intf2_req;
-	wire sb_intf2_gnt;
-	wire [7:0] sb_intf2_addr;
-	wire [7:0] sb_intf2_data;
-	wire [1:0] sb_intf2_mode;
-	wire sb_intf2_start;
-	wire sb_intf2_rdy;
-	assign sb_intf2_clk = clk;
-	memMod mem1(
-		.a_clk(sb_intf1_clk),
-		.a_req(sb_intf1_req),
-		.a_gnt(sb_intf1_gnt),
-		.a_addr(sb_intf1_addr),
-		.a_data(sb_intf1_data),
-		.a_mode(sb_intf1_mode),
-		.a_start(sb_intf1_start),
-		.a_rdy(sb_intf1_rdy)
-	);
-	cpuMod cpu1(
-		.b_clk(sb_intf1_clk),
-		.b_req(sb_intf1_req),
-		.b_gnt(sb_intf1_gnt),
-		.b_addr(sb_intf1_addr),
-		.b_data(sb_intf1_data),
-		.b_mode(sb_intf1_mode),
-		.b_start(sb_intf1_start),
-		.b_rdy(sb_intf1_rdy)
-	);
-	memMod mem2(
-		.a_clk(sb_intf2_clk),
-		.a_req(sb_intf2_req),
-		.a_gnt(sb_intf2_gnt),
-		.a_addr(sb_intf2_addr),
-		.a_data(sb_intf2_data),
-		.a_mode(sb_intf2_mode),
-		.a_start(sb_intf2_start),
-		.a_rdy(sb_intf2_rdy)
-	);
-	cpuMod cpu2(
-		.b_clk(sb_intf2_clk),
-		.b_req(sb_intf2_req),
-		.b_gnt(sb_intf2_gnt),
-		.b_addr(sb_intf2_addr),
-		.b_data(sb_intf2_data),
-		.b_mode(sb_intf2_mode),
-		.b_start(sb_intf2_start),
-		.b_rdy(sb_intf2_rdy)
-	);
+	generate
+		begin : sb_intf1
+			wire clk;
+			wire req;
+			reg gnt;
+			wire [7:0] addr;
+			wire [7:0] data;
+			wire [1:0] mode;
+			wire start;
+			wire rdy;
+		end
+		assign sb_intf1.clk = clk;
+	endgenerate
+	generate
+		begin : sb_intf2
+			wire clk;
+			wire req;
+			reg gnt;
+			wire [7:0] addr;
+			wire [7:0] data;
+			wire [1:0] mode;
+			wire start;
+			wire rdy;
+		end
+		assign sb_intf2.clk = clk;
+	endgenerate
+	generate
+		begin : mem1
+			wire avail;
+			always @(posedge top.sb_intf1.clk) top.sb_intf1.gnt &lt;= top.sb_intf1.req &amp; avail;
+		end
+	endgenerate
+	generate
+		begin : mem2
+			wire avail;
+			always @(posedge top.sb_intf2.clk) top.sb_intf2.gnt &lt;= top.sb_intf2.req &amp; avail;
+		end
+	endgenerate
 endmodule
 
 </pre>

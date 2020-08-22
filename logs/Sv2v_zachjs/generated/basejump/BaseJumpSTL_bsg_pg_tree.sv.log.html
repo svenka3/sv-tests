@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_pg_tree.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_pg_tree.v</a>
 defines: 
-time_elapsed: 0.329s
-ram usage: 13824 KB
+time_elapsed: 0.167s
+ram usage: 13856 KB
 </pre>
 <pre class="log">
 
@@ -29,19 +29,17 @@ module bsg_pg_tree (
 	p_o,
 	g_o
 );
-	parameter input_width_p = &#34;inv&#34;;
-	parameter output_width_p = &#34;inv&#34;;
+	parameter _sv2v_width_input_width_p = 24;
+	parameter [_sv2v_width_input_width_p - 1:0] input_width_p = &#34;inv&#34;;
+	parameter _sv2v_width_output_width_p = 24;
+	parameter [_sv2v_width_output_width_p - 1:0] output_width_p = &#34;inv&#34;;
 	parameter nodes_p = 1;
 	parameter edges_lp = nodes_p * 3;
-	function automatic signed [31:0] sv2v_cast_32_signed;
-		input reg signed [31:0] inp;
-		sv2v_cast_32_signed = inp;
-	endfunction
-	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] l_edge_p = sv2v_cast_32_signed(0);
-	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] r_edge_p = sv2v_cast_32_signed(0);
-	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] o_edge_p = sv2v_cast_32_signed(0);
-	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] node_type_p = sv2v_cast_32_signed(0);
-	parameter signed [(nodes_p &gt;= 1 ? (nodes_p * 32) - 1 : ((2 - nodes_p) * 32) + (((nodes_p - 1) * 32) - 1)):(nodes_p &gt;= 1 ? 0 : (nodes_p - 1) * 32)] row_p = sv2v_cast_32_signed(0);
+	parameter signed [(nodes_p * 32) - 1:0] l_edge_p = 32&#39;sd0;
+	parameter signed [(nodes_p * 32) - 1:0] r_edge_p = 32&#39;sd0;
+	parameter signed [(nodes_p * 32) - 1:0] o_edge_p = 32&#39;sd0;
+	parameter signed [(nodes_p * 32) - 1:0] node_type_p = 32&#39;sd0;
+	parameter signed [(nodes_p * 32) - 1:0] row_p = 32&#39;sd0;
 	input [input_width_p - 1:0] p_i;
 	input [input_width_p - 1:0] g_i;
 	output [output_width_p - 1:0] p_o;
@@ -55,23 +53,23 @@ module bsg_pg_tree (
 	genvar i;
 	generate
 		for (i = 0; i &lt; nodes_p; i = i + 1) begin : rof
-			if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 0) begin : blk
-				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = p[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] | p[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
-				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] | (g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] &amp; p[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]]);
+			if (node_type_p[i * 32+:32] == 0) begin : blk
+				assign p[o_edge_p[i * 32+:32]] = p[l_edge_p[i * 32+:32]] | p[r_edge_p[i * 32+:32]];
+				assign g[o_edge_p[i * 32+:32]] = g[r_edge_p[i * 32+:32]] | (g[l_edge_p[i * 32+:32]] &amp; p[r_edge_p[i * 32+:32]]);
 			end
-			else if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 1) begin : gry
-				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = 1&#39;sbx;
-				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] | (g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] &amp; p[r_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]]);
+			else if (node_type_p[i * 32+:32] == 1) begin : gry
+				assign p[o_edge_p[i * 32+:32]] = 1&#39;sbx;
+				assign g[o_edge_p[i * 32+:32]] = g[r_edge_p[i * 32+:32]] | (g[l_edge_p[i * 32+:32]] &amp; p[r_edge_p[i * 32+:32]]);
 			end
-			else if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 2) begin : bbuf
-				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = p[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
-				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
+			else if (node_type_p[i * 32+:32] == 2) begin : bbuf
+				assign p[o_edge_p[i * 32+:32]] = p[l_edge_p[i * 32+:32]];
+				assign g[o_edge_p[i * 32+:32]] = g[l_edge_p[i * 32+:32]];
 			end
-			else if (node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32] == 3) begin : gbuf
-				assign p[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = 1&#39;sbx;
-				assign g[o_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]] = g[l_edge_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]];
+			else if (node_type_p[i * 32+:32] == 3) begin : gbuf
+				assign p[o_edge_p[i * 32+:32]] = 1&#39;sbx;
+				assign g[o_edge_p[i * 32+:32]] = g[l_edge_p[i * 32+:32]];
 			end
-			else initial $error(&#34;unknown node_type: &#34;, node_type_p[(nodes_p &gt;= 1 ? i : (nodes_p - 1) - i) * 32+:32]);
+			else initial $error(&#34;unknown node_type: &#34;, node_type_p[i * 32+:32]);
 		end
 	endgenerate
 endmodule

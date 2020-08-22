@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_mux_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_mux_one_hot.v</a>
 defines: 
-time_elapsed: 0.329s
-ram usage: 12928 KB
+time_elapsed: 0.283s
+ram usage: 13572 KB
 </pre>
 <pre class="log">
 
@@ -28,25 +28,26 @@ module bsg_mux_one_hot (
 	sel_one_hot_i,
 	data_o
 );
-	parameter width_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
 	parameter els_p = 1;
 	parameter harden_p = 1;
-	input [(els_p &gt;= 1 ? (width_p &gt;= 1 ? (els_p * width_p) - 1 : (els_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):(els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] data_i;
+	input [(els_p * width_p) - 1:0] data_i;
 	input [els_p - 1:0] sel_one_hot_i;
 	output [width_p - 1:0] data_o;
-	wire [(els_p &gt;= 1 ? (width_p &gt;= 1 ? (els_p * width_p) - 1 : (els_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):(els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] data_masked;
+	wire [(els_p * width_p) - 1:0] data_masked;
 	genvar i;
 	genvar j;
 	generate
 		for (i = 0; i &lt; els_p; i = i + 1) begin : mask
-			assign data_masked[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? i : (els_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = data_i[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? i : (els_p - 1) - i) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] &amp; {width_p {sel_one_hot_i[i]}};
+			assign data_masked[i * width_p+:width_p] = data_i[i * width_p+:width_p] &amp; {width_p {sel_one_hot_i[i]}};
 		end
 	endgenerate
 	generate
 		for (i = 0; i &lt; width_p; i = i + 1) begin : reduce
 			wire [els_p - 1:0] gather;
 			for (j = 0; j &lt; els_p; j = j + 1) begin : reduce2
-				assign gather[j] = data_masked[((els_p &gt;= 1 ? j : (els_p - 1) - j) * (width_p &gt;= 1 ? width_p : 2 - width_p)) + (width_p &gt;= 1 ? i : (width_p - 1) - i)];
+				assign gather[j] = data_masked[(j * width_p) + i];
 			end
 			assign data_o[i] = |gather;
 		end

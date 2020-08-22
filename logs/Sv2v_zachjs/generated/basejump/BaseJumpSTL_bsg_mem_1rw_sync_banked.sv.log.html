@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_banked.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_banked.v</a>
 defines: 
-time_elapsed: 0.431s
-ram usage: 13880 KB
+time_elapsed: 0.194s
+ram usage: 14332 KB
 </pre>
 <pre class="log">
 
@@ -32,8 +32,10 @@ module bsg_mem_1rw_sync_banked (
 	data_i,
 	data_o
 );
-	parameter width_p = &#34;inv&#34;;
-	parameter els_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
+	parameter _sv2v_width_els_p = 24;
+	parameter [_sv2v_width_els_p - 1:0] els_p = &#34;inv&#34;;
 	parameter latch_last_read_p = 0;
 	parameter num_width_bank_p = 1;
 	parameter num_depth_bank_p = 1;
@@ -50,9 +52,8 @@ module bsg_mem_1rw_sync_banked (
 	input [width_p - 1:0] data_i;
 	output wire [width_p - 1:0] data_o;
 	generate
-		genvar i;
-		genvar j;
 		if (num_depth_bank_p == 1) begin : db1
+			genvar i;
 			for (i = 0; i &lt; num_width_bank_p; i = i + 1) begin : wb
 				bsg_mem_1rw_sync #(
 					.width_p(bank_width_lp),
@@ -71,7 +72,7 @@ module bsg_mem_1rw_sync_banked (
 		end
 		else begin : dbn
 			wire [num_depth_bank_p - 1:0] bank_v_li;
-			wire [(num_depth_bank_p &gt;= 1 ? (width_p &gt;= 1 ? (num_depth_bank_p * width_p) - 1 : (num_depth_bank_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - num_depth_bank_p) * width_p) + (((num_depth_bank_p - 1) * width_p) - 1) : ((2 - num_depth_bank_p) * (2 - width_p)) + (((width_p - 1) + ((num_depth_bank_p - 1) * (2 - width_p))) - 1))):(num_depth_bank_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (num_depth_bank_p - 1) * width_p : (width_p - 1) + ((num_depth_bank_p - 1) * (2 - width_p))))] bank_data_lo;
+			wire [(num_depth_bank_p * width_p) - 1:0] bank_data_lo;
 			wire [depth_bank_idx_width_lp - 1:0] depth_bank_idx_li = addr_i[0+:depth_bank_idx_width_lp];
 			wire [bank_addr_width_lp - 1:0] bank_addr_li = addr_i[depth_bank_idx_width_lp+:bank_addr_width_lp];
 			bsg_decode_with_v #(.num_out_p(num_depth_bank_p)) demux_v(
@@ -79,7 +80,9 @@ module bsg_mem_1rw_sync_banked (
 				.v_i(v_i),
 				.o(bank_v_li)
 			);
+			genvar i;
 			for (i = 0; i &lt; num_width_bank_p; i = i + 1) begin : wb
+				genvar j;
 				for (j = 0; j &lt; num_depth_bank_p; j = j + 1) begin : db
 					bsg_mem_1rw_sync #(
 						.width_p(bank_width_lp),
@@ -92,7 +95,7 @@ module bsg_mem_1rw_sync_banked (
 						.w_i(w_i),
 						.addr_i(bank_addr_li),
 						.data_i(data_i[i * bank_width_lp+:bank_width_lp]),
-						.data_o(bank_data_lo[(width_p &gt;= 1 ? ((num_depth_bank_p &gt;= 1 ? j : (num_depth_bank_p - 1) - j) * (width_p &gt;= 1 ? width_p : 2 - width_p)) + (width_p &gt;= 1 ? i * bank_width_lp : (width_p - 1) - (i * bank_width_lp)) : ((((num_depth_bank_p &gt;= 1 ? j : (num_depth_bank_p - 1) - j) * (width_p &gt;= 1 ? width_p : 2 - width_p)) + (width_p &gt;= 1 ? i * bank_width_lp : (width_p - 1) - (i * bank_width_lp))) - bank_width_lp) + 1)+:bank_width_lp])
+						.data_o(bank_data_lo[(j * width_p) + (i * bank_width_lp)+:bank_width_lp])
 					);
 				end
 			end

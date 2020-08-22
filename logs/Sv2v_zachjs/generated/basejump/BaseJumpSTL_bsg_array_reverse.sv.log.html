@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_array_reverse.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_array_reverse.v</a>
 defines: 
-time_elapsed: 0.224s
-ram usage: 13116 KB
+time_elapsed: 0.158s
+ram usage: 13540 KB
 </pre>
 <pre class="log">
 
@@ -27,14 +27,16 @@ module bsg_array_reverse (
 	i,
 	o
 );
-	parameter width_p = &#34;inv&#34;;
-	parameter els_p = &#34;inv&#34;;
-	input [(els_p &gt;= 1 ? (width_p &gt;= 1 ? (els_p * width_p) - 1 : (els_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):(els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] i;
-	output [(els_p &gt;= 1 ? (width_p &gt;= 1 ? (els_p * width_p) - 1 : (els_p * (2 - width_p)) + (width_p - 2)) : (width_p &gt;= 1 ? ((2 - els_p) * width_p) + (((els_p - 1) * width_p) - 1) : ((2 - els_p) * (2 - width_p)) + (((width_p - 1) + ((els_p - 1) * (2 - width_p))) - 1))):(els_p &gt;= 1 ? (width_p &gt;= 1 ? 0 : width_p - 1) : (width_p &gt;= 1 ? (els_p - 1) * width_p : (width_p - 1) + ((els_p - 1) * (2 - width_p))))] o;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
+	parameter _sv2v_width_els_p = 24;
+	parameter [_sv2v_width_els_p - 1:0] els_p = &#34;inv&#34;;
+	input [(els_p * width_p) - 1:0] i;
+	output [(els_p * width_p) - 1:0] o;
 	genvar j;
 	generate
 		for (j = 0; j &lt; els_p; j = j + 1) begin : rof
-			assign o[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? (els_p - j) - 1 : (els_p - 1) - ((els_p - j) - 1)) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)] = i[(width_p &gt;= 1 ? 0 : width_p - 1) + ((els_p &gt;= 1 ? j : (els_p - 1) - j) * (width_p &gt;= 1 ? width_p : 2 - width_p))+:(width_p &gt;= 1 ? width_p : 2 - width_p)];
+			assign o[((els_p - j) - 1) * width_p+:width_p] = i[j * width_p+:width_p];
 		end
 	endgenerate
 endmodule

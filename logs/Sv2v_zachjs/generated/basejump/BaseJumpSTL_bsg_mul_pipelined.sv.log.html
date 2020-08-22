@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_mul_pipelined.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_mul_pipelined.v</a>
 defines: 
-time_elapsed: 0.898s
-ram usage: 21184 KB
+time_elapsed: 1.189s
+ram usage: 23012 KB
 </pre>
 <pre class="log">
 
@@ -31,7 +31,8 @@ module bsg_mul_pipelined (
 	signed_i,
 	z_o
 );
-	parameter width_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
 	parameter pipeline_p = 1;
 	parameter harden_p = 1;
 	input clk_i;
@@ -82,7 +83,7 @@ module bsg_mul_32_32 (
 	output [63:0] z_o;
 	localparam width_lp = 32;
 	localparam pp_lp = (width_lp / 2) + 1;
-	wire [(pp_lp &gt;= 1 ? (pp_lp * 3) - 1 : ((2 - pp_lp) * 3) + (((pp_lp - 1) * 3) - 1)):(pp_lp &gt;= 1 ? 0 : (pp_lp - 1) * 3)] SDN;
+	wire [(pp_lp * 3) - 1:0] SDN;
 	bsg_mul_SDN #(.width_p(width_lp)) sdn(
 		.x_i(x_i),
 		.signed_i(signed_i),
@@ -110,15 +111,16 @@ module bsg_mul_32_32 (
 		.blocks_p(6),
 		.width_p(41),
 		.group_vec_p(56&#39;h29231e160e0600),
+		._sv2v_width_y_p(32),
 		.y_p(0),
 		.y_size_p(32),
-		.S_above_vec_p(164&#39;b10000000010000000010),
-		.dot_bar_vec_p(164&#39;b1000000001000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
-		.B_vec_p(164&#39;b1110111001100110001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000001100100011101100),
+		.S_above_vec_p(164&#39;b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000010000000010),
+		.dot_bar_vec_p(164&#39;b00001000000001000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
+		.B_vec_p(164&#39;b01110111001100110001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000001100100011101100),
 		.one_vec_p(164&#39;b10000000010000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
 		.harden_p(harden_p)
 	) brr0(
-		.SDN_i({SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 0 : 3) : (pp_lp - 1) - (pp_lp &gt;= 1 ? 0 : 3))+:12], 3&#39;b000}),
+		.SDN_i({SDN[0+:12], 3&#39;b000}),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(verify_zero[0]),
@@ -130,12 +132,15 @@ module bsg_mul_32_32 (
 	wire [33:0] gb_s;
 	wire [33:0] gb_dot;
 	bsg_mul_green_booth_dots #(
+		._sv2v_width_width_p(32),
 		.width_p(32),
+		._sv2v_width_blocks_p(32),
 		.blocks_p(5),
+		._sv2v_width_group_vec_p(48),
 		.group_vec_p(48&#39;h221b130b0500),
 		.harden_p(harden_p)
 	) gbd(
-		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 15 : 16) : (pp_lp - 1) - (pp_lp &gt;= 1 ? 15 : 16))+:6]),
+		.SDN_i(SDN[45+:6]),
 		.y_i(y_i),
 		.dot_o(gb_dot)
 	);
@@ -157,15 +162,16 @@ module bsg_mul_32_32 (
 		.blocks_p(6),
 		.width_p(43),
 		.group_vec_p(56&#39;h2b231d18100800),
+		._sv2v_width_y_p(32),
 		.y_p(-2),
 		.y_size_p(32),
-		.S_above_vec_p(172&#39;b1000000001000000001000000001),
-		.dot_bar_vec_p(172&#39;b100000000100000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
-		.B_vec_p(172&#39;b111011100110011000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
+		.S_above_vec_p(172&#39;b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000001000000001000000001),
+		.dot_bar_vec_p(172&#39;b0000100000000100000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
+		.B_vec_p(172&#39;b0111011100110011000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
 		.one_vec_p(172&#39;b1000000001000000001000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
 		.harden_p(harden_p)
 	) brr1(
-		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 3 : 7) : (pp_lp - 1) - (pp_lp &gt;= 1 ? 3 : 7))+:15]),
+		.SDN_i(SDN[9+:15]),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(verify_zero[1]),
@@ -225,15 +231,16 @@ module bsg_mul_32_32 (
 		.blocks_p(6),
 		.width_p(43),
 		.group_vec_p(56&#39;h2b231b15100800),
+		._sv2v_width_y_p(32),
 		.y_p(-2),
 		.y_size_p(32),
-		.S_above_vec_p(172&#39;b1000000001000000001000000001),
-		.dot_bar_vec_p(172&#39;b100000000100000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
-		.B_vec_p(172&#39;b111011100110011000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
+		.S_above_vec_p(172&#39;b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000001000000001000000001),
+		.dot_bar_vec_p(172&#39;b0000100000000100000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
+		.B_vec_p(172&#39;b0111011100110011000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
 		.one_vec_p(172&#39;b1000000001000000001000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
 		.harden_p(harden_p)
 	) brr2(
-		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 7 : 11) : (pp_lp - 1) - (pp_lp &gt;= 1 ? 7 : 11))+:15]),
+		.SDN_i(SDN[21+:15]),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(verify_zero[2]),
@@ -256,15 +263,16 @@ module bsg_mul_32_32 (
 		.blocks_p(6),
 		.width_p(42),
 		.group_vec_p(56&#39;h2a231b130d0800),
+		._sv2v_width_y_p(32),
 		.y_p(-2),
 		.y_size_p(32),
-		.S_above_vec_p(168&#39;b1000000001000000001000000001),
+		.S_above_vec_p(168&#39;b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000001000000001000000001),
 		.dot_bar_vec_p(168&#39;b100000000100000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
-		.B_vec_p(168&#39;b11100110011000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
-		.one_vec_p(168&#39;b1000000001000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
+		.B_vec_p(168&#39;b011100110011000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
+		.one_vec_p(168&#39;b000001000000001000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
 		.harden_p(harden_p)
 	) brr3(
-		.SDN_i(SDN[3 * (pp_lp &gt;= 1 ? (pp_lp &gt;= 1 ? 11 : 15) : (pp_lp - 1) - (pp_lp &gt;= 1 ? 11 : 15))+:15]),
+		.SDN_i(SDN[33+:15]),
 		.y_i(y_i),
 		.cr_i(1&#39;b0),
 		.cl_o(),
@@ -334,8 +342,11 @@ module bsg_mul_32_32 (
 		end
 	endgenerate
 	bsg_mul_csa_rep #(
+		._sv2v_width_width_p(32),
 		.width_p(34),
+		._sv2v_width_blocks_p(32),
 		.blocks_p(5),
+		._sv2v_width_group_vec_p(48),
 		.group_vec_p(48&#39;h221b130b0500),
 		.harden_p(harden_p)
 	) gb(
@@ -358,7 +369,7 @@ module bsg_mul_SDN (
 	parameter rows_lp = (width_p / 2) + 1;
 	input [width_p - 1:0] x_i;
 	input signed_i;
-	output [(rows_lp &gt;= 1 ? (rows_lp * 3) - 1 : ((2 - rows_lp) * 3) + (((rows_lp - 1) * 3) - 1)):(rows_lp &gt;= 1 ? 0 : (rows_lp - 1) * 3)] SDN_o;
+	output [(rows_lp * 3) - 1:0] SDN_o;
 	wire [width_p + 2:0] temp_x = {2&#39;b00, x_i, 1&#39;b0};
 	genvar i;
 	generate
@@ -370,9 +381,9 @@ module bsg_mul_SDN (
 			else begin : fi
 				assign trip = temp_x[(2 * i) + 2:2 * i] &amp; ~{3 {signed_i}};
 			end
-			assign SDN_o[(rows_lp &gt;= 1 ? i : (rows_lp - 1) - i) * 3] = trip[2];
-			assign SDN_o[((rows_lp &gt;= 1 ? i : (rows_lp - 1) - i) * 3) + 1] = (&amp;trip[1:0] &amp; ~trip[2]) | (~(|trip[1:0]) &amp; trip[2]);
-			assign SDN_o[((rows_lp &gt;= 1 ? i : (rows_lp - 1) - i) * 3) + 2] = trip[0] ^ trip[1];
+			assign SDN_o[i * 3] = trip[2];
+			assign SDN_o[(i * 3) + 1] = (&amp;trip[1:0] &amp; ~trip[2]) | (~(|trip[1:0]) &amp; trip[2]);
+			assign SDN_o[(i * 3) + 2] = trip[0] ^ trip[1];
 		end
 	endgenerate
 endmodule
@@ -403,11 +414,12 @@ module bsg_mul_16_16 (
 		.blocks_p(4),
 		.width_p(25),
 		.group_vec_p(40&#39;h19140e0600),
+		._sv2v_width_y_p(32),
 		.y_p(0),
 		.y_size_p(16),
-		.S_above_vec_p(100&#39;b10000000010000000010),
-		.dot_bar_vec_p(100&#39;b100000000100000000110000000000000000000000000000000000000000000000000000000000000000000000000000),
-		.B_vec_p(100&#39;b111011100110011000100000000000000000000000000000000000000000000000000000000100000001100100011101100),
+		.S_above_vec_p(100&#39;b0000000000000000000000000000000000000000000000000000000000000000000000000000000010000000010000000010),
+		.dot_bar_vec_p(100&#39;b0000100000000100000000110000000000000000000000000000000000000000000000000000000000000000000000000000),
+		.B_vec_p(100&#39;b0111011100110011000100000000000000000000000000000000000000000000000000000000100000001100100011101100),
 		.one_vec_p(100&#39;b1000000001000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000),
 		.harden_p(harden_p)
 	) brr0(
@@ -423,12 +435,13 @@ module bsg_mul_16_16 (
 		.blocks_p(4),
 		.width_p(26),
 		.group_vec_p(40&#39;h1a140e0800),
+		._sv2v_width_y_p(32),
 		.y_p(-2),
 		.y_size_p(16),
-		.S_above_vec_p(104&#39;b1000000001000000001000000001),
+		.S_above_vec_p(104&#39;b00000000000000000000000000000000000000000000000000000000000000000000000000001000000001000000001000000001),
 		.dot_bar_vec_p(104&#39;b10000000010000000010000000010000000000000000000000000000000000000000000000000000000000000000000000000000),
-		.B_vec_p(104&#39;b1110011001100010001000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
-		.one_vec_p(104&#39;b100000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000),
+		.B_vec_p(104&#39;b01110011001100010001000000000000000000000000000000000000000000000000000010000000110010001110110011111110),
+		.one_vec_p(104&#39;b00000100000000100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000),
 		.harden_p(harden_p)
 	) brr1(
 		.SDN_i(SDN[9+:15]),
@@ -527,7 +540,7 @@ module bsg_mul_comp42_rep_rep (
 	parameter width_p = 0;
 	parameter group_vec_p = 0;
 	parameter harden_p = 1;
-	input [(width_p &gt;= 1 ? (4 * width_p) - 1 : (4 * (2 - width_p)) + (width_p - 2)):(width_p &gt;= 1 ? 0 : width_p - 1)] i;
+	input [(4 * width_p) - 1:0] i;
 	input cr_i;
 	output cl_o;
 	output [width_p - 1:0] c_o;
@@ -538,11 +551,11 @@ module bsg_mul_comp42_rep_rep (
 		for (j = 0; j &lt; blocks_p; j = j + 1) begin : rof
 			localparam group_end_lp = (group_vec_p &gt;&gt; ((j + 1) &lt;&lt; 3)) &amp; 8&#39;hff;
 			localparam group_start_lp = (group_vec_p &gt;&gt; (j &lt;&lt; 3)) &amp; 8&#39;hff;
-			wire [((group_end_lp - group_start_lp) &gt;= 1 ? (4 * (group_end_lp - group_start_lp)) - 1 : (4 * (2 - (group_end_lp - group_start_lp))) + ((group_end_lp - group_start_lp) - 2)):((group_end_lp - group_start_lp) &gt;= 1 ? 0 : (group_end_lp - group_start_lp) - 1)] t;
-			assign t[((group_end_lp - group_start_lp) &gt;= 1 ? 0 : (group_end_lp - group_start_lp) - 1)+:((group_end_lp - group_start_lp) &gt;= 1 ? group_end_lp - group_start_lp : 2 - (group_end_lp - group_start_lp))] = i[(width_p &gt;= 1 ? (width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)) : ((width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
-			assign t[((group_end_lp - group_start_lp) &gt;= 1 ? 0 : (group_end_lp - group_start_lp) - 1) + ((group_end_lp - group_start_lp) &gt;= 1 ? group_end_lp - group_start_lp : 2 - (group_end_lp - group_start_lp))+:((group_end_lp - group_start_lp) &gt;= 1 ? group_end_lp - group_start_lp : 2 - (group_end_lp - group_start_lp))] = i[(width_p &gt;= 1 ? (width_p &gt;= 1 ? width_p : 2 - width_p) + (width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)) : (((width_p &gt;= 1 ? width_p : 2 - width_p) + (width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1))) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
-			assign t[((group_end_lp - group_start_lp) &gt;= 1 ? 0 : (group_end_lp - group_start_lp) - 1) + (2 * ((group_end_lp - group_start_lp) &gt;= 1 ? group_end_lp - group_start_lp : 2 - (group_end_lp - group_start_lp)))+:((group_end_lp - group_start_lp) &gt;= 1 ? group_end_lp - group_start_lp : 2 - (group_end_lp - group_start_lp))] = i[(width_p &gt;= 1 ? (2 * (width_p &gt;= 1 ? width_p : 2 - width_p)) + (width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)) : (((2 * (width_p &gt;= 1 ? width_p : 2 - width_p)) + (width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1))) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
-			assign t[((group_end_lp - group_start_lp) &gt;= 1 ? 0 : (group_end_lp - group_start_lp) - 1) + (3 * ((group_end_lp - group_start_lp) &gt;= 1 ? group_end_lp - group_start_lp : 2 - (group_end_lp - group_start_lp)))+:((group_end_lp - group_start_lp) &gt;= 1 ? group_end_lp - group_start_lp : 2 - (group_end_lp - group_start_lp))] = i[(width_p &gt;= 1 ? (3 * (width_p &gt;= 1 ? width_p : 2 - width_p)) + (width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)) : (((3 * (width_p &gt;= 1 ? width_p : 2 - width_p)) + (width_p &gt;= 1 ? ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1) : (width_p - 1) - ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1))) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
+			wire [(4 * (group_end_lp - group_start_lp)) - 1:0] t;
+			assign t[0+:group_end_lp - group_start_lp] = i[((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
+			assign t[group_end_lp - group_start_lp+:group_end_lp - group_start_lp] = i[width_p + ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
+			assign t[2 * (group_end_lp - group_start_lp)+:group_end_lp - group_start_lp] = i[(2 * width_p) + ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
+			assign t[3 * (group_end_lp - group_start_lp)+:group_end_lp - group_start_lp] = i[(3 * width_p) + ((group_end_lp - 1) &gt;= group_start_lp ? group_end_lp - 1 : ((group_end_lp - 1) + ((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)) - 1)-:((group_end_lp - 1) &gt;= group_start_lp ? ((group_end_lp - 1) - group_start_lp) + 1 : (group_start_lp - (group_end_lp - 1)) + 1)];
 			bsg_mul_comp42_rep #(.blocks_p(group_end_lp - group_start_lp)) cr(
 				.i(t),
 				.cr_i(carries[j]),
@@ -567,7 +580,8 @@ module bsg_mul_B4B_rep_rep (
 	parameter blocks_p = 1;
 	parameter width_p = 0;
 	parameter group_vec_p = 0;
-	parameter y_p = &#34;inv&#34;;
+	parameter _sv2v_width_y_p = 24;
+	parameter [_sv2v_width_y_p - 1:0] y_p = &#34;inv&#34;;
 	parameter y_size_p = 16;
 	parameter S_above_vec_p = 0;
 	parameter dot_bar_vec_p = 0;
@@ -590,6 +604,7 @@ module bsg_mul_B4B_rep_rep (
 			localparam [31:0] blocks_lp = group_end_lp - group_start_lp;
 			bsg_mul_B4B_rep #(
 				.blocks_p(blocks_lp),
+				._sv2v_width_y_p((_sv2v_width_y_p &gt;= 32 ? _sv2v_width_y_p : 32)),
 				.y_p(y_p + group_start_lp),
 				.y_size_p(y_size_p),
 				.S_above_vec_p(S_above_vec_p[(4 * group_end_lp) - 1:4 * group_start_lp]),
@@ -621,7 +636,8 @@ module bsg_mul_B4B_rep (
 	s_o
 );
 	parameter [31:0] blocks_p = 1;
-	parameter y_p = &#34;inv&#34;;
+	parameter _sv2v_width_y_p = 24;
+	parameter [_sv2v_width_y_p - 1:0] y_p = &#34;inv&#34;;
 	parameter [31:0] y_size_p = 16;
 	parameter S_above_vec_p = 0;
 	parameter dot_bar_vec_p = 0;
@@ -638,7 +654,7 @@ module bsg_mul_B4B_rep (
 	genvar i;
 	localparam y_shift_p = 9;
 	wire [(y_size_p + 8) + y_shift_p:0] y_pad = {{8 {y_i[y_size_p - 1] &amp; signed_i}}, y_i, 9&#39;b000000000};
-	wire [((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) &gt;= (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) ? ((((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) - (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4)) + 1) * 2) + (((blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) * 2) - 1) : ((((blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) - (blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1))) + 1) * 2) + (((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) * 2) - 1)):((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) &gt;= (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) ? (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) * 2 : (blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) * 2)] y_in;
+	wire [((blocks_p * 4) * 2) - 1:0] y_in;
 	generate
 		for (i = 0; i &lt; blocks_p; i = i + 1) begin : wiring
 			localparam [31:0] x7 = ((y_shift_p + y_p) + i) - 6;
@@ -649,10 +665,10 @@ module bsg_mul_B4B_rep (
 			localparam [31:0] x2 = ((y_shift_p + y_p) + i) - 3;
 			localparam [31:0] x1 = (y_shift_p + y_p) + i;
 			localparam [31:0] x0 = ((y_shift_p + y_p) + i) - 1;
-			assign y_in[((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) &gt;= (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) ? (blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4 : (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) - (((blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4) - (blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)))) * 2+:2] = {y_pad[x1], y_pad[x0]};
-			assign y_in[((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) &gt;= (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) ? ((blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4) + 1 : (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) - ((((blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4) + 1) - (blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)))) * 2+:2] = {y_pad[x3], y_pad[x2]};
-			assign y_in[((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) &gt;= (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) ? ((blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4) + 2 : (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) - ((((blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4) + 2) - (blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)))) * 2+:2] = {y_pad[x5], y_pad[x4]};
-			assign y_in[((blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)) &gt;= (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) ? ((blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4) + 3 : (blocks_p &gt;= 1 ? 0 : (blocks_p - 1) * 4) - ((((blocks_p &gt;= 1 ? i : (blocks_p - 1) - i) * 4) + 3) - (blocks_p &gt;= 1 ? (blocks_p * 4) - 1 : ((2 - blocks_p) * 4) + (((blocks_p - 1) * 4) - 1)))) * 2+:2] = {y_pad[x7], y_pad[x6]};
+			assign y_in[(i * 4) * 2+:2] = {y_pad[x1], y_pad[x0]};
+			assign y_in[((i * 4) + 1) * 2+:2] = {y_pad[x3], y_pad[x2]};
+			assign y_in[((i * 4) + 2) * 2+:2] = {y_pad[x5], y_pad[x4]};
+			assign y_in[((i * 4) + 3) * 2+:2] = {y_pad[x7], y_pad[x6]};
 		end
 	endgenerate
 	bsg_mul_booth_4_block_rep #(
@@ -677,9 +693,12 @@ module bsg_mul_csa_rep (
 	c_o,
 	s_o
 );
-	parameter width_p = &#34;inv&#34;;
-	parameter blocks_p = &#34;inv&#34;;
-	parameter group_vec_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
+	parameter _sv2v_width_blocks_p = 24;
+	parameter [_sv2v_width_blocks_p - 1:0] blocks_p = &#34;inv&#34;;
+	parameter _sv2v_width_group_vec_p = 24;
+	parameter [_sv2v_width_group_vec_p - 1:0] group_vec_p = &#34;inv&#34;;
 	parameter harden_p = 0;
 	input [width_p - 1:0] a_i;
 	input [width_p - 1:0] b_i;
@@ -710,10 +729,13 @@ module bsg_mul_green_booth_dots (
 	y_i,
 	dot_o
 );
-	parameter width_p = &#34;inv&#34;;
+	parameter _sv2v_width_width_p = 24;
+	parameter [_sv2v_width_width_p - 1:0] width_p = &#34;inv&#34;;
 	parameter harden_p = 0;
-	parameter blocks_p = &#34;inv&#34;;
-	parameter group_vec_p = &#34;inv&#34;;
+	parameter _sv2v_width_blocks_p = 24;
+	parameter [_sv2v_width_blocks_p - 1:0] blocks_p = &#34;inv&#34;;
+	parameter _sv2v_width_group_vec_p = 24;
+	parameter [_sv2v_width_group_vec_p - 1:0] group_vec_p = &#34;inv&#34;;
 	input [5:0] SDN_i;
 	input [width_p - 1:0] y_i;
 	output [width_p + 1:0] dot_o;
