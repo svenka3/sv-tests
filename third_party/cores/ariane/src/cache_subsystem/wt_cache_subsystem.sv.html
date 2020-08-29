@@ -220,98 +220,98 @@
 <a name="l-18"></a><span class="c1">//              with a standard 64 bit AXI interface instead of the OpenPiton</span>
 <a name="l-19"></a><span class="c1">//              L1.5 interface.</span>
 <a name="l-20"></a>
-<a name="l-21"></a><span class="kn">import</span> <span class="nn">ariane_pkg::*</span><span class="p">;</span>
-<a name="l-22"></a><span class="kn">import</span> <span class="nn">wt_cache_pkg::*</span><span class="p">;</span>
-<a name="l-23"></a>
-<a name="l-24"></a><span class="k">module</span> <span class="n">wt_cache_subsystem</span> <span class="p">#(</span>
-<a name="l-25"></a>  <span class="k">parameter</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ariane_cfg_t</span> <span class="n">ArianeCfg</span>       <span class="o">=</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ArianeDefaultConfig</span>  <span class="c1">// contains cacheable regions</span>
-<a name="l-26"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-27"></a>  <span class="k">input</span> <span class="k">logic</span>                            <span class="n">clk_i</span><span class="p">,</span>
-<a name="l-28"></a>  <span class="k">input</span> <span class="k">logic</span>                            <span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-29"></a>  <span class="c1">// I$</span>
-<a name="l-30"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">icache_en_i</span><span class="p">,</span>            <span class="c1">// enable icache (or bypass e.g: in debug mode)</span>
-<a name="l-31"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">icache_flush_i</span><span class="p">,</span>         <span class="c1">// flush the icache, flush and kill have to be asserted together</span>
-<a name="l-32"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">icache_miss_o</span><span class="p">,</span>          <span class="c1">// to performance counter</span>
-<a name="l-33"></a>  <span class="c1">// address translation requests</span>
-<a name="l-34"></a>  <span class="k">input</span>  <span class="n">icache_areq_i_t</span>                 <span class="n">icache_areq_i</span><span class="p">,</span>          <span class="c1">// to/from frontend</span>
-<a name="l-35"></a>  <span class="k">output</span> <span class="n">icache_areq_o_t</span>                 <span class="n">icache_areq_o</span><span class="p">,</span>
-<a name="l-36"></a>  <span class="c1">// data requests</span>
-<a name="l-37"></a>  <span class="k">input</span>  <span class="n">icache_dreq_i_t</span>                 <span class="n">icache_dreq_i</span><span class="p">,</span>          <span class="c1">// to/from frontend</span>
-<a name="l-38"></a>  <span class="k">output</span> <span class="n">icache_dreq_o_t</span>                 <span class="n">icache_dreq_o</span><span class="p">,</span>
-<a name="l-39"></a>  <span class="c1">// D$</span>
-<a name="l-40"></a>  <span class="c1">// Cache management</span>
-<a name="l-41"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">dcache_enable_i</span><span class="p">,</span>        <span class="c1">// from CSR</span>
-<a name="l-42"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">dcache_flush_i</span><span class="p">,</span>         <span class="c1">// high until acknowledged</span>
-<a name="l-43"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">dcache_flush_ack_o</span><span class="p">,</span>     <span class="c1">// send a single cycle acknowledge signal when the cache is flushed</span>
-<a name="l-44"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">dcache_miss_o</span><span class="p">,</span>          <span class="c1">// we missed on a ld/st</span>
-<a name="l-45"></a>  <span class="c1">// AMO interface</span>
-<a name="l-46"></a>  <span class="k">input</span> <span class="n">amo_req_t</span>                        <span class="n">dcache_amo_req_i</span><span class="p">,</span>
-<a name="l-47"></a>  <span class="k">output</span> <span class="n">amo_resp_t</span>                      <span class="n">dcache_amo_resp_o</span><span class="p">,</span>
-<a name="l-48"></a>  <span class="c1">// Request ports</span>
-<a name="l-49"></a>  <span class="k">input</span>  <span class="n">dcache_req_i_t</span>   <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">dcache_req_ports_i</span><span class="p">,</span>     <span class="c1">// to/from LSU</span>
-<a name="l-50"></a>  <span class="k">output</span> <span class="n">dcache_req_o_t</span>   <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">dcache_req_ports_o</span><span class="p">,</span>     <span class="c1">// to/from LSU</span>
-<a name="l-51"></a>  <span class="c1">// writebuffer status</span>
-<a name="l-52"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">wbuffer_empty_o</span><span class="p">,</span>
-<a name="l-53"></a><span class="no">`ifdef</span> <span class="n">PITON_ARIANE</span>
-<a name="l-54"></a>  <span class="c1">// L15 (memory side)</span>
-<a name="l-55"></a>  <span class="k">output</span> <span class="n">l15_req_t</span>                       <span class="n">l15_req_o</span><span class="p">,</span>
-<a name="l-56"></a>  <span class="k">input</span>  <span class="n">l15_rtrn_t</span>                      <span class="n">l15_rtrn_i</span>
-<a name="l-57"></a><span class="no">`else</span>
-<a name="l-58"></a>  <span class="c1">// memory side</span>
-<a name="l-59"></a>  <span class="k">output</span> <span class="n">ariane_axi</span><span class="o">::</span><span class="n">req_t</span>               <span class="n">axi_req_o</span><span class="p">,</span>
-<a name="l-60"></a>  <span class="k">input</span>  <span class="n">ariane_axi</span><span class="o">::</span><span class="n">resp_t</span>              <span class="n">axi_resp_i</span>
-<a name="l-61"></a><span class="no">`endif</span>
-<a name="l-62"></a>  <span class="c1">// TODO: interrupt interface</span>
-<a name="l-63"></a><span class="p">);</span>
-<a name="l-64"></a>
-<a name="l-65"></a>  <span class="k">logic</span> <span class="n">icache_adapter_data_req</span><span class="p">,</span> <span class="n">adapter_icache_data_ack</span><span class="p">,</span> <span class="n">adapter_icache_rtrn_vld</span><span class="p">;</span>
-<a name="l-66"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">icache_req_t</span>  <span class="n">icache_adapter</span><span class="p">;</span>
-<a name="l-67"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">icache_rtrn_t</span> <span class="n">adapter_icache</span><span class="p">;</span>
+<a name="l-21"></a>
+<a name="l-22"></a><span class="k">module</span> <span class="n">wt_cache_subsystem</span> <span class="k">import</span> <span class="n">ariane_pkg</span><span class="o">::*</span><span class="p">;</span> <span class="k">import</span> <span class="n">wt_cache_pkg</span><span class="o">::*</span><span class="p">;</span> <span class="p">#(</span>
+<a name="l-23"></a>  <span class="k">parameter</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ariane_cfg_t</span> <span class="n">ArianeCfg</span>       <span class="o">=</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ArianeDefaultConfig</span>  <span class="c1">// contains cacheable regions</span>
+<a name="l-24"></a><span class="p">)</span> <span class="p">(</span>
+<a name="l-25"></a>  <span class="k">input</span> <span class="k">logic</span>                            <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-26"></a>  <span class="k">input</span> <span class="k">logic</span>                            <span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-27"></a>  <span class="c1">// I$</span>
+<a name="l-28"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">icache_en_i</span><span class="p">,</span>            <span class="c1">// enable icache (or bypass e.g: in debug mode)</span>
+<a name="l-29"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">icache_flush_i</span><span class="p">,</span>         <span class="c1">// flush the icache, flush and kill have to be asserted together</span>
+<a name="l-30"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">icache_miss_o</span><span class="p">,</span>          <span class="c1">// to performance counter</span>
+<a name="l-31"></a>  <span class="c1">// address translation requests</span>
+<a name="l-32"></a>  <span class="k">input</span>  <span class="n">icache_areq_i_t</span>                 <span class="n">icache_areq_i</span><span class="p">,</span>          <span class="c1">// to/from frontend</span>
+<a name="l-33"></a>  <span class="k">output</span> <span class="n">icache_areq_o_t</span>                 <span class="n">icache_areq_o</span><span class="p">,</span>
+<a name="l-34"></a>  <span class="c1">// data requests</span>
+<a name="l-35"></a>  <span class="k">input</span>  <span class="n">icache_dreq_i_t</span>                 <span class="n">icache_dreq_i</span><span class="p">,</span>          <span class="c1">// to/from frontend</span>
+<a name="l-36"></a>  <span class="k">output</span> <span class="n">icache_dreq_o_t</span>                 <span class="n">icache_dreq_o</span><span class="p">,</span>
+<a name="l-37"></a>  <span class="c1">// D$</span>
+<a name="l-38"></a>  <span class="c1">// Cache management</span>
+<a name="l-39"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">dcache_enable_i</span><span class="p">,</span>        <span class="c1">// from CSR</span>
+<a name="l-40"></a>  <span class="k">input</span>  <span class="k">logic</span>                           <span class="n">dcache_flush_i</span><span class="p">,</span>         <span class="c1">// high until acknowledged</span>
+<a name="l-41"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">dcache_flush_ack_o</span><span class="p">,</span>     <span class="c1">// send a single cycle acknowledge signal when the cache is flushed</span>
+<a name="l-42"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">dcache_miss_o</span><span class="p">,</span>          <span class="c1">// we missed on a ld/st</span>
+<a name="l-43"></a>  <span class="c1">// AMO interface</span>
+<a name="l-44"></a>  <span class="k">input</span> <span class="n">amo_req_t</span>                        <span class="n">dcache_amo_req_i</span><span class="p">,</span>
+<a name="l-45"></a>  <span class="k">output</span> <span class="n">amo_resp_t</span>                      <span class="n">dcache_amo_resp_o</span><span class="p">,</span>
+<a name="l-46"></a>  <span class="c1">// Request ports</span>
+<a name="l-47"></a>  <span class="k">input</span>  <span class="n">dcache_req_i_t</span>   <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">dcache_req_ports_i</span><span class="p">,</span>     <span class="c1">// to/from LSU</span>
+<a name="l-48"></a>  <span class="k">output</span> <span class="n">dcache_req_o_t</span>   <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">dcache_req_ports_o</span><span class="p">,</span>     <span class="c1">// to/from LSU</span>
+<a name="l-49"></a>  <span class="c1">// writebuffer status</span>
+<a name="l-50"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">wbuffer_empty_o</span><span class="p">,</span>
+<a name="l-51"></a>  <span class="k">output</span> <span class="k">logic</span>                           <span class="n">wbuffer_not_ni_o</span><span class="p">,</span>
+<a name="l-52"></a><span class="no">`ifdef</span> <span class="n">PITON_ARIANE</span>
+<a name="l-53"></a>  <span class="c1">// L15 (memory side)</span>
+<a name="l-54"></a>  <span class="k">output</span> <span class="n">l15_req_t</span>                       <span class="n">l15_req_o</span><span class="p">,</span>
+<a name="l-55"></a>  <span class="k">input</span>  <span class="n">l15_rtrn_t</span>                      <span class="n">l15_rtrn_i</span>
+<a name="l-56"></a><span class="no">`else</span>
+<a name="l-57"></a>  <span class="c1">// memory side</span>
+<a name="l-58"></a>  <span class="k">output</span> <span class="n">ariane_axi</span><span class="o">::</span><span class="n">req_t</span>               <span class="n">axi_req_o</span><span class="p">,</span>
+<a name="l-59"></a>  <span class="k">input</span>  <span class="n">ariane_axi</span><span class="o">::</span><span class="n">resp_t</span>              <span class="n">axi_resp_i</span>
+<a name="l-60"></a><span class="no">`endif</span>
+<a name="l-61"></a>  <span class="c1">// TODO: interrupt interface</span>
+<a name="l-62"></a><span class="p">);</span>
+<a name="l-63"></a>
+<a name="l-64"></a>  <span class="k">logic</span> <span class="n">icache_adapter_data_req</span><span class="p">,</span> <span class="n">adapter_icache_data_ack</span><span class="p">,</span> <span class="n">adapter_icache_rtrn_vld</span><span class="p">;</span>
+<a name="l-65"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">icache_req_t</span>  <span class="n">icache_adapter</span><span class="p">;</span>
+<a name="l-66"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">icache_rtrn_t</span> <span class="n">adapter_icache</span><span class="p">;</span>
+<a name="l-67"></a>
 <a name="l-68"></a>
-<a name="l-69"></a>
-<a name="l-70"></a>  <span class="k">logic</span> <span class="n">dcache_adapter_data_req</span><span class="p">,</span> <span class="n">adapter_dcache_data_ack</span><span class="p">,</span> <span class="n">adapter_dcache_rtrn_vld</span><span class="p">;</span>
-<a name="l-71"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">dcache_req_t</span>  <span class="n">dcache_adapter</span><span class="p">;</span>
-<a name="l-72"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">dcache_rtrn_t</span> <span class="n">adapter_dcache</span><span class="p">;</span>
-<a name="l-73"></a>
-<a name="l-74"></a>  <span class="n">wt_icache</span> <span class="p">#(</span>
-<a name="l-75"></a>    <span class="c1">// use ID 0 for icache reads</span>
-<a name="l-76"></a>    <span class="p">.</span><span class="n">RdTxId</span>             <span class="p">(</span> <span class="mh">0</span>             <span class="p">),</span>
-<a name="l-77"></a>    <span class="p">.</span><span class="n">ArianeCfg</span>          <span class="p">(</span> <span class="n">ArianeCfg</span>     <span class="p">)</span>
-<a name="l-78"></a>  <span class="p">)</span> <span class="n">i_wt_icache</span> <span class="p">(</span>
-<a name="l-79"></a>    <span class="p">.</span><span class="n">clk_i</span>              <span class="p">(</span> <span class="n">clk_i</span>                   <span class="p">),</span>
-<a name="l-80"></a>    <span class="p">.</span><span class="n">rst_ni</span>             <span class="p">(</span> <span class="n">rst_ni</span>                  <span class="p">),</span>
-<a name="l-81"></a>    <span class="p">.</span><span class="n">flush_i</span>            <span class="p">(</span> <span class="n">icache_flush_i</span>          <span class="p">),</span>
-<a name="l-82"></a>    <span class="p">.</span><span class="n">en_i</span>               <span class="p">(</span> <span class="n">icache_en_i</span>             <span class="p">),</span>
-<a name="l-83"></a>    <span class="p">.</span><span class="n">miss_o</span>             <span class="p">(</span> <span class="n">icache_miss_o</span>           <span class="p">),</span>
-<a name="l-84"></a>    <span class="p">.</span><span class="n">areq_i</span>             <span class="p">(</span> <span class="n">icache_areq_i</span>           <span class="p">),</span>
-<a name="l-85"></a>    <span class="p">.</span><span class="n">areq_o</span>             <span class="p">(</span> <span class="n">icache_areq_o</span>           <span class="p">),</span>
-<a name="l-86"></a>    <span class="p">.</span><span class="n">dreq_i</span>             <span class="p">(</span> <span class="n">icache_dreq_i</span>           <span class="p">),</span>
-<a name="l-87"></a>    <span class="p">.</span><span class="n">dreq_o</span>             <span class="p">(</span> <span class="n">icache_dreq_o</span>           <span class="p">),</span>
-<a name="l-88"></a>    <span class="p">.</span><span class="n">mem_rtrn_vld_i</span>     <span class="p">(</span> <span class="n">adapter_icache_rtrn_vld</span> <span class="p">),</span>
-<a name="l-89"></a>    <span class="p">.</span><span class="n">mem_rtrn_i</span>         <span class="p">(</span> <span class="n">adapter_icache</span>          <span class="p">),</span>
-<a name="l-90"></a>    <span class="p">.</span><span class="n">mem_data_req_o</span>     <span class="p">(</span> <span class="n">icache_adapter_data_req</span> <span class="p">),</span>
-<a name="l-91"></a>    <span class="p">.</span><span class="n">mem_data_ack_i</span>     <span class="p">(</span> <span class="n">adapter_icache_data_ack</span> <span class="p">),</span>
-<a name="l-92"></a>    <span class="p">.</span><span class="n">mem_data_o</span>         <span class="p">(</span> <span class="n">icache_adapter</span>          <span class="p">)</span>
-<a name="l-93"></a>  <span class="p">);</span>
+<a name="l-69"></a>  <span class="k">logic</span> <span class="n">dcache_adapter_data_req</span><span class="p">,</span> <span class="n">adapter_dcache_data_ack</span><span class="p">,</span> <span class="n">adapter_dcache_rtrn_vld</span><span class="p">;</span>
+<a name="l-70"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">dcache_req_t</span>  <span class="n">dcache_adapter</span><span class="p">;</span>
+<a name="l-71"></a>  <span class="n">wt_cache_pkg</span><span class="o">::</span><span class="n">dcache_rtrn_t</span> <span class="n">adapter_dcache</span><span class="p">;</span>
+<a name="l-72"></a>
+<a name="l-73"></a>  <span class="n">wt_icache</span> <span class="p">#(</span>
+<a name="l-74"></a>    <span class="c1">// use ID 0 for icache reads</span>
+<a name="l-75"></a>    <span class="p">.</span><span class="n">RdTxId</span>             <span class="p">(</span> <span class="mh">0</span>             <span class="p">),</span>
+<a name="l-76"></a>    <span class="p">.</span><span class="n">ArianeCfg</span>          <span class="p">(</span> <span class="n">ArianeCfg</span>     <span class="p">)</span>
+<a name="l-77"></a>  <span class="p">)</span> <span class="n">i_wt_icache</span> <span class="p">(</span>
+<a name="l-78"></a>    <span class="p">.</span><span class="n">clk_i</span>              <span class="p">(</span> <span class="n">clk_i</span>                   <span class="p">),</span>
+<a name="l-79"></a>    <span class="p">.</span><span class="n">rst_ni</span>             <span class="p">(</span> <span class="n">rst_ni</span>                  <span class="p">),</span>
+<a name="l-80"></a>    <span class="p">.</span><span class="n">flush_i</span>            <span class="p">(</span> <span class="n">icache_flush_i</span>          <span class="p">),</span>
+<a name="l-81"></a>    <span class="p">.</span><span class="n">en_i</span>               <span class="p">(</span> <span class="n">icache_en_i</span>             <span class="p">),</span>
+<a name="l-82"></a>    <span class="p">.</span><span class="n">miss_o</span>             <span class="p">(</span> <span class="n">icache_miss_o</span>           <span class="p">),</span>
+<a name="l-83"></a>    <span class="p">.</span><span class="n">areq_i</span>             <span class="p">(</span> <span class="n">icache_areq_i</span>           <span class="p">),</span>
+<a name="l-84"></a>    <span class="p">.</span><span class="n">areq_o</span>             <span class="p">(</span> <span class="n">icache_areq_o</span>           <span class="p">),</span>
+<a name="l-85"></a>    <span class="p">.</span><span class="n">dreq_i</span>             <span class="p">(</span> <span class="n">icache_dreq_i</span>           <span class="p">),</span>
+<a name="l-86"></a>    <span class="p">.</span><span class="n">dreq_o</span>             <span class="p">(</span> <span class="n">icache_dreq_o</span>           <span class="p">),</span>
+<a name="l-87"></a>    <span class="p">.</span><span class="n">mem_rtrn_vld_i</span>     <span class="p">(</span> <span class="n">adapter_icache_rtrn_vld</span> <span class="p">),</span>
+<a name="l-88"></a>    <span class="p">.</span><span class="n">mem_rtrn_i</span>         <span class="p">(</span> <span class="n">adapter_icache</span>          <span class="p">),</span>
+<a name="l-89"></a>    <span class="p">.</span><span class="n">mem_data_req_o</span>     <span class="p">(</span> <span class="n">icache_adapter_data_req</span> <span class="p">),</span>
+<a name="l-90"></a>    <span class="p">.</span><span class="n">mem_data_ack_i</span>     <span class="p">(</span> <span class="n">adapter_icache_data_ack</span> <span class="p">),</span>
+<a name="l-91"></a>    <span class="p">.</span><span class="n">mem_data_o</span>         <span class="p">(</span> <span class="n">icache_adapter</span>          <span class="p">)</span>
+<a name="l-92"></a>  <span class="p">);</span>
+<a name="l-93"></a>
 <a name="l-94"></a>
-<a name="l-95"></a>
-<a name="l-96"></a>  <span class="c1">// Note:</span>
-<a name="l-97"></a>  <span class="c1">// Ports 0/1 for PTW and LD unit are read only.</span>
-<a name="l-98"></a>  <span class="c1">// they have equal prio and are RR arbited</span>
-<a name="l-99"></a>  <span class="c1">// Port 2 is write only and goes into the merging write buffer</span>
-<a name="l-100"></a>  <span class="n">wt_dcache</span> <span class="p">#(</span>
-<a name="l-101"></a>    <span class="c1">// use ID 1 for dcache reads and amos. note that the writebuffer</span>
-<a name="l-102"></a>    <span class="c1">// uses all IDs up to DCACHE_MAX_TX-1 for write transactions.</span>
-<a name="l-103"></a>    <span class="p">.</span><span class="n">RdAmoTxId</span>       <span class="p">(</span> <span class="mh">1</span>             <span class="p">),</span>
-<a name="l-104"></a>    <span class="p">.</span><span class="n">ArianeCfg</span>       <span class="p">(</span> <span class="n">ArianeCfg</span>     <span class="p">)</span>
-<a name="l-105"></a>  <span class="p">)</span> <span class="n">i_wt_dcache</span> <span class="p">(</span>
-<a name="l-106"></a>    <span class="p">.</span><span class="n">clk_i</span>           <span class="p">(</span> <span class="n">clk_i</span>                   <span class="p">),</span>
-<a name="l-107"></a>    <span class="p">.</span><span class="n">rst_ni</span>          <span class="p">(</span> <span class="n">rst_ni</span>                  <span class="p">),</span>
-<a name="l-108"></a>    <span class="p">.</span><span class="n">enable_i</span>        <span class="p">(</span> <span class="n">dcache_enable_i</span>         <span class="p">),</span>
-<a name="l-109"></a>    <span class="p">.</span><span class="n">flush_i</span>         <span class="p">(</span> <span class="n">dcache_flush_i</span>          <span class="p">),</span>
-<a name="l-110"></a>    <span class="p">.</span><span class="n">flush_ack_o</span>     <span class="p">(</span> <span class="n">dcache_flush_ack_o</span>      <span class="p">),</span>
-<a name="l-111"></a>    <span class="p">.</span><span class="n">miss_o</span>          <span class="p">(</span> <span class="n">dcache_miss_o</span>           <span class="p">),</span>
-<a name="l-112"></a>    <span class="p">.</span><span class="n">wbuffer_empty_o</span> <span class="p">(</span> <span class="n">wbuffer_empty_o</span>         <span class="p">),</span>
+<a name="l-95"></a>  <span class="c1">// Note:</span>
+<a name="l-96"></a>  <span class="c1">// Ports 0/1 for PTW and LD unit are read only.</span>
+<a name="l-97"></a>  <span class="c1">// they have equal prio and are RR arbited</span>
+<a name="l-98"></a>  <span class="c1">// Port 2 is write only and goes into the merging write buffer</span>
+<a name="l-99"></a>  <span class="n">wt_dcache</span> <span class="p">#(</span>
+<a name="l-100"></a>    <span class="c1">// use ID 1 for dcache reads and amos. note that the writebuffer</span>
+<a name="l-101"></a>    <span class="c1">// uses all IDs up to DCACHE_MAX_TX-1 for write transactions.</span>
+<a name="l-102"></a>    <span class="p">.</span><span class="n">RdAmoTxId</span>       <span class="p">(</span> <span class="mh">1</span>             <span class="p">),</span>
+<a name="l-103"></a>    <span class="p">.</span><span class="n">ArianeCfg</span>       <span class="p">(</span> <span class="n">ArianeCfg</span>     <span class="p">)</span>
+<a name="l-104"></a>  <span class="p">)</span> <span class="n">i_wt_dcache</span> <span class="p">(</span>
+<a name="l-105"></a>    <span class="p">.</span><span class="n">clk_i</span>           <span class="p">(</span> <span class="n">clk_i</span>                   <span class="p">),</span>
+<a name="l-106"></a>    <span class="p">.</span><span class="n">rst_ni</span>          <span class="p">(</span> <span class="n">rst_ni</span>                  <span class="p">),</span>
+<a name="l-107"></a>    <span class="p">.</span><span class="n">enable_i</span>        <span class="p">(</span> <span class="n">dcache_enable_i</span>         <span class="p">),</span>
+<a name="l-108"></a>    <span class="p">.</span><span class="n">flush_i</span>         <span class="p">(</span> <span class="n">dcache_flush_i</span>          <span class="p">),</span>
+<a name="l-109"></a>    <span class="p">.</span><span class="n">flush_ack_o</span>     <span class="p">(</span> <span class="n">dcache_flush_ack_o</span>      <span class="p">),</span>
+<a name="l-110"></a>    <span class="p">.</span><span class="n">miss_o</span>          <span class="p">(</span> <span class="n">dcache_miss_o</span>           <span class="p">),</span>
+<a name="l-111"></a>    <span class="p">.</span><span class="n">wbuffer_empty_o</span> <span class="p">(</span> <span class="n">wbuffer_empty_o</span>         <span class="p">),</span>
+<a name="l-112"></a>    <span class="p">.</span><span class="n">wbuffer_not_ni_o</span> <span class="p">(</span> <span class="n">wbuffer_not_ni_o</span>       <span class="p">),</span>
 <a name="l-113"></a>    <span class="p">.</span><span class="n">amo_req_i</span>       <span class="p">(</span> <span class="n">dcache_amo_req_i</span>        <span class="p">),</span>
 <a name="l-114"></a>    <span class="p">.</span><span class="n">amo_resp_o</span>      <span class="p">(</span> <span class="n">dcache_amo_resp_o</span>       <span class="p">),</span>
 <a name="l-115"></a>    <span class="p">.</span><span class="n">req_ports_i</span>     <span class="p">(</span> <span class="n">dcache_req_ports_i</span>      <span class="p">),</span>

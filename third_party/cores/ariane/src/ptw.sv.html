@@ -426,55 +426,55 @@
 <a name="l-14"></a><span class="c1">// Description: Hardware-PTW</span>
 <a name="l-15"></a>
 <a name="l-16"></a><span class="cm">/* verilator lint_off WIDTH */</span>
-<a name="l-17"></a><span class="kn">import</span> <span class="nn">ariane_pkg::*</span><span class="p">;</span>
-<a name="l-18"></a>
-<a name="l-19"></a><span class="k">module</span> <span class="n">ptw</span> <span class="p">#(</span>
-<a name="l-20"></a>        <span class="k">parameter</span> <span class="k">int</span> <span class="n">ASID_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-21"></a>        <span class="k">parameter</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ariane_cfg_t</span> <span class="n">ArianeCfg</span> <span class="o">=</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ArianeDefaultConfig</span>
-<a name="l-22"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-23"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">clk_i</span><span class="p">,</span>                  <span class="c1">// Clock</span>
-<a name="l-24"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">rst_ni</span><span class="p">,</span>                 <span class="c1">// Asynchronous reset active low</span>
-<a name="l-25"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">flush_i</span><span class="p">,</span>                <span class="c1">// flush everything, we need to do this because</span>
-<a name="l-26"></a>                                                            <span class="c1">// actually everything we do is speculative at this stage</span>
-<a name="l-27"></a>                                                            <span class="c1">// e.g.: there could be a CSR instruction that changes everything</span>
-<a name="l-28"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">ptw_active_o</span><span class="p">,</span>
-<a name="l-29"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">walking_instr_o</span><span class="p">,</span>        <span class="c1">// set when walking for TLB</span>
-<a name="l-30"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">ptw_error_o</span><span class="p">,</span>            <span class="c1">// set when an error occurred</span>
-<a name="l-31"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">ptw_access_exception_o</span><span class="p">,</span> <span class="c1">// set when an PMP access exception occured</span>
-<a name="l-32"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">enable_translation_i</span><span class="p">,</span>   <span class="c1">// CSRs indicate to enable SV39</span>
-<a name="l-33"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">en_ld_st_translation_i</span><span class="p">,</span> <span class="c1">// enable virtual memory translation for load/stores</span>
-<a name="l-34"></a>
-<a name="l-35"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">lsu_is_store_i</span><span class="p">,</span>         <span class="c1">// this translation was triggered by a store</span>
-<a name="l-36"></a>    <span class="c1">// PTW memory interface</span>
-<a name="l-37"></a>    <span class="k">input</span>  <span class="n">dcache_req_o_t</span>           <span class="n">req_port_i</span><span class="p">,</span>
-<a name="l-38"></a>    <span class="k">output</span> <span class="n">dcache_req_i_t</span>           <span class="n">req_port_o</span><span class="p">,</span>
+<a name="l-17"></a>
+<a name="l-18"></a><span class="k">module</span> <span class="n">ptw</span> <span class="k">import</span> <span class="n">ariane_pkg</span><span class="o">::*</span><span class="p">;</span> <span class="p">#(</span>
+<a name="l-19"></a>        <span class="k">parameter</span> <span class="k">int</span> <span class="n">ASID_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
+<a name="l-20"></a>        <span class="k">parameter</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ariane_cfg_t</span> <span class="n">ArianeCfg</span> <span class="o">=</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ArianeDefaultConfig</span>
+<a name="l-21"></a><span class="p">)</span> <span class="p">(</span>
+<a name="l-22"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">clk_i</span><span class="p">,</span>                  <span class="c1">// Clock</span>
+<a name="l-23"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">rst_ni</span><span class="p">,</span>                 <span class="c1">// Asynchronous reset active low</span>
+<a name="l-24"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">flush_i</span><span class="p">,</span>                <span class="c1">// flush everything, we need to do this because</span>
+<a name="l-25"></a>                                                            <span class="c1">// actually everything we do is speculative at this stage</span>
+<a name="l-26"></a>                                                            <span class="c1">// e.g.: there could be a CSR instruction that changes everything</span>
+<a name="l-27"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">ptw_active_o</span><span class="p">,</span>
+<a name="l-28"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">walking_instr_o</span><span class="p">,</span>        <span class="c1">// set when walking for TLB</span>
+<a name="l-29"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">ptw_error_o</span><span class="p">,</span>            <span class="c1">// set when an error occurred</span>
+<a name="l-30"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">ptw_access_exception_o</span><span class="p">,</span> <span class="c1">// set when an PMP access exception occured</span>
+<a name="l-31"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">enable_translation_i</span><span class="p">,</span>   <span class="c1">// CSRs indicate to enable SV39</span>
+<a name="l-32"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">en_ld_st_translation_i</span><span class="p">,</span> <span class="c1">// enable virtual memory translation for load/stores</span>
+<a name="l-33"></a>
+<a name="l-34"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">lsu_is_store_i</span><span class="p">,</span>         <span class="c1">// this translation was triggered by a store</span>
+<a name="l-35"></a>    <span class="c1">// PTW memory interface</span>
+<a name="l-36"></a>    <span class="k">input</span>  <span class="n">dcache_req_o_t</span>           <span class="n">req_port_i</span><span class="p">,</span>
+<a name="l-37"></a>    <span class="k">output</span> <span class="n">dcache_req_i_t</span>           <span class="n">req_port_o</span><span class="p">,</span>
+<a name="l-38"></a>
 <a name="l-39"></a>
-<a name="l-40"></a>
-<a name="l-41"></a>    <span class="c1">// to TLBs, update logic</span>
-<a name="l-42"></a>    <span class="k">output</span> <span class="n">tlb_update_t</span>             <span class="n">itlb_update_o</span><span class="p">,</span>
-<a name="l-43"></a>    <span class="k">output</span> <span class="n">tlb_update_t</span>             <span class="n">dtlb_update_o</span><span class="p">,</span>
-<a name="l-44"></a>
-<a name="l-45"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">update_vaddr_o</span><span class="p">,</span>
-<a name="l-46"></a>
-<a name="l-47"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">ASID_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">asid_i</span><span class="p">,</span>
-<a name="l-48"></a>    <span class="c1">// from TLBs</span>
-<a name="l-49"></a>    <span class="c1">// did we miss?</span>
-<a name="l-50"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">itlb_access_i</span><span class="p">,</span>
-<a name="l-51"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">itlb_hit_i</span><span class="p">,</span>
-<a name="l-52"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">itlb_vaddr_i</span><span class="p">,</span>
-<a name="l-53"></a>
-<a name="l-54"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">dtlb_access_i</span><span class="p">,</span>
-<a name="l-55"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">dtlb_hit_i</span><span class="p">,</span>
-<a name="l-56"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">dtlb_vaddr_i</span><span class="p">,</span>
-<a name="l-57"></a>    <span class="c1">// from CSR file</span>
-<a name="l-58"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">43</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">satp_ppn_i</span><span class="p">,</span> <span class="c1">// ppn from satp</span>
-<a name="l-59"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">mxr_i</span><span class="p">,</span>
-<a name="l-60"></a>    <span class="c1">// Performance counters</span>
-<a name="l-61"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">itlb_miss_o</span><span class="p">,</span>
-<a name="l-62"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">dtlb_miss_o</span><span class="p">,</span>
-<a name="l-63"></a>    <span class="c1">// PMP</span>
-<a name="l-64"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">pmpcfg_t</span> <span class="p">[</span><span class="n">ArianeCfg</span><span class="p">.</span><span class="n">NrPMPEntries</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">pmpcfg_i</span><span class="p">,</span>
-<a name="l-65"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">ArianeCfg</span><span class="p">.</span><span class="n">NrPMPEntries</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="mh">53</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>      <span class="n">pmpaddr_i</span><span class="p">,</span>
+<a name="l-40"></a>    <span class="c1">// to TLBs, update logic</span>
+<a name="l-41"></a>    <span class="k">output</span> <span class="n">tlb_update_t</span>             <span class="n">itlb_update_o</span><span class="p">,</span>
+<a name="l-42"></a>    <span class="k">output</span> <span class="n">tlb_update_t</span>             <span class="n">dtlb_update_o</span><span class="p">,</span>
+<a name="l-43"></a>
+<a name="l-44"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">update_vaddr_o</span><span class="p">,</span>
+<a name="l-45"></a>
+<a name="l-46"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">ASID_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">asid_i</span><span class="p">,</span>
+<a name="l-47"></a>    <span class="c1">// from TLBs</span>
+<a name="l-48"></a>    <span class="c1">// did we miss?</span>
+<a name="l-49"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">itlb_access_i</span><span class="p">,</span>
+<a name="l-50"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">itlb_hit_i</span><span class="p">,</span>
+<a name="l-51"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">itlb_vaddr_i</span><span class="p">,</span>
+<a name="l-52"></a>
+<a name="l-53"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">dtlb_access_i</span><span class="p">,</span>
+<a name="l-54"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">dtlb_hit_i</span><span class="p">,</span>
+<a name="l-55"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">dtlb_vaddr_i</span><span class="p">,</span>
+<a name="l-56"></a>    <span class="c1">// from CSR file</span>
+<a name="l-57"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">43</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">satp_ppn_i</span><span class="p">,</span> <span class="c1">// ppn from satp</span>
+<a name="l-58"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">mxr_i</span><span class="p">,</span>
+<a name="l-59"></a>    <span class="c1">// Performance counters</span>
+<a name="l-60"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">itlb_miss_o</span><span class="p">,</span>
+<a name="l-61"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">dtlb_miss_o</span><span class="p">,</span>
+<a name="l-62"></a>    <span class="c1">// PMP</span>
+<a name="l-63"></a>
+<a name="l-64"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">pmpcfg_t</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">pmpcfg_i</span><span class="p">,</span>
+<a name="l-65"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="mh">53</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>       <span class="n">pmpaddr_i</span><span class="p">,</span>
 <a name="l-66"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">PLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">bad_paddr_o</span>
 <a name="l-67"></a>
 <a name="l-68"></a><span class="p">);</span>

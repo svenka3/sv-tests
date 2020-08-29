@@ -312,7 +312,8 @@
 <a href="#l-304">304</a>
 <a href="#l-305">305</a>
 <a href="#l-306">306</a>
-<a href="#l-307">307</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna.</span>
+<a href="#l-307">307</a>
+<a href="#l-308">308</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna.</span>
 <a name="l-2"></a><span class="c1">// Copyright and related rights are licensed under the Solderpad Hardware</span>
 <a name="l-3"></a><span class="c1">// License, Version 0.51 (the &quot;License&quot;); you may not use this file except in</span>
 <a name="l-4"></a><span class="c1">// compliance with the License.  You may obtain a copy of the License at</span>
@@ -326,96 +327,96 @@
 <a name="l-12"></a><span class="c1">// Date: 19.04.2017</span>
 <a name="l-13"></a><span class="c1">// Description: Instantiation of all functional units residing in the execute stage</span>
 <a name="l-14"></a>
-<a name="l-15"></a><span class="kn">import</span> <span class="nn">ariane_pkg::*</span><span class="p">;</span>
-<a name="l-16"></a>
-<a name="l-17"></a><span class="k">module</span> <span class="n">ex_stage</span> <span class="p">#(</span>
-<a name="l-18"></a>    <span class="k">parameter</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ariane_cfg_t</span> <span class="n">ArianeCfg</span> <span class="o">=</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ArianeDefaultConfig</span>
-<a name="l-19"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-20"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">clk_i</span><span class="p">,</span>    <span class="c1">// Clock</span>
-<a name="l-21"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">rst_ni</span><span class="p">,</span>   <span class="c1">// Asynchronous reset active low</span>
-<a name="l-22"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">flush_i</span><span class="p">,</span>
-<a name="l-23"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">debug_mode_i</span><span class="p">,</span>
-<a name="l-24"></a>
-<a name="l-25"></a>    <span class="k">input</span>  <span class="n">fu_data_t</span>                               <span class="n">fu_data_i</span><span class="p">,</span>
-<a name="l-26"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">pc_i</span><span class="p">,</span>                  <span class="c1">// PC of current instruction</span>
-<a name="l-27"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">is_compressed_instr_i</span><span class="p">,</span> <span class="c1">// we need to know if this was a compressed instruction</span>
-<a name="l-28"></a>                                                                          <span class="c1">// in order to calculate the next PC on a mis-predict</span>
-<a name="l-29"></a>    <span class="c1">// Fixed latency unit(s)</span>
-<a name="l-30"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">flu_result_o</span><span class="p">,</span>
-<a name="l-31"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">flu_trans_id_o</span><span class="p">,</span>        <span class="c1">// ID of scoreboard entry at which to write back</span>
-<a name="l-32"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">flu_exception_o</span><span class="p">,</span>
-<a name="l-33"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">flu_ready_o</span><span class="p">,</span>           <span class="c1">// FLU is ready</span>
-<a name="l-34"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">flu_valid_o</span><span class="p">,</span>           <span class="c1">// FLU result is valid</span>
-<a name="l-35"></a>    <span class="c1">// Branches and Jumps</span>
-<a name="l-36"></a>    <span class="c1">// ALU 1</span>
-<a name="l-37"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">alu_valid_i</span><span class="p">,</span>           <span class="c1">// Output is valid</span>
-<a name="l-38"></a>    <span class="c1">// Branch Unit</span>
-<a name="l-39"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">branch_valid_i</span><span class="p">,</span>        <span class="c1">// we are using the branch unit</span>
-<a name="l-40"></a>    <span class="k">input</span>  <span class="n">branchpredict_sbe_t</span>                     <span class="n">branch_predict_i</span><span class="p">,</span>
-<a name="l-41"></a>    <span class="k">output</span> <span class="n">bp_resolve_t</span>                            <span class="n">resolved_branch_o</span><span class="p">,</span>     <span class="c1">// the branch engine uses the write back from the ALU</span>
-<a name="l-42"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">resolve_branch_o</span><span class="p">,</span>      <span class="c1">// to ID signaling that we resolved the branch</span>
-<a name="l-43"></a>    <span class="c1">// CSR</span>
-<a name="l-44"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">csr_valid_i</span><span class="p">,</span>
-<a name="l-45"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">csr_addr_o</span><span class="p">,</span>
-<a name="l-46"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">csr_commit_i</span><span class="p">,</span>
-<a name="l-47"></a>    <span class="c1">// MULT</span>
-<a name="l-48"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">mult_valid_i</span><span class="p">,</span>      <span class="c1">// Output is valid</span>
-<a name="l-49"></a>    <span class="c1">// LSU</span>
-<a name="l-50"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">lsu_ready_o</span><span class="p">,</span>        <span class="c1">// FU is ready</span>
-<a name="l-51"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">lsu_valid_i</span><span class="p">,</span>        <span class="c1">// Input is valid</span>
-<a name="l-52"></a>
-<a name="l-53"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">load_valid_o</span><span class="p">,</span>
-<a name="l-54"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">load_result_o</span><span class="p">,</span>
-<a name="l-55"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">load_trans_id_o</span><span class="p">,</span>
-<a name="l-56"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">load_exception_o</span><span class="p">,</span>
-<a name="l-57"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">store_valid_o</span><span class="p">,</span>
-<a name="l-58"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">store_result_o</span><span class="p">,</span>
-<a name="l-59"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">store_trans_id_o</span><span class="p">,</span>
-<a name="l-60"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">store_exception_o</span><span class="p">,</span>
-<a name="l-61"></a>
-<a name="l-62"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">lsu_commit_i</span><span class="p">,</span>
-<a name="l-63"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">lsu_commit_ready_o</span><span class="p">,</span> <span class="c1">// commit queue is ready to accept another commit request</span>
-<a name="l-64"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">commit_tran_id_i</span><span class="p">,</span>
-<a name="l-65"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">no_st_pending_o</span><span class="p">,</span>
-<a name="l-66"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">amo_valid_commit_i</span><span class="p">,</span>
-<a name="l-67"></a>    <span class="c1">// FPU</span>
-<a name="l-68"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">fpu_ready_o</span><span class="p">,</span>      <span class="c1">// FU is ready</span>
-<a name="l-69"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">fpu_valid_i</span><span class="p">,</span>      <span class="c1">// Output is valid</span>
-<a name="l-70"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_fmt_i</span><span class="p">,</span>        <span class="c1">// FP format</span>
-<a name="l-71"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_rm_i</span><span class="p">,</span>         <span class="c1">// FP rm</span>
-<a name="l-72"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_frm_i</span><span class="p">,</span>        <span class="c1">// FP frm csr</span>
-<a name="l-73"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_prec_i</span><span class="p">,</span>       <span class="c1">// FP precision control</span>
-<a name="l-74"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">fpu_trans_id_o</span><span class="p">,</span>
-<a name="l-75"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">fpu_result_o</span><span class="p">,</span>
-<a name="l-76"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">fpu_valid_o</span><span class="p">,</span>
-<a name="l-77"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">fpu_exception_o</span><span class="p">,</span>
-<a name="l-78"></a>    <span class="c1">// Memory Management</span>
-<a name="l-79"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">enable_translation_i</span><span class="p">,</span>
-<a name="l-80"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">en_ld_st_translation_i</span><span class="p">,</span>
-<a name="l-81"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">flush_tlb_i</span><span class="p">,</span>
-<a name="l-82"></a>
-<a name="l-83"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">priv_lvl_t</span>                       <span class="n">priv_lvl_i</span><span class="p">,</span>
-<a name="l-84"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">priv_lvl_t</span>                       <span class="n">ld_st_priv_lvl_i</span><span class="p">,</span>
-<a name="l-85"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">sum_i</span><span class="p">,</span>
-<a name="l-86"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">mxr_i</span><span class="p">,</span>
-<a name="l-87"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">43</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">satp_ppn_i</span><span class="p">,</span>
-<a name="l-88"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">ASID_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">asid_i</span><span class="p">,</span>
-<a name="l-89"></a>    <span class="c1">// icache translation requests</span>
-<a name="l-90"></a>    <span class="k">input</span>  <span class="n">icache_areq_o_t</span>                         <span class="n">icache_areq_i</span><span class="p">,</span>
-<a name="l-91"></a>    <span class="k">output</span> <span class="n">icache_areq_i_t</span>                         <span class="n">icache_areq_o</span><span class="p">,</span>
-<a name="l-92"></a>
-<a name="l-93"></a>    <span class="c1">// interface to dcache</span>
-<a name="l-94"></a>    <span class="k">input</span>  <span class="n">dcache_req_o_t</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                    <span class="n">dcache_req_ports_i</span><span class="p">,</span>
-<a name="l-95"></a>    <span class="k">output</span> <span class="n">dcache_req_i_t</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                    <span class="n">dcache_req_ports_o</span><span class="p">,</span>
-<a name="l-96"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">dcache_wbuffer_empty_i</span><span class="p">,</span>
+<a name="l-15"></a>
+<a name="l-16"></a><span class="k">module</span> <span class="n">ex_stage</span> <span class="k">import</span> <span class="n">ariane_pkg</span><span class="o">::*</span><span class="p">;</span> <span class="p">#(</span>
+<a name="l-17"></a>    <span class="k">parameter</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ariane_cfg_t</span> <span class="n">ArianeCfg</span> <span class="o">=</span> <span class="n">ariane_pkg</span><span class="o">::</span><span class="n">ArianeDefaultConfig</span>
+<a name="l-18"></a><span class="p">)</span> <span class="p">(</span>
+<a name="l-19"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">clk_i</span><span class="p">,</span>    <span class="c1">// Clock</span>
+<a name="l-20"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">rst_ni</span><span class="p">,</span>   <span class="c1">// Asynchronous reset active low</span>
+<a name="l-21"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">flush_i</span><span class="p">,</span>
+<a name="l-22"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">debug_mode_i</span><span class="p">,</span>
+<a name="l-23"></a>
+<a name="l-24"></a>    <span class="k">input</span>  <span class="n">fu_data_t</span>                               <span class="n">fu_data_i</span><span class="p">,</span>
+<a name="l-25"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">VLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">pc_i</span><span class="p">,</span>                  <span class="c1">// PC of current instruction</span>
+<a name="l-26"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">is_compressed_instr_i</span><span class="p">,</span> <span class="c1">// we need to know if this was a compressed instruction</span>
+<a name="l-27"></a>                                                                          <span class="c1">// in order to calculate the next PC on a mis-predict</span>
+<a name="l-28"></a>    <span class="c1">// Fixed latency unit(s)</span>
+<a name="l-29"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">flu_result_o</span><span class="p">,</span>
+<a name="l-30"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">flu_trans_id_o</span><span class="p">,</span>        <span class="c1">// ID of scoreboard entry at which to write back</span>
+<a name="l-31"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">flu_exception_o</span><span class="p">,</span>
+<a name="l-32"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">flu_ready_o</span><span class="p">,</span>           <span class="c1">// FLU is ready</span>
+<a name="l-33"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">flu_valid_o</span><span class="p">,</span>           <span class="c1">// FLU result is valid</span>
+<a name="l-34"></a>    <span class="c1">// Branches and Jumps</span>
+<a name="l-35"></a>    <span class="c1">// ALU 1</span>
+<a name="l-36"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">alu_valid_i</span><span class="p">,</span>           <span class="c1">// Output is valid</span>
+<a name="l-37"></a>    <span class="c1">// Branch Unit</span>
+<a name="l-38"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">branch_valid_i</span><span class="p">,</span>        <span class="c1">// we are using the branch unit</span>
+<a name="l-39"></a>    <span class="k">input</span>  <span class="n">branchpredict_sbe_t</span>                     <span class="n">branch_predict_i</span><span class="p">,</span>
+<a name="l-40"></a>    <span class="k">output</span> <span class="n">bp_resolve_t</span>                            <span class="n">resolved_branch_o</span><span class="p">,</span>     <span class="c1">// the branch engine uses the write back from the ALU</span>
+<a name="l-41"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">resolve_branch_o</span><span class="p">,</span>      <span class="c1">// to ID signaling that we resolved the branch</span>
+<a name="l-42"></a>    <span class="c1">// CSR</span>
+<a name="l-43"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">csr_valid_i</span><span class="p">,</span>
+<a name="l-44"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">csr_addr_o</span><span class="p">,</span>
+<a name="l-45"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">csr_commit_i</span><span class="p">,</span>
+<a name="l-46"></a>    <span class="c1">// MULT</span>
+<a name="l-47"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">mult_valid_i</span><span class="p">,</span>      <span class="c1">// Output is valid</span>
+<a name="l-48"></a>    <span class="c1">// LSU</span>
+<a name="l-49"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">lsu_ready_o</span><span class="p">,</span>        <span class="c1">// FU is ready</span>
+<a name="l-50"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">lsu_valid_i</span><span class="p">,</span>        <span class="c1">// Input is valid</span>
+<a name="l-51"></a>
+<a name="l-52"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">load_valid_o</span><span class="p">,</span>
+<a name="l-53"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">load_result_o</span><span class="p">,</span>
+<a name="l-54"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">load_trans_id_o</span><span class="p">,</span>
+<a name="l-55"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">load_exception_o</span><span class="p">,</span>
+<a name="l-56"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">store_valid_o</span><span class="p">,</span>
+<a name="l-57"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">store_result_o</span><span class="p">,</span>
+<a name="l-58"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">store_trans_id_o</span><span class="p">,</span>
+<a name="l-59"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">store_exception_o</span><span class="p">,</span>
+<a name="l-60"></a>
+<a name="l-61"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">lsu_commit_i</span><span class="p">,</span>
+<a name="l-62"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">lsu_commit_ready_o</span><span class="p">,</span> <span class="c1">// commit queue is ready to accept another commit request</span>
+<a name="l-63"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">commit_tran_id_i</span><span class="p">,</span>
+<a name="l-64"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">no_st_pending_o</span><span class="p">,</span>
+<a name="l-65"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">amo_valid_commit_i</span><span class="p">,</span>
+<a name="l-66"></a>    <span class="c1">// FPU</span>
+<a name="l-67"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">fpu_ready_o</span><span class="p">,</span>      <span class="c1">// FU is ready</span>
+<a name="l-68"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">fpu_valid_i</span><span class="p">,</span>      <span class="c1">// Output is valid</span>
+<a name="l-69"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_fmt_i</span><span class="p">,</span>        <span class="c1">// FP format</span>
+<a name="l-70"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_rm_i</span><span class="p">,</span>         <span class="c1">// FP rm</span>
+<a name="l-71"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_frm_i</span><span class="p">,</span>        <span class="c1">// FP frm csr</span>
+<a name="l-72"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                             <span class="n">fpu_prec_i</span><span class="p">,</span>       <span class="c1">// FP precision control</span>
+<a name="l-73"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">fpu_trans_id_o</span><span class="p">,</span>
+<a name="l-74"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">fpu_result_o</span><span class="p">,</span>
+<a name="l-75"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">fpu_valid_o</span><span class="p">,</span>
+<a name="l-76"></a>    <span class="k">output</span> <span class="n">exception_t</span>                             <span class="n">fpu_exception_o</span><span class="p">,</span>
+<a name="l-77"></a>    <span class="c1">// Memory Management</span>
+<a name="l-78"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">enable_translation_i</span><span class="p">,</span>
+<a name="l-79"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">en_ld_st_translation_i</span><span class="p">,</span>
+<a name="l-80"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">flush_tlb_i</span><span class="p">,</span>
+<a name="l-81"></a>
+<a name="l-82"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">priv_lvl_t</span>                       <span class="n">priv_lvl_i</span><span class="p">,</span>
+<a name="l-83"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">priv_lvl_t</span>                       <span class="n">ld_st_priv_lvl_i</span><span class="p">,</span>
+<a name="l-84"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">sum_i</span><span class="p">,</span>
+<a name="l-85"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">mxr_i</span><span class="p">,</span>
+<a name="l-86"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">43</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                            <span class="n">satp_ppn_i</span><span class="p">,</span>
+<a name="l-87"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">ASID_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">asid_i</span><span class="p">,</span>
+<a name="l-88"></a>    <span class="c1">// icache translation requests</span>
+<a name="l-89"></a>    <span class="k">input</span>  <span class="n">icache_areq_o_t</span>                         <span class="n">icache_areq_i</span><span class="p">,</span>
+<a name="l-90"></a>    <span class="k">output</span> <span class="n">icache_areq_i_t</span>                         <span class="n">icache_areq_o</span><span class="p">,</span>
+<a name="l-91"></a>
+<a name="l-92"></a>    <span class="c1">// interface to dcache</span>
+<a name="l-93"></a>    <span class="k">input</span>  <span class="n">dcache_req_o_t</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                    <span class="n">dcache_req_ports_i</span><span class="p">,</span>
+<a name="l-94"></a>    <span class="k">output</span> <span class="n">dcache_req_i_t</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                    <span class="n">dcache_req_ports_o</span><span class="p">,</span>
+<a name="l-95"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">dcache_wbuffer_empty_i</span><span class="p">,</span>
+<a name="l-96"></a>    <span class="k">input</span>  <span class="k">logic</span>                                   <span class="n">dcache_wbuffer_not_ni_i</span><span class="p">,</span>
 <a name="l-97"></a>    <span class="k">output</span> <span class="n">amo_req_t</span>                               <span class="n">amo_req_o</span><span class="p">,</span>          <span class="c1">// request to cache subsytem</span>
 <a name="l-98"></a>    <span class="k">input</span>  <span class="n">amo_resp_t</span>                              <span class="n">amo_resp_i</span><span class="p">,</span>         <span class="c1">// response from cache subsystem</span>
 <a name="l-99"></a>    <span class="c1">// Performance counters</span>
 <a name="l-100"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">itlb_miss_o</span><span class="p">,</span>
 <a name="l-101"></a>    <span class="k">output</span> <span class="k">logic</span>                                   <span class="n">dtlb_miss_o</span><span class="p">,</span>
 <a name="l-102"></a>    <span class="c1">// PMPs</span>
-<a name="l-103"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">pmpcfg_t</span> <span class="p">[</span><span class="n">ArianeCfg</span><span class="p">.</span><span class="n">NrPMPEntries</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">pmpcfg_i</span><span class="p">,</span>
-<a name="l-104"></a>    <span class="k">input</span>  <span class="k">logic</span><span class="p">[</span><span class="n">ArianeCfg</span><span class="p">.</span><span class="n">NrPMPEntries</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="mh">53</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>       <span class="n">pmpaddr_i</span>
+<a name="l-103"></a>    <span class="k">input</span>  <span class="n">riscv</span><span class="o">::</span><span class="n">pmpcfg_t</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                  <span class="n">pmpcfg_i</span><span class="p">,</span>
+<a name="l-104"></a>    <span class="k">input</span>  <span class="k">logic</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="mh">53</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                       <span class="n">pmpaddr_i</span>
 <a name="l-105"></a><span class="p">);</span>
 <a name="l-106"></a>
 <a name="l-107"></a>    <span class="c1">// -------------------------</span>
@@ -611,14 +612,15 @@
 <a name="l-297"></a>        <span class="p">.</span><span class="n">dcache_req_ports_i</span><span class="p">,</span>
 <a name="l-298"></a>        <span class="p">.</span><span class="n">dcache_req_ports_o</span><span class="p">,</span>
 <a name="l-299"></a>        <span class="p">.</span><span class="n">dcache_wbuffer_empty_i</span><span class="p">,</span>
-<a name="l-300"></a>        <span class="p">.</span><span class="n">amo_valid_commit_i</span><span class="p">,</span>
-<a name="l-301"></a>        <span class="p">.</span><span class="n">amo_req_o</span><span class="p">,</span>
-<a name="l-302"></a>        <span class="p">.</span><span class="n">amo_resp_i</span><span class="p">,</span>
-<a name="l-303"></a>        <span class="p">.</span><span class="n">pmpcfg_i</span><span class="p">,</span>
-<a name="l-304"></a>        <span class="p">.</span><span class="n">pmpaddr_i</span>
-<a name="l-305"></a>    <span class="p">);</span>
-<a name="l-306"></a>
-<a name="l-307"></a><span class="k">endmodule</span>
+<a name="l-300"></a>        <span class="p">.</span><span class="n">dcache_wbuffer_not_ni_i</span><span class="p">,</span>
+<a name="l-301"></a>        <span class="p">.</span><span class="n">amo_valid_commit_i</span><span class="p">,</span>
+<a name="l-302"></a>        <span class="p">.</span><span class="n">amo_req_o</span><span class="p">,</span>
+<a name="l-303"></a>        <span class="p">.</span><span class="n">amo_resp_i</span><span class="p">,</span>
+<a name="l-304"></a>        <span class="p">.</span><span class="n">pmpcfg_i</span><span class="p">,</span>
+<a name="l-305"></a>        <span class="p">.</span><span class="n">pmpaddr_i</span>
+<a name="l-306"></a>    <span class="p">);</span>
+<a name="l-307"></a>
+<a name="l-308"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
