@@ -232,10 +232,10 @@
 <a name="l-11"></a><span class="c1">// raise an error by asserting integ_fail_o.</span>
 <a name="l-12"></a><span class="c1">//</span>
 <a name="l-13"></a><span class="c1">// Further, the module supports ping testing of the alert diff pair. In order to</span>
-<a name="l-14"></a><span class="c1">// initiate a ping test, ping_en_i shall be set to 1&#39;b1 until ping_ok_o is</span>
+<a name="l-14"></a><span class="c1">// initiate a ping test, ping_req_i shall be set to 1&#39;b1 until ping_ok_o is</span>
 <a name="l-15"></a><span class="c1">// asserted for one cycle. The signal may be de-asserted (e.g. after a long)</span>
 <a name="l-16"></a><span class="c1">// timeout period. However note that all ping responses that come in after</span>
-<a name="l-17"></a><span class="c1">// deasserting ping_en_i will be treated as native alerts.</span>
+<a name="l-17"></a><span class="c1">// deasserting ping_req_i will be treated as native alerts.</span>
 <a name="l-18"></a><span class="c1">//</span>
 <a name="l-19"></a><span class="c1">// The protocol works in both asynchronous and synchronous cases. In the</span>
 <a name="l-20"></a><span class="c1">// asynchronous case, the parameter AsyncOn must be set to 1&#39;b1 in order to</span>
@@ -260,7 +260,7 @@
 <a name="l-39"></a>  <span class="k">input</span>             <span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-40"></a>  <span class="c1">// this triggers a ping test. keep asserted</span>
 <a name="l-41"></a>  <span class="c1">// until ping_ok_o is asserted.</span>
-<a name="l-42"></a>  <span class="k">input</span>             <span class="n">ping_en_i</span><span class="p">,</span>
+<a name="l-42"></a>  <span class="k">input</span>             <span class="n">ping_req_i</span><span class="p">,</span>
 <a name="l-43"></a>  <span class="k">output</span> <span class="k">logic</span>      <span class="n">ping_ok_o</span><span class="p">,</span>
 <a name="l-44"></a>  <span class="c1">// asserted if signal integrity issue detected</span>
 <a name="l-45"></a>  <span class="k">output</span> <span class="k">logic</span>      <span class="n">integ_fail_o</span><span class="p">,</span>
@@ -300,13 +300,13 @@
 <a name="l-79"></a>  <span class="n">state_e</span> <span class="n">state_d</span><span class="p">,</span> <span class="n">state_q</span><span class="p">;</span>
 <a name="l-80"></a>  <span class="k">logic</span> <span class="n">ping_rise</span><span class="p">;</span>
 <a name="l-81"></a>  <span class="k">logic</span> <span class="n">ping_tog_d</span><span class="p">,</span> <span class="n">ping_tog_q</span><span class="p">,</span> <span class="n">ack_d</span><span class="p">,</span> <span class="n">ack_q</span><span class="p">;</span>
-<a name="l-82"></a>  <span class="k">logic</span> <span class="n">ping_en_d</span><span class="p">,</span> <span class="n">ping_en_q</span><span class="p">;</span>
+<a name="l-82"></a>  <span class="k">logic</span> <span class="n">ping_req_d</span><span class="p">,</span> <span class="n">ping_req_q</span><span class="p">;</span>
 <a name="l-83"></a>  <span class="k">logic</span> <span class="n">ping_pending_d</span><span class="p">,</span> <span class="n">ping_pending_q</span><span class="p">;</span>
 <a name="l-84"></a>
-<a name="l-85"></a>  <span class="c1">// signal ping request upon positive transition on ping_en_i</span>
+<a name="l-85"></a>  <span class="c1">// signal ping request upon positive transition on ping_req_i</span>
 <a name="l-86"></a>  <span class="c1">// signalling is performed by a level change event on the diff output</span>
-<a name="l-87"></a>  <span class="k">assign</span> <span class="n">ping_en_d</span>  <span class="o">=</span> <span class="n">ping_en_i</span><span class="p">;</span>
-<a name="l-88"></a>  <span class="k">assign</span> <span class="n">ping_rise</span>  <span class="o">=</span> <span class="n">ping_en_i</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">ping_en_q</span><span class="p">;</span>
+<a name="l-87"></a>  <span class="k">assign</span> <span class="n">ping_req_d</span>  <span class="o">=</span> <span class="n">ping_req_i</span><span class="p">;</span>
+<a name="l-88"></a>  <span class="k">assign</span> <span class="n">ping_rise</span>  <span class="o">=</span> <span class="n">ping_req_i</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">ping_req_q</span><span class="p">;</span>
 <a name="l-89"></a>  <span class="k">assign</span> <span class="n">ping_tog_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">ping_rise</span><span class="p">)</span> <span class="o">?</span> <span class="o">~</span><span class="n">ping_tog_q</span> <span class="o">:</span> <span class="n">ping_tog_q</span><span class="p">;</span>
 <a name="l-90"></a>
 <a name="l-91"></a>  <span class="c1">// the ping pending signal is used to in the FSM to distinguish whether the</span>
@@ -314,7 +314,7 @@
 <a name="l-93"></a>  <span class="c1">// it is important that this is only set on a rising ping_en level change, since</span>
 <a name="l-94"></a>  <span class="c1">// otherwise the ping enable signal could be abused to &quot;mask&quot; all native alerts</span>
 <a name="l-95"></a>  <span class="c1">// as ping responses by constantly tying it to 1.</span>
-<a name="l-96"></a>  <span class="k">assign</span> <span class="n">ping_pending_d</span> <span class="o">=</span> <span class="n">ping_rise</span> <span class="o">|</span> <span class="p">((</span><span class="o">~</span><span class="n">ping_ok_o</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">ping_en_i</span> <span class="o">&amp;</span> <span class="n">ping_pending_q</span><span class="p">);</span>
+<a name="l-96"></a>  <span class="k">assign</span> <span class="n">ping_pending_d</span> <span class="o">=</span> <span class="n">ping_rise</span> <span class="o">|</span> <span class="p">((</span><span class="o">~</span><span class="n">ping_ok_o</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">ping_req_i</span> <span class="o">&amp;</span> <span class="n">ping_pending_q</span><span class="p">);</span>
 <a name="l-97"></a>
 <a name="l-98"></a>  <span class="c1">// diff pair outputs</span>
 <a name="l-99"></a>  <span class="k">assign</span> <span class="n">alert_rx_o</span><span class="p">.</span><span class="n">ack_p</span>  <span class="o">=</span> <span class="n">ack_q</span><span class="p">;</span>
@@ -377,13 +377,13 @@
 <a name="l-156"></a>      <span class="n">state_q</span>        <span class="o">&lt;=</span> <span class="n">Idle</span><span class="p">;</span>
 <a name="l-157"></a>      <span class="n">ack_q</span>          <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-158"></a>      <span class="n">ping_tog_q</span>     <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-159"></a>      <span class="n">ping_en_q</span>      <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-159"></a>      <span class="n">ping_req_q</span>     <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-160"></a>      <span class="n">ping_pending_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
 <a name="l-161"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-162"></a>      <span class="n">state_q</span>        <span class="o">&lt;=</span> <span class="n">state_d</span><span class="p">;</span>
 <a name="l-163"></a>      <span class="n">ack_q</span>          <span class="o">&lt;=</span> <span class="n">ack_d</span><span class="p">;</span>
 <a name="l-164"></a>      <span class="n">ping_tog_q</span>     <span class="o">&lt;=</span> <span class="n">ping_tog_d</span><span class="p">;</span>
-<a name="l-165"></a>      <span class="n">ping_en_q</span>      <span class="o">&lt;=</span> <span class="n">ping_en_d</span><span class="p">;</span>
+<a name="l-165"></a>      <span class="n">ping_req_q</span>     <span class="o">&lt;=</span> <span class="n">ping_req_d</span><span class="p">;</span>
 <a name="l-166"></a>      <span class="n">ping_pending_q</span> <span class="o">&lt;=</span> <span class="n">ping_pending_d</span><span class="p">;</span>
 <a name="l-167"></a>    <span class="k">end</span>
 <a name="l-168"></a>  <span class="k">end</span>
@@ -403,11 +403,11 @@
 <a name="l-182"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">PingDiffOk_A</span><span class="p">,</span> <span class="n">alert_rx_o</span><span class="p">.</span><span class="n">ping_p</span> <span class="o">^</span> <span class="n">alert_rx_o</span><span class="p">.</span><span class="n">ping_n</span><span class="p">)</span>
 <a name="l-183"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">AckDiffOk_A</span><span class="p">,</span> <span class="n">alert_rx_o</span><span class="p">.</span><span class="n">ack_p</span> <span class="o">^</span> <span class="n">alert_rx_o</span><span class="p">.</span><span class="n">ack_n</span><span class="p">)</span>
 <a name="l-184"></a>  <span class="c1">// ping request at input -&gt; need to see encoded ping request</span>
-<a name="l-185"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">PingRequest0_A</span><span class="p">,</span> <span class="p">##</span><span class="mh">1</span> <span class="n">$rose</span><span class="p">(</span><span class="n">ping_en_i</span><span class="p">)</span> <span class="o">|=&gt;</span> <span class="n">$changed</span><span class="p">(</span><span class="n">alert_rx_o</span><span class="p">.</span><span class="n">ping_p</span><span class="p">))</span>
+<a name="l-185"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">PingRequest0_A</span><span class="p">,</span> <span class="p">##</span><span class="mh">1</span> <span class="n">$rose</span><span class="p">(</span><span class="n">ping_req_i</span><span class="p">)</span> <span class="o">|=&gt;</span> <span class="n">$changed</span><span class="p">(</span><span class="n">alert_rx_o</span><span class="p">.</span><span class="n">ping_p</span><span class="p">))</span>
 <a name="l-186"></a>  <span class="c1">// ping response implies it has been requested</span>
 <a name="l-187"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">PingResponse0_A</span><span class="p">,</span> <span class="n">ping_ok_o</span> <span class="o">|-&gt;</span> <span class="n">ping_pending_q</span><span class="p">)</span>
 <a name="l-188"></a>  <span class="c1">// correctly latch ping request</span>
-<a name="l-189"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">PingPending_A</span><span class="p">,</span> <span class="p">##</span><span class="mh">1</span> <span class="n">$rose</span><span class="p">(</span><span class="n">ping_en_i</span><span class="p">)</span> <span class="o">|=&gt;</span> <span class="n">ping_pending_q</span><span class="p">)</span>
+<a name="l-189"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">PingPending_A</span><span class="p">,</span> <span class="p">##</span><span class="mh">1</span> <span class="n">$rose</span><span class="p">(</span><span class="n">ping_req_i</span><span class="p">)</span> <span class="o">|=&gt;</span> <span class="n">ping_pending_q</span><span class="p">)</span>
 <a name="l-190"></a>
 <a name="l-191"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">AsyncOn</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_async_assert</span>
 <a name="l-192"></a>    <span class="c1">// signal integrity check propagation</span>

@@ -538,7 +538,7 @@
 <a name="l-15"></a><span class="no">`include</span> <span class="s">&quot;prim_assert.sv&quot;</span>
 <a name="l-16"></a>
 <a name="l-17"></a><span class="k">module</span> <span class="n">ibex_multdiv_fast</span> <span class="p">#(</span>
-<a name="l-18"></a>    <span class="k">parameter</span> <span class="k">bit</span> <span class="n">SingleCycleMultiply</span> <span class="o">=</span> <span class="mh">0</span>
+<a name="l-18"></a>    <span class="k">parameter</span> <span class="n">ibex_pkg</span><span class="o">::</span><span class="n">rv32m_e</span> <span class="n">RV32M</span> <span class="o">=</span> <span class="n">ibex_pkg</span><span class="o">::</span><span class="n">RV32MFast</span>
 <a name="l-19"></a>  <span class="p">)</span> <span class="p">(</span>
 <a name="l-20"></a>    <span class="k">input</span>  <span class="k">logic</span>             <span class="n">clk_i</span><span class="p">,</span>
 <a name="l-21"></a>    <span class="k">input</span>  <span class="k">logic</span>             <span class="n">rst_ni</span><span class="p">,</span>
@@ -655,7 +655,7 @@
 <a name="l-132"></a>
 <a name="l-133"></a>  <span class="c1">// The single cycle multiplier uses three 17 bit multipliers to compute MUL instructions in a</span>
 <a name="l-134"></a>  <span class="c1">// single cycle and MULH instructions in two cycles.</span>
-<a name="l-135"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">SingleCycleMultiply</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_multiv_single_cycle</span>
+<a name="l-135"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">RV32M</span> <span class="o">==</span> <span class="n">RV32MSingleCycle</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_mult_single_cycle</span>
 <a name="l-136"></a>
 <a name="l-137"></a>    <span class="k">typedef</span> <span class="k">enum</span> <span class="k">logic</span> <span class="p">{</span>
 <a name="l-138"></a>      <span class="n">MULL</span><span class="p">,</span> <span class="n">MULH</span>
@@ -772,7 +772,7 @@
 <a name="l-249"></a>
 <a name="l-250"></a>  <span class="c1">// The fast multiplier uses one 17 bit multiplier to compute MUL instructions in 3 cycles</span>
 <a name="l-251"></a>  <span class="c1">// and MULH instructions in 4 cycles.</span>
-<a name="l-252"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_multdiv_fast</span>
+<a name="l-252"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_mult_fast</span>
 <a name="l-253"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mult_op_a</span><span class="p">;</span>
 <a name="l-254"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mult_op_b</span><span class="p">;</span>
 <a name="l-255"></a>
@@ -888,7 +888,7 @@
 <a name="l-365"></a>    <span class="c1">// States must be knwon/valid.</span>
 <a name="l-366"></a>    <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IbexMultStateKnown</span><span class="p">,</span> <span class="n">mult_state_q</span><span class="p">)</span>
 <a name="l-367"></a>
-<a name="l-368"></a>  <span class="k">end</span> <span class="c1">// gen_multdiv_fast</span>
+<a name="l-368"></a>  <span class="k">end</span> <span class="c1">// gen_mult_fast</span>
 <a name="l-369"></a>
 <a name="l-370"></a>  <span class="c1">// Divider</span>
 <a name="l-371"></a>  <span class="k">assign</span> <span class="n">res_adder_h</span>    <span class="o">=</span> <span class="n">alu_adder_ext_i</span><span class="p">[</span><span class="mh">33</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>

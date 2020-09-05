@@ -115,7 +115,7 @@
 <a name="l-10"></a><span class="cm"> * This register file is based on flip flops. Use this register file when</span>
 <a name="l-11"></a><span class="cm"> * targeting FPGA synthesis or Verilator simulation.</span>
 <a name="l-12"></a><span class="cm"> */</span>
-<a name="l-13"></a><span class="k">module</span> <span class="n">ibex_register_file</span> <span class="p">#(</span>
+<a name="l-13"></a><span class="k">module</span> <span class="n">ibex_register_file_ff</span> <span class="p">#(</span>
 <a name="l-14"></a>    <span class="k">parameter</span> <span class="k">bit</span>          <span class="n">RV32E</span>             <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
 <a name="l-15"></a>    <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">DataWidth</span>         <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>
 <a name="l-16"></a>    <span class="k">parameter</span> <span class="k">bit</span>          <span class="n">DummyInstructions</span> <span class="o">=</span> <span class="mh">0</span>
@@ -170,8 +170,8 @@
 <a name="l-65"></a>  <span class="c1">// With dummy instructions enabled, R0 behaves as a real register but will always return 0 for</span>
 <a name="l-66"></a>  <span class="c1">// real instructions.</span>
 <a name="l-67"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">DummyInstructions</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_dummy_r0</span>
-<a name="l-68"></a>    <span class="k">logic</span>        <span class="n">we_r0_dummy</span><span class="p">;</span>
-<a name="l-69"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rf_r0_q</span><span class="p">;</span>
+<a name="l-68"></a>    <span class="k">logic</span>                 <span class="n">we_r0_dummy</span><span class="p">;</span>
+<a name="l-69"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">DataWidth</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rf_r0_q</span><span class="p">;</span>
 <a name="l-70"></a>
 <a name="l-71"></a>    <span class="c1">// Write enable for dummy R0 register (waddr_a_i will always be 0 for dummy instructions)</span>
 <a name="l-72"></a>    <span class="k">assign</span> <span class="n">we_r0_dummy</span> <span class="o">=</span> <span class="n">we_a_i</span> <span class="o">&amp;</span> <span class="n">dummy_instr_id_i</span><span class="p">;</span>
