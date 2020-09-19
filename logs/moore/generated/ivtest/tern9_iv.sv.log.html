@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,42 +17,30 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v</a>
 defines: 
-time_elapsed: 0.008s
-ram usage: 10048 KB
+time_elapsed: 0.007s
+ram usage: 11180 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v</a>
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v:7</a>:17-21:
+warning: unsupported: system task `$display`; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v:16</a>:3-68:
    | 
-   |    wire test1 = flag? val : 1&#39;bx;
-   |                 ^^^^             
+   |      $display(&#34;FAILED -- flag=%b, val=%b, test1=%b&#34;, flag, val, test1);
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v:7</a>:23-26:
+compiler bug: lowering of Expr #105 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html#l-17" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v:17</a>:3-10:
    | 
-   |    wire test1 = flag? val : 1&#39;bx;
-   |                       ^^^        
+   |      $finish;
+   |      ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1439
 
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html#l-8" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v:8</a>:17-21:
-   | 
-   |    wire test2 = flag? 1&#39;b0 : 1&#39;bx;
-   |                 ^^^^              
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
 
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v:9</a>:17-21:
-   | 
-   |    wire test3 = flag? 1&#39;bx : val;
-   |                 ^^^^             
-
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/tern9.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/tern9.v:9</a>:30-33:
-   | 
-   |    wire test3 = flag? 1&#39;bx : val;
-   |                              ^^^ 
-
+thread &#39;main&#39; panicked at &#39;lowering of Expr #105 to hir not implemented&#39;, /rustc/04488afe34512aa4c33566eb16d8c912a3ae04f9/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

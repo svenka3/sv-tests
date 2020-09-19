@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,19 +17,19 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v</a>
 defines: 
-time_elapsed: 0.008s
-ram usage: 10344 KB
+time_elapsed: 0.007s
+ram usage: 10604 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e bugreport <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v:14</a>:6-90:
    | 
    |      $display(&#34;FAILED -- Got %x, expected %x.&#34;,BaudGeneratorInc,BaudGeneratorIncShouldBe);
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2014673.v.html#l-16" target="file-frame">third_party/tests/ivtest/ivltests/pr2014673.v:16</a>:6-24:
    | 
    |      $display(&#34;PASSED&#34;);
@@ -44,12 +44,20 @@ proc %bugreport.initial.100.0 (i17$ %BaudGeneratorInc, i17$ %BaudGeneratorIncSho
 }
 
 entity @bugreport () -&gt; () {
-    %0 = const i32 75
-    %BaudGeneratorInc = sig i32 %0
-    %1 = const i17 75
-    %BaudGeneratorIncShouldBe = sig i17 %1
-    inst %bugreport.initial.100.0 (i32$ %BaudGeneratorInc, i17$ %BaudGeneratorIncShouldBe) -&gt; ()
-    halt
+    %0 = const i17 0
+    %BaudGeneratorInc = sig i17 %0
+    %1 = const i32 75
+    %2 = const i32 0
+    %3 = sig i32 %2
+    %4 = const time 0s 1d
+    drv i32$ %3, %1, %4
+    con i17$ %BaudGeneratorInc, %3
+    %BaudGeneratorIncShouldBe = sig i17 %0
+    %5 = const i17 75
+    %6 = sig i17 %0
+    drv i17$ %6, %5, %4
+    con i17$ %BaudGeneratorIncShouldBe, %6
+    inst %bugreport.initial.100.0 (i17$ %BaudGeneratorInc, i17$ %BaudGeneratorIncShouldBe) -&gt; ()
 }
 
 </pre>

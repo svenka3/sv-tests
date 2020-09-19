@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/vhdl_test8.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vhdl_test8.v</a>
 defines: 
 time_elapsed: 0.007s
-ram usage: 10816 KB
+ram usage: 10996 KB
 </pre>
 <pre class="log">
 
@@ -35,8 +35,10 @@ init:
 check:
     %2 = prb i32$ %i
     st i32* %i.shadow, %2
-    %impledge = neq i8 %a.prb, %a.prb
-    %impledge1 = neq i8 %b.prb, %b.prb
+    %a.prb1 = prb i8$ %a
+    %impledge = neq i8 %a.prb, %a.prb1
+    %b.prb1 = prb i8$ %b
+    %impledge1 = neq i8 %b.prb, %b.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
@@ -56,11 +58,9 @@ loop_continue:
     %8 = sig i8 %7
     %9 = shr i8$ %match, i8$ %8, i32 %i.shadow.ld1
     %10 = exts i1$, i8$ %9, 0, 1
-    %a.prb1 = prb i8$ %a
     %i.shadow.ld2 = ld i32* %i.shadow
     %11 = shr i8 %a.prb1, i8 %7, i32 %i.shadow.ld2
     %12 = exts i1, i8 %11, 0, 1
-    %b.prb1 = prb i8$ %b
     %i.shadow.ld3 = ld i32* %i.shadow
     %13 = shr i8 %b.prb1, i8 %7, i32 %i.shadow.ld3
     %14 = exts i1, i8 %13, 0, 1
@@ -79,7 +79,6 @@ entity @match_bits_v (i8$ %a, i8$ %b) -&gt; (i8$ %match) {
     %0 = const i32 0
     %i = sig i32 %0
     inst %match_bits_v.always.111.0 (i8$ %a, i8$ %b) -&gt; (i8$ %match, i32$ %i)
-    halt
 }
 
 </pre>

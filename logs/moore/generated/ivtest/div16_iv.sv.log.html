@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,23 +18,28 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html" target="file-frame">third_party/tests/ivtest/contrib/div16.v</a>
 defines: 
 time_elapsed: 0.008s
-ram usage: 11040 KB
+ram usage: 11452 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e div16 <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html" target="file-frame">third_party/tests/ivtest/contrib/div16.v</a>
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html#l-98" target="file-frame">third_party/tests/ivtest/contrib/div16.v:98</a>:37-42:
+compiler bug: VarDeclName with weird parent PortDecl(PortDecl #111)
+  --&gt; <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html#l-67" target="file-frame">third_party/tests/ivtest/contrib/div16.v:67</a>:16-17:
    | 
-   | wire [2*N-1:0] accum_minus_bpower = accum - bpower;
-   |                                     ^^^^^          
-
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html#l-98" target="file-frame">third_party/tests/ivtest/contrib/div16.v:98</a>:45-51:
+   | output [N-1:0]    r;    // Here is the remainder.
+   |                   ^                              
+   = note: Encountered at src/svlog/typeck.rs:62
+   = note: Needed to compute the type of the expression:
+  --&gt; <a href="../../../../third_party/tests/ivtest/contrib/div16.v.html#l-93" target="file-frame">third_party/tests/ivtest/contrib/div16.v:93</a>:8-9:
    | 
-   | wire [2*N-1:0] accum_minus_bpower = accum - bpower;
-   |                                             ^^^^^^ 
+   | assign r = accum;
+   |        ^         
 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #111)&#39;, /rustc/04488afe34512aa4c33566eb16d8c912a3ae04f9/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

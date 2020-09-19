@@ -85,31 +85,31 @@
 <a name="l-8"></a><span class="no">`include</span> <span class="s">&quot;prim_assert.sv&quot;</span>
 <a name="l-9"></a>
 <a name="l-10"></a><span class="k">module</span> <span class="n">rstmgr_ctrl</span> <span class="k">import</span> <span class="n">rstmgr_pkg</span><span class="o">::*</span><span class="p">;</span> <span class="p">#(</span>
-<a name="l-11"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">PowerDomains</span> <span class="o">=</span> <span class="mh">2</span><span class="p">,</span>
-<a name="l-12"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">OffDomains</span> <span class="o">=</span> <span class="n">PowerDomains</span> <span class="o">-</span> <span class="mh">1</span>
+<a name="l-11"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="n">PowerDomains</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+<a name="l-12"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="n">OffDomains</span> <span class="o">=</span> <span class="n">PowerDomains</span> <span class="o">-</span> <span class="mi">1</span>
 <a name="l-13"></a><span class="p">)</span> <span class="p">(</span>
 <a name="l-14"></a>  <span class="k">input</span> <span class="n">clk_i</span><span class="p">,</span>
 <a name="l-15"></a>  <span class="k">input</span> <span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-16"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rst_req_i</span><span class="p">,</span>
-<a name="l-17"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rst_parent_ni</span><span class="p">,</span> <span class="c1">// parent reset</span>
-<a name="l-18"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rst_no</span>
+<a name="l-16"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rst_req_i</span><span class="p">,</span>
+<a name="l-17"></a>  <span class="k">input</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rst_parent_ni</span><span class="p">,</span> <span class="c1">// parent reset</span>
+<a name="l-18"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rst_no</span>
 <a name="l-19"></a><span class="p">);</span>
 <a name="l-20"></a>
 <a name="l-21"></a>  <span class="c1">// The code below always assumes the always on domain is index 0</span>
-<a name="l-22"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">AlwaysOnIndex_A</span><span class="p">,</span> <span class="n">ALWAYS_ON_SEL</span> <span class="o">==</span> <span class="mh">0</span><span class="p">)</span>
+<a name="l-22"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">AlwaysOnIndex_A</span><span class="p">,</span> <span class="n">ALWAYS_ON_SEL</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
 <a name="l-23"></a>
 <a name="l-24"></a>  <span class="c1">// when there are multiple on domains, the latter 1 should become another parameter</span>
-<a name="l-25"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">OffDomainSelStart</span> <span class="o">=</span> <span class="n">ALWAYS_ON_SEL</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-25"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="n">OffDomainSelStart</span> <span class="o">=</span> <span class="n">ALWAYS_ON_SEL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
 <a name="l-26"></a>
 <a name="l-27"></a>  <span class="c1">// the always on root reset</span>
-<a name="l-28"></a>  <span class="k">logic</span> <span class="n">rst_aon_nq</span><span class="p">;</span>
+<a name="l-28"></a>  <span class="kt">logic</span> <span class="n">rst_aon_nq</span><span class="p">;</span>
 <a name="l-29"></a>
 <a name="l-30"></a>  <span class="c1">// the remaining resets</span>
-<a name="l-31"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">OffDomains</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rst_pd_nd</span><span class="p">,</span> <span class="n">rst_pd_nq</span><span class="p">;</span>
+<a name="l-31"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">OffDomains</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rst_pd_nd</span><span class="p">,</span> <span class="n">rst_pd_nq</span><span class="p">;</span>
 <a name="l-32"></a>
 <a name="l-33"></a>  <span class="c1">// Parent resets may assert asynchronously, so we need to sync before using it as part</span>
 <a name="l-34"></a>  <span class="c1">// of the control path</span>
-<a name="l-35"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rst_parent_synced</span><span class="p">;</span>
+<a name="l-35"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">PowerDomains</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rst_parent_synced</span><span class="p">;</span>
 <a name="l-36"></a>  <span class="n">prim_flop_2sync</span> <span class="p">#(</span>
 <a name="l-37"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">PowerDomains</span><span class="p">),</span>
 <a name="l-38"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="m">&#39;0</span><span class="p">)</span>

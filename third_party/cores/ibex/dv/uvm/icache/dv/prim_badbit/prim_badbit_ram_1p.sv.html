@@ -101,24 +101,24 @@
 <a name="l-11"></a><span class="no">`include</span> <span class="s">&quot;prim_assert.sv&quot;</span>
 <a name="l-12"></a>
 <a name="l-13"></a><span class="k">module</span> <span class="n">prim_badbit_ram_1p</span> <span class="p">#(</span>
-<a name="l-14"></a>  <span class="k">parameter</span>  <span class="k">int</span> <span class="n">Width</span>           <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>   <span class="c1">// bit</span>
-<a name="l-15"></a>  <span class="k">parameter</span>  <span class="k">int</span> <span class="n">Depth</span>           <span class="o">=</span> <span class="mh">128</span><span class="p">,</span>
-<a name="l-16"></a>  <span class="k">parameter</span>  <span class="k">int</span> <span class="n">DataBitsPerMask</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>    <span class="c1">// Number of data bits per bit of write mask</span>
+<a name="l-14"></a>  <span class="k">parameter</span>  <span class="kt">int</span> <span class="n">Width</span>           <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>   <span class="c1">// bit</span>
+<a name="l-15"></a>  <span class="k">parameter</span>  <span class="kt">int</span> <span class="n">Depth</span>           <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+<a name="l-16"></a>  <span class="k">parameter</span>  <span class="kt">int</span> <span class="n">DataBitsPerMask</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>    <span class="c1">// Number of data bits per bit of write mask</span>
 <a name="l-17"></a>  <span class="k">parameter</span>      <span class="n">MemInitFile</span>     <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>   <span class="c1">// VMEM file to initialize the memory with</span>
 <a name="l-18"></a>
-<a name="l-19"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">Aw</span>              <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">Depth</span><span class="p">)</span>  <span class="c1">// derived parameter</span>
+<a name="l-19"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="n">Aw</span>              <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">Depth</span><span class="p">)</span>  <span class="c1">// derived parameter</span>
 <a name="l-20"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-21"></a>  <span class="k">input</span>  <span class="k">logic</span>             <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-21"></a>  <span class="k">input</span>  <span class="kt">logic</span>             <span class="n">clk_i</span><span class="p">,</span>
 <a name="l-22"></a>
-<a name="l-23"></a>  <span class="k">input</span>  <span class="k">logic</span>             <span class="n">req_i</span><span class="p">,</span>
-<a name="l-24"></a>  <span class="k">input</span>  <span class="k">logic</span>             <span class="n">write_i</span><span class="p">,</span>
-<a name="l-25"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">Aw</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>    <span class="n">addr_i</span><span class="p">,</span>
-<a name="l-26"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wdata_i</span><span class="p">,</span>
-<a name="l-27"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wmask_i</span><span class="p">,</span>
-<a name="l-28"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rdata_o</span> <span class="c1">// Read data. Data is returned one cycle after req_i is high.</span>
+<a name="l-23"></a>  <span class="k">input</span>  <span class="kt">logic</span>             <span class="n">req_i</span><span class="p">,</span>
+<a name="l-24"></a>  <span class="k">input</span>  <span class="kt">logic</span>             <span class="n">write_i</span><span class="p">,</span>
+<a name="l-25"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">Aw</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>    <span class="n">addr_i</span><span class="p">,</span>
+<a name="l-26"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">wdata_i</span><span class="p">,</span>
+<a name="l-27"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">wmask_i</span><span class="p">,</span>
+<a name="l-28"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rdata_o</span> <span class="c1">// Read data. Data is returned one cycle after req_i is high.</span>
 <a name="l-29"></a><span class="p">);</span>
 <a name="l-30"></a>
-<a name="l-31"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sram_rdata</span><span class="p">;</span>
+<a name="l-31"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">sram_rdata</span><span class="p">;</span>
 <a name="l-32"></a>
 <a name="l-33"></a>  <span class="n">prim_generic_ram_1p</span> <span class="p">#(</span>
 <a name="l-34"></a>    <span class="p">.</span><span class="n">Width</span>           <span class="p">(</span><span class="n">Width</span><span class="p">),</span>
@@ -146,26 +146,26 @@
 <a name="l-56"></a>  <span class="c1">// Making bad_bit_mask a constant size makes this easier to use (because you don&#39;t need to faff</span>
 <a name="l-57"></a>  <span class="c1">// around with parameterised interfaces in your UVM database). Check that rdata_o is actually</span>
 <a name="l-58"></a>  <span class="c1">// controllable. Similarly, we make the address a constant width: make sure that&#39;s large enough.</span>
-<a name="l-59"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">WidthSmallEnough</span><span class="p">,</span> <span class="n">Width</span> <span class="o">&lt;=</span> <span class="mh">128</span><span class="p">)</span>
-<a name="l-60"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">AddrSmallEnough</span><span class="p">,</span> <span class="n">Aw</span> <span class="o">&lt;=</span> <span class="mh">32</span><span class="p">)</span>
+<a name="l-59"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">WidthSmallEnough</span><span class="p">,</span> <span class="n">Width</span> <span class="o">&lt;=</span> <span class="mi">128</span><span class="p">)</span>
+<a name="l-60"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">AddrSmallEnough</span><span class="p">,</span> <span class="n">Aw</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="p">)</span>
 <a name="l-61"></a>
 <a name="l-62"></a>  <span class="c1">// Make the Width parameter easily accessible to bound-in modules.</span>
-<a name="l-63"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">width</span><span class="p">;</span>
+<a name="l-63"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">width</span><span class="p">;</span>
 <a name="l-64"></a>  <span class="k">assign</span> <span class="n">width</span> <span class="o">=</span> <span class="n">Width</span><span class="p">;</span>
 <a name="l-65"></a>
 <a name="l-66"></a>  <span class="c1">// Similarly, extend addr, wdata, wmask and sram_rdata (the un-fiddled value)</span>
-<a name="l-67"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">addr</span><span class="p">;</span>
-<a name="l-68"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">127</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wdata</span><span class="p">,</span> <span class="n">wmask</span><span class="p">,</span> <span class="n">rdata</span><span class="p">;</span>
-<a name="l-69"></a>  <span class="k">assign</span> <span class="n">addr</span>  <span class="o">=</span> <span class="p">{{</span><span class="mh">32</span><span class="o">-</span><span class="n">Aw</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="n">addr_i</span><span class="p">};</span>
-<a name="l-70"></a>  <span class="k">assign</span> <span class="n">wdata</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">128</span><span class="o">-</span><span class="n">Width</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="n">wdata_i</span><span class="p">};</span>
-<a name="l-71"></a>  <span class="k">assign</span> <span class="n">wmask</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">128</span><span class="o">-</span><span class="n">Width</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="n">wmask_i</span><span class="p">};</span>
-<a name="l-72"></a>  <span class="k">assign</span> <span class="n">rdata</span> <span class="o">=</span> <span class="p">{{</span><span class="mh">128</span><span class="o">-</span><span class="n">Width</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="n">sram_rdata</span><span class="p">};</span>
+<a name="l-67"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">addr</span><span class="p">;</span>
+<a name="l-68"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">127</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">wdata</span><span class="p">,</span> <span class="n">wmask</span><span class="p">,</span> <span class="n">rdata</span><span class="p">;</span>
+<a name="l-69"></a>  <span class="k">assign</span> <span class="n">addr</span>  <span class="o">=</span> <span class="p">{{</span><span class="mi">32</span><span class="o">-</span><span class="n">Aw</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">addr_i</span><span class="p">};</span>
+<a name="l-70"></a>  <span class="k">assign</span> <span class="n">wdata</span> <span class="o">=</span> <span class="p">{{</span><span class="mi">128</span><span class="o">-</span><span class="n">Width</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">wdata_i</span><span class="p">};</span>
+<a name="l-71"></a>  <span class="k">assign</span> <span class="n">wmask</span> <span class="o">=</span> <span class="p">{{</span><span class="mi">128</span><span class="o">-</span><span class="n">Width</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">wmask_i</span><span class="p">};</span>
+<a name="l-72"></a>  <span class="k">assign</span> <span class="n">rdata</span> <span class="o">=</span> <span class="p">{{</span><span class="mi">128</span><span class="o">-</span><span class="n">Width</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">sram_rdata</span><span class="p">};</span>
 <a name="l-73"></a>
 <a name="l-74"></a>  <span class="c1">// To inject errors, bind in an interface with bad_bit_mask as an output and assign one of the</span>
 <a name="l-75"></a>  <span class="c1">// bits in bad_bit_mask[Width-1:0] to one. The wired-OR together with an assignment to zero means</span>
 <a name="l-76"></a>  <span class="c1">// this acts like a weak pull-down.</span>
-<a name="l-77"></a>  <span class="k">wor</span> <span class="p">[</span><span class="mh">127</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">bad_bit_mask</span><span class="p">;</span>
-<a name="l-78"></a>  <span class="k">assign</span> <span class="n">bad_bit_mask</span> <span class="o">=</span> <span class="mh">128</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-77"></a>  <span class="kt">wor</span> <span class="p">[</span><span class="mi">127</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">bad_bit_mask</span><span class="p">;</span>
+<a name="l-78"></a>  <span class="k">assign</span> <span class="n">bad_bit_mask</span> <span class="o">=</span> <span class="mb">128&#39;b0</span><span class="p">;</span>
 <a name="l-79"></a>
 <a name="l-80"></a>  <span class="k">assign</span> <span class="n">rdata_o</span> <span class="o">=</span> <span class="n">sram_rdata</span> <span class="o">^</span> <span class="n">bad_bit_mask</span><span class="p">;</span>
 <a name="l-81"></a><span class="no">`endif</span> <span class="c1">// VERILATOR</span>

@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,12 +18,12 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr594.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr594.v</a>
 defines: 
 time_elapsed: 0.006s
-ram usage: 10456 KB
+ram usage: 10500 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr594.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr594.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr594.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/pr594.v:11</a>:5-34:
    | 
    |        $display(&#34;RSData=%h&#34;, RSData);
@@ -46,17 +46,21 @@ loop_body:
 loop_exit:
     halt
 loop_continue:
-    %concat = const i8 0
+    %6 = const i168 70564227392281261150626194441720167532866358753627
     %J.shadow.ld1 = ld i32* %J.shadow
-    %6 = const i32 8
-    %7 = smul i32 %J.shadow.ld1, %6
-    %8 = shr i8 %concat, i8 %concat, i32 %7
-    drv i8$ %RSData, %8, %3
+    %7 = const i32 8
+    %8 = smul i32 %J.shadow.ld1, %7
+    %9 = const i168 0
+    %10 = shr i168 %6, i168 %9, i32 %8
+    %11 = const i168 255
+    %12 = and i168 %10, %11
+    %13 = exts i8, i168 %12, 0, 8
+    drv i8$ %RSData, %13, %3
     %J.shadow.ld2 = ld i32* %J.shadow
-    %9 = const i32 1
-    %10 = sub i32 %J.shadow.ld2, %9
-    drv i32$ %J, %10, %3
-    st i32* %J.shadow, %10
+    %14 = const i32 1
+    %15 = sub i32 %J.shadow.ld2, %14
+    drv i32$ %J, %15, %3
+    st i32* %J.shadow, %15
     br %loop_body
 }
 
@@ -66,7 +70,6 @@ entity @test () -&gt; () {
     %1 = const i8 0
     %RSData = sig i8 %1
     inst %test.initial.92.0 () -&gt; (i32$ %J, i8$ %RSData)
-    halt
 }
 
 </pre>

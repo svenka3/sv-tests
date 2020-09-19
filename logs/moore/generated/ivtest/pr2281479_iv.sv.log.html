@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,37 +17,37 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2281479.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2281479.v</a>
 defines: 
-time_elapsed: 0.011s
-ram usage: 10820 KB
+time_elapsed: 0.009s
+ram usage: 10844 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2281479.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2281479.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2281479.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/pr2281479.v:19</a>:7-58:
    | 
    |       $display(&#34;FAILED 2&#39;b10 case, found case %d&#34;, where);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2281479.v.html#l-25" target="file-frame">third_party/tests/ivtest/ivltests/pr2281479.v:25</a>:7-62:
    | 
    |       $display(&#34;FAILED 2&#39;bx? case (1), found case %d&#34;, where);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2281479.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/pr2281479.v:30</a>:7-62:
    | 
    |       $display(&#34;FAILED 2&#39;bx? case (2), found case %d&#34;, where);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2281479.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/pr2281479.v:36</a>:7-58:
    | 
    |       $display(&#34;FAILED 2&#39;b?? case, found case %d&#34;, where);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2281479.v.html#l-40" target="file-frame">third_party/tests/ivtest/ivltests/pr2281479.v:40</a>:17-35:
    | 
    |     if (passed) $display(&#34;PASSED&#34;);
@@ -58,10 +58,10 @@ init:
     %in.prb = prb i2$ %in
     wait %check, %in
 check:
-    %impledge = neq i2 %in.prb, %in.prb
+    %in.prb1 = prb i2$ %in
+    %impledge = neq i2 %in.prb, %in.prb1
     br %impledge, %init, %event
 event:
-    %in.prb1 = prb i2$ %in
     %0 = const i2 2
     %1 = eq i2 %in.prb1, %0
     %2 = const time 0s 1e
@@ -180,7 +180,6 @@ entity @top () -&gt; () {
     %where = sig i32 %2
     inst %top.always.59.0 (i2$ %in) -&gt; (i32$ %where)
     inst %top.initial.251.0 (i32$ %where) -&gt; (i1$ %passed, i2$ %in)
-    halt
 }
 
 </pre>

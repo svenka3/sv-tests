@@ -323,53 +323,53 @@
 <a name="l-13"></a>
 <a name="l-14"></a><span class="k">module</span> <span class="n">scr1_pipe_lsu</span> <span class="p">(</span>
 <a name="l-15"></a>    <span class="c1">// Common</span>
-<a name="l-16"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">rst_n</span><span class="p">,</span>
-<a name="l-17"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">clk</span><span class="p">,</span>
+<a name="l-16"></a>    <span class="k">input</span>   <span class="kt">logic</span>                               <span class="n">rst_n</span><span class="p">,</span>
+<a name="l-17"></a>    <span class="k">input</span>   <span class="kt">logic</span>                               <span class="n">clk</span><span class="p">,</span>
 <a name="l-18"></a>
 <a name="l-19"></a>    <span class="c1">// EXU &lt;-&gt; LSU interface</span>
-<a name="l-20"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">exu2lsu_req</span><span class="p">,</span>            <span class="c1">// Request to LSU</span>
+<a name="l-20"></a>    <span class="k">input</span>   <span class="kt">logic</span>                               <span class="n">exu2lsu_req</span><span class="p">,</span>            <span class="c1">// Request to LSU</span>
 <a name="l-21"></a>    <span class="k">input</span>   <span class="n">type_scr1_lsu_cmd_sel_e</span>             <span class="n">exu2lsu_cmd</span><span class="p">,</span>            <span class="c1">// LSU command</span>
-<a name="l-22"></a>    <span class="k">input</span>   <span class="k">logic</span> <span class="p">[</span><span class="no">`SCR1_XLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">exu2lsu_addr</span><span class="p">,</span>           <span class="c1">// Address of DMEM</span>
-<a name="l-23"></a>    <span class="k">input</span>   <span class="k">logic</span> <span class="p">[</span><span class="no">`SCR1_XLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">exu2lsu_s_data</span><span class="p">,</span>         <span class="c1">// Data for store</span>
-<a name="l-24"></a>    <span class="k">output</span>  <span class="k">logic</span>                               <span class="n">lsu2exu_rdy</span><span class="p">,</span>            <span class="c1">// LSU received DMEM response</span>
-<a name="l-25"></a>    <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">`SCR1_XLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">lsu2exu_l_data</span><span class="p">,</span>         <span class="c1">// Load data</span>
-<a name="l-26"></a>    <span class="k">output</span>  <span class="k">logic</span>                               <span class="n">lsu2exu_exc</span><span class="p">,</span>            <span class="c1">// Exception from LSU</span>
+<a name="l-22"></a>    <span class="k">input</span>   <span class="kt">logic</span> <span class="p">[</span><span class="no">`SCR1_XLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">exu2lsu_addr</span><span class="p">,</span>           <span class="c1">// Address of DMEM</span>
+<a name="l-23"></a>    <span class="k">input</span>   <span class="kt">logic</span> <span class="p">[</span><span class="no">`SCR1_XLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">exu2lsu_s_data</span><span class="p">,</span>         <span class="c1">// Data for store</span>
+<a name="l-24"></a>    <span class="k">output</span>  <span class="kt">logic</span>                               <span class="n">lsu2exu_rdy</span><span class="p">,</span>            <span class="c1">// LSU received DMEM response</span>
+<a name="l-25"></a>    <span class="k">output</span>  <span class="kt">logic</span> <span class="p">[</span><span class="no">`SCR1_XLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">lsu2exu_l_data</span><span class="p">,</span>         <span class="c1">// Load data</span>
+<a name="l-26"></a>    <span class="k">output</span>  <span class="kt">logic</span>                               <span class="n">lsu2exu_exc</span><span class="p">,</span>            <span class="c1">// Exception from LSU</span>
 <a name="l-27"></a>    <span class="k">output</span>  <span class="n">type_scr1_exc_code_e</span>                <span class="n">lsu2exu_exc_code</span><span class="p">,</span>       <span class="c1">// Exception code</span>
 <a name="l-28"></a>
 <a name="l-29"></a>    <span class="c1">// TDU &lt;-&gt; LSU interface</span>
 <a name="l-30"></a><span class="no">`ifdef</span> <span class="n">SCR1_BRKM_EN</span>
 <a name="l-31"></a>    <span class="k">output</span>  <span class="n">type_scr1_brkm_lsu_mon_s</span>            <span class="n">lsu2tdu_d_mon</span><span class="p">,</span>
-<a name="l-32"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">tdu2lsu_i_x_req</span><span class="p">,</span>
-<a name="l-33"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">tdu2lsu_d_x_req</span><span class="p">,</span>
+<a name="l-32"></a>    <span class="k">input</span>   <span class="kt">logic</span>                               <span class="n">tdu2lsu_i_x_req</span><span class="p">,</span>
+<a name="l-33"></a>    <span class="k">input</span>   <span class="kt">logic</span>                               <span class="n">tdu2lsu_d_x_req</span><span class="p">,</span>
 <a name="l-34"></a><span class="no">`endif</span> <span class="c1">// SCR1_BRKM_EN</span>
 <a name="l-35"></a>
 <a name="l-36"></a>    <span class="c1">// Data memory interface</span>
-<a name="l-37"></a>    <span class="k">output</span>  <span class="k">logic</span>                               <span class="n">lsu2dmem_req</span><span class="p">,</span>
+<a name="l-37"></a>    <span class="k">output</span>  <span class="kt">logic</span>                               <span class="n">lsu2dmem_req</span><span class="p">,</span>
 <a name="l-38"></a>    <span class="k">output</span>  <span class="n">type_scr1_mem_cmd_e</span>                 <span class="n">lsu2dmem_cmd</span><span class="p">,</span>
 <a name="l-39"></a>    <span class="k">output</span>  <span class="n">type_scr1_mem_width_e</span>               <span class="n">lsu2dmem_width</span><span class="p">,</span>
-<a name="l-40"></a>    <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">`SCR1_DMEM_AWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>       <span class="n">lsu2dmem_addr</span><span class="p">,</span>
-<a name="l-41"></a>    <span class="k">output</span>  <span class="k">logic</span> <span class="p">[</span><span class="no">`SCR1_DMEM_DWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>       <span class="n">lsu2dmem_wdata</span><span class="p">,</span>
-<a name="l-42"></a>    <span class="k">input</span>   <span class="k">logic</span>                               <span class="n">dmem2lsu_req_ack</span><span class="p">,</span>
-<a name="l-43"></a>    <span class="k">input</span>   <span class="k">logic</span> <span class="p">[</span><span class="no">`SCR1_DMEM_DWIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>       <span class="n">dmem2lsu_rdata</span><span class="p">,</span>
+<a name="l-40"></a>    <span class="k">output</span>  <span class="kt">logic</span> <span class="p">[</span><span class="no">`SCR1_DMEM_AWIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">lsu2dmem_addr</span><span class="p">,</span>
+<a name="l-41"></a>    <span class="k">output</span>  <span class="kt">logic</span> <span class="p">[</span><span class="no">`SCR1_DMEM_DWIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">lsu2dmem_wdata</span><span class="p">,</span>
+<a name="l-42"></a>    <span class="k">input</span>   <span class="kt">logic</span>                               <span class="n">dmem2lsu_req_ack</span><span class="p">,</span>
+<a name="l-43"></a>    <span class="k">input</span>   <span class="kt">logic</span> <span class="p">[</span><span class="no">`SCR1_DMEM_DWIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">dmem2lsu_rdata</span><span class="p">,</span>
 <a name="l-44"></a>    <span class="k">input</span>   <span class="n">type_scr1_mem_resp_e</span>                <span class="n">dmem2lsu_resp</span>
 <a name="l-45"></a><span class="p">);</span>
 <a name="l-46"></a>
 <a name="l-47"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-48"></a><span class="c1">// Local types declaration</span>
 <a name="l-49"></a><span class="c1">//-------------------------------------------------------------------------------</span>
-<a name="l-50"></a><span class="k">typedef</span> <span class="k">enum</span> <span class="k">logic</span> <span class="p">{</span><span class="n">SCR1_FSM_IDLE</span><span class="p">,</span> <span class="n">SCR1_FSM_BUSY</span><span class="p">}</span> <span class="n">type_scr1_lsu_fsm_e</span><span class="p">;</span>
+<a name="l-50"></a><span class="k">typedef</span> <span class="k">enum</span> <span class="kt">logic</span> <span class="p">{</span><span class="n">SCR1_FSM_IDLE</span><span class="p">,</span> <span class="n">SCR1_FSM_BUSY</span><span class="p">}</span> <span class="n">type_scr1_lsu_fsm_e</span><span class="p">;</span>
 <a name="l-51"></a>
 <a name="l-52"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-53"></a><span class="c1">// Local signals declaration</span>
 <a name="l-54"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-55"></a><span class="n">type_scr1_lsu_fsm_e</span>         <span class="n">fsm</span><span class="p">;</span>
 <a name="l-56"></a><span class="n">type_scr1_lsu_cmd_sel_e</span>     <span class="n">lsu_cmd_r</span><span class="p">;</span>
-<a name="l-57"></a><span class="k">logic</span>                       <span class="n">dmem_resp_ok</span><span class="p">;</span>
-<a name="l-58"></a><span class="k">logic</span>                       <span class="n">dmem_resp_er</span><span class="p">;</span>
-<a name="l-59"></a><span class="k">logic</span>                       <span class="n">l_misalign</span><span class="p">;</span>
-<a name="l-60"></a><span class="k">logic</span>                       <span class="n">s_misalign</span><span class="p">;</span>
+<a name="l-57"></a><span class="kt">logic</span>                       <span class="n">dmem_resp_ok</span><span class="p">;</span>
+<a name="l-58"></a><span class="kt">logic</span>                       <span class="n">dmem_resp_er</span><span class="p">;</span>
+<a name="l-59"></a><span class="kt">logic</span>                       <span class="n">l_misalign</span><span class="p">;</span>
+<a name="l-60"></a><span class="kt">logic</span>                       <span class="n">s_misalign</span><span class="p">;</span>
 <a name="l-61"></a><span class="no">`ifdef</span> <span class="n">SCR1_BRKM_EN</span>
-<a name="l-62"></a><span class="k">logic</span>                       <span class="n">lsu_hwbrk</span><span class="p">;</span>
+<a name="l-62"></a><span class="kt">logic</span>                       <span class="n">lsu_hwbrk</span><span class="p">;</span>
 <a name="l-63"></a><span class="no">`endif</span> <span class="c1">// SCR1_BRKM_EN</span>
 <a name="l-64"></a>
 <a name="l-65"></a>
@@ -408,15 +408,15 @@
 <a name="l-98"></a><span class="c1">// Load / store address misaligned exception</span>
 <a name="l-99"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-100"></a><span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-101"></a>    <span class="n">l_misalign</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-102"></a>    <span class="n">s_misalign</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-101"></a>    <span class="n">l_misalign</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-102"></a>    <span class="n">s_misalign</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-103"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">exu2lsu_req</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-104"></a>        <span class="k">case</span> <span class="p">(</span><span class="n">exu2lsu_cmd</span><span class="p">)</span>
 <a name="l-105"></a>            <span class="n">SCR1_LSU_CMD_LH</span><span class="p">,</span>
-<a name="l-106"></a>            <span class="n">SCR1_LSU_CMD_LHU</span>    <span class="o">:</span> <span class="n">l_misalign</span> <span class="o">=</span> <span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-107"></a>            <span class="n">SCR1_LSU_CMD_LW</span>     <span class="o">:</span> <span class="n">l_misalign</span> <span class="o">=</span> <span class="o">|</span><span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-108"></a>            <span class="n">SCR1_LSU_CMD_SH</span>     <span class="o">:</span> <span class="n">s_misalign</span> <span class="o">=</span> <span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-109"></a>            <span class="n">SCR1_LSU_CMD_SW</span>     <span class="o">:</span> <span class="n">s_misalign</span> <span class="o">=</span> <span class="o">|</span><span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-106"></a>            <span class="n">SCR1_LSU_CMD_LHU</span>    <span class="o">:</span> <span class="n">l_misalign</span> <span class="o">=</span> <span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-107"></a>            <span class="n">SCR1_LSU_CMD_LW</span>     <span class="o">:</span> <span class="n">l_misalign</span> <span class="o">=</span> <span class="o">|</span><span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-108"></a>            <span class="n">SCR1_LSU_CMD_SH</span>     <span class="o">:</span> <span class="n">s_misalign</span> <span class="o">=</span> <span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-109"></a>            <span class="n">SCR1_LSU_CMD_SW</span>     <span class="o">:</span> <span class="n">s_misalign</span> <span class="o">=</span> <span class="o">|</span><span class="n">exu2lsu_addr</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
 <a name="l-110"></a>            <span class="k">default</span> <span class="o">:</span> <span class="k">begin</span> <span class="k">end</span>
 <a name="l-111"></a>        <span class="k">endcase</span> <span class="c1">// exu2lsu_cmd</span>
 <a name="l-112"></a>    <span class="k">end</span>
@@ -436,7 +436,7 @@
 <a name="l-126"></a><span class="c1">// Exception code</span>
 <a name="l-127"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-128"></a><span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-129"></a>    <span class="k">case</span> <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span>
+<a name="l-129"></a>    <span class="k">case</span> <span class="p">(</span><span class="mb">1&#39;b1</span><span class="p">)</span>
 <a name="l-130"></a>        <span class="n">dmem_resp_er</span>    <span class="o">:</span> <span class="k">begin</span>
 <a name="l-131"></a>            <span class="k">case</span> <span class="p">(</span><span class="n">lsu_cmd_r</span><span class="p">)</span>
 <a name="l-132"></a>                <span class="n">SCR1_LSU_CMD_LB</span><span class="p">,</span>
@@ -466,10 +466,10 @@
 <a name="l-156"></a><span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-157"></a>    <span class="k">case</span> <span class="p">(</span><span class="n">lsu_cmd_r</span><span class="p">)</span>
 <a name="l-158"></a>        <span class="n">SCR1_LSU_CMD_LW</span>     <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="n">dmem2lsu_rdata</span><span class="p">;</span>
-<a name="l-159"></a>        <span class="n">SCR1_LSU_CMD_LH</span>     <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="n">$signed</span>  <span class="p">(</span><span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
-<a name="l-160"></a>        <span class="n">SCR1_LSU_CMD_LHU</span>    <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-161"></a>        <span class="n">SCR1_LSU_CMD_LB</span>     <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="n">$signed</span>  <span class="p">(</span><span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
-<a name="l-162"></a>        <span class="n">SCR1_LSU_CMD_LBU</span>    <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-159"></a>        <span class="n">SCR1_LSU_CMD_LH</span>     <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="p">$</span><span class="kt">signed</span>  <span class="p">(</span><span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mi">15</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span>
+<a name="l-160"></a>        <span class="n">SCR1_LSU_CMD_LHU</span>    <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mi">15</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-161"></a>        <span class="n">SCR1_LSU_CMD_LB</span>     <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="p">$</span><span class="kt">signed</span>  <span class="p">(</span><span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span>
+<a name="l-162"></a>        <span class="n">SCR1_LSU_CMD_LBU</span>    <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="n">dmem2lsu_rdata</span><span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
 <a name="l-163"></a>        <span class="k">default</span>             <span class="o">:</span> <span class="n">lsu2exu_l_data</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-164"></a>    <span class="k">endcase</span> <span class="c1">// lsu_cmd_r</span>
 <a name="l-165"></a><span class="k">end</span>
@@ -561,44 +561,44 @@
 <a name="l-251"></a>
 <a name="l-252"></a><span class="n">SCR1_SVA_LSU_XCHECK_CTRL</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-253"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
-<a name="l-254"></a>    <span class="o">!</span><span class="n">$isunknown</span><span class="p">({</span><span class="n">exu2lsu_req</span><span class="p">,</span> <span class="n">fsm</span>
+<a name="l-254"></a>    <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">({</span><span class="n">exu2lsu_req</span><span class="p">,</span> <span class="n">fsm</span>
 <a name="l-255"></a><span class="no">`ifdef</span> <span class="n">SCR1_BRKM_EN</span>
 <a name="l-256"></a>        <span class="p">,</span> <span class="n">tdu2lsu_i_x_req</span><span class="p">,</span> <span class="n">tdu2lsu_d_x_req</span>
 <a name="l-257"></a><span class="no">`endif</span> <span class="c1">// SCR1_BRKM_EN</span>
 <a name="l-258"></a>    <span class="p">})</span>
-<a name="l-259"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;LSU Error: unknown control value&quot;</span><span class="p">);</span>
+<a name="l-259"></a>    <span class="p">)</span> <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;LSU Error: unknown control value&quot;</span><span class="p">);</span>
 <a name="l-260"></a>
 <a name="l-261"></a><span class="n">SCR1_SVA_LSU_XCHECK_CMD</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-262"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
-<a name="l-263"></a>    <span class="n">exu2lsu_req</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">({</span><span class="n">exu2lsu_cmd</span><span class="p">,</span> <span class="n">exu2lsu_addr</span><span class="p">})</span>
-<a name="l-264"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;LSU Error: undefined CMD or address&quot;</span><span class="p">);</span>
+<a name="l-263"></a>    <span class="n">exu2lsu_req</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">({</span><span class="n">exu2lsu_cmd</span><span class="p">,</span> <span class="n">exu2lsu_addr</span><span class="p">})</span>
+<a name="l-264"></a>    <span class="p">)</span> <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;LSU Error: undefined CMD or address&quot;</span><span class="p">);</span>
 <a name="l-265"></a>
 <a name="l-266"></a><span class="n">SCR1_SVA_LSU_XCHECK_SDATA</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-267"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
-<a name="l-268"></a>    <span class="p">(</span><span class="n">exu2lsu_req</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">lsu2dmem_cmd</span> <span class="o">==</span> <span class="n">SCR1_MEM_CMD_WR</span><span class="p">))</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">({</span><span class="n">exu2lsu_s_data</span><span class="p">})</span>
-<a name="l-269"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;LSU Error: undefined store data&quot;</span><span class="p">);</span>
+<a name="l-268"></a>    <span class="p">(</span><span class="n">exu2lsu_req</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">lsu2dmem_cmd</span> <span class="o">==</span> <span class="n">SCR1_MEM_CMD_WR</span><span class="p">))</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">({</span><span class="n">exu2lsu_s_data</span><span class="p">})</span>
+<a name="l-269"></a>    <span class="p">)</span> <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;LSU Error: undefined store data&quot;</span><span class="p">);</span>
 <a name="l-270"></a>
 <a name="l-271"></a><span class="n">SCR1_SVA_LSU_XCHECK_EXC</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-272"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
-<a name="l-273"></a>    <span class="n">lsu2exu_exc</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">lsu2exu_exc_code</span><span class="p">)</span>
-<a name="l-274"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;LSU Error: exception code undefined&quot;</span><span class="p">);</span>
+<a name="l-273"></a>    <span class="n">lsu2exu_exc</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">(</span><span class="n">lsu2exu_exc_code</span><span class="p">)</span>
+<a name="l-274"></a>    <span class="p">)</span> <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;LSU Error: exception code undefined&quot;</span><span class="p">);</span>
 <a name="l-275"></a>
 <a name="l-276"></a><span class="c1">// Behavior checks</span>
 <a name="l-277"></a>
 <a name="l-278"></a><span class="n">SCR1_SVA_LSU_EXC_ONEHOT</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-279"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
-<a name="l-280"></a>    <span class="n">$onehot0</span><span class="p">({</span><span class="n">dmem_resp_er</span><span class="p">,</span> <span class="n">l_misalign</span><span class="p">,</span> <span class="n">s_misalign</span><span class="p">})</span>
-<a name="l-281"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;LSU Error: more than one exception at a time&quot;</span><span class="p">);</span>
+<a name="l-280"></a>    <span class="p">$</span><span class="n">onehot0</span><span class="p">({</span><span class="n">dmem_resp_er</span><span class="p">,</span> <span class="n">l_misalign</span><span class="p">,</span> <span class="n">s_misalign</span><span class="p">})</span>
+<a name="l-281"></a>    <span class="p">)</span> <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;LSU Error: more than one exception at a time&quot;</span><span class="p">);</span>
 <a name="l-282"></a>
 <a name="l-283"></a><span class="n">SCR1_SVA_LSU_UNEXPECTED_DMEM_RESP</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-284"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
 <a name="l-285"></a>    <span class="p">(</span><span class="n">fsm</span> <span class="o">==</span> <span class="n">SCR1_FSM_IDLE</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="o">~</span><span class="p">(</span><span class="n">dmem_resp_ok</span> <span class="o">|</span> <span class="n">dmem_resp_er</span><span class="p">)</span>
-<a name="l-286"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;LSU Error: not expecting memory response&quot;</span><span class="p">);</span>
+<a name="l-286"></a>    <span class="p">)</span> <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;LSU Error: not expecting memory response&quot;</span><span class="p">);</span>
 <a name="l-287"></a>
 <a name="l-288"></a><span class="n">SCR1_SVA_LSU_REQ_EXC</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-289"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
 <a name="l-290"></a>    <span class="n">lsu2exu_exc</span> <span class="o">|-&gt;</span> <span class="n">exu2lsu_req</span>
-<a name="l-291"></a>    <span class="p">)</span> <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;LSU Error: impossible exception&quot;</span><span class="p">);</span>
+<a name="l-291"></a>    <span class="p">)</span> <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;LSU Error: impossible exception&quot;</span><span class="p">);</span>
 <a name="l-292"></a>
 <a name="l-293"></a><span class="no">`ifdef</span> <span class="n">SCR1_BRKM_EN</span>
 <a name="l-294"></a><span class="n">SCR1_COV_LSU_MISALIGN_BRKPT</span> <span class="o">:</span> <span class="k">cover</span> <span class="k">property</span> <span class="p">(</span>

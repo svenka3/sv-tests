@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v.html" target="file-frame">third_party/tools/yosys/tests/asicworld/code_verilog_tutorial_simple_if.v</a>
 defines: 
 time_elapsed: 0.005s
-ram usage: 10176 KB
+ram usage: 10232 KB
 </pre>
 <pre class="log">
 
@@ -29,17 +29,17 @@ init:
     %din.prb = prb i1$ %din
     wait %check, %enable, %din
 check:
-    %impledge = neq i1 %enable.prb, %enable.prb
-    %impledge1 = neq i1 %din.prb, %din.prb
+    %enable.prb1 = prb i1$ %enable
+    %impledge = neq i1 %enable.prb, %enable.prb1
+    %din.prb1 = prb i1$ %din
+    %impledge1 = neq i1 %din.prb, %din.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %enable.prb1 = prb i1$ %enable
     %0 = const i1 0
     %1 = neq i1 %enable.prb1, %0
     br %1, %init, %if_true
 if_true:
-    %din.prb1 = prb i1$ %din
     %2 = const time 0s 1d
     drv i1$ %latch, %din.prb1, %2
     br %init
@@ -51,7 +51,6 @@ entity @simple_if () -&gt; () {
     %enable = sig i1 %0
     %din = sig i1 %0
     inst %simple_if.always.37.0 (i1$ %enable, i1$ %din) -&gt; (i1$ %latch)
-    halt
 }
 
 </pre>

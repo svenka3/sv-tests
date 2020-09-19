@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,19 +17,19 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2038048.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2038048.v</a>
 defines: 
-time_elapsed: 0.011s
-ram usage: 10936 KB
+time_elapsed: 0.008s
+ram usage: 10844 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e array_word_part_select <a href="../../../../third_party/tests/ivtest/ivltests/pr2038048.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2038048.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2038048.v.html#l-25" target="file-frame">third_party/tests/ivtest/ivltests/pr2038048.v:25</a>:16-34:
    | 
    |   #2 if (pass) $display(&#34;PASSED&#34;);
    |                ^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2038048.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/pr2038048.v:31</a>:5-100:
    | 
    |     $display(&#34;Failed: testing index %d, expected %d, got %d&#34;, Index,
@@ -103,7 +103,8 @@ init:
     %Index.prb = prb i4$ %Index
     wait %check, %Index
 check:
-    %impledge = neq i4 %Index.prb, %Index.prb
+    %Index.prb1 = prb i4$ %Index
+    %impledge = neq i4 %Index.prb, %Index.prb1
     br %impledge, %init, %event
 event:
     %0 = const i32 1
@@ -112,8 +113,8 @@ event:
     %2 = const i32 0
     %Value.prb = prb i3$ %Value
     %zext = inss i32 %2, i3 %Value.prb, 0, 3
-    %Index.prb1 = prb i4$ %Index
-    %zext1 = inss i32 %2, i4 %Index.prb1, 0, 4
+    %Index.prb2 = prb i4$ %Index
+    %zext1 = inss i32 %2, i4 %Index.prb2, 0, 4
     %3 = const i32 8
     %4 = umod i32 %zext1, %3
     %5 = neq i32 %zext, %4
@@ -147,7 +148,6 @@ entity @array_word_part_select () -&gt; () {
     drv i3$ %Value, %8, %9
     inst %array_word_part_select.initial.164.0 (i1$ %pass) -&gt; ([16 x i4]$ %Data, i4$ %Index, i32$ %i)
     inst %array_word_part_select.always.223.0 (i4$ %Index, i3$ %Value) -&gt; (i1$ %pass)
-    halt
 }
 
 </pre>

@@ -56,34 +56,34 @@
 <a href="#l-48">48</a>
 <a href="#l-49">49</a>
 <a href="#l-50">50</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="k">module</span> <span class="n">bsg_wormhole_router_output_control</span>
-<a name="l-2"></a>  <span class="p">#(</span><span class="k">parameter</span> <span class="n">input_dirs_p</span><span class="o">=-</span><span class="mh">1</span><span class="p">)</span>
+<a name="l-2"></a>  <span class="p">#(</span><span class="k">parameter</span> <span class="n">input_dirs_p</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <a name="l-3"></a>   <span class="p">(</span><span class="k">input</span> <span class="n">clk_i</span>
 <a name="l-4"></a>    <span class="p">,</span> <span class="k">input</span> <span class="n">reset_i</span>
 <a name="l-5"></a>
 <a name="l-6"></a>    <span class="c1">// this input channel has a header packet at the head of the FIFO for this output</span>
-<a name="l-7"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">reqs_i</span>
+<a name="l-7"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">reqs_i</span>
 <a name="l-8"></a>
 <a name="l-9"></a>    <span class="c1">// the input channel finished a packet on the previous cycle</span>
 <a name="l-10"></a>    <span class="c1">// note: it is up to this module to verify that the input channel was allocated to this output channel</span>
-<a name="l-11"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">release_i</span>
+<a name="l-11"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">release_i</span>
 <a name="l-12"></a>
 <a name="l-13"></a>    <span class="c1">// from input fifos</span>
-<a name="l-14"></a>    <span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">valid_i</span>
-<a name="l-15"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">yumi_o</span>
+<a name="l-14"></a>    <span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">valid_i</span>
+<a name="l-15"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">yumi_o</span>
 <a name="l-16"></a>
 <a name="l-17"></a>    <span class="c1">// channel outputs</span>
 <a name="l-18"></a>    <span class="p">,</span> <span class="k">input</span> <span class="n">ready_i</span>
 <a name="l-19"></a>    <span class="p">,</span> <span class="k">output</span> <span class="n">valid_o</span>
-<a name="l-20"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_sel_o</span>
+<a name="l-20"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_sel_o</span>
 <a name="l-21"></a>    <span class="p">);</span>
 <a name="l-22"></a>
-<a name="l-23"></a>   <span class="k">wire</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">scheduled_r</span><span class="p">,</span> <span class="n">scheduled_with_release</span><span class="p">,</span> <span class="n">scheduled_n</span><span class="p">,</span> <span class="n">grants_lo</span><span class="p">;</span>
+<a name="l-23"></a>   <span class="kt">wire</span> <span class="p">[</span><span class="n">input_dirs_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">scheduled_r</span><span class="p">,</span> <span class="n">scheduled_with_release</span><span class="p">,</span> <span class="n">scheduled_n</span><span class="p">,</span> <span class="n">grants_lo</span><span class="p">;</span>
 <a name="l-24"></a>
 <a name="l-25"></a>   <span class="n">bsg_dff_reset</span> <span class="p">#(.</span><span class="n">width_p</span><span class="p">(</span><span class="n">input_dirs_p</span><span class="p">))</span> <span class="n">scheduled_reg</span> <span class="p">(.</span><span class="n">clk_i</span><span class="p">,</span> <span class="p">.</span><span class="n">reset_i</span><span class="p">,</span> <span class="p">.</span><span class="n">data_i</span><span class="p">(</span><span class="n">scheduled_n</span><span class="p">),</span> <span class="p">.</span><span class="n">data_o</span><span class="p">(</span><span class="n">scheduled_r</span><span class="p">));</span>
 <a name="l-26"></a>
 <a name="l-27"></a>   <span class="k">assign</span> <span class="n">scheduled_with_release</span> <span class="o">=</span> <span class="n">scheduled_r</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">release_i</span><span class="p">;</span>
 <a name="l-28"></a>
-<a name="l-29"></a>   <span class="k">wire</span>                     <span class="n">free_to_schedule</span> <span class="o">=</span> <span class="o">!</span><span class="n">scheduled_with_release</span><span class="p">;</span>
+<a name="l-29"></a>   <span class="kt">wire</span>                     <span class="n">free_to_schedule</span> <span class="o">=</span> <span class="o">!</span><span class="n">scheduled_with_release</span><span class="p">;</span>
 <a name="l-30"></a>
 <a name="l-31"></a>   <span class="n">bsg_round_robin_arb</span>
 <a name="l-32"></a>     <span class="p">#(.</span><span class="n">inputs_p</span><span class="p">(</span><span class="n">input_dirs_p</span><span class="p">))</span> <span class="n">brr</span>

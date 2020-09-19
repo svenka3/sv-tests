@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/tern2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/tern2.v</a>
 defines: 
-time_elapsed: 0.006s
-ram usage: 10488 KB
+time_elapsed: 0.005s
+ram usage: 10540 KB
 </pre>
 <pre class="log">
 
@@ -30,19 +30,19 @@ init:
     %b.prb = prb i14$ %b
     wait %check, %sel, %a, %b
 check:
-    %impledge = neq i1 %sel.prb, %sel.prb
-    %impledge1 = neq i14 %a.prb, %a.prb
+    %sel.prb1 = prb i1$ %sel
+    %impledge = neq i1 %sel.prb, %sel.prb1
+    %a.prb1 = prb i14$ %a
+    %impledge1 = neq i14 %a.prb, %a.prb1
     %event_or = or i1 %impledge, %impledge1
-    %impledge2 = neq i14 %b.prb, %b.prb
+    %b.prb1 = prb i14$ %b
+    %impledge2 = neq i14 %b.prb, %b.prb1
     %event_or1 = or i1 %event_or, %impledge2
     br %event_or1, %init, %event
 event:
     %0 = exts i14$, i14$ %out, 0, 14
-    %sel.prb1 = prb i1$ %sel
     %1 = const i1 0
     %2 = neq i1 %sel.prb1, %1
-    %a.prb1 = prb i14$ %a
-    %b.prb1 = prb i14$ %b
     %3 = [i14 %b.prb1, %a.prb1]
     %4 = mux [2 x i14] %3, i1 %2
     %5 = const time 0s 1e
@@ -58,7 +58,6 @@ entity @main2 () -&gt; () {
     %a = sig i14 %1
     %b = sig i14 %1
     inst %main2.always.76.0 (i1$ %sel, i14$ %a, i14$ %b) -&gt; (i14$ %out)
-    halt
 }
 
 </pre>

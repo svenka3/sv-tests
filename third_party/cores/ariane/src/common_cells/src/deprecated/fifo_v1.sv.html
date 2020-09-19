@@ -76,26 +76,26 @@
 <a name="l-12"></a>
 <a name="l-13"></a><span class="cm">/* verilator lint_off DECLFILENAME */</span>
 <a name="l-14"></a><span class="k">module</span> <span class="n">fifo</span> <span class="p">#(</span>
-<a name="l-15"></a>    <span class="k">parameter</span> <span class="k">bit</span>          <span class="n">FALL_THROUGH</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="c1">// fifo is in fall-through mode</span>
-<a name="l-16"></a>    <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">DATA_WIDTH</span>   <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>   <span class="c1">// default data width if the fifo is of type logic</span>
-<a name="l-17"></a>    <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">DEPTH</span>        <span class="o">=</span> <span class="mh">8</span><span class="p">,</span>    <span class="c1">// depth can be arbitrary from 0 to 2**32</span>
-<a name="l-18"></a>    <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">THRESHOLD</span>    <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>    <span class="c1">// fill count until when to assert threshold_o</span>
-<a name="l-19"></a>    <span class="k">parameter</span> <span class="k">type</span> <span class="n">dtype</span>                <span class="o">=</span> <span class="k">logic</span> <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>
+<a name="l-15"></a>    <span class="k">parameter</span> <span class="kt">bit</span>          <span class="n">FALL_THROUGH</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">,</span> <span class="c1">// fifo is in fall-through mode</span>
+<a name="l-16"></a>    <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">DATA_WIDTH</span>   <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>   <span class="c1">// default data width if the fifo is of type logic</span>
+<a name="l-17"></a>    <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">DEPTH</span>        <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>    <span class="c1">// depth can be arbitrary from 0 to 2**32</span>
+<a name="l-18"></a>    <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">THRESHOLD</span>    <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>    <span class="c1">// fill count until when to assert threshold_o</span>
+<a name="l-19"></a>    <span class="k">parameter</span> <span class="kt">type</span> <span class="n">dtype</span>                <span class="o">=</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>
 <a name="l-20"></a><span class="p">)(</span>
-<a name="l-21"></a>    <span class="k">input</span>  <span class="k">logic</span>  <span class="n">clk_i</span><span class="p">,</span>            <span class="c1">// Clock</span>
-<a name="l-22"></a>    <span class="k">input</span>  <span class="k">logic</span>  <span class="n">rst_ni</span><span class="p">,</span>           <span class="c1">// Asynchronous reset active low</span>
-<a name="l-23"></a>    <span class="k">input</span>  <span class="k">logic</span>  <span class="n">flush_i</span><span class="p">,</span>          <span class="c1">// flush the queue</span>
-<a name="l-24"></a>    <span class="k">input</span>  <span class="k">logic</span>  <span class="n">testmode_i</span><span class="p">,</span>       <span class="c1">// test_mode to bypass clock gating</span>
+<a name="l-21"></a>    <span class="k">input</span>  <span class="kt">logic</span>  <span class="n">clk_i</span><span class="p">,</span>            <span class="c1">// Clock</span>
+<a name="l-22"></a>    <span class="k">input</span>  <span class="kt">logic</span>  <span class="n">rst_ni</span><span class="p">,</span>           <span class="c1">// Asynchronous reset active low</span>
+<a name="l-23"></a>    <span class="k">input</span>  <span class="kt">logic</span>  <span class="n">flush_i</span><span class="p">,</span>          <span class="c1">// flush the queue</span>
+<a name="l-24"></a>    <span class="k">input</span>  <span class="kt">logic</span>  <span class="n">testmode_i</span><span class="p">,</span>       <span class="c1">// test_mode to bypass clock gating</span>
 <a name="l-25"></a>    <span class="c1">// status flags</span>
-<a name="l-26"></a>    <span class="k">output</span> <span class="k">logic</span>  <span class="n">full_o</span><span class="p">,</span>           <span class="c1">// queue is full</span>
-<a name="l-27"></a>    <span class="k">output</span> <span class="k">logic</span>  <span class="n">empty_o</span><span class="p">,</span>          <span class="c1">// queue is empty</span>
-<a name="l-28"></a>    <span class="k">output</span> <span class="k">logic</span>  <span class="n">threshold_o</span><span class="p">,</span>      <span class="c1">// the FIFO is above the specified threshold</span>
+<a name="l-26"></a>    <span class="k">output</span> <span class="kt">logic</span>  <span class="n">full_o</span><span class="p">,</span>           <span class="c1">// queue is full</span>
+<a name="l-27"></a>    <span class="k">output</span> <span class="kt">logic</span>  <span class="n">empty_o</span><span class="p">,</span>          <span class="c1">// queue is empty</span>
+<a name="l-28"></a>    <span class="k">output</span> <span class="kt">logic</span>  <span class="n">threshold_o</span><span class="p">,</span>      <span class="c1">// the FIFO is above the specified threshold</span>
 <a name="l-29"></a>    <span class="c1">// as long as the queue is not full we can push new data</span>
 <a name="l-30"></a>    <span class="k">input</span>  <span class="n">dtype</span>  <span class="n">data_i</span><span class="p">,</span>           <span class="c1">// data to push into the queue</span>
-<a name="l-31"></a>    <span class="k">input</span>  <span class="k">logic</span>  <span class="n">push_i</span><span class="p">,</span>           <span class="c1">// data is valid and can be pushed to the queue</span>
+<a name="l-31"></a>    <span class="k">input</span>  <span class="kt">logic</span>  <span class="n">push_i</span><span class="p">,</span>           <span class="c1">// data is valid and can be pushed to the queue</span>
 <a name="l-32"></a>    <span class="c1">// as long as the queue is not empty we can pop new elements</span>
 <a name="l-33"></a>    <span class="k">output</span> <span class="n">dtype</span>  <span class="n">data_o</span><span class="p">,</span>           <span class="c1">// output data</span>
-<a name="l-34"></a>    <span class="k">input</span>  <span class="k">logic</span>  <span class="n">pop_i</span>             <span class="c1">// pop head from queue</span>
+<a name="l-34"></a>    <span class="k">input</span>  <span class="kt">logic</span>  <span class="n">pop_i</span>             <span class="c1">// pop head from queue</span>
 <a name="l-35"></a><span class="p">);</span>
 <a name="l-36"></a>    <span class="n">fifo_v2</span> <span class="p">#(</span>
 <a name="l-37"></a>        <span class="p">.</span><span class="n">FALL_THROUGH</span> <span class="p">(</span> <span class="n">FALL_THROUGH</span> <span class="p">),</span>

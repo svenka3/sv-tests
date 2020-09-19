@@ -59,19 +59,19 @@
 <a href="#l-51">51</a>
 <a href="#l-52">52</a>
 <a href="#l-53">53</a>
-<a href="#l-54">54</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="k">class</span> <span class="n">monitor</span> <span class="k">extends</span> <span class="n">uvm_monitor</span><span class="p">;</span>
+<a href="#l-54">54</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="kd">class</span> <span class="nc">monitor</span> <span class="kd">extends</span> <span class="nc">uvm_monitor</span><span class="p">;</span>
 <a name="l-2"></a>    <span class="n">input_vif</span>  <span class="n">vif</span><span class="p">;</span>
-<a name="l-3"></a>    <span class="k">event</span> <span class="n">begin_record</span><span class="p">,</span> <span class="n">end_record</span><span class="p">;</span>
+<a name="l-3"></a>    <span class="kt">event</span> <span class="n">begin_record</span><span class="p">,</span> <span class="n">end_record</span><span class="p">;</span>
 <a name="l-4"></a>    <span class="n">packet_in</span> <span class="n">tr</span><span class="p">;</span>
 <a name="l-5"></a>    <span class="n">uvm_analysis_port</span> <span class="p">#(</span><span class="n">packet_in</span><span class="p">)</span> <span class="n">item_collected_port</span><span class="p">;</span>
 <a name="l-6"></a>    <span class="no">`uvm_component_utils</span><span class="p">(</span><span class="n">monitor</span><span class="p">)</span>
 <a name="l-7"></a>   
-<a name="l-8"></a>    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="k">string</span> <span class="n">name</span><span class="p">,</span> <span class="n">uvm_component</span> <span class="n">parent</span><span class="p">);</span>
+<a name="l-8"></a>    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="n">uvm_component</span> <span class="n">parent</span><span class="p">);</span>
 <a name="l-9"></a>        <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">);</span>
 <a name="l-10"></a>        <span class="n">item_collected_port</span> <span class="o">=</span> <span class="k">new</span> <span class="p">(</span><span class="s">&quot;item_collected_port&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
 <a name="l-11"></a>    <span class="k">endfunction</span>
 <a name="l-12"></a>
-<a name="l-13"></a>    <span class="k">virtual</span> <span class="k">function</span> <span class="k">void</span> <span class="n">build_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
+<a name="l-13"></a>    <span class="k">virtual</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">build_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
 <a name="l-14"></a>        <span class="k">super</span><span class="p">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
 <a name="l-15"></a>        <span class="k">assert</span><span class="p">(</span><span class="n">uvm_config_db</span><span class="p">#(</span><span class="n">input_vif</span><span class="p">)</span><span class="o">::</span><span class="n">get</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;vif&quot;</span><span class="p">,</span> <span class="n">vif</span><span class="p">));</span>
 <a name="l-16"></a>        <span class="n">tr</span> <span class="o">=</span> <span class="n">packet_in</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;tr&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
@@ -86,13 +86,13 @@
 <a name="l-25"></a>    <span class="k">endtask</span>
 <a name="l-26"></a>
 <a name="l-27"></a>    <span class="k">virtual</span> <span class="k">task</span> <span class="n">collect_transactions</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
-<a name="l-28"></a>        <span class="k">wait</span><span class="p">(</span><span class="n">vif</span><span class="p">.</span><span class="n">rst</span> <span class="o">===</span> <span class="mh">1</span><span class="p">);</span>
+<a name="l-28"></a>        <span class="k">wait</span><span class="p">(</span><span class="n">vif</span><span class="p">.</span><span class="n">rst</span> <span class="o">===</span> <span class="mi">1</span><span class="p">);</span>
 <a name="l-29"></a>        <span class="p">@(</span><span class="k">negedge</span> <span class="n">vif</span><span class="p">.</span><span class="n">rst</span><span class="p">);</span>
 <a name="l-30"></a>        
 <a name="l-31"></a>        <span class="k">forever</span> <span class="k">begin</span>
 <a name="l-32"></a>            <span class="k">do</span> <span class="k">begin</span>
 <a name="l-33"></a>                <span class="p">@(</span><span class="k">posedge</span> <span class="n">vif</span><span class="p">.</span><span class="n">clk</span><span class="p">);</span>
-<a name="l-34"></a>            <span class="k">end</span> <span class="k">while</span> <span class="p">(</span><span class="n">vif</span><span class="p">.</span><span class="n">valid</span> <span class="o">===</span> <span class="mh">0</span> <span class="o">||</span> <span class="n">vif</span><span class="p">.</span><span class="n">ready</span> <span class="o">===</span> <span class="mh">0</span><span class="p">);</span>
+<a name="l-34"></a>            <span class="k">end</span> <span class="k">while</span> <span class="p">(</span><span class="n">vif</span><span class="p">.</span><span class="n">valid</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">vif</span><span class="p">.</span><span class="n">ready</span> <span class="o">===</span> <span class="mi">0</span><span class="p">);</span>
 <a name="l-35"></a>            <span class="o">-&gt;</span> <span class="n">begin_record</span><span class="p">;</span>
 <a name="l-36"></a>            
 <a name="l-37"></a>            <span class="n">tr</span><span class="p">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">vif</span><span class="p">.</span><span class="n">A</span><span class="p">;</span>
@@ -112,7 +112,7 @@
 <a name="l-51"></a>            <span class="n">end_tr</span><span class="p">(</span><span class="n">tr</span><span class="p">);</span>
 <a name="l-52"></a>        <span class="k">end</span>
 <a name="l-53"></a>    <span class="k">endtask</span>
-<a name="l-54"></a><span class="k">endclass</span>
+<a name="l-54"></a><span class="kd">endclass</span>
 </pre></div>
 </td></tr></table>
   </body>

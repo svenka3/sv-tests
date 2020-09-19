@@ -329,8 +329,8 @@
 <a name="l-25"></a><span class="kn">import</span> <span class="nn">taiga_types::*</span><span class="p">;</span>
 <a name="l-26"></a>
 <a name="l-27"></a><span class="k">module</span> <span class="n">taiga</span> <span class="p">(</span>
-<a name="l-28"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-29"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-28"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-29"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
 <a name="l-30"></a>
 <a name="l-31"></a>        <span class="n">local_memory_interface</span><span class="p">.</span><span class="n">master</span> <span class="n">instruction_bram</span><span class="p">,</span>
 <a name="l-32"></a>        <span class="n">local_memory_interface</span><span class="p">.</span><span class="n">master</span> <span class="n">data_bram</span><span class="p">,</span>
@@ -343,26 +343,26 @@
 <a name="l-39"></a>
 <a name="l-40"></a>        <span class="n">l2_requester_interface</span><span class="p">.</span><span class="n">master</span> <span class="n">l2</span><span class="p">,</span>
 <a name="l-41"></a>
-<a name="l-42"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">timer_interrupt</span><span class="p">,</span>
-<a name="l-43"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">interrupt</span>
+<a name="l-42"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">timer_interrupt</span><span class="p">,</span>
+<a name="l-43"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">interrupt</span>
 <a name="l-44"></a>        <span class="p">);</span>
 <a name="l-45"></a>
-<a name="l-46"></a>    <span class="n">l1_arbiter_request_interface</span> <span class="n">l1_request</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]();</span>
-<a name="l-47"></a>    <span class="n">l1_arbiter_return_interface</span> <span class="n">l1_response</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]();</span>
-<a name="l-48"></a>    <span class="k">logic</span> <span class="n">sc_complete</span><span class="p">;</span>
-<a name="l-49"></a>    <span class="k">logic</span> <span class="n">sc_success</span><span class="p">;</span>
+<a name="l-46"></a>    <span class="n">l1_arbiter_request_interface</span> <span class="n">l1_request</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]();</span>
+<a name="l-47"></a>    <span class="n">l1_arbiter_return_interface</span> <span class="n">l1_response</span><span class="p">[</span><span class="n">L1_CONNECTIONS</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]();</span>
+<a name="l-48"></a>    <span class="kt">logic</span> <span class="n">sc_complete</span><span class="p">;</span>
+<a name="l-49"></a>    <span class="kt">logic</span> <span class="n">sc_success</span><span class="p">;</span>
 <a name="l-50"></a>
 <a name="l-51"></a>    <span class="n">branch_predictor_interface</span> <span class="n">bp</span><span class="p">();</span>
 <a name="l-52"></a>    <span class="n">branch_results_t</span> <span class="n">br_results</span><span class="p">;</span>
-<a name="l-53"></a>    <span class="k">logic</span> <span class="n">branch_flush</span><span class="p">;</span>
-<a name="l-54"></a>    <span class="k">logic</span> <span class="n">potential_branch_exception</span><span class="p">;</span>
+<a name="l-53"></a>    <span class="kt">logic</span> <span class="n">branch_flush</span><span class="p">;</span>
+<a name="l-54"></a>    <span class="kt">logic</span> <span class="n">potential_branch_exception</span><span class="p">;</span>
 <a name="l-55"></a>    <span class="n">exception_packet_t</span> <span class="n">br_exception</span><span class="p">;</span>
-<a name="l-56"></a>    <span class="k">logic</span> <span class="n">branch_exception_is_jump</span><span class="p">;</span>
+<a name="l-56"></a>    <span class="kt">logic</span> <span class="n">branch_exception_is_jump</span><span class="p">;</span>
 <a name="l-57"></a>
 <a name="l-58"></a>    <span class="n">ras_interface</span> <span class="n">ras</span><span class="p">();</span>
 <a name="l-59"></a>
 <a name="l-60"></a>    <span class="n">issue_packet_t</span> <span class="n">issue</span><span class="p">;</span>
-<a name="l-61"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rs_data</span> <span class="p">[</span><span class="n">REGFILE_READ_PORTS</span><span class="p">];</span>
+<a name="l-61"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rs_data</span> <span class="p">[</span><span class="n">REGFILE_READ_PORTS</span><span class="p">];</span>
 <a name="l-62"></a>
 <a name="l-63"></a>
 <a name="l-64"></a>    <span class="n">alu_inputs_t</span> <span class="n">alu_inputs</span><span class="p">;</span>
@@ -373,10 +373,10 @@
 <a name="l-69"></a>    <span class="n">gc_inputs_t</span> <span class="n">gc_inputs</span><span class="p">;</span>
 <a name="l-70"></a>
 <a name="l-71"></a>    <span class="n">unit_issue_interface</span> <span class="n">unit_issue</span> <span class="p">[</span><span class="n">NUM_UNITS</span><span class="p">]();</span>
-<a name="l-72"></a>    <span class="k">logic</span> <span class="n">alu_issued</span><span class="p">;</span>
+<a name="l-72"></a>    <span class="kt">logic</span> <span class="n">alu_issued</span><span class="p">;</span>
 <a name="l-73"></a>
 <a name="l-74"></a>    <span class="n">exception_packet_t</span>  <span class="n">ls_exception</span><span class="p">;</span>
-<a name="l-75"></a>    <span class="k">logic</span> <span class="n">ls_exception_is_store</span><span class="p">;</span>
+<a name="l-75"></a>    <span class="kt">logic</span> <span class="n">ls_exception_is_store</span><span class="p">;</span>
 <a name="l-76"></a>
 <a name="l-77"></a>    <span class="n">unit_writeback_interface</span> <span class="n">unit_wb</span>  <span class="p">[</span><span class="n">NUM_WB_UNITS</span><span class="p">]();</span>
 <a name="l-78"></a>
@@ -385,104 +385,104 @@
 <a name="l-81"></a>
 <a name="l-82"></a>    <span class="n">tlb_interface</span> <span class="n">itlb</span><span class="p">();</span>
 <a name="l-83"></a>    <span class="n">tlb_interface</span> <span class="n">dtlb</span><span class="p">();</span>
-<a name="l-84"></a>    <span class="k">logic</span> <span class="n">tlb_on</span><span class="p">;</span>
-<a name="l-85"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">ASIDLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">asid</span><span class="p">;</span>
+<a name="l-84"></a>    <span class="kt">logic</span> <span class="n">tlb_on</span><span class="p">;</span>
+<a name="l-85"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">ASIDLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">asid</span><span class="p">;</span>
 <a name="l-86"></a>
 <a name="l-87"></a>    <span class="c1">//Instruction ID/Metadata</span>
 <a name="l-88"></a>        <span class="c1">//ID issuing</span>
 <a name="l-89"></a>    <span class="n">id_t</span> <span class="n">pc_id</span><span class="p">;</span>
-<a name="l-90"></a>    <span class="k">logic</span> <span class="n">pc_id_available</span><span class="p">;</span>
-<a name="l-91"></a>    <span class="k">logic</span> <span class="n">pc_id_assigned</span><span class="p">;</span>
-<a name="l-92"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">if_pc</span><span class="p">;</span>
+<a name="l-90"></a>    <span class="kt">logic</span> <span class="n">pc_id_available</span><span class="p">;</span>
+<a name="l-91"></a>    <span class="kt">logic</span> <span class="n">pc_id_assigned</span><span class="p">;</span>
+<a name="l-92"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">if_pc</span><span class="p">;</span>
 <a name="l-93"></a>        <span class="c1">//Fetch stage</span>
 <a name="l-94"></a>    <span class="n">id_t</span> <span class="n">fetch_id</span><span class="p">;</span>
-<a name="l-95"></a>    <span class="k">logic</span> <span class="n">fetch_complete</span><span class="p">;</span>
-<a name="l-96"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">fetch_instruction</span><span class="p">;</span>
-<a name="l-97"></a>    <span class="k">logic</span> <span class="n">fetch_address_valid</span><span class="p">;</span>
+<a name="l-95"></a>    <span class="kt">logic</span> <span class="n">fetch_complete</span><span class="p">;</span>
+<a name="l-96"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">fetch_instruction</span><span class="p">;</span>
+<a name="l-97"></a>    <span class="kt">logic</span> <span class="n">fetch_address_valid</span><span class="p">;</span>
 <a name="l-98"></a>        <span class="c1">//Decode stage</span>
-<a name="l-99"></a>    <span class="k">logic</span> <span class="n">decode_advance</span><span class="p">;</span>
+<a name="l-99"></a>    <span class="kt">logic</span> <span class="n">decode_advance</span><span class="p">;</span>
 <a name="l-100"></a>    <span class="n">decode_packet_t</span> <span class="n">decode</span><span class="p">;</span>
 <a name="l-101"></a>        <span class="c1">//Issue stage</span>
 <a name="l-102"></a>    <span class="n">id_t</span> <span class="n">rs_id</span> <span class="p">[</span><span class="n">REGFILE_READ_PORTS</span><span class="p">];</span>
-<a name="l-103"></a>    <span class="k">logic</span> <span class="n">rs_inuse</span> <span class="p">[</span><span class="n">REGFILE_READ_PORTS</span><span class="p">];</span>
-<a name="l-104"></a>    <span class="k">logic</span> <span class="n">rs_id_inuse</span> <span class="p">[</span><span class="n">REGFILE_READ_PORTS</span><span class="p">];</span>
+<a name="l-103"></a>    <span class="kt">logic</span> <span class="n">rs_inuse</span> <span class="p">[</span><span class="n">REGFILE_READ_PORTS</span><span class="p">];</span>
+<a name="l-104"></a>    <span class="kt">logic</span> <span class="n">rs_id_inuse</span> <span class="p">[</span><span class="n">REGFILE_READ_PORTS</span><span class="p">];</span>
 <a name="l-105"></a>        <span class="c1">//Branch predictor</span>
 <a name="l-106"></a>    <span class="n">branch_metadata_t</span> <span class="n">branch_metadata_if</span><span class="p">;</span>
 <a name="l-107"></a>    <span class="n">branch_metadata_t</span> <span class="n">branch_metadata_ex</span><span class="p">;</span>
 <a name="l-108"></a>        <span class="c1">//ID freeing</span>
-<a name="l-109"></a>    <span class="k">logic</span> <span class="n">store_complete</span><span class="p">;</span>
+<a name="l-109"></a>    <span class="kt">logic</span> <span class="n">store_complete</span><span class="p">;</span>
 <a name="l-110"></a>    <span class="n">id_t</span> <span class="n">store_id</span><span class="p">;</span>
-<a name="l-111"></a>    <span class="k">logic</span> <span class="n">branch_complete</span><span class="p">;</span>
+<a name="l-111"></a>    <span class="kt">logic</span> <span class="n">branch_complete</span><span class="p">;</span>
 <a name="l-112"></a>    <span class="n">id_t</span> <span class="n">branch_id</span><span class="p">;</span>
-<a name="l-113"></a>    <span class="k">logic</span> <span class="n">system_op_or_exception_complete</span><span class="p">;</span>
-<a name="l-114"></a>    <span class="k">logic</span> <span class="n">exception_with_rd_complete</span><span class="p">;</span>
+<a name="l-113"></a>    <span class="kt">logic</span> <span class="n">system_op_or_exception_complete</span><span class="p">;</span>
+<a name="l-114"></a>    <span class="kt">logic</span> <span class="n">exception_with_rd_complete</span><span class="p">;</span>
 <a name="l-115"></a>    <span class="n">id_t</span> <span class="n">system_op_or_exception_id</span><span class="p">;</span>
-<a name="l-116"></a>    <span class="k">logic</span> <span class="n">instruction_retired</span><span class="p">;</span>
-<a name="l-117"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">MAX_COMPLETE_COUNT</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">retire_inc</span><span class="p">;</span>
+<a name="l-116"></a>    <span class="kt">logic</span> <span class="n">instruction_retired</span><span class="p">;</span>
+<a name="l-117"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">MAX_COMPLETE_COUNT</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">retire_inc</span><span class="p">;</span>
 <a name="l-118"></a>        <span class="c1">//Exception</span>
 <a name="l-119"></a>    <span class="n">id_t</span> <span class="n">exception_id</span><span class="p">;</span>
-<a name="l-120"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">exception_pc</span><span class="p">;</span>
+<a name="l-120"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">exception_pc</span><span class="p">;</span>
 <a name="l-121"></a>
 <a name="l-122"></a>    <span class="c1">//Global Control</span>
-<a name="l-123"></a>    <span class="k">logic</span> <span class="n">gc_init_clear</span><span class="p">;</span>
-<a name="l-124"></a>    <span class="k">logic</span> <span class="n">gc_fetch_hold</span><span class="p">;</span>
-<a name="l-125"></a>    <span class="k">logic</span> <span class="n">gc_issue_hold</span><span class="p">;</span>
-<a name="l-126"></a>    <span class="k">logic</span> <span class="n">gc_issue_flush</span><span class="p">;</span>
-<a name="l-127"></a>    <span class="k">logic</span> <span class="n">gc_fetch_flush</span><span class="p">;</span>
-<a name="l-128"></a>    <span class="k">logic</span> <span class="n">gc_fetch_pc_override</span><span class="p">;</span>
-<a name="l-129"></a>    <span class="k">logic</span> <span class="n">gc_supress_writeback</span><span class="p">;</span>
-<a name="l-130"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">gc_fetch_pc</span><span class="p">;</span>
+<a name="l-123"></a>    <span class="kt">logic</span> <span class="n">gc_init_clear</span><span class="p">;</span>
+<a name="l-124"></a>    <span class="kt">logic</span> <span class="n">gc_fetch_hold</span><span class="p">;</span>
+<a name="l-125"></a>    <span class="kt">logic</span> <span class="n">gc_issue_hold</span><span class="p">;</span>
+<a name="l-126"></a>    <span class="kt">logic</span> <span class="n">gc_issue_flush</span><span class="p">;</span>
+<a name="l-127"></a>    <span class="kt">logic</span> <span class="n">gc_fetch_flush</span><span class="p">;</span>
+<a name="l-128"></a>    <span class="kt">logic</span> <span class="n">gc_fetch_pc_override</span><span class="p">;</span>
+<a name="l-129"></a>    <span class="kt">logic</span> <span class="n">gc_supress_writeback</span><span class="p">;</span>
+<a name="l-130"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">gc_fetch_pc</span><span class="p">;</span>
 <a name="l-131"></a>
-<a name="l-132"></a>    <span class="k">logic</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">csr_rd</span><span class="p">;</span>
+<a name="l-132"></a>    <span class="kt">logic</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">csr_rd</span><span class="p">;</span>
 <a name="l-133"></a>    <span class="n">id_t</span> <span class="n">csr_id</span><span class="p">;</span>
-<a name="l-134"></a>    <span class="k">logic</span> <span class="n">csr_done</span><span class="p">;</span>
-<a name="l-135"></a>    <span class="k">logic</span> <span class="n">ls_is_idle</span><span class="p">;</span>
+<a name="l-134"></a>    <span class="kt">logic</span> <span class="n">csr_done</span><span class="p">;</span>
+<a name="l-135"></a>    <span class="kt">logic</span> <span class="n">ls_is_idle</span><span class="p">;</span>
 <a name="l-136"></a>
 <a name="l-137"></a>    <span class="c1">//Decode Unit and Fetch Unit</span>
-<a name="l-138"></a>    <span class="k">logic</span> <span class="n">illegal_instruction</span><span class="p">;</span>
-<a name="l-139"></a>    <span class="k">logic</span> <span class="n">instruction_issued</span><span class="p">;</span>
-<a name="l-140"></a>    <span class="k">logic</span> <span class="n">gc_flush_required</span><span class="p">;</span>
+<a name="l-138"></a>    <span class="kt">logic</span> <span class="n">illegal_instruction</span><span class="p">;</span>
+<a name="l-139"></a>    <span class="kt">logic</span> <span class="n">instruction_issued</span><span class="p">;</span>
+<a name="l-140"></a>    <span class="kt">logic</span> <span class="n">gc_flush_required</span><span class="p">;</span>
 <a name="l-141"></a>
 <a name="l-142"></a>    <span class="c1">//LS</span>
 <a name="l-143"></a>    <span class="n">writeback_store_interface</span> <span class="n">wb_store</span><span class="p">();</span>
 <a name="l-144"></a>
 <a name="l-145"></a>    <span class="c1">//WB</span>
 <a name="l-146"></a>    <span class="n">id_t</span> <span class="n">ids_retiring</span> <span class="p">[</span><span class="n">COMMIT_PORTS</span><span class="p">];</span>
-<a name="l-147"></a>    <span class="k">logic</span> <span class="n">retired</span> <span class="p">[</span><span class="n">COMMIT_PORTS</span><span class="p">];</span>
-<a name="l-148"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">retired_rd_addr</span> <span class="p">[</span><span class="n">COMMIT_PORTS</span><span class="p">];</span>
+<a name="l-147"></a>    <span class="kt">logic</span> <span class="n">retired</span> <span class="p">[</span><span class="n">COMMIT_PORTS</span><span class="p">];</span>
+<a name="l-148"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">retired_rd_addr</span> <span class="p">[</span><span class="n">COMMIT_PORTS</span><span class="p">];</span>
 <a name="l-149"></a>    <span class="n">id_t</span> <span class="n">id_for_rd</span> <span class="p">[</span><span class="n">COMMIT_PORTS</span><span class="p">];</span>
 <a name="l-150"></a>
 <a name="l-151"></a>    <span class="c1">//Trace Interface Signals</span>
-<a name="l-152"></a>    <span class="k">logic</span> <span class="n">tr_operand_stall</span><span class="p">;</span>
-<a name="l-153"></a>    <span class="k">logic</span> <span class="n">tr_unit_stall</span><span class="p">;</span>
-<a name="l-154"></a>    <span class="k">logic</span> <span class="n">tr_no_id_stall</span><span class="p">;</span>
-<a name="l-155"></a>    <span class="k">logic</span> <span class="n">tr_no_instruction_stall</span><span class="p">;</span>
-<a name="l-156"></a>    <span class="k">logic</span> <span class="n">tr_other_stall</span><span class="p">;</span>
-<a name="l-157"></a>    <span class="k">logic</span> <span class="n">tr_branch_operand_stall</span><span class="p">;</span>
-<a name="l-158"></a>    <span class="k">logic</span> <span class="n">tr_alu_operand_stall</span><span class="p">;</span>
-<a name="l-159"></a>    <span class="k">logic</span> <span class="n">tr_ls_operand_stall</span><span class="p">;</span>
-<a name="l-160"></a>    <span class="k">logic</span> <span class="n">tr_div_operand_stall</span><span class="p">;</span>
+<a name="l-152"></a>    <span class="kt">logic</span> <span class="n">tr_operand_stall</span><span class="p">;</span>
+<a name="l-153"></a>    <span class="kt">logic</span> <span class="n">tr_unit_stall</span><span class="p">;</span>
+<a name="l-154"></a>    <span class="kt">logic</span> <span class="n">tr_no_id_stall</span><span class="p">;</span>
+<a name="l-155"></a>    <span class="kt">logic</span> <span class="n">tr_no_instruction_stall</span><span class="p">;</span>
+<a name="l-156"></a>    <span class="kt">logic</span> <span class="n">tr_other_stall</span><span class="p">;</span>
+<a name="l-157"></a>    <span class="kt">logic</span> <span class="n">tr_branch_operand_stall</span><span class="p">;</span>
+<a name="l-158"></a>    <span class="kt">logic</span> <span class="n">tr_alu_operand_stall</span><span class="p">;</span>
+<a name="l-159"></a>    <span class="kt">logic</span> <span class="n">tr_ls_operand_stall</span><span class="p">;</span>
+<a name="l-160"></a>    <span class="kt">logic</span> <span class="n">tr_div_operand_stall</span><span class="p">;</span>
 <a name="l-161"></a>
-<a name="l-162"></a>    <span class="k">logic</span> <span class="n">tr_alu_op</span><span class="p">;</span>
-<a name="l-163"></a>    <span class="k">logic</span> <span class="n">tr_branch_or_jump_op</span><span class="p">;</span>
-<a name="l-164"></a>    <span class="k">logic</span> <span class="n">tr_load_op</span><span class="p">;</span>
-<a name="l-165"></a>    <span class="k">logic</span> <span class="n">tr_store_op</span><span class="p">;</span>
-<a name="l-166"></a>    <span class="k">logic</span> <span class="n">tr_mul_op</span><span class="p">;</span>
-<a name="l-167"></a>    <span class="k">logic</span> <span class="n">tr_div_op</span><span class="p">;</span>
-<a name="l-168"></a>    <span class="k">logic</span> <span class="n">tr_misc_op</span><span class="p">;</span>
+<a name="l-162"></a>    <span class="kt">logic</span> <span class="n">tr_alu_op</span><span class="p">;</span>
+<a name="l-163"></a>    <span class="kt">logic</span> <span class="n">tr_branch_or_jump_op</span><span class="p">;</span>
+<a name="l-164"></a>    <span class="kt">logic</span> <span class="n">tr_load_op</span><span class="p">;</span>
+<a name="l-165"></a>    <span class="kt">logic</span> <span class="n">tr_store_op</span><span class="p">;</span>
+<a name="l-166"></a>    <span class="kt">logic</span> <span class="n">tr_mul_op</span><span class="p">;</span>
+<a name="l-167"></a>    <span class="kt">logic</span> <span class="n">tr_div_op</span><span class="p">;</span>
+<a name="l-168"></a>    <span class="kt">logic</span> <span class="n">tr_misc_op</span><span class="p">;</span>
 <a name="l-169"></a>
-<a name="l-170"></a>    <span class="k">logic</span> <span class="n">tr_instruction_issued_dec</span><span class="p">;</span>
-<a name="l-171"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tr_instruction_pc_dec</span><span class="p">;</span>
-<a name="l-172"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tr_instruction_data_dec</span><span class="p">;</span>
+<a name="l-170"></a>    <span class="kt">logic</span> <span class="n">tr_instruction_issued_dec</span><span class="p">;</span>
+<a name="l-171"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tr_instruction_pc_dec</span><span class="p">;</span>
+<a name="l-172"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tr_instruction_data_dec</span><span class="p">;</span>
 <a name="l-173"></a>
-<a name="l-174"></a>    <span class="k">logic</span> <span class="n">tr_branch_correct</span><span class="p">;</span>
-<a name="l-175"></a>    <span class="k">logic</span> <span class="n">tr_branch_misspredict</span><span class="p">;</span>
-<a name="l-176"></a>    <span class="k">logic</span> <span class="n">tr_return_correct</span><span class="p">;</span>
-<a name="l-177"></a>    <span class="k">logic</span> <span class="n">tr_return_misspredict</span><span class="p">;</span>
+<a name="l-174"></a>    <span class="kt">logic</span> <span class="n">tr_branch_correct</span><span class="p">;</span>
+<a name="l-175"></a>    <span class="kt">logic</span> <span class="n">tr_branch_misspredict</span><span class="p">;</span>
+<a name="l-176"></a>    <span class="kt">logic</span> <span class="n">tr_return_correct</span><span class="p">;</span>
+<a name="l-177"></a>    <span class="kt">logic</span> <span class="n">tr_return_misspredict</span><span class="p">;</span>
 <a name="l-178"></a>
-<a name="l-179"></a>    <span class="k">logic</span> <span class="n">tr_rs1_forwarding_needed</span><span class="p">;</span>
-<a name="l-180"></a>    <span class="k">logic</span> <span class="n">tr_rs2_forwarding_needed</span><span class="p">;</span>
-<a name="l-181"></a>    <span class="k">logic</span> <span class="n">tr_rs1_and_rs2_forwarding_needed</span><span class="p">;</span>
+<a name="l-179"></a>    <span class="kt">logic</span> <span class="n">tr_rs1_forwarding_needed</span><span class="p">;</span>
+<a name="l-180"></a>    <span class="kt">logic</span> <span class="n">tr_rs2_forwarding_needed</span><span class="p">;</span>
+<a name="l-181"></a>    <span class="kt">logic</span> <span class="n">tr_rs1_and_rs2_forwarding_needed</span><span class="p">;</span>
 <a name="l-182"></a>
 <a name="l-183"></a>    <span class="n">unit_id_t</span> <span class="n">tr_num_instructions_completing</span><span class="p">;</span>
 <a name="l-184"></a>    <span class="n">id_t</span> <span class="n">tr_num_instructions_in_flight</span><span class="p">;</span>
@@ -503,7 +503,7 @@
 <a name="l-199"></a>
 <a name="l-200"></a>    <span class="c1">////////////////////////////////////////////////////</span>
 <a name="l-201"></a>    <span class="c1">// Fetch</span>
-<a name="l-202"></a>    <span class="n">fetch</span> <span class="n">fetch_block</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">icache_on</span><span class="p">(</span><span class="m">&#39;1</span><span class="p">),</span> <span class="p">.</span><span class="n">tlb</span><span class="p">(</span><span class="n">itlb</span><span class="p">),</span> <span class="p">.</span><span class="n">l1_request</span><span class="p">(</span><span class="n">l1_request</span><span class="p">[</span><span class="n">L1_ICACHE_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_response</span><span class="p">(</span><span class="n">l1_response</span><span class="p">[</span><span class="n">L1_ICACHE_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">exception</span><span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">));</span>
+<a name="l-202"></a>    <span class="n">fetch</span> <span class="n">fetch_block</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">icache_on</span><span class="p">(</span><span class="m">&#39;1</span><span class="p">),</span> <span class="p">.</span><span class="n">tlb</span><span class="p">(</span><span class="n">itlb</span><span class="p">),</span> <span class="p">.</span><span class="n">l1_request</span><span class="p">(</span><span class="n">l1_request</span><span class="p">[</span><span class="n">L1_ICACHE_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_response</span><span class="p">(</span><span class="n">l1_response</span><span class="p">[</span><span class="n">L1_ICACHE_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">exception</span><span class="p">(</span><span class="mb">1&#39;b0</span><span class="p">));</span>
 <a name="l-203"></a>    <span class="n">branch_predictor</span> <span class="n">bp_block</span> <span class="p">(.</span><span class="o">*</span><span class="p">);</span>
 <a name="l-204"></a>    <span class="n">ras</span> <span class="n">ras_block</span><span class="p">(.</span><span class="o">*</span><span class="p">);</span>
 <a name="l-205"></a>    <span class="k">generate</span> <span class="k">if</span> <span class="p">(</span><span class="n">ENABLE_S_MODE</span><span class="p">)</span> <span class="k">begin</span>
@@ -511,7 +511,7 @@
 <a name="l-207"></a>            <span class="n">mmu</span> <span class="n">i_mmu</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span>  <span class="p">.</span><span class="n">mmu</span><span class="p">(</span><span class="n">immu</span><span class="p">)</span> <span class="p">,</span> <span class="p">.</span><span class="n">l1_request</span><span class="p">(</span><span class="n">l1_request</span><span class="p">[</span><span class="n">L1_IMMU_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_response</span><span class="p">(</span><span class="n">l1_response</span><span class="p">[</span><span class="n">L1_IMMU_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">mmu_exception</span><span class="p">());</span>
 <a name="l-208"></a>        <span class="k">end</span>
 <a name="l-209"></a>        <span class="k">else</span> <span class="k">begin</span>
-<a name="l-210"></a>            <span class="k">assign</span> <span class="n">itlb</span><span class="p">.</span><span class="n">complete</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-210"></a>            <span class="k">assign</span> <span class="n">itlb</span><span class="p">.</span><span class="n">complete</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 <a name="l-211"></a>            <span class="k">assign</span> <span class="n">itlb</span><span class="p">.</span><span class="n">physical_address</span> <span class="o">=</span> <span class="n">itlb</span><span class="p">.</span><span class="n">virtual_address</span><span class="p">;</span>
 <a name="l-212"></a>        <span class="k">end</span>
 <a name="l-213"></a>    <span class="k">endgenerate</span>
@@ -528,13 +528,13 @@
 <a name="l-224"></a>    <span class="c1">//Execution Units</span>
 <a name="l-225"></a>    <span class="n">branch_unit</span> <span class="n">branch_unit_block</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">issue</span><span class="p">(</span><span class="n">unit_issue</span><span class="p">[</span><span class="n">BRANCH_UNIT_ID</span><span class="p">]));</span>
 <a name="l-226"></a>    <span class="n">alu_unit</span> <span class="n">alu_unit_block</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">issue</span><span class="p">(</span><span class="n">unit_issue</span><span class="p">[</span><span class="n">ALU_UNIT_WB_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">wb</span><span class="p">(</span><span class="n">unit_wb</span><span class="p">[</span><span class="n">ALU_UNIT_WB_ID</span><span class="p">]));</span>
-<a name="l-227"></a>    <span class="n">load_store_unit</span> <span class="n">load_store_unit_block</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">dcache_on</span><span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">),</span> <span class="p">.</span><span class="n">clear_reservation</span><span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">),</span> <span class="p">.</span><span class="n">tlb</span><span class="p">(</span><span class="n">dtlb</span><span class="p">),</span> <span class="p">.</span><span class="n">issue</span><span class="p">(</span><span class="n">unit_issue</span><span class="p">[</span><span class="n">LS_UNIT_WB_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">wb</span><span class="p">(</span><span class="n">unit_wb</span><span class="p">[</span><span class="n">LS_UNIT_WB_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_request</span><span class="p">(</span><span class="n">l1_request</span><span class="p">[</span><span class="n">L1_DCACHE_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_response</span><span class="p">(</span><span class="n">l1_response</span><span class="p">[</span><span class="n">L1_DCACHE_ID</span><span class="p">]));</span>
+<a name="l-227"></a>    <span class="n">load_store_unit</span> <span class="n">load_store_unit_block</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">dcache_on</span><span class="p">(</span><span class="mb">1&#39;b1</span><span class="p">),</span> <span class="p">.</span><span class="n">clear_reservation</span><span class="p">(</span><span class="mb">1&#39;b0</span><span class="p">),</span> <span class="p">.</span><span class="n">tlb</span><span class="p">(</span><span class="n">dtlb</span><span class="p">),</span> <span class="p">.</span><span class="n">issue</span><span class="p">(</span><span class="n">unit_issue</span><span class="p">[</span><span class="n">LS_UNIT_WB_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">wb</span><span class="p">(</span><span class="n">unit_wb</span><span class="p">[</span><span class="n">LS_UNIT_WB_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_request</span><span class="p">(</span><span class="n">l1_request</span><span class="p">[</span><span class="n">L1_DCACHE_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_response</span><span class="p">(</span><span class="n">l1_response</span><span class="p">[</span><span class="n">L1_DCACHE_ID</span><span class="p">]));</span>
 <a name="l-228"></a>    <span class="k">generate</span> <span class="k">if</span> <span class="p">(</span><span class="n">ENABLE_S_MODE</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-229"></a>            <span class="n">tlb_lut_ram</span> <span class="p">#(</span><span class="n">DTLB_WAYS</span><span class="p">,</span> <span class="n">DTLB_DEPTH</span><span class="p">)</span> <span class="n">d_tlb</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">tlb</span><span class="p">(</span><span class="n">dtlb</span><span class="p">),</span> <span class="p">.</span><span class="n">mmu</span><span class="p">(</span><span class="n">dmmu</span><span class="p">));</span>
 <a name="l-230"></a>            <span class="n">mmu</span> <span class="n">d_mmu</span> <span class="p">(.</span><span class="o">*</span><span class="p">,</span> <span class="p">.</span><span class="n">mmu</span><span class="p">(</span><span class="n">dmmu</span><span class="p">),</span> <span class="p">.</span><span class="n">l1_request</span><span class="p">(</span><span class="n">l1_request</span><span class="p">[</span><span class="n">L1_DMMU_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">l1_response</span><span class="p">(</span><span class="n">l1_response</span><span class="p">[</span><span class="n">L1_DMMU_ID</span><span class="p">]),</span> <span class="p">.</span><span class="n">mmu_exception</span><span class="p">());</span>
 <a name="l-231"></a>        <span class="k">end</span>
 <a name="l-232"></a>        <span class="k">else</span> <span class="k">begin</span>
-<a name="l-233"></a>            <span class="k">assign</span> <span class="n">dtlb</span><span class="p">.</span><span class="n">complete</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-233"></a>            <span class="k">assign</span> <span class="n">dtlb</span><span class="p">.</span><span class="n">complete</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 <a name="l-234"></a>            <span class="k">assign</span> <span class="n">dtlb</span><span class="p">.</span><span class="n">physical_address</span> <span class="o">=</span> <span class="n">dtlb</span><span class="p">.</span><span class="n">virtual_address</span><span class="p">;</span>
 <a name="l-235"></a>        <span class="k">end</span>
 <a name="l-236"></a>    <span class="k">endgenerate</span>

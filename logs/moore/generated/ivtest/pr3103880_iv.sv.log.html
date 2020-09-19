@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr3103880.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr3103880.v</a>
 defines: 
-time_elapsed: 0.011s
-ram usage: 10660 KB
+time_elapsed: 0.008s
+ram usage: 10696 KB
 </pre>
 <pre class="log">
 
@@ -29,7 +29,7 @@ error: unknown system task `$sformat`
    |     $sformat(str, &#34;%0d&#34;, (v + 2 - 1) * 1);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3103880.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/pr3103880.v:12</a>:7-63:
    | 
    |       $display(&#34;FAILED 1st test, expected \&#34;3\&#34;, got %s&#34;, str);
@@ -41,7 +41,7 @@ error: unknown system task `$sformat`
    |     $sformat(str, &#34;%0d&#34;, &#39;d1 - &#39;d2 + v);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3103880.v.html#l-18" target="file-frame">third_party/tests/ivtest/ivltests/pr3103880.v:18</a>:7-63:
    | 
    |       $display(&#34;FAILED 2nd test, expected \&#34;1\&#34;, got %s&#34;, str);
@@ -53,13 +53,13 @@ error: unknown system task `$sformat`
    |     $sformat(str, &#34;%0d&#34;, v + (-1));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3103880.v.html#l-24" target="file-frame">third_party/tests/ivtest/ivltests/pr3103880.v:24</a>:7-63:
    | 
    |       $display(&#34;FAILED 3rd test, expected \&#34;1\&#34;, got %s&#34;, str);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr3103880.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr3103880.v:28</a>:15-33:
    | 
    |     if (pass) $display(&#34;PASSED&#34;);
@@ -80,34 +80,39 @@ proc %test.initial.328.0 (i320$ %str) -&gt; (i1$ %pass, i16$ %v) {
     %6 = const i320 0
     %7 = inss i320 %6, i319 %5, 0, 319
     %8 = exts i8, i320 %7, 0, 8
-    %concat = const i8 0
-    %9 = neq i8 %8, %concat
-    %10 = const i1 0
-    %11 = neq i1 %9, %10
-    %12 = exts i311, i320 %str.prb, 9, 311
-    %13 = inss i320 %6, i311 %12, 0, 311
-    %14 = exts i312, i320 %13, 0, 312
-    %15 = const i312 0
-    %16 = neq i312 %14, %15
-    %17 = neq i1 %16, %10
-    %18 = or i1 %11, %17
-    %19 = neq i1 %18, %10
-    br %19, %if_exit, %if_true
+    %9 = const i8 51
+    %10 = neq i8 %8, %9
+    %11 = const i1 0
+    %12 = neq i1 %10, %11
+    %13 = exts i311, i320 %str.prb, 9, 311
+    %14 = inss i320 %6, i311 %13, 0, 311
+    %15 = exts i312, i320 %14, 0, 312
+    %16 = const i312 0
+    %17 = neq i312 %15, %16
+    %18 = neq i1 %17, %11
+    %19 = or i1 %12, %18
+    %20 = neq i1 %19, %11
+    br %20, %if_exit, %if_true
 if_true:
-    drv i1$ %pass, %10, %3
-    st i1* %pass.shadow, %10
+    drv i1$ %pass, %11, %3
+    st i1* %pass.shadow, %11
     br %if_exit
 if_exit:
-    br %19, %if_exit1, %if_true1
+    %21 = const i8 49
+    %22 = neq i8 %8, %21
+    %23 = neq i1 %22, %11
+    %24 = or i1 %23, %18
+    %25 = neq i1 %24, %11
+    br %25, %if_exit1, %if_true1
 if_true1:
-    drv i1$ %pass, %10, %3
-    st i1* %pass.shadow, %10
+    drv i1$ %pass, %11, %3
+    st i1* %pass.shadow, %11
     br %if_exit1
 if_exit1:
-    br %19, %if_exit2, %if_true2
+    br %25, %if_exit2, %if_true2
 if_true2:
-    drv i1$ %pass, %10, %3
-    st i1* %pass.shadow, %10
+    drv i1$ %pass, %11, %3
+    st i1* %pass.shadow, %11
     br %if_exit2
 if_exit2:
     halt
@@ -121,7 +126,6 @@ entity @test () -&gt; () {
     %2 = const i16 0
     %v = sig i16 %2
     inst %test.initial.328.0 (i320$ %str) -&gt; (i1$ %pass, i16$ %v)
-    halt
 }
 
 </pre>

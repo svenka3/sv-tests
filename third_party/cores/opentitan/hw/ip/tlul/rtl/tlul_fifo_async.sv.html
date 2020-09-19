@@ -111,8 +111,8 @@
 <a name="l-9"></a><span class="no">`include</span> <span class="s">&quot;prim_assert.sv&quot;</span>
 <a name="l-10"></a>
 <a name="l-11"></a><span class="k">module</span> <span class="n">tlul_fifo_async</span> <span class="p">#(</span>
-<a name="l-12"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">ReqDepth</span> <span class="o">=</span> <span class="mh">3</span><span class="p">,</span>
-<a name="l-13"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">RspDepth</span> <span class="o">=</span> <span class="mh">3</span>
+<a name="l-12"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">ReqDepth</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+<a name="l-13"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">RspDepth</span> <span class="o">=</span> <span class="mi">3</span>
 <a name="l-14"></a><span class="p">)</span> <span class="p">(</span>
 <a name="l-15"></a>  <span class="k">input</span>                      <span class="n">clk_h_i</span><span class="p">,</span>
 <a name="l-16"></a>  <span class="k">input</span>                      <span class="n">rst_h_ni</span><span class="p">,</span>
@@ -125,7 +125,7 @@
 <a name="l-23"></a><span class="p">);</span>
 <a name="l-24"></a>
 <a name="l-25"></a>  <span class="c1">// Put everything on the request side into one FIFO</span>
-<a name="l-26"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">REQFIFO_WIDTH</span> <span class="o">=</span> <span class="n">$bits</span><span class="p">(</span><span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_h2d_t</span><span class="p">)</span><span class="o">-</span><span class="mh">2</span><span class="p">;</span>
+<a name="l-26"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">REQFIFO_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">bits</span><span class="p">(</span><span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_h2d_t</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">;</span>
 <a name="l-27"></a>
 <a name="l-28"></a>  <span class="n">prim_fifo_async</span> <span class="p">#(.</span><span class="n">Width</span><span class="p">(</span><span class="n">REQFIFO_WIDTH</span><span class="p">),</span> <span class="p">.</span><span class="n">Depth</span><span class="p">(</span><span class="n">ReqDepth</span><span class="p">))</span> <span class="n">reqfifo</span> <span class="p">(</span>
 <a name="l-29"></a>    <span class="p">.</span><span class="n">clk_wr_i</span>      <span class="p">(</span><span class="n">clk_h_i</span><span class="p">),</span>
@@ -158,7 +158,7 @@
 <a name="l-56"></a>
 <a name="l-57"></a>  <span class="c1">// Put everything on the response side into the other FIFO</span>
 <a name="l-58"></a>
-<a name="l-59"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">RSPFIFO_WIDTH</span> <span class="o">=</span> <span class="n">$bits</span><span class="p">(</span><span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_d2h_t</span><span class="p">)</span> <span class="o">-</span><span class="mh">2</span><span class="p">;</span>
+<a name="l-59"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">RSPFIFO_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">bits</span><span class="p">(</span><span class="n">tlul_pkg</span><span class="o">::</span><span class="n">tl_d2h_t</span><span class="p">)</span> <span class="o">-</span><span class="mi">2</span><span class="p">;</span>
 <a name="l-60"></a>
 <a name="l-61"></a>  <span class="n">prim_fifo_async</span> <span class="p">#(.</span><span class="n">Width</span><span class="p">(</span><span class="n">RSPFIFO_WIDTH</span><span class="p">),</span> <span class="p">.</span><span class="n">Depth</span><span class="p">(</span><span class="n">RspDepth</span><span class="p">))</span> <span class="n">rspfifo</span> <span class="p">(</span>
 <a name="l-62"></a>    <span class="p">.</span><span class="n">clk_wr_i</span>      <span class="p">(</span><span class="n">clk_d_i</span><span class="p">),</span>
@@ -192,7 +192,7 @@
 <a name="l-90"></a>  <span class="c1">////////////////</span>
 <a name="l-91"></a>  <span class="c1">// Assertions //</span>
 <a name="l-92"></a>  <span class="c1">////////////////</span>
-<a name="l-93"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">DepthGTE3_A</span><span class="p">,</span> <span class="n">ReqDepth</span> <span class="o">&gt;=</span> <span class="mh">3</span> <span class="o">&amp;&amp;</span> <span class="n">RspDepth</span> <span class="o">&gt;=</span> <span class="mh">3</span><span class="p">)</span>
+<a name="l-93"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">DepthGTE3_A</span><span class="p">,</span> <span class="n">ReqDepth</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="n">RspDepth</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">)</span>
 <a name="l-94"></a>
 <a name="l-95"></a><span class="k">endmodule</span>
 </pre></div>

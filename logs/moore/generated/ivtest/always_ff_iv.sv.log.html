@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,37 +17,37 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/always_ff.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_ff.v</a>
 defines: 
-time_elapsed: 0.009s
-ram usage: 10696 KB
+time_elapsed: 0.010s
+ram usage: 10620 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/always_ff.v.html" target="file-frame">third_party/tests/ivtest/ivltests/always_ff.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_ff.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/always_ff.v:14</a>:7-60:
    | 
    |       $display(&#34;FAILED: initally expected 1&#39;bx, got %b&#34;, q);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_ff.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/always_ff.v:22</a>:7-64:
    | 
    |       $display(&#34;FAILED: clock in a 0 expected 1&#39;b0, got %b&#34;, q);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_ff.v.html#l-30" target="file-frame">third_party/tests/ivtest/ivltests/always_ff.v:30</a>:7-67:
    | 
    |       $display(&#34;FAILED: no clock change expected 1&#39;b0, got %b&#34;, q);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_ff.v.html#l-37" target="file-frame">third_party/tests/ivtest/ivltests/always_ff.v:37</a>:7-64:
    | 
    |       $display(&#34;FAILED: clock in a 1 expected 1&#39;b1, got %b&#34;, q);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/always_ff.v.html#l-41" target="file-frame">third_party/tests/ivtest/ivltests/always_ff.v:41</a>:15-33:
    | 
    |     if (pass) $display(&#34;PASSED&#34;);
@@ -58,9 +58,10 @@ init:
     %clk.prb = prb i1$ %clk
     wait %check, %clk
 check:
+    %clk.prb1 = prb i1$ %clk
     %0 = const i1 0
     %1 = eq i1 %clk.prb, %0
-    %2 = neq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb1, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
@@ -162,7 +163,6 @@ entity @top () -&gt; () {
     %pass = sig i1 %0
     inst %top.always_ff.29.0 (i1$ %clk, i1$ %d) -&gt; (i1$ %q)
     inst %top.initial.235.0 (i1$ %q) -&gt; (i1$ %clk, i1$ %d, i1$ %pass)
-    halt
 }
 
 </pre>

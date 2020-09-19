@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: net declaration assignment test
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: 10.3.1
 incdirs: /tmpfs/src/github/sv-tests/tests/chapter-10
 top_module: 
@@ -18,23 +18,22 @@ mode: parsing
 files: <a href="../../../tests/chapter-10/10.3.1--net-decl-assignment.sv.html" target="file-frame">tests/chapter-10/10.3.1--net-decl-assignment.sv</a>
 defines: 
 time_elapsed: 0.005s
-ram usage: 9888 KB
+ram usage: 10288 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/tests/chapter-10 -e top <a href="../../../tests/chapter-10/10.3.1--net-decl-assignment.sv.html" target="file-frame">tests/chapter-10/10.3.1--net-decl-assignment.sv</a>
-error: value is not constant
-  --&gt; <a href="../../../tests/chapter-10/10.3.1--net-decl-assignment.sv.html#l-8" target="file-frame">tests/chapter-10/10.3.1--net-decl-assignment.sv:8</a>:10-11:
-   | 
-   | wire w = a &amp; b;
-   |          ^     
-
-error: value is not constant
-  --&gt; <a href="../../../tests/chapter-10/10.3.1--net-decl-assignment.sv.html#l-8" target="file-frame">tests/chapter-10/10.3.1--net-decl-assignment.sv:8</a>:14-15:
-   | 
-   | wire w = a &amp; b;
-   |              ^ 
-
+entity @top (i1$ %a, i1$ %b) -&gt; () {
+    %0 = const i1 0
+    %w = sig i1 %0
+    %a.prb = prb i1$ %a
+    %b.prb = prb i1$ %b
+    %1 = and i1 %a.prb, %b.prb
+    %2 = sig i1 %0
+    %3 = const time 0s 1d
+    drv i1$ %2, %1, %3
+    con i1$ %w, %2
+}
 
 </pre>
 </body>

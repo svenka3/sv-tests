@@ -17,31 +17,31 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v</a>
 defines: 
-time_elapsed: 0.013s
-ram usage: 11024 KB
+time_elapsed: 0.012s
+ram usage: 11216 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e sysSimpleTest <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:10</a>:7-24:
    | 
    |       $display(&#34;reset&#34;);
    |       ^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:13</a>:7-29:
    | 
    |       $display(&#34;reset done&#34;);
    |       ^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-118" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:118</a>:2-211:
    | 
    |     $display(&#34;OK:  %0d * %0d + %0d == %0d&#34;,
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1698499.v.html#l-125" target="file-frame">third_party/tests/ivtest/ivltests/pr1698499.v:125</a>:2-211:
    | 
    |     $display(&#34;BAD: %0d * %0d + %0d != %0d&#34;,
@@ -98,9 +98,10 @@ init:
     %CLK.prb = prb i1$ %CLK
     wait %check, %CLK
 check:
+    %CLK.prb1 = prb i1$ %CLK
     %0 = const i1 0
     %1 = eq i1 %CLK.prb, %0
-    %2 = neq i1 %CLK.prb, %0
+    %2 = neq i1 %CLK.prb1, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
@@ -148,9 +149,10 @@ init:
     %CLK.prb = prb i1$ %CLK
     wait %check, %CLK
 check:
+    %CLK.prb1 = prb i1$ %CLK
     %0 = const i1 0
     %1 = neq i1 %CLK.prb, %0
-    %2 = eq i1 %CLK.prb, %0
+    %2 = eq i1 %CLK.prb1, %0
     %negedge = and i1 %2, %1
     br %negedge, %init, %event
 event:
@@ -255,7 +257,6 @@ entity @sysSimpleTest () -&gt; () {
     inst %sysSimpleTest.always.400.0 (i1$ %CLK, i1$ %RST_N, i99$ %y\24D_IN, i1$ %y\24EN, i99$ %z\24D_IN, i1$ %z\24EN) -&gt; (i99$ %y, i99$ %z)
     inst %sysSimpleTest.initial.423.0 () -&gt; (i99$ %y, i99$ %z)
     inst %sysSimpleTest.always.555.0 (i1$ %CLK, i1$ %RST_N, i1$ %z_MUL_IF_y_SLT_0_AND_NOT_z_SLT_0_OR_NOT_y_SLT__ETC___d22) -&gt; ()
-    halt
 }
 
 </pre>

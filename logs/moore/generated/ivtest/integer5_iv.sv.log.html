@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,24 +18,24 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/integer5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/integer5.v</a>
 defines: 
 time_elapsed: 0.008s
-ram usage: 10364 KB
+ram usage: 10592 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/integer5.v.html" target="file-frame">third_party/tests/ivtest/ivltests/integer5.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/integer5.v.html#l-39" target="file-frame">third_party/tests/ivtest/ivltests/integer5.v:39</a>:9-70:
    | 
    |         $display(&#34;FAILED - division didn&#39;t work s/b A, is %h&#34;,result);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/integer5.v.html#l-44" target="file-frame">third_party/tests/ivtest/ivltests/integer5.v:44</a>:9-78:
    | 
    |         $display(&#34;FAILED - assign division didn&#39;t work s/b A, is %h&#34;,result1);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/integer5.v.html#l-48" target="file-frame">third_party/tests/ivtest/ivltests/integer5.v:48</a>:7-25:
    | 
    |       $display(&#34;PASSED&#34;);
@@ -43,12 +43,12 @@ error: unknown system task `$display`
 
 proc %test.initial.149.0 (i4$ %result1) -&gt; (i4$ %result, i1$ %error, i32$ %num1) {
 0:
-    %1 = prb i1$ %error
-    %error.shadow = var i1 %1
+    %1 = prb i32$ %num1
+    %num1.shadow = var i32 %1
     %2 = prb i4$ %result
     %result.shadow = var i4 %2
-    %3 = prb i32$ %num1
-    %num1.shadow = var i32 %3
+    %3 = prb i1$ %error
+    %error.shadow = var i1 %3
     %4 = const i1 0
     %5 = const time 0s 1e
     drv i1$ %error, %4, %5
@@ -66,10 +66,10 @@ proc %test.initial.149.0 (i4$ %result1) -&gt; (i4$ %result, i1$ %error, i32$ %nu
     st i4* %result.shadow, %11
     wait %12 for %7
 12:
-    %13 = prb i1$ %error
-    st i1* %error.shadow, %13
-    %14 = prb i32$ %num1
-    st i32* %num1.shadow, %14
+    %13 = prb i32$ %num1
+    st i32* %num1.shadow, %13
+    %14 = prb i1$ %error
+    st i1* %error.shadow, %14
     %15 = prb i4$ %result
     st i4* %result.shadow, %15
     %result.shadow.ld = ld i4* %result.shadow
@@ -114,7 +114,6 @@ entity @test () -&gt; () {
     %8 = const time 0s 1e
     drv i4$ %result1, %7, %8
     inst %test.initial.149.0 (i4$ %result1) -&gt; (i4$ %result, i1$ %error, i32$ %num1)
-    halt
 }
 
 </pre>

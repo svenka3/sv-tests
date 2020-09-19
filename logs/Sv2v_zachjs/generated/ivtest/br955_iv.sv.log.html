@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br955.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br955.v</a>
 defines: 
-time_elapsed: 0.083s
-ram usage: 10556 KB
+time_elapsed: 0.100s
+ram usage: 10560 KB
 </pre>
 <pre class="log">
 
@@ -31,6 +31,7 @@ module mux_2_to_1 (
 	input sel_i;
 	input [1:0] dat_i;
 	output dat_o;
+	wire dat_o;
 	assign dat_o = (sel_i &amp;&amp; dat_i[1]) || (~sel_i &amp;&amp; dat_i[0]);
 endmodule
 module mux_n_to_1 (
@@ -46,11 +47,14 @@ module mux_n_to_1 (
 	genvar i;
 	genvar j;
 	generate
-		if (sel_w == 1) mux_2_to_1 mux_simple(
-			.sel_i(sel_i),
-			.dat_i(inputs_i),
-			.dat_o(output_o)
-		);
+		if (sel_w == 1) begin
+			wire output_o;
+			mux_2_to_1 mux_simple(
+				.sel_i(sel_i),
+				.dat_i(inputs_i),
+				.dat_o(output_o)
+			);
+		end
 		else begin
 			wire [n_inputs - 2:0] inter_w;
 			for (i = 0; i &lt; sel_w; i = i + 1) begin : SELECT_STAGE
@@ -69,6 +73,7 @@ module mux_n_to_1 (
 					);
 				end
 			end
+			wire output_o;
 			assign output_o = inter_w[(n_inputs / (2 ** (sel_w - 1))) * ((2 ** (sel_w - 1)) - 1)];
 		end
 	endgenerate

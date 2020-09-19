@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,19 +17,19 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2085984.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2085984.v</a>
 defines: 
-time_elapsed: 0.010s
-ram usage: 10396 KB
+time_elapsed: 0.007s
+ram usage: 10620 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2085984.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2085984.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2085984.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr2085984.v:13</a>:24-42:
    | 
    |     if (a[2] != 2&#39;b01) $display(&#34;FAILED&#34;);
    |                        ^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2085984.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr2085984.v:14</a>:10-28:
    | 
    |     else $display(&#34;PASSED&#34;);
@@ -46,25 +46,25 @@ init:
     %4 = extf i3, [8 x i3] %3, 0
     wait %check, %b, %c
 check:
-    %impledge = neq i3 %4, %4
-    br %impledge, %init, %event
-event:
-    %5 = const i32 2
-    %6 = const i2 0
-    %7 = [4 x i2 %6]
-    %8 = sig [4 x i2] %7
-    %9 = shr [4 x i2]$ %a, [4 x i2]$ %8, i32 %5
-    %10 = extf i2$, [4 x i2]$ %9, 0
     %b.prb1 = prb [8 x i3]$ %b
     %c.prb1 = prb [3 x i3]$ %c
-    %11 = extf i3, [3 x i3] %c.prb1, 0
-    %12 = const i3 0
-    %13 = [8 x i3 %12]
-    %14 = shr [8 x i3] %b.prb1, [8 x i3] %13, i3 %11
-    %15 = extf i3, [8 x i3] %14, 0
-    %16 = exts i2, i3 %15, 0, 2
+    %5 = extf i3, [3 x i3] %c.prb1, 0
+    %6 = const i3 0
+    %7 = [8 x i3 %6]
+    %8 = shr [8 x i3] %b.prb1, [8 x i3] %7, i3 %5
+    %9 = extf i3, [8 x i3] %8, 0
+    %impledge = neq i3 %4, %9
+    br %impledge, %init, %event
+event:
+    %10 = const i32 2
+    %11 = const i2 0
+    %12 = [4 x i2 %11]
+    %13 = sig [4 x i2] %12
+    %14 = shr [4 x i2]$ %a, [4 x i2]$ %13, i32 %10
+    %15 = extf i2$, [4 x i2]$ %14, 0
+    %16 = exts i2, i3 %9, 0, 2
     %17 = const time 0s 1d
-    drv i2$ %10, %16, %17
+    drv i2$ %15, %16, %17
     br %init
 }
 
@@ -122,7 +122,6 @@ entity @top () -&gt; () {
     %i = sig i32 %5
     inst %top.always.75.0 ([8 x i3]$ %b, [3 x i3]$ %c) -&gt; ([4 x i2]$ %a)
     inst %top.initial.175.0 ([4 x i2]$ %a) -&gt; ([8 x i3]$ %b, [3 x i3]$ %c, i32$ %i)
-    halt
 }
 
 </pre>

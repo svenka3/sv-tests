@@ -219,29 +219,29 @@
 <a name="l-63"></a>
 <a name="l-64"></a><span class="c1">// mbt: note bsg_fifo_two_port_bank code moved to bsg_fifo_1r1w_pseudo_large</span>
 <a name="l-65"></a>
-<a name="l-66"></a><span class="k">module</span> <span class="n">bsg_fifo_1r1w_large_banked</span> <span class="p">#(</span><span class="k">parameter</span> <span class="n">width_p</span>         <span class="o">=</span> <span class="o">-</span><span class="mh">1</span>
-<a name="l-67"></a>				    <span class="p">,</span> <span class="k">parameter</span> <span class="n">els_p</span>         <span class="o">=</span> <span class="o">-</span><span class="mh">1</span>
+<a name="l-66"></a><span class="k">module</span> <span class="n">bsg_fifo_1r1w_large_banked</span> <span class="p">#(</span><span class="k">parameter</span> <span class="n">width_p</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<a name="l-67"></a>				    <span class="p">,</span> <span class="k">parameter</span> <span class="n">els_p</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 <a name="l-68"></a>                                    <span class="p">)</span>
 <a name="l-69"></a>   <span class="p">(</span><span class="k">input</span>                  <span class="n">clk_i</span>
 <a name="l-70"></a>    <span class="p">,</span> <span class="k">input</span>                <span class="n">reset_i</span>
-<a name="l-71"></a>    <span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">data_i</span>
+<a name="l-71"></a>    <span class="p">,</span> <span class="k">input</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">data_i</span>
 <a name="l-72"></a>    <span class="p">,</span> <span class="k">input</span>                <span class="n">v_i</span>
 <a name="l-73"></a>    <span class="p">,</span> <span class="k">output</span>               <span class="n">ready_o</span>
 <a name="l-74"></a>
 <a name="l-75"></a>    <span class="p">,</span> <span class="k">output</span>               <span class="n">v_o</span>
-<a name="l-76"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_o</span>
+<a name="l-76"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o</span>
 <a name="l-77"></a>    <span class="p">,</span> <span class="k">input</span>                <span class="n">yumi_i</span>
 <a name="l-78"></a>    <span class="p">);</span>
 <a name="l-79"></a>
-<a name="l-80"></a>   <span class="k">initial</span> <span class="k">assert</span> <span class="p">((</span><span class="n">els_p</span> <span class="o">&amp;</span> <span class="mh">1</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0</span><span class="p">)</span> <span class="k">else</span>
-<a name="l-81"></a>     <span class="n">$error</span><span class="p">(</span><span class="s">&quot;odd number of elements for two port fifo not handled.&quot;</span><span class="p">);</span>
+<a name="l-80"></a>   <span class="k">initial</span> <span class="k">assert</span> <span class="p">((</span><span class="n">els_p</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span>
+<a name="l-81"></a>     <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;odd number of elements for two port fifo not handled.&quot;</span><span class="p">);</span>
 <a name="l-82"></a>
 <a name="l-83"></a>   <span class="k">genvar</span> <span class="n">i</span><span class="p">;</span>
 <a name="l-84"></a>
-<a name="l-85"></a>   <span class="k">wire</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">v_i_demux</span><span class="p">,</span> <span class="n">ready_o_mux</span><span class="p">;</span>
+<a name="l-85"></a>   <span class="kt">wire</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>               <span class="n">v_i_demux</span><span class="p">,</span> <span class="n">ready_o_mux</span><span class="p">;</span>
 <a name="l-86"></a>
 <a name="l-87"></a>   <span class="n">bsg_round_robin_1_to_n</span> <span class="p">#(.</span><span class="n">width_p</span><span class="p">(</span><span class="n">width_p</span><span class="p">)</span>
-<a name="l-88"></a>                            <span class="p">,.</span><span class="n">num_out_p</span><span class="p">(</span><span class="mh">2</span><span class="p">)</span>
+<a name="l-88"></a>                            <span class="p">,.</span><span class="n">num_out_p</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <a name="l-89"></a>			   <span class="p">)</span>  <span class="n">rr1n</span>
 <a name="l-90"></a>   <span class="p">(.</span><span class="n">clk_i</span>   <span class="p">(</span><span class="n">clk_i</span>      <span class="p">)</span>
 <a name="l-91"></a>    <span class="p">,.</span><span class="n">reset_i</span><span class="p">(</span><span class="n">reset_i</span>    <span class="p">)</span>
@@ -253,10 +253,10 @@
 <a name="l-97"></a>    <span class="p">,.</span><span class="n">ready_i</span><span class="p">(</span><span class="n">ready_o_mux</span><span class="p">)</span>
 <a name="l-98"></a>    <span class="p">);</span>
 <a name="l-99"></a>
-<a name="l-100"></a>   <span class="k">wire</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">v_int</span><span class="p">,</span> <span class="n">yumi_int</span><span class="p">;</span>
-<a name="l-101"></a>   <span class="k">wire</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_int</span><span class="p">;</span>
+<a name="l-100"></a>   <span class="kt">wire</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>               <span class="n">v_int</span><span class="p">,</span> <span class="n">yumi_int</span><span class="p">;</span>
+<a name="l-101"></a>   <span class="kt">wire</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_int</span><span class="p">;</span>
 <a name="l-102"></a>
-<a name="l-103"></a>   <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<a name="l-103"></a>   <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
 <a name="l-104"></a>     <span class="k">begin</span>
 <a name="l-105"></a>
 <a name="l-106"></a>	<span class="c1">//</span>
@@ -269,8 +269,8 @@
 <a name="l-113"></a>	<span class="c1">//</span>
 <a name="l-114"></a>	
 <a name="l-115"></a>        <span class="n">bsg_fifo_1r1w_pseudo_large</span> <span class="p">#(.</span><span class="n">width</span><span class="p">(</span><span class="n">width_p</span><span class="p">)</span>
-<a name="l-116"></a>                                     <span class="p">,.</span><span class="n">els_p</span><span class="p">(</span><span class="n">els_p</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">)</span>
-<a name="l-117"></a>				     <span class="p">,.</span><span class="n">early_yumi_p</span><span class="p">(</span><span class="mh">1</span><span class="p">)</span>
+<a name="l-116"></a>                                     <span class="p">,.</span><span class="n">els_p</span><span class="p">(</span><span class="n">els_p</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span>
+<a name="l-117"></a>				     <span class="p">,.</span><span class="n">early_yumi_p</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <a name="l-118"></a>				     <span class="c1">// ,.max_conflict_run_p (1)</span>
 <a name="l-119"></a>                                     <span class="p">)</span> <span class="n">bank</span>
 <a name="l-120"></a>            <span class="p">(.</span><span class="n">clk_i</span>   <span class="p">(</span><span class="n">clk_i</span><span class="p">)</span>
@@ -287,7 +287,7 @@
 <a name="l-131"></a>     <span class="k">end</span>
 <a name="l-132"></a>
 <a name="l-133"></a>   <span class="n">bsg_round_robin_n_to_1</span> <span class="p">#(.</span><span class="n">width</span><span class="p">(</span><span class="n">width_p</span><span class="p">)</span>
-<a name="l-134"></a>                            <span class="p">,.</span><span class="n">num_in_p</span><span class="p">(</span><span class="mh">2</span><span class="p">)</span>
+<a name="l-134"></a>                            <span class="p">,.</span><span class="n">num_in_p</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <a name="l-135"></a>                            <span class="p">)</span> <span class="n">round_robin_n_to_1</span>
 <a name="l-136"></a>     <span class="p">(.</span><span class="n">clk_i</span>   <span class="p">(</span><span class="n">clk_i</span>     <span class="p">)</span>
 <a name="l-137"></a>      <span class="p">,.</span><span class="n">reset_i</span><span class="p">(</span><span class="n">reset_i</span>   <span class="p">)</span>

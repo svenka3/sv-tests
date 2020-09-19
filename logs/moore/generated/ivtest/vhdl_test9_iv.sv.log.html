@@ -17,18 +17,18 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/vhdl_test9.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vhdl_test9.v</a>
 defines: 
-time_elapsed: 0.008s
-ram usage: 10756 KB
+time_elapsed: 0.007s
+ram usage: 10888 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e count_ones_v <a href="../../../../third_party/tests/ivtest/ivltests/vhdl_test9.v.html" target="file-frame">third_party/tests/ivtest/ivltests/vhdl_test9.v</a>
 proc %count_ones_v.always.103.0 (i16$ %vec) -&gt; (i5$ %count, i32$ %i, i32$ %result) {
 0:
-    %1 = prb i32$ %result
-    %result.shadow = var i32 %1
-    %2 = prb i32$ %i
-    %i.shadow = var i32 %2
+    %1 = prb i32$ %i
+    %i.shadow = var i32 %1
+    %2 = prb i32$ %result
+    %result.shadow = var i32 %2
     br %init
 init:
     %vec.prb = prb i16$ %vec
@@ -38,7 +38,8 @@ check:
     st i32* %i.shadow, %3
     %4 = prb i32$ %result
     st i32* %result.shadow, %4
-    %impledge = neq i16 %vec.prb, %vec.prb
+    %vec.prb1 = prb i16$ %vec
+    %impledge = neq i16 %vec.prb, %vec.prb1
     br %impledge, %init, %event
 event:
     %5 = const i32 0
@@ -59,7 +60,6 @@ loop_exit:
     drv i5$ %count, %9, %6
     br %0
 loop_continue:
-    %vec.prb1 = prb i16$ %vec
     %i.shadow.ld1 = ld i32* %i.shadow
     %10 = const i16 0
     %11 = shr i16 %vec.prb1, i16 %10, i32 %i.shadow.ld1
@@ -89,7 +89,6 @@ entity @count_ones_v (i16$ %vec) -&gt; (i5$ %count) {
     %i = sig i32 %0
     %result = sig i32 %0
     inst %count_ones_v.always.103.0 (i16$ %vec) -&gt; (i5$ %count, i32$ %i, i32$ %result)
-    halt
 }
 
 </pre>

@@ -92,33 +92,33 @@
 <a name="l-8"></a><span class="c1">// and points to slots_p slots.</span>
 <a name="l-9"></a><span class="c1">//</span>
 <a name="l-10"></a>
-<a name="l-11"></a><span class="k">module</span> <span class="n">bsg_circular_ptr</span> <span class="p">#(</span><span class="k">parameter</span> <span class="n">slots_p</span>     <span class="o">=</span> <span class="o">-</span><span class="mh">1</span>
-<a name="l-12"></a>                          <span class="p">,</span> <span class="k">parameter</span> <span class="n">max_add_p</span> <span class="o">=</span> <span class="o">-</span><span class="mh">1</span>
+<a name="l-11"></a><span class="k">module</span> <span class="n">bsg_circular_ptr</span> <span class="p">#(</span><span class="k">parameter</span> <span class="n">slots_p</span>     <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<a name="l-12"></a>                          <span class="p">,</span> <span class="k">parameter</span> <span class="n">max_add_p</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 <a name="l-13"></a>                          <span class="c1">// local param</span>
 <a name="l-14"></a>                          <span class="p">,</span> <span class="k">parameter</span> <span class="n">ptr_width_lp</span> <span class="o">=</span> <span class="no">`BSG_SAFE_CLOG2</span><span class="p">(</span><span class="n">slots_p</span><span class="p">)</span>
 <a name="l-15"></a>			  <span class="p">)</span>
 <a name="l-16"></a>   <span class="p">(</span><span class="k">input</span> <span class="n">clk</span>
 <a name="l-17"></a>    <span class="p">,</span> <span class="k">input</span> <span class="n">reset_i</span>
-<a name="l-18"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">max_add_p</span><span class="o">+</span><span class="mh">1</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">add_i</span>
-<a name="l-19"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">o</span>
-<a name="l-20"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">n_o</span>
+<a name="l-18"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">max_add_p</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">add_i</span>
+<a name="l-19"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">o</span>
+<a name="l-20"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">n_o</span>
 <a name="l-21"></a>    <span class="p">);</span>
 <a name="l-22"></a>
-<a name="l-23"></a>   <span class="k">logic</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ptr_r</span><span class="p">,</span> <span class="n">ptr_n</span><span class="p">,</span> <span class="n">ptr_nowrap</span><span class="p">;</span>
-<a name="l-24"></a>   <span class="k">logic</span> <span class="p">[</span><span class="nl">ptr_width_lp:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">ptr_wrap</span><span class="p">;</span>
+<a name="l-23"></a>   <span class="kt">logic</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">ptr_r</span><span class="p">,</span> <span class="n">ptr_n</span><span class="p">,</span> <span class="n">ptr_nowrap</span><span class="p">;</span>
+<a name="l-24"></a>   <span class="kt">logic</span> <span class="p">[</span><span class="nl">ptr_width_lp:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">ptr_wrap</span><span class="p">;</span>
 <a name="l-25"></a>
 <a name="l-26"></a>   <span class="k">assign</span> <span class="n">o</span> <span class="o">=</span> <span class="n">ptr_r</span><span class="p">;</span>
 <a name="l-27"></a>   <span class="k">assign</span> <span class="n">n_o</span> <span class="o">=</span> <span class="n">ptr_n</span><span class="p">;</span>
 <a name="l-28"></a>
 <a name="l-29"></a>   <span class="c1">// increment round robin pointers</span>
 <a name="l-30"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span>
-<a name="l-31"></a>     <span class="k">if</span> <span class="p">(</span><span class="n">reset_i</span><span class="p">)</span> <span class="n">ptr_r</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-31"></a>     <span class="k">if</span> <span class="p">(</span><span class="n">reset_i</span><span class="p">)</span> <span class="n">ptr_r</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-32"></a>     <span class="k">else</span>       <span class="n">ptr_r</span> <span class="o">&lt;=</span> <span class="n">ptr_n</span><span class="p">;</span>
 <a name="l-33"></a>
-<a name="l-34"></a>   <span class="k">if</span> <span class="p">(</span><span class="n">slots_p</span> <span class="o">==</span> <span class="mh">1</span><span class="p">)</span>
+<a name="l-34"></a>   <span class="k">if</span> <span class="p">(</span><span class="n">slots_p</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
 <a name="l-35"></a>     <span class="k">begin</span>
-<a name="l-36"></a>	<span class="k">assign</span> <span class="n">ptr_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-37"></a>	<span class="k">wire</span> <span class="n">ignore</span> <span class="o">=</span> <span class="o">|</span><span class="n">add_i</span><span class="p">;</span>
+<a name="l-36"></a>	<span class="k">assign</span> <span class="n">ptr_n</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-37"></a>	<span class="kt">wire</span> <span class="n">ignore</span> <span class="o">=</span> <span class="o">|</span><span class="n">add_i</span><span class="p">;</span>
 <a name="l-38"></a>     <span class="k">end</span>
 <a name="l-39"></a>   <span class="k">else</span>
 <a name="l-40"></a>   
@@ -131,9 +131,9 @@
 <a name="l-47"></a>    <span class="k">if</span> <span class="p">(</span><span class="no">`BSG_IS_POW2</span><span class="p">(</span><span class="n">slots_p</span><span class="p">))</span>
 <a name="l-48"></a>       <span class="k">begin</span>
 <a name="l-49"></a>	  <span class="c1">// reduce critical path on add_i signal</span>
-<a name="l-50"></a>	  <span class="k">if</span> <span class="p">(</span><span class="n">max_add_p</span> <span class="o">==</span> <span class="mh">1</span><span class="p">)</span>
+<a name="l-50"></a>	  <span class="k">if</span> <span class="p">(</span><span class="n">max_add_p</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
 <a name="l-51"></a>	    <span class="k">begin</span>
-<a name="l-52"></a>	       <span class="k">wire</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">ptr_r_p1</span> <span class="o">=</span> <span class="n">ptr_r</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-52"></a>	       <span class="kt">wire</span> <span class="p">[</span><span class="n">ptr_width_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">ptr_r_p1</span> <span class="o">=</span> <span class="n">ptr_r</span> <span class="o">+</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-53"></a>	       <span class="k">assign</span>  <span class="n">ptr_n</span> <span class="o">=</span> <span class="n">add_i</span> <span class="o">?</span> <span class="n">ptr_r_p1</span> <span class="o">:</span> <span class="n">ptr_r</span><span class="p">;</span>
 <a name="l-54"></a>	    <span class="k">end</span>
 <a name="l-55"></a>	  <span class="k">else</span>
@@ -143,18 +143,18 @@
 <a name="l-59"></a>       <span class="k">begin</span><span class="o">:</span> <span class="n">notpow2</span>
 <a name="l-60"></a>          <span class="c1">// compute wrapped and non-wrap cases</span>
 <a name="l-61"></a>          <span class="c1">// in parallel</span>
-<a name="l-62"></a>          <span class="k">assign</span> <span class="n">ptr_wrap</span> <span class="o">=</span> <span class="p">(</span><span class="n">ptr_width_lp</span><span class="o">+</span><span class="mh">1</span><span class="p">)&#39;({</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">ptr_r</span> <span class="p">}</span> <span class="o">-</span> <span class="n">slots_p</span> <span class="o">+</span> <span class="n">add_i</span><span class="p">);</span>
+<a name="l-62"></a>          <span class="k">assign</span> <span class="n">ptr_wrap</span> <span class="o">=</span> <span class="p">(</span><span class="n">ptr_width_lp</span><span class="o">+</span><span class="mi">1</span><span class="p">)&#39;({</span> <span class="mb">1&#39;b0</span><span class="p">,</span> <span class="n">ptr_r</span> <span class="p">}</span> <span class="o">-</span> <span class="n">slots_p</span> <span class="o">+</span> <span class="n">add_i</span><span class="p">);</span>
 <a name="l-63"></a>          <span class="k">assign</span> <span class="n">ptr_nowrap</span> <span class="o">=</span> <span class="n">ptr_r</span> <span class="o">+</span> <span class="n">add_i</span><span class="p">;</span>
 <a name="l-64"></a>
 <a name="l-65"></a>          <span class="c1">// if (ptr_r + add_i - slots_p &gt;= 0)</span>
 <a name="l-66"></a>          <span class="c1">// then we have wrapped around</span>
-<a name="l-67"></a>          <span class="k">assign</span> <span class="n">ptr_n</span> <span class="o">=</span> <span class="o">~</span><span class="n">ptr_wrap</span><span class="p">[</span><span class="n">ptr_width_lp</span><span class="p">]</span> <span class="o">?</span> <span class="n">ptr_wrap</span><span class="p">[</span><span class="mh">0</span><span class="o">+:</span><span class="n">ptr_width_lp</span><span class="p">]</span> <span class="o">:</span> <span class="n">ptr_nowrap</span><span class="p">;</span>
+<a name="l-67"></a>          <span class="k">assign</span> <span class="n">ptr_n</span> <span class="o">=</span> <span class="o">~</span><span class="n">ptr_wrap</span><span class="p">[</span><span class="n">ptr_width_lp</span><span class="p">]</span> <span class="o">?</span> <span class="n">ptr_wrap</span><span class="p">[</span><span class="mi">0</span><span class="o">+:</span><span class="n">ptr_width_lp</span><span class="p">]</span> <span class="o">:</span> <span class="n">ptr_nowrap</span><span class="p">;</span>
 <a name="l-68"></a>
 <a name="l-69"></a>	  <span class="c1">// synopsys translate_off</span>
 <a name="l-70"></a>          <span class="k">always_comb</span>
 <a name="l-71"></a>            <span class="k">begin</span>
-<a name="l-72"></a>              <span class="k">assert</span><span class="p">(</span> <span class="p">(</span><span class="n">ptr_n</span> <span class="o">&lt;</span> <span class="n">slots_p</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="o">|</span><span class="n">ptr_n</span> <span class="o">===</span> <span class="p">&#39;</span><span class="n">X</span><span class="p">)</span> <span class="o">||</span> <span class="n">reset_i</span> <span class="o">||</span> <span class="p">(</span><span class="n">add_i</span> <span class="o">&gt;</span> <span class="n">slots_p</span><span class="p">))</span>
-<a name="l-73"></a>                <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;bsg_circular_ptr counter overflow (ptr_r=%b/add_i=%b/ptr_wrap=%b/ptr_n=%b)&quot;</span><span class="p">,</span><span class="n">ptr_r</span><span class="p">,</span><span class="n">add_i</span><span class="p">,</span><span class="n">ptr_wrap</span><span class="p">,</span><span class="n">ptr_n</span><span class="p">,</span> <span class="n">slots_p</span><span class="p">);</span>
+<a name="l-72"></a>              <span class="k">assert</span><span class="p">(</span> <span class="p">(</span><span class="n">ptr_n</span> <span class="o">&lt;</span> <span class="n">slots_p</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="o">|</span><span class="n">ptr_n</span> <span class="o">===</span> <span class="m">&#39;X</span><span class="p">)</span> <span class="o">||</span> <span class="n">reset_i</span> <span class="o">||</span> <span class="p">(</span><span class="n">add_i</span> <span class="o">&gt;</span> <span class="n">slots_p</span><span class="p">))</span>
+<a name="l-73"></a>                <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;bsg_circular_ptr counter overflow (ptr_r=%b/add_i=%b/ptr_wrap=%b/ptr_n=%b)&quot;</span><span class="p">,</span><span class="n">ptr_r</span><span class="p">,</span><span class="n">add_i</span><span class="p">,</span><span class="n">ptr_wrap</span><span class="p">,</span><span class="n">ptr_n</span><span class="p">,</span> <span class="n">slots_p</span><span class="p">);</span>
 <a name="l-74"></a>            <span class="k">end</span>
 <a name="l-75"></a>	  <span class="c1">// synopsys translate_on</span>
 <a name="l-76"></a><span class="k">end</span>

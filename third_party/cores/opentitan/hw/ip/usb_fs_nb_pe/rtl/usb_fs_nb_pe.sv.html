@@ -276,19 +276,19 @@
 <a name="l-15"></a><span class="c1">// this version contains no packet buffers</span>
 <a name="l-16"></a>
 <a name="l-17"></a><span class="k">module</span> <span class="n">usb_fs_nb_pe</span> <span class="p">#(</span>
-<a name="l-18"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">NumOutEps</span> <span class="o">=</span> <span class="mh">2</span><span class="p">,</span>
-<a name="l-19"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">NumInEps</span> <span class="o">=</span> <span class="mh">2</span><span class="p">,</span>
-<a name="l-20"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">MaxPktSizeByte</span> <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>
-<a name="l-21"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">PktW</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">MaxPktSizeByte</span><span class="p">)</span> <span class="c1">// derived parameter</span>
+<a name="l-18"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">NumOutEps</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+<a name="l-19"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">NumInEps</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+<a name="l-20"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">MaxPktSizeByte</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+<a name="l-21"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">PktW</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">MaxPktSizeByte</span><span class="p">)</span> <span class="c1">// derived parameter</span>
 <a name="l-22"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-23"></a>  <span class="k">input</span>  <span class="k">logic</span>                   <span class="n">clk_48mhz_i</span><span class="p">,</span>
-<a name="l-24"></a>  <span class="k">input</span>  <span class="k">logic</span>                   <span class="n">rst_ni</span><span class="p">,</span>        <span class="c1">// Async. reset, active low</span>
-<a name="l-25"></a>  <span class="k">input</span>  <span class="k">logic</span>                   <span class="n">link_reset_i</span><span class="p">,</span>  <span class="c1">// USB reset, sync to 48 MHz, active high</span>
-<a name="l-26"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">dev_addr_i</span><span class="p">,</span>
+<a name="l-23"></a>  <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">clk_48mhz_i</span><span class="p">,</span>
+<a name="l-24"></a>  <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">rst_ni</span><span class="p">,</span>        <span class="c1">// Async. reset, active low</span>
+<a name="l-25"></a>  <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">link_reset_i</span><span class="p">,</span>  <span class="c1">// USB reset, sync to 48 MHz, active high</span>
+<a name="l-26"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">dev_addr_i</span><span class="p">,</span>
 <a name="l-27"></a>
-<a name="l-28"></a>  <span class="k">input</span>  <span class="k">logic</span>                   <span class="n">cfg_eop_single_bit_i</span><span class="p">,</span> <span class="c1">// 1: detect a single SE0 bit as EOP</span>
-<a name="l-29"></a>  <span class="k">input</span>  <span class="k">logic</span>                   <span class="n">tx_osc_test_mode_i</span><span class="p">,</span> <span class="c1">// Oscillator test mode (constantly output JK)</span>
-<a name="l-30"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">data_toggle_clear_i</span><span class="p">,</span> <span class="c1">// Clear the data toggles for an EP</span>
+<a name="l-28"></a>  <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">cfg_eop_single_bit_i</span><span class="p">,</span> <span class="c1">// 1: detect a single SE0 bit as EOP</span>
+<a name="l-29"></a>  <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">tx_osc_test_mode_i</span><span class="p">,</span> <span class="c1">// Oscillator test mode (constantly output JK)</span>
+<a name="l-30"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">data_toggle_clear_i</span><span class="p">,</span> <span class="c1">// Clear the data toggles for an EP</span>
 <a name="l-31"></a>
 <a name="l-32"></a>  <span class="c1">////////////////////////////</span>
 <a name="l-33"></a>  <span class="c1">// USB Endpoint Interface //</span>
@@ -298,80 +298,80 @@
 <a name="l-37"></a>  <span class="c1">///////////////////////////////</span>
 <a name="l-38"></a>
 <a name="l-39"></a>  <span class="c1">// out endpoint interfaces</span>
-<a name="l-40"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">out_ep_current_o</span><span class="p">,</span> <span class="c1">// Other signals address to this ep</span>
-<a name="l-41"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">out_ep_data_put_o</span><span class="p">,</span> <span class="c1">// put the data (put addr advances after)</span>
-<a name="l-42"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">PktW</span> <span class="o">-</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>      <span class="n">out_ep_put_addr_o</span><span class="p">,</span> <span class="c1">// Offset to put data (0..pktlen)</span>
-<a name="l-43"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">out_ep_data_o</span><span class="p">,</span>
-<a name="l-44"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">out_ep_newpkt_o</span><span class="p">,</span><span class="c1">// New OUT pkt start (with in_ep_current_o update)</span>
-<a name="l-45"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">out_ep_acked_o</span><span class="p">,</span> <span class="c1">// good termination, device has acked</span>
-<a name="l-46"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">out_ep_rollback_o</span><span class="p">,</span> <span class="c1">// bad termination, discard data</span>
-<a name="l-47"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">out_ep_setup_o</span><span class="p">,</span>
-<a name="l-48"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">out_ep_full_i</span><span class="p">,</span> <span class="c1">// Cannot accept data</span>
-<a name="l-49"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">out_ep_stall_i</span><span class="p">,</span> <span class="c1">// Stalled</span>
-<a name="l-50"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">out_ep_iso_i</span><span class="p">,</span> <span class="c1">// Configure endpoint in isochronous mode</span>
+<a name="l-40"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">out_ep_current_o</span><span class="p">,</span> <span class="c1">// Other signals address to this ep</span>
+<a name="l-41"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">out_ep_data_put_o</span><span class="p">,</span> <span class="c1">// put the data (put addr advances after)</span>
+<a name="l-42"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">PktW</span> <span class="o">-</span> <span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>      <span class="n">out_ep_put_addr_o</span><span class="p">,</span> <span class="c1">// Offset to put data (0..pktlen)</span>
+<a name="l-43"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">out_ep_data_o</span><span class="p">,</span>
+<a name="l-44"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">out_ep_newpkt_o</span><span class="p">,</span><span class="c1">// New OUT pkt start (with in_ep_current_o update)</span>
+<a name="l-45"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">out_ep_acked_o</span><span class="p">,</span> <span class="c1">// good termination, device has acked</span>
+<a name="l-46"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">out_ep_rollback_o</span><span class="p">,</span> <span class="c1">// bad termination, discard data</span>
+<a name="l-47"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">out_ep_setup_o</span><span class="p">,</span>
+<a name="l-48"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">out_ep_full_i</span><span class="p">,</span> <span class="c1">// Cannot accept data</span>
+<a name="l-49"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">out_ep_stall_i</span><span class="p">,</span> <span class="c1">// Stalled</span>
+<a name="l-50"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumOutEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">out_ep_iso_i</span><span class="p">,</span> <span class="c1">// Configure endpoint in isochronous mode</span>
 <a name="l-51"></a>
 <a name="l-52"></a>  <span class="c1">// in endpoint interfaces</span>
-<a name="l-53"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">in_ep_current_o</span><span class="p">,</span> <span class="c1">// Other signals addressed to this ep</span>
-<a name="l-54"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">in_ep_rollback_o</span><span class="p">,</span> <span class="c1">// Bad termination, rollback transaction</span>
-<a name="l-55"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">in_ep_acked_o</span><span class="p">,</span> <span class="c1">// good termination, transaction complete</span>
-<a name="l-56"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">PktW</span> <span class="o">-</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>      <span class="n">in_ep_get_addr_o</span><span class="p">,</span> <span class="c1">// Offset requested (0..pktlen)</span>
-<a name="l-57"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">in_ep_data_get_o</span><span class="p">,</span> <span class="c1">// Accept data (get_addr advances too)</span>
-<a name="l-58"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">in_ep_newpkt_o</span><span class="p">,</span> <span class="c1">// New IN pkt start (with in_ep_current_o update)</span>
-<a name="l-59"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>    <span class="n">in_ep_stall_i</span><span class="p">,</span> <span class="c1">// Endpoint in a stall state</span>
-<a name="l-60"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>    <span class="n">in_ep_has_data_i</span><span class="p">,</span> <span class="c1">// Endpoint has data to supply</span>
-<a name="l-61"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">in_ep_data_i</span><span class="p">,</span> <span class="c1">// Data for current get_addr</span>
-<a name="l-62"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>    <span class="n">in_ep_data_done_i</span><span class="p">,</span> <span class="c1">// Set when out of data</span>
-<a name="l-63"></a>  <span class="k">input</span>  <span class="k">logic</span>  <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">in_ep_iso_i</span><span class="p">,</span> <span class="c1">// Configure endpoint in isochronous mode</span>
+<a name="l-53"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">in_ep_current_o</span><span class="p">,</span> <span class="c1">// Other signals addressed to this ep</span>
+<a name="l-54"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">in_ep_rollback_o</span><span class="p">,</span> <span class="c1">// Bad termination, rollback transaction</span>
+<a name="l-55"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">in_ep_acked_o</span><span class="p">,</span> <span class="c1">// good termination, transaction complete</span>
+<a name="l-56"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">PktW</span> <span class="o">-</span> <span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>      <span class="n">in_ep_get_addr_o</span><span class="p">,</span> <span class="c1">// Offset requested (0..pktlen)</span>
+<a name="l-57"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">in_ep_data_get_o</span><span class="p">,</span> <span class="c1">// Accept data (get_addr advances too)</span>
+<a name="l-58"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">in_ep_newpkt_o</span><span class="p">,</span> <span class="c1">// New IN pkt start (with in_ep_current_o update)</span>
+<a name="l-59"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>    <span class="n">in_ep_stall_i</span><span class="p">,</span> <span class="c1">// Endpoint in a stall state</span>
+<a name="l-60"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>    <span class="n">in_ep_has_data_i</span><span class="p">,</span> <span class="c1">// Endpoint has data to supply</span>
+<a name="l-61"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">in_ep_data_i</span><span class="p">,</span> <span class="c1">// Data for current get_addr</span>
+<a name="l-62"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>    <span class="n">in_ep_data_done_i</span><span class="p">,</span> <span class="c1">// Set when out of data</span>
+<a name="l-63"></a>  <span class="k">input</span>  <span class="kt">logic</span>  <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">in_ep_iso_i</span><span class="p">,</span> <span class="c1">// Configure endpoint in isochronous mode</span>
 <a name="l-64"></a>
 <a name="l-65"></a>  <span class="c1">// sof interface</span>
-<a name="l-66"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">sof_valid_o</span><span class="p">,</span>
-<a name="l-67"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">10</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">frame_index_o</span><span class="p">,</span>
+<a name="l-66"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">sof_valid_o</span><span class="p">,</span>
+<a name="l-67"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">10</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>            <span class="n">frame_index_o</span><span class="p">,</span>
 <a name="l-68"></a>
 <a name="l-69"></a>  <span class="c1">// RX errors</span>
-<a name="l-70"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">rx_crc_err_o</span><span class="p">,</span>
-<a name="l-71"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">rx_pid_err_o</span><span class="p">,</span>
-<a name="l-72"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">rx_bitstuff_err_o</span><span class="p">,</span>
+<a name="l-70"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">rx_crc_err_o</span><span class="p">,</span>
+<a name="l-71"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">rx_pid_err_o</span><span class="p">,</span>
+<a name="l-72"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">rx_bitstuff_err_o</span><span class="p">,</span>
 <a name="l-73"></a>
 <a name="l-74"></a>  <span class="c1">///////////////////////////////////////</span>
 <a name="l-75"></a>  <span class="c1">// USB TX/RX Interface (synchronous) //</span>
 <a name="l-76"></a>  <span class="c1">///////////////////////////////////////</span>
-<a name="l-77"></a>  <span class="k">input</span>  <span class="k">logic</span>                   <span class="n">usb_d_i</span><span class="p">,</span>
-<a name="l-78"></a>  <span class="k">input</span>  <span class="k">logic</span>                   <span class="n">usb_se0_i</span><span class="p">,</span>
+<a name="l-77"></a>  <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">usb_d_i</span><span class="p">,</span>
+<a name="l-78"></a>  <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">usb_se0_i</span><span class="p">,</span>
 <a name="l-79"></a>
-<a name="l-80"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">usb_d_o</span><span class="p">,</span>
-<a name="l-81"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">usb_se0_o</span><span class="p">,</span>
-<a name="l-82"></a>  <span class="k">output</span> <span class="k">logic</span>                   <span class="n">usb_oe_o</span>
+<a name="l-80"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">usb_d_o</span><span class="p">,</span>
+<a name="l-81"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">usb_se0_o</span><span class="p">,</span>
+<a name="l-82"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">usb_oe_o</span>
 <a name="l-83"></a><span class="p">);</span>
 <a name="l-84"></a>
 <a name="l-85"></a>  <span class="kn">import</span> <span class="nn">usb_consts_pkg::*</span><span class="p">;</span>
 <a name="l-86"></a>
 <a name="l-87"></a>  <span class="c1">// rx interface</span>
-<a name="l-88"></a>  <span class="k">logic</span> <span class="n">bit_strobe</span><span class="p">;</span>
-<a name="l-89"></a>  <span class="k">logic</span> <span class="n">rx_pkt_start</span><span class="p">;</span>
-<a name="l-90"></a>  <span class="k">logic</span> <span class="n">rx_pkt_end</span><span class="p">;</span>
-<a name="l-91"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rx_pid</span><span class="p">;</span>
-<a name="l-92"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rx_addr</span><span class="p">;</span>
-<a name="l-93"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rx_endp</span><span class="p">;</span>
-<a name="l-94"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">10</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rx_frame_num</span><span class="p">;</span>
-<a name="l-95"></a>  <span class="k">logic</span> <span class="n">rx_data_put</span><span class="p">;</span>
-<a name="l-96"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rx_data</span><span class="p">;</span>
-<a name="l-97"></a>  <span class="k">logic</span> <span class="n">rx_pkt_valid</span><span class="p">;</span>
+<a name="l-88"></a>  <span class="kt">logic</span> <span class="n">bit_strobe</span><span class="p">;</span>
+<a name="l-89"></a>  <span class="kt">logic</span> <span class="n">rx_pkt_start</span><span class="p">;</span>
+<a name="l-90"></a>  <span class="kt">logic</span> <span class="n">rx_pkt_end</span><span class="p">;</span>
+<a name="l-91"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rx_pid</span><span class="p">;</span>
+<a name="l-92"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rx_addr</span><span class="p">;</span>
+<a name="l-93"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rx_endp</span><span class="p">;</span>
+<a name="l-94"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">10</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rx_frame_num</span><span class="p">;</span>
+<a name="l-95"></a>  <span class="kt">logic</span> <span class="n">rx_data_put</span><span class="p">;</span>
+<a name="l-96"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rx_data</span><span class="p">;</span>
+<a name="l-97"></a>  <span class="kt">logic</span> <span class="n">rx_pkt_valid</span><span class="p">;</span>
 <a name="l-98"></a>
 <a name="l-99"></a>  <span class="c1">// tx mux</span>
-<a name="l-100"></a>  <span class="k">logic</span> <span class="n">in_tx_pkt_start</span><span class="p">;</span>
-<a name="l-101"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">in_tx_pid</span><span class="p">;</span>
-<a name="l-102"></a>  <span class="k">logic</span> <span class="n">out_tx_pkt_start</span><span class="p">;</span>
-<a name="l-103"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">out_tx_pid</span><span class="p">;</span>
+<a name="l-100"></a>  <span class="kt">logic</span> <span class="n">in_tx_pkt_start</span><span class="p">;</span>
+<a name="l-101"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">in_tx_pid</span><span class="p">;</span>
+<a name="l-102"></a>  <span class="kt">logic</span> <span class="n">out_tx_pkt_start</span><span class="p">;</span>
+<a name="l-103"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">out_tx_pid</span><span class="p">;</span>
 <a name="l-104"></a>
 <a name="l-105"></a>  <span class="c1">// tx interface</span>
-<a name="l-106"></a>  <span class="k">logic</span> <span class="n">tx_pkt_start</span><span class="p">;</span>
-<a name="l-107"></a>  <span class="k">logic</span> <span class="n">tx_pkt_end</span><span class="p">;</span>
-<a name="l-108"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tx_pid</span><span class="p">;</span>
-<a name="l-109"></a>  <span class="k">logic</span> <span class="n">tx_data_avail</span><span class="p">;</span>
-<a name="l-110"></a>  <span class="k">logic</span> <span class="n">tx_data_get</span><span class="p">;</span>
-<a name="l-111"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tx_data</span><span class="p">;</span>
+<a name="l-106"></a>  <span class="kt">logic</span> <span class="n">tx_pkt_start</span><span class="p">;</span>
+<a name="l-107"></a>  <span class="kt">logic</span> <span class="n">tx_pkt_end</span><span class="p">;</span>
+<a name="l-108"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tx_pid</span><span class="p">;</span>
+<a name="l-109"></a>  <span class="kt">logic</span> <span class="n">tx_data_avail</span><span class="p">;</span>
+<a name="l-110"></a>  <span class="kt">logic</span> <span class="n">tx_data_get</span><span class="p">;</span>
+<a name="l-111"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tx_data</span><span class="p">;</span>
 <a name="l-112"></a>
-<a name="l-113"></a>  <span class="k">logic</span> <span class="n">usb_oe</span><span class="p">;</span>
+<a name="l-113"></a>  <span class="kt">logic</span> <span class="n">usb_oe</span><span class="p">;</span>
 <a name="l-114"></a>
 <a name="l-115"></a>  <span class="c1">// sof interface</span>
 <a name="l-116"></a>  <span class="k">assign</span> <span class="n">sof_valid_o</span> <span class="o">=</span> <span class="n">rx_pkt_end</span> <span class="o">&amp;</span> <span class="n">rx_pkt_valid</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">usb_pid_e</span><span class="p">&#39;(</span><span class="n">rx_pid</span><span class="p">)</span> <span class="o">==</span> <span class="n">UsbPidSof</span><span class="p">);</span>

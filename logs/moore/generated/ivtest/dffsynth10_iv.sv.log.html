@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth10.v.html" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth10.v</a>
 defines: 
-time_elapsed: 0.011s
-ram usage: 10920 KB
+time_elapsed: 0.010s
+ram usage: 10876 KB
 </pre>
 <pre class="log">
 
@@ -29,13 +29,13 @@ error: unknown system task `$monitor`
    |   $monitor(&#34;%b %b %b %b&#34;, CLK, EN, D, Q);
    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth10.v.html#l-43" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth10.v:43</a>:5-23:
    | 
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/dffsynth10.v.html#l-45" target="file-frame">third_party/tests/ivtest/ivltests/dffsynth10.v:45</a>:5-23:
    | 
    |     $display(&#34;PASSED&#34;);
@@ -46,9 +46,10 @@ init:
     %CLK.prb = prb i1$ %CLK
     wait %check, %CLK
 check:
+    %CLK.prb1 = prb i1$ %CLK
     %0 = const i1 0
     %1 = eq i1 %CLK.prb, %0
-    %2 = neq i1 %CLK.prb, %0
+    %2 = neq i1 %CLK.prb1, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
@@ -230,7 +231,6 @@ entity @top () -&gt; () {
     %failed = sig i1 %0
     inst %top.always.101.0 (i1$ %CLK, i4$ %D, i1$ %EN) -&gt; (i4$ %Q)
     inst %top.initial.401.0 (i4$ %Q) -&gt; (i1$ %CLK, i4$ %D, i1$ %EN, i1$ %failed)
-    halt
 }
 
 </pre>

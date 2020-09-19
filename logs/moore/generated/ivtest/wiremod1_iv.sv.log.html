@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,19 +17,19 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/wiremod1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/wiremod1.v</a>
 defines: 
-time_elapsed: 0.009s
-ram usage: 10704 KB
+time_elapsed: 0.008s
+ram usage: 10840 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/wiremod1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/wiremod1.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/wiremod1.v.html#l-45" target="file-frame">third_party/tests/ivtest/ivltests/wiremod1.v:45</a>:12-105:
    | 
    |            $display(&#34;FAILED continuous 1=%h,2=%h,3=%h,3a=%h&#34;,
    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/wiremod1.v.html#l-52" target="file-frame">third_party/tests/ivtest/ivltests/wiremod1.v:52</a>:5-23:
    | 
    |     $display(&#34;PASSED&#34;);
@@ -41,13 +41,13 @@ init:
     %var2.prb = prb i4$ %var2
     wait %check, %var1, %var2
 check:
-    %impledge = neq i4 %var1.prb, %var1.prb
-    %impledge1 = neq i4 %var2.prb, %var2.prb
+    %var1.prb1 = prb i4$ %var1
+    %impledge = neq i4 %var1.prb, %var1.prb1
+    %var2.prb1 = prb i4$ %var2
+    %impledge1 = neq i4 %var2.prb, %var2.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %var1.prb1 = prb i4$ %var1
-    %var2.prb1 = prb i4$ %var2
     %0 = umod i4 %var1.prb1, %var2.prb1
     %1 = const time 0s 1e
     drv i4$ %var3, %0, %1
@@ -56,12 +56,12 @@ event:
 
 proc %main.initial.194.0 (i4$ %var3, i4$ %var3a) -&gt; (i4$ %var1, i4$ %var2, i1$ %error) {
 0:
-    %1 = prb i1$ %error
-    %error.shadow = var i1 %1
+    %1 = prb i4$ %var1
+    %var1.shadow = var i4 %1
     %2 = prb i4$ %var2
     %var2.shadow = var i4 %2
-    %3 = prb i4$ %var1
-    %var1.shadow = var i4 %3
+    %3 = prb i1$ %error
+    %error.shadow = var i1 %3
     %4 = const i4 0
     %5 = const time 0s 1e
     drv i4$ %var1, %4, %5
@@ -152,7 +152,6 @@ entity @main () -&gt; () {
     drv i4$ %var3a, %2, %3
     inst %main.always.61.0 (i4$ %var1, i4$ %var2) -&gt; (i4$ %var3)
     inst %main.initial.194.0 (i4$ %var3, i4$ %var3a) -&gt; (i4$ %var1, i4$ %var2, i1$ %error)
-    halt
 }
 
 </pre>

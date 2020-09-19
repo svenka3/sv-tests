@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-9/9.4.2--event_control_edge.sv.html" target="file-frame">tests/chapter-9/9.4.2--event_control_edge.sv</a>
 defines: 
-time_elapsed: 0.007s
-ram usage: 10316 KB
+time_elapsed: 0.005s
+ram usage: 10480 KB
 </pre>
 <pre class="log">
 
@@ -34,27 +34,36 @@ init:
 check:
     %2 = prb i4$ %a
     st i4* %a.shadow, %2
+    %clk.prb1 = prb i1$ %clk
     %3 = const i1 0
     %4 = eq i1 %clk.prb, %3
-    %5 = neq i1 %clk.prb, %3
+    %5 = neq i1 %clk.prb1, %3
     %posedge = and i1 %4, %5
-    br %posedge, %init, %event
+    %6 = neq i1 %clk.prb, %3
+    %7 = eq i1 %clk.prb1, %3
+    %negedge = and i1 %7, %6
+    %edge = or i1 %posedge, %negedge
+    br %edge, %init, %event
 event:
     %a.shadow.ld = ld i4* %a.shadow
-    %6 = not i4 %a.shadow.ld
-    %7 = const time 0s 1e
-    drv i4$ %a, %6, %7
-    st i4* %a.shadow, %6
+    %8 = not i4 %a.shadow.ld
+    %9 = const time 0s 1e
+    drv i4$ %a, %8, %9
+    st i4* %a.shadow, %8
     br %0
 }
 
 entity @block_tb () -&gt; () {
     %0 = const i4 0
     %a = sig i4 %0
-    %1 = const i32 0
-    %clk = sig i32 %1
-    inst %block_tb.always.33.0 (i32$ %clk) -&gt; (i4$ %a)
-    halt
+    %1 = const i1 0
+    %clk = sig i1 %1
+    %2 = const i32 0
+    %3 = sig i32 %2
+    %4 = const time 0s 1d
+    drv i32$ %3, %2, %4
+    con i1$ %clk, %3
+    inst %block_tb.always.33.0 (i1$ %clk) -&gt; (i4$ %a)
 }
 
 </pre>

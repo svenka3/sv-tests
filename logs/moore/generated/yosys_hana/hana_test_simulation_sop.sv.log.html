@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_sop.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_sop.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
 defines: 
-time_elapsed: 0.035s
-ram usage: 15052 KB
+time_elapsed: 0.026s
+ram usage: 15224 KB
 </pre>
 <pre class="log">
 
@@ -29,15 +29,15 @@ init:
     %select.prb = prb i2$ %select
     wait %check, %in, %select
 check:
-    %impledge = neq i2 %in.prb, %in.prb
-    %impledge1 = neq i2 %select.prb, %select.prb
+    %in.prb1 = prb i2$ %in
+    %impledge = neq i2 %in.prb, %in.prb1
+    %select.prb1 = prb i2$ %select
+    %impledge1 = neq i2 %select.prb, %select.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %select.prb1 = prb i2$ %select
     %0 = const i2 0
     %1 = eq i2 %select.prb1, %0
-    %in.prb1 = prb i2$ %in
     %2 = const time 0s 1e
     br %1, %3, %case_body
 case_body:
@@ -58,7 +58,6 @@ case_body1:
 
 entity @f1_test (i2$ %in, i2$ %select) -&gt; (i1$ %out) {
     inst %f1_test.always.58.0 (i2$ %in, i2$ %select) -&gt; (i1$ %out)
-    halt
 }
 
 </pre>

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/hana/test_simulation_decoder.v.html" target="file-frame">third_party/tools/yosys/tests/hana/test_simulation_decoder.v</a> <a href="../../../../third_party/tools/yosys/tests/hana/hana_vlib.v.html" target="file-frame">third_party/tools/yosys/tests/hana/hana_vlib.v</a>
 defines: 
-time_elapsed: 0.036s
-ram usage: 15328 KB
+time_elapsed: 0.029s
+ram usage: 15564 KB
 </pre>
 <pre class="log">
 
@@ -29,12 +29,13 @@ init:
     %enable.prb = prb i2$ %enable
     wait %check, %in, %enable
 check:
-    %impledge = neq i2 %in.prb, %in.prb
-    %impledge1 = neq i2 %enable.prb, %enable.prb
+    %in.prb1 = prb i2$ %in
+    %impledge = neq i2 %in.prb, %in.prb1
+    %enable.prb1 = prb i2$ %enable
+    %impledge1 = neq i2 %enable.prb, %enable.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %enable.prb1 = prb i2$ %enable
     %0 = const i2 0
     %1 = neq i2 %enable.prb1, %0
     %2 = not i1 %1
@@ -46,7 +47,6 @@ if_true:
     drv i1$ %out, %3, %5
     br %init
 if_false:
-    %in.prb1 = prb i2$ %in
     %6 = eq i2 %in.prb1, %0
     br %6, %7, %case_body
 case_body:
@@ -78,7 +78,6 @@ case_body3:
 
 entity @f1_test (i2$ %in, i2$ %enable) -&gt; (i1$ %out) {
     inst %f1_test.always.86.0 (i2$ %in, i2$ %enable) -&gt; (i1$ %out)
-    halt
 }
 
 </pre>

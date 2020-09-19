@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,30 +18,30 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/time2.v</a>
 defines: 
 time_elapsed: 0.008s
-ram usage: 10436 KB
+ram usage: 10676 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e time2 <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html" target="file-frame">third_party/tests/ivtest/ivltests/time2.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:33</a>:9-54:
    | 
    |         $display(&#34;time = %t, clock = %h&#34;,$time,clock);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-41" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:41</a>:5-58:
    | 
    |     $display(&#34; edge ! time = %t, count = %h&#34;,$time,count);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-48" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:48</a>:9-65:
    | 
    |         $display(&#34;FAILED - vect[0] clock detect count=%d&#34;,count);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/time2.v.html#l-50" target="file-frame">third_party/tests/ivtest/ivltests/time2.v:50</a>:9-27:
    | 
    |         $display(&#34;PASSED&#34;);
@@ -98,21 +98,24 @@ init:
 check:
     %3 = prb i4$ %count
     st i4* %count.shadow, %3
-    %4 = const i4 0
-    %5 = eq i4 %2, %4
-    %6 = neq i4 %2, %4
-    %posedge = and i1 %5, %6
+    %clock.prb1 = prb i4$ %clock
+    %b.prb1 = prb i4$ %b
+    %4 = and i4 %clock.prb1, %b.prb1
+    %5 = const i4 0
+    %6 = eq i4 %2, %5
+    %7 = neq i4 %4, %5
+    %posedge = and i1 %6, %7
     br %posedge, %init, %event
 event:
-    %7 = const i32 0
+    %8 = const i32 0
     %count.shadow.ld = ld i4* %count.shadow
-    %zext = inss i32 %7, i4 %count.shadow.ld, 0, 4
-    %8 = const i32 1
-    %9 = add i32 %zext, %8
-    %10 = exts i4, i32 %9, 0, 4
-    %11 = const time 0s 1e
-    drv i4$ %count, %10, %11
-    st i4* %count.shadow, %10
+    %zext = inss i32 %8, i4 %count.shadow.ld, 0, 4
+    %9 = const i32 1
+    %10 = add i32 %zext, %9
+    %11 = exts i4, i32 %10, 0, 4
+    %12 = const time 0s 1e
+    drv i4$ %count, %11, %12
+    st i4* %count.shadow, %11
     br %0
 }
 
@@ -132,7 +135,6 @@ entity @time2 () -&gt; () {
     inst %time2.initial.86.0 () -&gt; (i4$ %clock, i4$ %b, i4$ %count)
     inst %time2.always.126.0 (i4$ %clock, i4$ %b) -&gt; (i4$ %count)
     inst %time2.initial.158.0 (i4$ %count) -&gt; ()
-    halt
 }
 
 </pre>

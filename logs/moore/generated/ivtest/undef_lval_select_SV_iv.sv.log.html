@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,19 +17,19 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/undef_lval_select_SV.v.html" target="file-frame">third_party/tests/ivtest/ivltests/undef_lval_select_SV.v</a>
 defines: 
-time_elapsed: 0.009s
-ram usage: 10576 KB
+time_elapsed: 0.007s
+ram usage: 10728 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/undef_lval_select_SV.v.html" target="file-frame">third_party/tests/ivtest/ivltests/undef_lval_select_SV.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/undef_lval_select_SV.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/undef_lval_select_SV.v:14</a>:7-108:
    | 
    |       $display(&#34;Failed vec[1&#39;bx], expected 4&#39;bxxxx, got %b, %b,%b&#34;,
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/undef_lval_select_SV.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/undef_lval_select_SV.v:19</a>:15-33:
    | 
    |     if (pass) $display(&#34;PASSED&#34;);
@@ -72,34 +72,6 @@ proc %top.initial.197.0 () -&gt; (i1$ %pass, [3 x i4]$ %vec) {
     %23 = const i4 9
     drv i4$ %14, %23, %4
     st i4* %15, %23
-    %vec.shadow.ld = ld [3 x i4]* %vec.shadow
-    %24 = exts [1 x i4], [3 x i4] %7, 0, 1
-    %25 = exts [2 x i4], [3 x i4] %vec.shadow.ld, 1, 2
-    %26 = inss [3 x i4] %7, [1 x i4] %24, 2, 1
-    %27 = inss [3 x i4] %26, [2 x i4] %25, 0, 2
-    %28 = extf i4, [3 x i4] %27, 0
-    %29 = neq i4 %28, %6
-    %30 = const i1 0
-    %31 = neq i1 %29, %30
-    %vec.shadow.ld1 = ld [3 x i4]* %vec.shadow
-    %32 = extf i4, [3 x i4] %vec.shadow.ld1, 0
-    %33 = neq i4 %32, %6
-    %34 = neq i1 %33, %30
-    %35 = and i1 %31, %34
-    %36 = neq i1 %35, %30
-    %vec.shadow.ld2 = ld [3 x i4]* %vec.shadow
-    %37 = shr [3 x i4] %vec.shadow.ld2, [3 x i4] %7, i32 %16
-    %38 = extf i4, [3 x i4] %37, 0
-    %39 = neq i4 %38, %6
-    %40 = neq i1 %39, %30
-    %41 = and i1 %36, %40
-    %42 = neq i1 %41, %30
-    br %42, %if_exit, %if_true
-if_true:
-    drv i1$ %pass, %30, %4
-    st i1* %pass.shadow, %30
-    br %if_exit
-if_exit:
     halt
 }
 
@@ -110,7 +82,6 @@ entity @top () -&gt; () {
     %2 = [i4 %1, %1, %1]
     %vec = sig [3 x i4] %2
     inst %top.initial.197.0 () -&gt; (i1$ %pass, [3 x i4]$ %vec)
-    halt
 }
 
 </pre>

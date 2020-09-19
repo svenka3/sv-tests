@@ -415,16 +415,16 @@
 <a name="l-11"></a>  <span class="kn">import</span> <span class="nn">otbn_pkg::*</span><span class="p">;</span>
 <a name="l-12"></a><span class="p">(</span>
 <a name="l-13"></a>  <span class="c1">// For assertions only.</span>
-<a name="l-14"></a>  <span class="k">input</span>  <span class="k">logic</span>                 <span class="n">clk_i</span><span class="p">,</span>
-<a name="l-15"></a>  <span class="k">input</span>  <span class="k">logic</span>                 <span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-14"></a>  <span class="k">input</span>  <span class="kt">logic</span>                 <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-15"></a>  <span class="k">input</span>  <span class="kt">logic</span>                 <span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-16"></a>
 <a name="l-17"></a>  <span class="c1">// instruction data to be decoded</span>
-<a name="l-18"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">insn_fetch_resp_data_i</span><span class="p">,</span>
-<a name="l-19"></a>  <span class="k">input</span>  <span class="k">logic</span>                 <span class="n">insn_fetch_resp_valid_i</span><span class="p">,</span>
+<a name="l-18"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>          <span class="n">insn_fetch_resp_data_i</span><span class="p">,</span>
+<a name="l-19"></a>  <span class="k">input</span>  <span class="kt">logic</span>                 <span class="n">insn_fetch_resp_valid_i</span><span class="p">,</span>
 <a name="l-20"></a>
 <a name="l-21"></a>  <span class="c1">// Decoded instruction</span>
-<a name="l-22"></a>  <span class="k">output</span> <span class="k">logic</span>                 <span class="n">insn_valid_o</span><span class="p">,</span>
-<a name="l-23"></a>  <span class="k">output</span> <span class="k">logic</span>                 <span class="n">insn_illegal_o</span><span class="p">,</span>
+<a name="l-22"></a>  <span class="k">output</span> <span class="kt">logic</span>                 <span class="n">insn_valid_o</span><span class="p">,</span>
+<a name="l-23"></a>  <span class="k">output</span> <span class="kt">logic</span>                 <span class="n">insn_illegal_o</span><span class="p">,</span>
 <a name="l-24"></a>
 <a name="l-25"></a>  <span class="c1">// Decoded instruction data, matching the &quot;Decoding&quot; section of the specification.</span>
 <a name="l-26"></a>  <span class="k">output</span> <span class="n">insn_dec_base_t</span>       <span class="n">insn_dec_base_o</span><span class="p">,</span>
@@ -433,16 +433,16 @@
 <a name="l-29"></a>  <span class="k">output</span> <span class="n">insn_dec_ctrl_t</span>       <span class="n">insn_dec_ctrl_o</span>
 <a name="l-30"></a><span class="p">);</span>
 <a name="l-31"></a>
-<a name="l-32"></a>  <span class="k">logic</span>        <span class="n">illegal_insn</span><span class="p">;</span>
-<a name="l-33"></a>  <span class="k">logic</span>        <span class="n">rf_we</span><span class="p">;</span>
+<a name="l-32"></a>  <span class="kt">logic</span>        <span class="n">illegal_insn</span><span class="p">;</span>
+<a name="l-33"></a>  <span class="kt">logic</span>        <span class="n">rf_we</span><span class="p">;</span>
 <a name="l-34"></a>
-<a name="l-35"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">insn</span><span class="p">;</span>
-<a name="l-36"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">insn_alu</span><span class="p">;</span>
+<a name="l-35"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">insn</span><span class="p">;</span>
+<a name="l-36"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">insn_alu</span><span class="p">;</span>
 <a name="l-37"></a>
 <a name="l-38"></a>  <span class="c1">// Source/Destination register instruction index</span>
-<a name="l-39"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">insn_rs1</span><span class="p">;</span>
-<a name="l-40"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">insn_rs2</span><span class="p">;</span>
-<a name="l-41"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">insn_rd</span><span class="p">;</span>
+<a name="l-39"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">insn_rs1</span><span class="p">;</span>
+<a name="l-40"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">insn_rs2</span><span class="p">;</span>
+<a name="l-41"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">insn_rd</span><span class="p">;</span>
 <a name="l-42"></a>
 <a name="l-43"></a>  <span class="n">insn_opcode_e</span>     <span class="n">opcode</span><span class="p">;</span>
 <a name="l-44"></a>  <span class="n">insn_opcode_e</span>     <span class="n">opcode_alu</span><span class="p">;</span>
@@ -460,42 +460,42 @@
 <a name="l-56"></a>  <span class="n">imm_a_sel_e</span>  <span class="n">imm_a_mux_sel</span><span class="p">;</span>       <span class="c1">// immediate selection for operand a</span>
 <a name="l-57"></a>  <span class="n">imm_b_sel_e</span>  <span class="n">imm_b_mux_sel</span><span class="p">;</span>       <span class="c1">// immediate selection for operand b</span>
 <a name="l-58"></a>
-<a name="l-59"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">imm_i_type</span><span class="p">;</span>
-<a name="l-60"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">imm_s_type</span><span class="p">;</span>
-<a name="l-61"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">imm_b_type</span><span class="p">;</span>
-<a name="l-62"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">imm_u_type</span><span class="p">;</span>
-<a name="l-63"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">imm_j_type</span><span class="p">;</span>
+<a name="l-59"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">imm_i_type</span><span class="p">;</span>
+<a name="l-60"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">imm_s_type</span><span class="p">;</span>
+<a name="l-61"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">imm_b_type</span><span class="p">;</span>
+<a name="l-62"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">imm_u_type</span><span class="p">;</span>
+<a name="l-63"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">imm_j_type</span><span class="p">;</span>
 <a name="l-64"></a>
 <a name="l-65"></a>  <span class="n">alu_op_e</span>    <span class="n">alu_operator</span><span class="p">;</span>        <span class="c1">// ALU operation selection</span>
 <a name="l-66"></a>  <span class="n">op_a_sel_e</span>  <span class="n">alu_op_a_mux_sel</span><span class="p">;</span>    <span class="c1">// operand a selection: reg value, PC, immediate or zero</span>
 <a name="l-67"></a>  <span class="n">op_b_sel_e</span>  <span class="n">alu_op_b_mux_sel</span><span class="p">;</span>    <span class="c1">// operand b selection: reg value or immediate</span>
 <a name="l-68"></a>
-<a name="l-69"></a>  <span class="k">logic</span> <span class="n">rf_ren_a</span><span class="p">;</span>
-<a name="l-70"></a>  <span class="k">logic</span> <span class="n">rf_ren_b</span><span class="p">;</span>
+<a name="l-69"></a>  <span class="kt">logic</span> <span class="n">rf_ren_a</span><span class="p">;</span>
+<a name="l-70"></a>  <span class="kt">logic</span> <span class="n">rf_ren_b</span><span class="p">;</span>
 <a name="l-71"></a>
 <a name="l-72"></a>  <span class="c1">// immediate extraction and sign extension</span>
-<a name="l-73"></a>  <span class="k">assign</span> <span class="n">imm_i_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mh">20</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">20</span><span class="p">]</span> <span class="p">};</span>
-<a name="l-74"></a>  <span class="k">assign</span> <span class="n">imm_s_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mh">20</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">25</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">7</span><span class="p">]</span> <span class="p">};</span>
-<a name="l-75"></a>  <span class="k">assign</span> <span class="n">imm_b_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mh">19</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">7</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">30</span><span class="o">:</span><span class="mh">25</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">8</span><span class="p">],</span> <span class="mh">1</span><span class="mb">&#39;b0</span> <span class="p">};</span>
-<a name="l-76"></a>  <span class="k">assign</span> <span class="n">imm_u_type</span> <span class="o">=</span> <span class="p">{</span> <span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">12</span><span class="p">],</span> <span class="mh">12</span><span class="mb">&#39;b0</span> <span class="p">};</span>
-<a name="l-77"></a>  <span class="k">assign</span> <span class="n">imm_j_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mh">12</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">12</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">20</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">30</span><span class="o">:</span><span class="mh">21</span><span class="p">],</span> <span class="mh">1</span><span class="mb">&#39;b0</span> <span class="p">};</span>
+<a name="l-73"></a>  <span class="k">assign</span> <span class="n">imm_i_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mi">20</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">20</span><span class="p">]</span> <span class="p">};</span>
+<a name="l-74"></a>  <span class="k">assign</span> <span class="n">imm_s_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mi">20</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">25</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">11</span><span class="o">:</span><span class="mi">7</span><span class="p">]</span> <span class="p">};</span>
+<a name="l-75"></a>  <span class="k">assign</span> <span class="n">imm_b_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mi">19</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">30</span><span class="o">:</span><span class="mi">25</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">11</span><span class="o">:</span><span class="mi">8</span><span class="p">],</span> <span class="mb">1&#39;b0</span> <span class="p">};</span>
+<a name="l-76"></a>  <span class="k">assign</span> <span class="n">imm_u_type</span> <span class="o">=</span> <span class="p">{</span> <span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">12</span><span class="p">],</span> <span class="mb">12&#39;b0</span> <span class="p">};</span>
+<a name="l-77"></a>  <span class="k">assign</span> <span class="n">imm_j_type</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mi">12</span><span class="p">{</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="p">]}},</span> <span class="n">insn</span><span class="p">[</span><span class="mi">19</span><span class="o">:</span><span class="mi">12</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">20</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">30</span><span class="o">:</span><span class="mi">21</span><span class="p">],</span> <span class="mb">1&#39;b0</span> <span class="p">};</span>
 <a name="l-78"></a>
 <a name="l-79"></a>  <span class="c1">// source registers</span>
-<a name="l-80"></a>  <span class="k">assign</span> <span class="n">insn_rs1</span> <span class="o">=</span> <span class="n">insn</span><span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">15</span><span class="p">];</span>
-<a name="l-81"></a>  <span class="k">assign</span> <span class="n">insn_rs2</span> <span class="o">=</span> <span class="n">insn</span><span class="p">[</span><span class="mh">24</span><span class="o">:</span><span class="mh">20</span><span class="p">];</span>
+<a name="l-80"></a>  <span class="k">assign</span> <span class="n">insn_rs1</span> <span class="o">=</span> <span class="n">insn</span><span class="p">[</span><span class="mi">19</span><span class="o">:</span><span class="mi">15</span><span class="p">];</span>
+<a name="l-81"></a>  <span class="k">assign</span> <span class="n">insn_rs2</span> <span class="o">=</span> <span class="n">insn</span><span class="p">[</span><span class="mi">24</span><span class="o">:</span><span class="mi">20</span><span class="p">];</span>
 <a name="l-82"></a>
 <a name="l-83"></a>  <span class="c1">// destination register</span>
-<a name="l-84"></a>  <span class="k">assign</span> <span class="n">insn_rd</span> <span class="o">=</span> <span class="n">insn</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">7</span><span class="p">];</span>
+<a name="l-84"></a>  <span class="k">assign</span> <span class="n">insn_rd</span> <span class="o">=</span> <span class="n">insn</span><span class="p">[</span><span class="mi">11</span><span class="o">:</span><span class="mi">7</span><span class="p">];</span>
 <a name="l-85"></a>
 <a name="l-86"></a>  <span class="n">insn_subset_e</span> <span class="n">insn_subset</span><span class="p">;</span>
 <a name="l-87"></a>  <span class="n">rf_wd_sel_e</span> <span class="n">rf_wdata_sel</span><span class="p">;</span>
 <a name="l-88"></a>
-<a name="l-89"></a>  <span class="k">logic</span> <span class="n">ecall_insn</span><span class="p">;</span>
-<a name="l-90"></a>  <span class="k">logic</span> <span class="n">ld_insn</span><span class="p">;</span>
-<a name="l-91"></a>  <span class="k">logic</span> <span class="n">st_insn</span><span class="p">;</span>
+<a name="l-89"></a>  <span class="kt">logic</span> <span class="n">ecall_insn</span><span class="p">;</span>
+<a name="l-90"></a>  <span class="kt">logic</span> <span class="n">ld_insn</span><span class="p">;</span>
+<a name="l-91"></a>  <span class="kt">logic</span> <span class="n">st_insn</span><span class="p">;</span>
 <a name="l-92"></a>
 <a name="l-93"></a>  <span class="c1">// Reduced main ALU immediate MUX for Operand B</span>
-<a name="l-94"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">imm_b</span><span class="p">;</span>
+<a name="l-94"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">imm_b</span><span class="p">;</span>
 <a name="l-95"></a>  <span class="k">always_comb</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">immediate_b_mux</span>
 <a name="l-96"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">imm_b_mux_sel</span><span class="p">)</span>
 <a name="l-97"></a>      <span class="nl">ImmBI:</span>         <span class="n">imm_b</span> <span class="o">=</span> <span class="n">imm_i_type</span><span class="p">;</span>
@@ -533,16 +533,16 @@
 <a name="l-129"></a>
 <a name="l-130"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-131"></a>    <span class="n">rf_wdata_sel</span>          <span class="o">=</span> <span class="n">RfWdSelEx</span><span class="p">;</span>
-<a name="l-132"></a>    <span class="n">rf_we</span>                 <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-133"></a>    <span class="n">rf_ren_a</span>              <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-134"></a>    <span class="n">rf_ren_b</span>              <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-132"></a>    <span class="n">rf_we</span>                 <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-133"></a>    <span class="n">rf_ren_a</span>              <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-134"></a>    <span class="n">rf_ren_b</span>              <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-135"></a>
-<a name="l-136"></a>    <span class="n">illegal_insn</span>          <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-137"></a>    <span class="n">ecall_insn</span>            <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-138"></a>    <span class="n">ld_insn</span>               <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-139"></a>    <span class="n">st_insn</span>               <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-136"></a>    <span class="n">illegal_insn</span>          <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-137"></a>    <span class="n">ecall_insn</span>            <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-138"></a>    <span class="n">ld_insn</span>               <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-139"></a>    <span class="n">st_insn</span>               <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-140"></a>
-<a name="l-141"></a>    <span class="n">opcode</span>                <span class="o">=</span> <span class="n">insn_opcode_e</span><span class="p">&#39;(</span><span class="n">insn</span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
+<a name="l-141"></a>    <span class="n">opcode</span>                <span class="o">=</span> <span class="n">insn_opcode_e</span><span class="p">&#39;(</span><span class="n">insn</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span>
 <a name="l-142"></a>
 <a name="l-143"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">opcode</span><span class="p">)</span>
 <a name="l-144"></a>      <span class="c1">/////////</span>
@@ -551,64 +551,64 @@
 <a name="l-147"></a>
 <a name="l-148"></a>      <span class="nl">InsnOpcodeBaseLui:</span> <span class="k">begin</span>  <span class="c1">// Load Upper Immediate</span>
 <a name="l-149"></a>        <span class="n">insn_subset</span>      <span class="o">=</span> <span class="n">InsnSubsetBase</span><span class="p">;</span>
-<a name="l-150"></a>        <span class="n">rf_we</span>            <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-150"></a>        <span class="n">rf_we</span>            <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-151"></a>      <span class="k">end</span>
 <a name="l-152"></a>
 <a name="l-153"></a>      <span class="nl">InsnOpcodeBaseOpImm:</span> <span class="k">begin</span> <span class="c1">// Register-Immediate ALU Operations</span>
 <a name="l-154"></a>        <span class="n">insn_subset</span>      <span class="o">=</span> <span class="n">InsnSubsetBase</span><span class="p">;</span>
-<a name="l-155"></a>        <span class="n">rf_ren_a</span>         <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-156"></a>        <span class="n">rf_we</span>            <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-155"></a>        <span class="n">rf_ren_a</span>         <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-156"></a>        <span class="n">rf_we</span>            <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-157"></a>
-<a name="l-158"></a>        <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">])</span>
-<a name="l-159"></a>          <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">,</span>
-<a name="l-160"></a>          <span class="mh">3</span><span class="mb">&#39;b010</span><span class="p">,</span>
-<a name="l-161"></a>          <span class="mh">3</span><span class="mb">&#39;b011</span><span class="p">,</span>
-<a name="l-162"></a>          <span class="mh">3</span><span class="mb">&#39;b100</span><span class="p">,</span>
-<a name="l-163"></a>          <span class="mh">3</span><span class="mb">&#39;b110</span><span class="p">,</span>
-<a name="l-164"></a>          <span class="mh">3</span><span class="mb">&#39;b111</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-158"></a>        <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">])</span>
+<a name="l-159"></a>          <span class="mb">3&#39;b000</span><span class="p">,</span>
+<a name="l-160"></a>          <span class="mb">3&#39;b010</span><span class="p">,</span>
+<a name="l-161"></a>          <span class="mb">3&#39;b011</span><span class="p">,</span>
+<a name="l-162"></a>          <span class="mb">3&#39;b100</span><span class="p">,</span>
+<a name="l-163"></a>          <span class="mb">3&#39;b110</span><span class="p">,</span>
+<a name="l-164"></a>          <span class="mb">3&#39;b111</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-165"></a>
-<a name="l-166"></a>          <span class="mh">3</span><span class="mb">&#39;b001</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-167"></a>            <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">27</span><span class="p">])</span>
-<a name="l-168"></a>              <span class="mh">5</span><span class="mb">&#39;b0</span><span class="nl">_0000:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>                                         <span class="c1">// slli</span>
-<a name="l-169"></a>              <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-166"></a>          <span class="mb">3&#39;b001</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-167"></a>            <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">27</span><span class="p">])</span>
+<a name="l-168"></a>              <span class="mb">5&#39;b0_0000</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>                                         <span class="c1">// slli</span>
+<a name="l-169"></a>              <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-170"></a>            <span class="k">endcase</span>
 <a name="l-171"></a>          <span class="k">end</span>
 <a name="l-172"></a>
-<a name="l-173"></a>          <span class="mh">3</span><span class="mb">&#39;b101</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-174"></a>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">insn</span><span class="p">[</span><span class="mh">26</span><span class="p">])</span> <span class="k">begin</span>
-<a name="l-175"></a>              <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">27</span><span class="p">])</span>
-<a name="l-176"></a>                <span class="mh">5</span><span class="mb">&#39;b0</span><span class="n">_0000</span><span class="p">,</span>                                                             <span class="c1">// srli</span>
-<a name="l-177"></a>                <span class="mh">5</span><span class="mb">&#39;b0</span><span class="nl">_1000:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>                                        <span class="c1">// srai</span>
+<a name="l-173"></a>          <span class="mb">3&#39;b101</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-174"></a>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">insn</span><span class="p">[</span><span class="mi">26</span><span class="p">])</span> <span class="k">begin</span>
+<a name="l-175"></a>              <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">27</span><span class="p">])</span>
+<a name="l-176"></a>                <span class="mb">5&#39;b0_0000</span><span class="p">,</span>                                                             <span class="c1">// srli</span>
+<a name="l-177"></a>                <span class="mb">5&#39;b0_1000</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>                                        <span class="c1">// srai</span>
 <a name="l-178"></a>
-<a name="l-179"></a>                <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-179"></a>                <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-180"></a>              <span class="k">endcase</span>
 <a name="l-181"></a>            <span class="k">end</span>
 <a name="l-182"></a>          <span class="k">end</span>
 <a name="l-183"></a>
-<a name="l-184"></a>          <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-184"></a>          <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-185"></a>        <span class="k">endcase</span>
 <a name="l-186"></a>      <span class="k">end</span>
 <a name="l-187"></a>
 <a name="l-188"></a>      <span class="nl">InsnOpcodeBaseOp:</span> <span class="k">begin</span>  <span class="c1">// Register-Register ALU operation</span>
 <a name="l-189"></a>        <span class="n">insn_subset</span>     <span class="o">=</span> <span class="n">InsnSubsetBase</span><span class="p">;</span>
-<a name="l-190"></a>        <span class="n">rf_ren_a</span>        <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-191"></a>        <span class="n">rf_ren_b</span>        <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-192"></a>        <span class="n">rf_we</span>           <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-193"></a>        <span class="k">if</span> <span class="p">({</span><span class="n">insn</span><span class="p">[</span><span class="mh">26</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">13</span><span class="o">:</span><span class="mh">12</span><span class="p">]}</span> <span class="o">!=</span> <span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">,</span> <span class="mh">2</span><span class="mb">&#39;b01</span><span class="p">})</span> <span class="k">begin</span>
-<a name="l-194"></a>          <span class="k">unique</span> <span class="k">case</span> <span class="p">({</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">25</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">]})</span>
+<a name="l-190"></a>        <span class="n">rf_ren_a</span>        <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-191"></a>        <span class="n">rf_ren_b</span>        <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-192"></a>        <span class="n">rf_we</span>           <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-193"></a>        <span class="k">if</span> <span class="p">({</span><span class="n">insn</span><span class="p">[</span><span class="mi">26</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">13</span><span class="o">:</span><span class="mi">12</span><span class="p">]}</span> <span class="o">!=</span> <span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">,</span> <span class="mb">2&#39;b01</span><span class="p">})</span> <span class="k">begin</span>
+<a name="l-194"></a>          <span class="k">unique</span> <span class="k">case</span> <span class="p">({</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">25</span><span class="p">],</span> <span class="n">insn</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">]})</span>
 <a name="l-195"></a>            <span class="c1">// RV32I ALU operations</span>
-<a name="l-196"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">},</span>
-<a name="l-197"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b010</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">},</span>
-<a name="l-198"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b010</span><span class="p">},</span>
-<a name="l-199"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b011</span><span class="p">},</span>
-<a name="l-200"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b100</span><span class="p">},</span>
-<a name="l-201"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b110</span><span class="p">},</span>
-<a name="l-202"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b111</span><span class="p">},</span>
-<a name="l-203"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">},</span>
-<a name="l-204"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b101</span><span class="p">},</span>
-<a name="l-205"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b010</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b101</span><span class="p">}</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-196"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b000</span><span class="p">},</span>
+<a name="l-197"></a>            <span class="p">{</span><span class="mb">7&#39;b010_0000</span><span class="p">,</span> <span class="mb">3&#39;b000</span><span class="p">},</span>
+<a name="l-198"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b010</span><span class="p">},</span>
+<a name="l-199"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b011</span><span class="p">},</span>
+<a name="l-200"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b100</span><span class="p">},</span>
+<a name="l-201"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b110</span><span class="p">},</span>
+<a name="l-202"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b111</span><span class="p">},</span>
+<a name="l-203"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b001</span><span class="p">},</span>
+<a name="l-204"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b101</span><span class="p">},</span>
+<a name="l-205"></a>            <span class="p">{</span><span class="mb">7&#39;b010_0000</span><span class="p">,</span> <span class="mb">3&#39;b101</span><span class="p">}</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-206"></a>            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-207"></a>              <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-207"></a>              <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-208"></a>            <span class="k">end</span>
 <a name="l-209"></a>          <span class="k">endcase</span>
 <a name="l-210"></a>        <span class="k">end</span>
@@ -620,22 +620,22 @@
 <a name="l-216"></a>
 <a name="l-217"></a>      <span class="nl">InsnOpcodeBaseLoad:</span> <span class="k">begin</span>
 <a name="l-218"></a>        <span class="n">insn_subset</span> <span class="o">=</span> <span class="n">InsnSubsetBase</span><span class="p">;</span>
-<a name="l-219"></a>        <span class="n">rf_ren_a</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-220"></a>        <span class="n">ld_insn</span>     <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-219"></a>        <span class="n">rf_ren_a</span>    <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-220"></a>        <span class="n">ld_insn</span>     <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-221"></a>
-<a name="l-222"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">3</span><span class="mb">&#39;b010</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-223"></a>          <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-222"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">]</span> <span class="o">!=</span> <span class="mb">3&#39;b010</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-223"></a>          <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-224"></a>        <span class="k">end</span>
 <a name="l-225"></a>      <span class="k">end</span>
 <a name="l-226"></a>
 <a name="l-227"></a>      <span class="nl">InsnOpcodeBaseStore:</span> <span class="k">begin</span>
 <a name="l-228"></a>        <span class="n">insn_subset</span> <span class="o">=</span> <span class="n">InsnSubsetBase</span><span class="p">;</span>
-<a name="l-229"></a>        <span class="n">rf_ren_a</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-230"></a>        <span class="n">rf_ren_b</span>    <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-231"></a>        <span class="n">st_insn</span>     <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-229"></a>        <span class="n">rf_ren_a</span>    <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-230"></a>        <span class="n">rf_ren_b</span>    <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-231"></a>        <span class="n">st_insn</span>     <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-232"></a>
-<a name="l-233"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">3</span><span class="mb">&#39;b010</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-234"></a>          <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-233"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">]</span> <span class="o">!=</span> <span class="mb">3&#39;b010</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-234"></a>          <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-235"></a>        <span class="k">end</span>
 <a name="l-236"></a>      <span class="k">end</span>
 <a name="l-237"></a>
@@ -645,26 +645,26 @@
 <a name="l-241"></a>
 <a name="l-242"></a>      <span class="nl">InsnOpcodeBaseSystem:</span> <span class="k">begin</span>
 <a name="l-243"></a>        <span class="n">insn_subset</span> <span class="o">=</span> <span class="n">InsnSubsetBase</span><span class="p">;</span>
-<a name="l-244"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">]</span> <span class="o">==</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-244"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">]</span> <span class="o">==</span> <span class="mb">3&#39;b000</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-245"></a>          <span class="c1">// non CSR related SYSTEM instructions</span>
-<a name="l-246"></a>          <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">20</span><span class="p">])</span>
+<a name="l-246"></a>          <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">20</span><span class="p">])</span>
 <a name="l-247"></a>            <span class="mh">12&#39;h000</span><span class="o">:</span>  <span class="c1">// ECALL</span>
-<a name="l-248"></a>              <span class="n">ecall_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-248"></a>              <span class="n">ecall_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-249"></a>
 <a name="l-250"></a>            <span class="k">default</span><span class="o">:</span>
-<a name="l-251"></a>              <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-251"></a>              <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-252"></a>          <span class="k">endcase</span>
 <a name="l-253"></a>
 <a name="l-254"></a>          <span class="c1">// rs1 and rd must be 0</span>
-<a name="l-255"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">insn_rs1</span> <span class="o">!=</span> <span class="mh">5</span><span class="mb">&#39;b0</span> <span class="o">||</span> <span class="n">insn_rd</span> <span class="o">!=</span> <span class="mh">5</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-256"></a>            <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-255"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">insn_rs1</span> <span class="o">!=</span> <span class="mb">5&#39;b0</span> <span class="o">||</span> <span class="n">insn_rd</span> <span class="o">!=</span> <span class="mb">5&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-256"></a>            <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-257"></a>          <span class="k">end</span>
 <a name="l-258"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-259"></a>          <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-259"></a>          <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-260"></a>        <span class="k">end</span>
 <a name="l-261"></a>      <span class="k">end</span>
 <a name="l-262"></a>
-<a name="l-263"></a>      <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-263"></a>      <span class="k">default</span><span class="o">:</span> <span class="n">illegal_insn</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-264"></a>    <span class="k">endcase</span>
 <a name="l-265"></a>
 <a name="l-266"></a>
@@ -672,7 +672,7 @@
 <a name="l-268"></a>    <span class="c1">// NOTE: instructions can also be detected to be illegal inside the CSRs (upon accesses with</span>
 <a name="l-269"></a>    <span class="c1">// insufficient privileges). These cases are not handled here.</span>
 <a name="l-270"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">illegal_insn</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-271"></a>      <span class="n">rf_we</span>           <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-271"></a>      <span class="n">rf_we</span>           <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-272"></a>    <span class="k">end</span>
 <a name="l-273"></a>  <span class="k">end</span>
 <a name="l-274"></a>
@@ -688,7 +688,7 @@
 <a name="l-284"></a>    <span class="n">imm_a_mux_sel</span>    <span class="o">=</span> <span class="n">ImmAZero</span><span class="p">;</span>
 <a name="l-285"></a>    <span class="n">imm_b_mux_sel</span>    <span class="o">=</span> <span class="n">ImmBI</span><span class="p">;</span>
 <a name="l-286"></a>
-<a name="l-287"></a>    <span class="n">opcode_alu</span>         <span class="o">=</span> <span class="n">insn_opcode_e</span><span class="p">&#39;(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
+<a name="l-287"></a>    <span class="n">opcode_alu</span>         <span class="o">=</span> <span class="n">insn_opcode_e</span><span class="p">&#39;(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span>
 <a name="l-288"></a>
 <a name="l-289"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">opcode_alu</span><span class="p">)</span>
 <a name="l-290"></a>      <span class="c1">/////////</span>
@@ -715,20 +715,20 @@
 <a name="l-311"></a>        <span class="n">alu_op_b_mux_sel</span>  <span class="o">=</span> <span class="n">OpBSelImmediate</span><span class="p">;</span>
 <a name="l-312"></a>        <span class="n">imm_b_mux_sel</span>     <span class="o">=</span> <span class="n">ImmBI</span><span class="p">;</span>
 <a name="l-313"></a>
-<a name="l-314"></a>        <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">])</span>
-<a name="l-315"></a>          <span class="mh">3</span><span class="mb">&#39;b000</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAdd</span><span class="p">;</span>  <span class="c1">// Add Immediate</span>
-<a name="l-316"></a>          <span class="mh">3</span><span class="mb">&#39;b100</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpXor</span><span class="p">;</span>  <span class="c1">// Exclusive Or with Immediate</span>
-<a name="l-317"></a>          <span class="mh">3</span><span class="mb">&#39;b110</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpOr</span><span class="p">;</span>   <span class="c1">// Or with Immediate</span>
-<a name="l-318"></a>          <span class="mh">3</span><span class="mb">&#39;b111</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAnd</span><span class="p">;</span>  <span class="c1">// And with Immediate</span>
+<a name="l-314"></a>        <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">])</span>
+<a name="l-315"></a>          <span class="mb">3&#39;b000</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAdd</span><span class="p">;</span>  <span class="c1">// Add Immediate</span>
+<a name="l-316"></a>          <span class="mb">3&#39;b100</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpXor</span><span class="p">;</span>  <span class="c1">// Exclusive Or with Immediate</span>
+<a name="l-317"></a>          <span class="mb">3&#39;b110</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpOr</span><span class="p">;</span>   <span class="c1">// Or with Immediate</span>
+<a name="l-318"></a>          <span class="mb">3&#39;b111</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAnd</span><span class="p">;</span>  <span class="c1">// And with Immediate</span>
 <a name="l-319"></a>
-<a name="l-320"></a>          <span class="mh">3</span><span class="mb">&#39;b001</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-320"></a>          <span class="mb">3&#39;b001</span><span class="o">:</span> <span class="k">begin</span>
 <a name="l-321"></a>            <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSll</span><span class="p">;</span> <span class="c1">// Shift Left Logical by Immediate</span>
 <a name="l-322"></a>          <span class="k">end</span>
 <a name="l-323"></a>
-<a name="l-324"></a>          <span class="mh">3</span><span class="mb">&#39;b101</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-325"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">27</span><span class="p">]</span> <span class="o">==</span> <span class="mh">5</span><span class="mb">&#39;b0</span><span class="n">_0000</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-324"></a>          <span class="mb">3&#39;b101</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-325"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">27</span><span class="p">]</span> <span class="o">==</span> <span class="mb">5&#39;b0_0000</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-326"></a>              <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSrl</span><span class="p">;</span>               <span class="c1">// Shift Right Logical by Immediate</span>
-<a name="l-327"></a>            <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">27</span><span class="p">]</span> <span class="o">==</span> <span class="mh">5</span><span class="mb">&#39;b0</span><span class="n">_1000</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-327"></a>            <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">27</span><span class="p">]</span> <span class="o">==</span> <span class="mb">5&#39;b0_1000</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-328"></a>              <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSra</span><span class="p">;</span>               <span class="c1">// Shift Right Arithmetically by Immediate</span>
 <a name="l-329"></a>            <span class="k">end</span>
 <a name="l-330"></a>          <span class="k">end</span>
@@ -741,17 +741,17 @@
 <a name="l-337"></a>        <span class="n">alu_op_a_mux_sel</span> <span class="o">=</span> <span class="n">OpASelRegister</span><span class="p">;</span>
 <a name="l-338"></a>        <span class="n">alu_op_b_mux_sel</span> <span class="o">=</span> <span class="n">OpBSelRegister</span><span class="p">;</span>
 <a name="l-339"></a>
-<a name="l-340"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">insn_alu</span><span class="p">[</span><span class="mh">26</span><span class="p">])</span> <span class="k">begin</span>
-<a name="l-341"></a>          <span class="k">unique</span> <span class="k">case</span> <span class="p">({</span><span class="n">insn_alu</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">25</span><span class="p">],</span> <span class="n">insn_alu</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">]})</span>
+<a name="l-340"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">insn_alu</span><span class="p">[</span><span class="mi">26</span><span class="p">])</span> <span class="k">begin</span>
+<a name="l-341"></a>          <span class="k">unique</span> <span class="k">case</span> <span class="p">({</span><span class="n">insn_alu</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">25</span><span class="p">],</span> <span class="n">insn_alu</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">]})</span>
 <a name="l-342"></a>            <span class="c1">// RV32I ALU operations</span>
-<a name="l-343"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAdd</span><span class="p">;</span>   <span class="c1">// Add</span>
-<a name="l-344"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b010</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSub</span><span class="p">;</span>   <span class="c1">// Sub</span>
-<a name="l-345"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b100</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpXor</span><span class="p">;</span>   <span class="c1">// Xor</span>
-<a name="l-346"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b110</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpOr</span><span class="p">;</span>    <span class="c1">// Or</span>
-<a name="l-347"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b111</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAnd</span><span class="p">;</span>   <span class="c1">// And</span>
-<a name="l-348"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b001</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSll</span><span class="p">;</span>   <span class="c1">// Shift Left Logical</span>
-<a name="l-349"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b000</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b101</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSrl</span><span class="p">;</span>   <span class="c1">// Shift Right Logical</span>
-<a name="l-350"></a>            <span class="p">{</span><span class="mh">7</span><span class="mb">&#39;b010</span><span class="n">_0000</span><span class="p">,</span> <span class="mh">3</span><span class="mb">&#39;b101</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSra</span><span class="p">;</span>   <span class="c1">// Shift Right Arithmetic</span>
+<a name="l-343"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b000</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAdd</span><span class="p">;</span>   <span class="c1">// Add</span>
+<a name="l-344"></a>            <span class="p">{</span><span class="mb">7&#39;b010_0000</span><span class="p">,</span> <span class="mb">3&#39;b000</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSub</span><span class="p">;</span>   <span class="c1">// Sub</span>
+<a name="l-345"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b100</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpXor</span><span class="p">;</span>   <span class="c1">// Xor</span>
+<a name="l-346"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b110</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpOr</span><span class="p">;</span>    <span class="c1">// Or</span>
+<a name="l-347"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b111</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpAnd</span><span class="p">;</span>   <span class="c1">// And</span>
+<a name="l-348"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b001</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSll</span><span class="p">;</span>   <span class="c1">// Shift Left Logical</span>
+<a name="l-349"></a>            <span class="p">{</span><span class="mb">7&#39;b000_0000</span><span class="p">,</span> <span class="mb">3&#39;b101</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSrl</span><span class="p">;</span>   <span class="c1">// Shift Right Logical</span>
+<a name="l-350"></a>            <span class="p">{</span><span class="mb">7&#39;b010_0000</span><span class="p">,</span> <span class="mb">3&#39;b101</span><span class="p">}</span><span class="o">:</span> <span class="n">alu_operator</span> <span class="o">=</span> <span class="n">AluOpSra</span><span class="p">;</span>   <span class="c1">// Shift Right Arithmetic</span>
 <a name="l-351"></a>            <span class="k">default</span><span class="o">:</span> <span class="p">;</span>
 <a name="l-352"></a>          <span class="k">endcase</span>
 <a name="l-353"></a>        <span class="k">end</span>
@@ -780,7 +780,7 @@
 <a name="l-376"></a>      <span class="c1">/////////////</span>
 <a name="l-377"></a>
 <a name="l-378"></a>      <span class="nl">InsnOpcodeBaseSystem:</span> <span class="k">begin</span>
-<a name="l-379"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">]</span> <span class="o">==</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-379"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">insn_alu</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">]</span> <span class="o">==</span> <span class="mb">3&#39;b000</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-380"></a>          <span class="c1">// non CSR related SYSTEM instructions</span>
 <a name="l-381"></a>          <span class="n">alu_op_a_mux_sel</span> <span class="o">=</span> <span class="n">OpASelRegister</span><span class="p">;</span>
 <a name="l-382"></a>          <span class="n">alu_op_b_mux_sel</span> <span class="o">=</span> <span class="n">OpBSelImmediate</span><span class="p">;</span>
@@ -797,7 +797,7 @@
 <a name="l-393"></a>
 <a name="l-394"></a>  <span class="c1">// Selectors must be known/valid.</span>
 <a name="l-395"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexRegImmAluOpKnown</span><span class="p">,</span> <span class="p">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">InsnOpcodeBaseOpImm</span><span class="p">)</span> <span class="o">|-&gt;</span>
-<a name="l-396"></a>      <span class="o">!</span><span class="n">$isunknown</span><span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">]))</span>
+<a name="l-396"></a>      <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">(</span><span class="n">insn</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">]))</span>
 <a name="l-397"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>

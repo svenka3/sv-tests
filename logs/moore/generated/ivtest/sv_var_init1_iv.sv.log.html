@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,25 +17,25 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v</a>
 defines: 
-time_elapsed: 0.008s
-ram usage: 10400 KB
+time_elapsed: 0.006s
+ram usage: 10436 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:9</a>:6-31:
    | 
    |   #0 $display(&#34;%0d %0d&#34;, i, j);
    |      ^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-11" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:11</a>:5-23:
    | 
    |     $display(&#34;PASSED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/sv_var_init1.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/sv_var_init1.v:13</a>:5-23:
    | 
    |     $display(&#34;FAILED&#34;);
@@ -46,10 +46,10 @@ init:
     %i.prb = prb i32$ %i
     wait %check, %i
 check:
-    %impledge = neq i32 %i.prb, %i.prb
+    %i.prb1 = prb i32$ %i
+    %impledge = neq i32 %i.prb, %i.prb1
     br %impledge, %init, %event
 event:
-    %i.prb1 = prb i32$ %i
     %0 = const time 0s 1e
     drv i32$ %j, %i.prb1, %0
     br %init
@@ -70,7 +70,6 @@ entity @top () -&gt; () {
     %j = sig i32 %1
     inst %top.always.28.0 (i32$ %i) -&gt; (i32$ %j)
     inst %top.initial.78.0 (i32$ %i, i32$ %j) -&gt; ()
-    halt
 }
 
 </pre>

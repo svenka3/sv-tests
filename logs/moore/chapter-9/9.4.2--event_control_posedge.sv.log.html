@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../tests/chapter-9/9.4.2--event_control_posedge.sv.html" target="file-frame">tests/chapter-9/9.4.2--event_control_posedge.sv</a>
 defines: 
-time_elapsed: 0.006s
-ram usage: 10328 KB
+time_elapsed: 0.004s
+ram usage: 10320 KB
 </pre>
 <pre class="log">
 
@@ -34,9 +34,10 @@ init:
 check:
     %2 = prb i4$ %a
     st i4* %a.shadow, %2
+    %clk.prb1 = prb i1$ %clk
     %3 = const i1 0
     %4 = eq i1 %clk.prb, %3
-    %5 = neq i1 %clk.prb, %3
+    %5 = neq i1 %clk.prb1, %3
     %posedge = and i1 %4, %5
     br %posedge, %init, %event
 event:
@@ -51,10 +52,14 @@ event:
 entity @block_tb () -&gt; () {
     %0 = const i4 0
     %a = sig i4 %0
-    %1 = const i32 0
-    %clk = sig i32 %1
-    inst %block_tb.always.33.0 (i32$ %clk) -&gt; (i4$ %a)
-    halt
+    %1 = const i1 0
+    %clk = sig i1 %1
+    %2 = const i32 0
+    %3 = sig i32 %2
+    %4 = const time 0s 1d
+    drv i32$ %3, %2, %4
+    con i1$ %clk, %3
+    inst %block_tb.always.33.0 (i1$ %clk) -&gt; (i4$ %a)
 }
 
 </pre>

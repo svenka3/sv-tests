@@ -275,65 +275,65 @@
 <a name="l-41"></a>
 <a name="l-42"></a><span class="k">module</span> <span class="n">axi_address_decoder_AR</span>
 <a name="l-43"></a><span class="p">#(</span>
-<a name="l-44"></a>    <span class="k">parameter</span>  <span class="n">ADDR_WIDTH</span>     <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>
-<a name="l-45"></a>    <span class="k">parameter</span>  <span class="n">N_INIT_PORT</span>    <span class="o">=</span> <span class="mh">8</span><span class="p">,</span>
-<a name="l-46"></a>    <span class="k">parameter</span>  <span class="n">N_REGION</span>       <span class="o">=</span> <span class="mh">4</span>
+<a name="l-44"></a>    <span class="k">parameter</span>  <span class="n">ADDR_WIDTH</span>     <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+<a name="l-45"></a>    <span class="k">parameter</span>  <span class="n">N_INIT_PORT</span>    <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+<a name="l-46"></a>    <span class="k">parameter</span>  <span class="n">N_REGION</span>       <span class="o">=</span> <span class="mi">4</span>
 <a name="l-47"></a><span class="p">)</span>
 <a name="l-48"></a><span class="p">(</span>
-<a name="l-49"></a>    <span class="k">input</span>  <span class="k">logic</span>                                                        <span class="n">clk</span><span class="p">,</span>
-<a name="l-50"></a>    <span class="k">input</span>  <span class="k">logic</span>                                                        <span class="n">rst_n</span><span class="p">,</span>
+<a name="l-49"></a>    <span class="k">input</span>  <span class="kt">logic</span>                                                        <span class="n">clk</span><span class="p">,</span>
+<a name="l-50"></a>    <span class="k">input</span>  <span class="kt">logic</span>                                                        <span class="n">rst_n</span><span class="p">,</span>
 <a name="l-51"></a>
-<a name="l-52"></a>    <span class="k">input</span>  <span class="k">logic</span>                                                        <span class="n">arvalid_i</span><span class="p">,</span>
-<a name="l-53"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">ADDR_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                       <span class="n">araddr_i</span><span class="p">,</span>
-<a name="l-54"></a>    <span class="k">output</span> <span class="k">logic</span>                                                        <span class="n">arready_o</span><span class="p">,</span>
+<a name="l-52"></a>    <span class="k">input</span>  <span class="kt">logic</span>                                                        <span class="n">arvalid_i</span><span class="p">,</span>
+<a name="l-53"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">ADDR_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                                       <span class="n">araddr_i</span><span class="p">,</span>
+<a name="l-54"></a>    <span class="k">output</span> <span class="kt">logic</span>                                                        <span class="n">arready_o</span><span class="p">,</span>
 <a name="l-55"></a>
-<a name="l-56"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                      <span class="n">arvalid_o</span><span class="p">,</span>
-<a name="l-57"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                      <span class="n">arready_i</span><span class="p">,</span>
+<a name="l-56"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                                      <span class="n">arvalid_o</span><span class="p">,</span>
+<a name="l-57"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                                      <span class="n">arready_i</span><span class="p">,</span>
 <a name="l-58"></a>
-<a name="l-59"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">ADDR_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">START_ADDR_i</span><span class="p">,</span>
-<a name="l-60"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">ADDR_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">END_ADDR_i</span><span class="p">,</span>
-<a name="l-61"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                        <span class="n">enable_region_i</span><span class="p">,</span>
+<a name="l-59"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">ADDR_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">START_ADDR_i</span><span class="p">,</span>
+<a name="l-60"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">ADDR_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">END_ADDR_i</span><span class="p">,</span>
+<a name="l-61"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                        <span class="n">enable_region_i</span><span class="p">,</span>
 <a name="l-62"></a>
-<a name="l-63"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                                      <span class="n">connectivity_map_i</span><span class="p">,</span>
+<a name="l-63"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                                      <span class="n">connectivity_map_i</span><span class="p">,</span>
 <a name="l-64"></a>
-<a name="l-65"></a>    <span class="k">output</span> <span class="k">logic</span>                                                        <span class="n">incr_req_o</span><span class="p">,</span>
-<a name="l-66"></a>    <span class="k">input</span>  <span class="k">logic</span>                                                        <span class="n">full_counter_i</span><span class="p">,</span>
-<a name="l-67"></a>    <span class="k">input</span>  <span class="k">logic</span>                                                        <span class="n">outstanding_trans_i</span><span class="p">,</span>
+<a name="l-65"></a>    <span class="k">output</span> <span class="kt">logic</span>                                                        <span class="n">incr_req_o</span><span class="p">,</span>
+<a name="l-66"></a>    <span class="k">input</span>  <span class="kt">logic</span>                                                        <span class="n">full_counter_i</span><span class="p">,</span>
+<a name="l-67"></a>    <span class="k">input</span>  <span class="kt">logic</span>                                                        <span class="n">outstanding_trans_i</span><span class="p">,</span>
 <a name="l-68"></a>
-<a name="l-69"></a>    <span class="k">output</span> <span class="k">logic</span>                                                        <span class="n">error_req_o</span><span class="p">,</span>
-<a name="l-70"></a>    <span class="k">input</span>  <span class="k">logic</span>                                                        <span class="n">error_gnt_i</span><span class="p">,</span>
-<a name="l-71"></a>    <span class="k">output</span> <span class="k">logic</span>                                                        <span class="n">sample_ardata_info_o</span>
+<a name="l-69"></a>    <span class="k">output</span> <span class="kt">logic</span>                                                        <span class="n">error_req_o</span><span class="p">,</span>
+<a name="l-70"></a>    <span class="k">input</span>  <span class="kt">logic</span>                                                        <span class="n">error_gnt_i</span><span class="p">,</span>
+<a name="l-71"></a>    <span class="k">output</span> <span class="kt">logic</span>                                                        <span class="n">sample_ardata_info_o</span>
 <a name="l-72"></a><span class="p">);</span>
 <a name="l-73"></a>
-<a name="l-74"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                               <span class="n">match_region</span><span class="p">;</span>
-<a name="l-75"></a>  <span class="k">logic</span> <span class="p">[</span><span class="nl">N_INIT_PORT:</span><span class="mh">0</span><span class="p">]</span>                                 <span class="n">match_region_masked</span><span class="p">;</span>
-<a name="l-76"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">match_region_int</span><span class="p">;</span>
-<a name="l-77"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">N_REGION</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                 <span class="n">match_region_rev</span><span class="p">;</span>
+<a name="l-74"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                               <span class="n">match_region</span><span class="p">;</span>
+<a name="l-75"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="nl">N_INIT_PORT:</span><span class="mi">0</span><span class="p">]</span>                                 <span class="n">match_region_masked</span><span class="p">;</span>
+<a name="l-76"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_REGION</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                 <span class="n">match_region_int</span><span class="p">;</span>
+<a name="l-77"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">N_REGION</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                 <span class="n">match_region_rev</span><span class="p">;</span>
 <a name="l-78"></a>
 <a name="l-79"></a>
-<a name="l-80"></a>  <span class="k">logic</span>                                                 <span class="n">arready_int</span><span class="p">;</span>
-<a name="l-81"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>                               <span class="n">arvalid_int</span><span class="p">;</span>
+<a name="l-80"></a>  <span class="kt">logic</span>                                                 <span class="n">arready_int</span><span class="p">;</span>
+<a name="l-81"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>                               <span class="n">arvalid_int</span><span class="p">;</span>
 <a name="l-82"></a>
 <a name="l-83"></a>  <span class="k">genvar</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">;</span>
 <a name="l-84"></a>
-<a name="l-85"></a>  <span class="k">enum</span> <span class="k">logic</span>    <span class="p">{</span><span class="n">OPERATIVE</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">}</span> <span class="n">CS</span><span class="p">,</span> <span class="n">NS</span><span class="p">;</span>
+<a name="l-85"></a>  <span class="k">enum</span> <span class="kt">logic</span>    <span class="p">{</span><span class="n">OPERATIVE</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">}</span> <span class="n">CS</span><span class="p">,</span> <span class="n">NS</span><span class="p">;</span>
 <a name="l-86"></a>
 <a name="l-87"></a>
 <a name="l-88"></a>  <span class="k">generate</span>
 <a name="l-89"></a>
 <a name="l-90"></a>      <span class="c1">// First calculate for each region where what slave ist matching</span>
-<a name="l-91"></a>      <span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">N_REGION</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+<a name="l-91"></a>      <span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">N_REGION</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
 <a name="l-92"></a>      <span class="k">begin</span>
-<a name="l-93"></a>           <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<a name="l-93"></a>           <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
 <a name="l-94"></a>           <span class="k">begin</span>
-<a name="l-95"></a>              <span class="k">assign</span> <span class="n">match_region_int</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span>  <span class="p">(</span><span class="n">enable_region_i</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span> <span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">araddr_i</span> <span class="o">&gt;=</span> <span class="n">START_ADDR_i</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">araddr_i</span> <span class="o">&lt;=</span> <span class="n">END_ADDR_i</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="o">:</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-95"></a>              <span class="k">assign</span> <span class="n">match_region_int</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span>  <span class="p">(</span><span class="n">enable_region_i</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mb">1&#39;b1</span> <span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">araddr_i</span> <span class="o">&gt;=</span> <span class="n">START_ADDR_i</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">araddr_i</span> <span class="o">&lt;=</span> <span class="n">END_ADDR_i</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="o">:</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-96"></a>           <span class="k">end</span>
 <a name="l-97"></a>      <span class="k">end</span>
 <a name="l-98"></a>
 <a name="l-99"></a>      <span class="c1">// transpose the match_region_int bidimensional array</span>
-<a name="l-100"></a>      <span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+<a name="l-100"></a>      <span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
 <a name="l-101"></a>      <span class="k">begin</span>
-<a name="l-102"></a>           <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_REGION</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<a name="l-102"></a>           <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_REGION</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
 <a name="l-103"></a>           <span class="k">begin</span>
 <a name="l-104"></a>             <span class="k">assign</span> <span class="n">match_region_rev</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">match_region_int</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
 <a name="l-105"></a>           <span class="k">end</span>
@@ -341,15 +341,15 @@
 <a name="l-107"></a>
 <a name="l-108"></a>
 <a name="l-109"></a>      <span class="c1">//Or reduction</span>
-<a name="l-110"></a>      <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mh">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<a name="l-110"></a>      <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">N_INIT_PORT</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
 <a name="l-111"></a>      <span class="k">begin</span>
 <a name="l-112"></a>        <span class="k">assign</span> <span class="n">match_region</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span>  <span class="o">|</span> <span class="n">match_region_rev</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
 <a name="l-113"></a>      <span class="k">end</span>
 <a name="l-114"></a>
-<a name="l-115"></a>      <span class="k">assign</span> <span class="n">match_region_masked</span><span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">match_region</span> <span class="o">&amp;</span> <span class="n">connectivity_map_i</span><span class="p">;</span>
+<a name="l-115"></a>      <span class="k">assign</span> <span class="n">match_region_masked</span><span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">match_region</span> <span class="o">&amp;</span> <span class="n">connectivity_map_i</span><span class="p">;</span>
 <a name="l-116"></a>
 <a name="l-117"></a>      <span class="c1">// if there are no moatches, then assert an error</span>
-<a name="l-118"></a>      <span class="k">assign</span> <span class="n">match_region_masked</span><span class="p">[</span><span class="n">N_INIT_PORT</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="o">|</span><span class="n">match_region_masked</span><span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
+<a name="l-118"></a>      <span class="k">assign</span> <span class="n">match_region_masked</span><span class="p">[</span><span class="n">N_INIT_PORT</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="o">|</span><span class="n">match_region_masked</span><span class="p">[</span><span class="n">N_INIT_PORT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span>
 <a name="l-119"></a>  <span class="k">endgenerate</span>
 <a name="l-120"></a>
 <a name="l-121"></a>
@@ -363,12 +363,12 @@
 <a name="l-129"></a>
 <a name="l-130"></a>    <span class="k">if</span><span class="p">(</span><span class="n">arvalid_i</span><span class="p">)</span>
 <a name="l-131"></a>    <span class="k">begin</span>
-<a name="l-132"></a>        <span class="p">{</span><span class="n">error_req_o</span><span class="p">,</span><span class="n">arvalid_int</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="n">N_INIT_PORT</span><span class="o">+</span><span class="mh">1</span><span class="p">{</span><span class="n">arvalid_i</span><span class="p">}</span> <span class="p">}</span> <span class="o">&amp;</span> <span class="n">match_region_masked</span><span class="p">;</span>
+<a name="l-132"></a>        <span class="p">{</span><span class="n">error_req_o</span><span class="p">,</span><span class="n">arvalid_int</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="n">N_INIT_PORT</span><span class="o">+</span><span class="mi">1</span><span class="p">{</span><span class="n">arvalid_i</span><span class="p">}</span> <span class="p">}</span> <span class="o">&amp;</span> <span class="n">match_region_masked</span><span class="p">;</span>
 <a name="l-133"></a>    <span class="k">end</span>
 <a name="l-134"></a>    <span class="k">else</span>
 <a name="l-135"></a>    <span class="k">begin</span>
 <a name="l-136"></a>        <span class="n">arvalid_int</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-137"></a>        <span class="n">error_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-137"></a>        <span class="n">error_req_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-138"></a>    <span class="k">end</span>
 <a name="l-139"></a>
 <a name="l-140"></a>    <span class="n">arready_int</span> <span class="o">=</span> <span class="o">|</span><span class="p">({</span><span class="n">error_gnt_i</span><span class="p">,</span><span class="n">arready_i</span><span class="p">}</span> <span class="o">&amp;</span> <span class="n">match_region_masked</span><span class="p">);</span>
@@ -382,7 +382,7 @@
 <a name="l-148"></a>  <span class="c1">// --------------------------------------------------------------------------------------------------------------------------------------------------//</span>
 <a name="l-149"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">,</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span>
 <a name="l-150"></a>  <span class="k">begin</span>
-<a name="l-151"></a>    <span class="k">if</span><span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span>
+<a name="l-151"></a>    <span class="k">if</span><span class="p">(</span><span class="n">rst_n</span> <span class="o">==</span> <span class="mb">1&#39;b0</span><span class="p">)</span>
 <a name="l-152"></a>    <span class="k">begin</span>
 <a name="l-153"></a>        <span class="n">CS</span> <span class="o">&lt;=</span> <span class="n">OPERATIVE</span><span class="p">;</span>
 <a name="l-154"></a>    <span class="k">end</span>
@@ -396,12 +396,12 @@
 <a name="l-162"></a>
 <a name="l-163"></a>  <span class="k">always_comb</span>
 <a name="l-164"></a>  <span class="k">begin</span>
-<a name="l-165"></a>      <span class="n">arready_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-165"></a>      <span class="n">arready_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-166"></a>      <span class="n">arvalid_o</span> <span class="o">=</span> <span class="n">arvalid_int</span><span class="p">;</span>
 <a name="l-167"></a>
-<a name="l-168"></a>      <span class="n">sample_ardata_info_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-168"></a>      <span class="n">sample_ardata_info_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-169"></a>
-<a name="l-170"></a>      <span class="n">incr_req_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-170"></a>      <span class="n">incr_req_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-171"></a>
 <a name="l-172"></a>      <span class="k">case</span><span class="p">(</span><span class="n">CS</span><span class="p">)</span>
 <a name="l-173"></a>          <span class="nl">OPERATIVE:</span>
@@ -409,15 +409,15 @@
 <a name="l-175"></a>              <span class="k">if</span><span class="p">(</span><span class="n">error_req_o</span><span class="p">)</span>
 <a name="l-176"></a>              <span class="k">begin</span>
 <a name="l-177"></a>                <span class="n">NS</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">;</span>
-<a name="l-178"></a>                <span class="n">arready_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span> <span class="c1">// granbt then stall any incoming resposnses</span>
-<a name="l-179"></a>                <span class="n">sample_ardata_info_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-178"></a>                <span class="n">arready_o</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span> <span class="c1">// granbt then stall any incoming resposnses</span>
+<a name="l-179"></a>                <span class="n">sample_ardata_info_o</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-180"></a>                <span class="n">arvalid_o</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-181"></a>              <span class="k">end</span>
 <a name="l-182"></a>              <span class="k">else</span>
 <a name="l-183"></a>              <span class="k">begin</span>
 <a name="l-184"></a>                <span class="n">NS</span> <span class="o">=</span> <span class="n">OPERATIVE</span><span class="p">;</span>
 <a name="l-185"></a>                <span class="n">arready_o</span> <span class="o">=</span> <span class="n">arready_int</span><span class="p">;</span>
-<a name="l-186"></a>                <span class="n">sample_ardata_info_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-186"></a>                <span class="n">sample_ardata_info_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-187"></a>                <span class="n">incr_req_o</span> <span class="o">=</span> <span class="o">|</span><span class="p">(</span><span class="n">arvalid_o</span> <span class="o">&amp;</span> <span class="n">arready_i</span><span class="p">);</span>
 <a name="l-188"></a>                <span class="n">arvalid_o</span> <span class="o">=</span> <span class="n">arvalid_int</span><span class="p">;</span>
 <a name="l-189"></a>              <span class="k">end</span>
@@ -425,7 +425,7 @@
 <a name="l-191"></a>
 <a name="l-192"></a>          <span class="nl">ERROR:</span>
 <a name="l-193"></a>          <span class="k">begin</span>
-<a name="l-194"></a>              <span class="n">arready_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-194"></a>              <span class="n">arready_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-195"></a>              <span class="n">arvalid_o</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-196"></a>
 <a name="l-197"></a>              <span class="k">if</span><span class="p">(</span><span class="n">outstanding_trans_i</span><span class="p">)</span>

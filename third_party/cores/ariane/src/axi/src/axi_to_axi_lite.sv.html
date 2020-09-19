@@ -164,21 +164,21 @@
 <a name="l-20"></a><span class="c1">/// Burst accesses are not yet supported and DO NOT produce an error.</span>
 <a name="l-21"></a><span class="k">module</span> <span class="n">axi_to_axi_lite</span> <span class="p">#(</span>
 <a name="l-22"></a>  <span class="c1">/// Maximum number of outstanding reads.</span>
-<a name="l-23"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">NUM_PENDING_RD</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
+<a name="l-23"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="n">NUM_PENDING_RD</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <a name="l-24"></a>  <span class="c1">/// Maximum number of outstanding writes.</span>
-<a name="l-25"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="n">NUM_PENDING_WR</span> <span class="o">=</span> <span class="mh">1</span>
+<a name="l-25"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="n">NUM_PENDING_WR</span> <span class="o">=</span> <span class="mi">1</span>
 <a name="l-26"></a><span class="p">)(</span>
-<a name="l-27"></a>  <span class="k">input</span> <span class="k">logic</span>     <span class="n">clk_i</span><span class="p">,</span>
-<a name="l-28"></a>  <span class="k">input</span> <span class="k">logic</span>     <span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-29"></a>  <span class="k">input</span> <span class="k">logic</span>     <span class="n">testmode_i</span><span class="p">,</span>
+<a name="l-27"></a>  <span class="k">input</span> <span class="kt">logic</span>     <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-28"></a>  <span class="k">input</span> <span class="kt">logic</span>     <span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-29"></a>  <span class="k">input</span> <span class="kt">logic</span>     <span class="n">testmode_i</span><span class="p">,</span>
 <a name="l-30"></a>  <span class="n">AXI_BUS</span><span class="p">.</span><span class="n">Slave</span>   <span class="n">in</span><span class="p">,</span>
 <a name="l-31"></a>  <span class="n">AXI_LITE</span><span class="p">.</span><span class="n">Master</span> <span class="n">out</span>
 <a name="l-32"></a><span class="p">);</span>
 <a name="l-33"></a>
 <a name="l-34"></a>  <span class="no">`ifndef</span> <span class="n">SYNTHESIS</span>
 <a name="l-35"></a>  <span class="k">initial</span> <span class="k">begin</span>
-<a name="l-36"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">NUM_PENDING_RD</span> <span class="o">&gt;</span> <span class="mh">0</span><span class="p">);</span>
-<a name="l-37"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">NUM_PENDING_WR</span> <span class="o">&gt;</span> <span class="mh">0</span><span class="p">);</span>
+<a name="l-36"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">NUM_PENDING_RD</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+<a name="l-37"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">NUM_PENDING_WR</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
 <a name="l-38"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">AXI_ADDR_WIDTH</span> <span class="o">==</span> <span class="n">out</span><span class="p">.</span><span class="n">AXI_ADDR_WIDTH</span><span class="p">);</span>
 <a name="l-39"></a>    <span class="k">assert</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">AXI_DATA_WIDTH</span> <span class="o">==</span> <span class="n">out</span><span class="p">.</span><span class="n">AXI_DATA_WIDTH</span><span class="p">);</span>
 <a name="l-40"></a>  <span class="k">end</span>
@@ -186,31 +186,31 @@
 <a name="l-42"></a>
 <a name="l-43"></a>  <span class="c1">// Round the maximum number of pending transactions up to the next power of</span>
 <a name="l-44"></a>  <span class="c1">// two. This is required by the implementation of the FIFO.</span>
-<a name="l-45"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">DEPTH_FIFO_RD</span> <span class="o">=</span> <span class="mh">2</span><span class="o">**</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_PENDING_RD</span><span class="p">);</span>
-<a name="l-46"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="n">DEPTH_FIFO_WR</span> <span class="o">=</span> <span class="mh">2</span><span class="o">**</span><span class="n">$clog2</span><span class="p">(</span><span class="n">NUM_PENDING_WR</span><span class="p">);</span>
+<a name="l-45"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="n">DEPTH_FIFO_RD</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">NUM_PENDING_RD</span><span class="p">);</span>
+<a name="l-46"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="n">DEPTH_FIFO_WR</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">NUM_PENDING_WR</span><span class="p">);</span>
 <a name="l-47"></a>
 <a name="l-48"></a>  <span class="c1">// The transaction information that will be stored locally.</span>
 <a name="l-49"></a>  <span class="k">typedef</span> <span class="k">struct</span> <span class="k">packed</span> <span class="p">{</span>
-<a name="l-50"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_id</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">id</span><span class="p">;</span>
-<a name="l-51"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_user</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">user</span><span class="p">;</span>
+<a name="l-50"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_id</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">id</span><span class="p">;</span>
+<a name="l-51"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_user</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">user</span><span class="p">;</span>
 <a name="l-52"></a>  <span class="p">}</span> <span class="n">meta_rd_t</span><span class="p">;</span>
 <a name="l-53"></a>
 <a name="l-54"></a>  <span class="k">typedef</span> <span class="k">struct</span> <span class="k">packed</span> <span class="p">{</span>
-<a name="l-55"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_id</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">id</span><span class="p">;</span>
-<a name="l-56"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_user</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">user</span><span class="p">;</span>
+<a name="l-55"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_id</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">id</span><span class="p">;</span>
+<a name="l-56"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_user</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">user</span><span class="p">;</span>
 <a name="l-57"></a>  <span class="p">}</span> <span class="n">meta_wr_t</span><span class="p">;</span>
 <a name="l-58"></a>
 <a name="l-59"></a>  <span class="c1">// HACK: Rather than passing a meta_rd_t and meta_wr_t into the FIFO&#39;s data_o</span>
 <a name="l-60"></a>  <span class="c1">//       port, we destructure it into the constituent fields. If we don&#39;t do</span>
 <a name="l-61"></a>  <span class="c1">//       this, Synopsys DC 2016.03 throws an &quot;Internal Error&quot; on &quot;meta_rd.id&quot;.</span>
-<a name="l-62"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_id</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">meta_rd_id</span><span class="p">;</span>
-<a name="l-63"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_user</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">meta_rd_user</span><span class="p">;</span>
-<a name="l-64"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_id</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">meta_wr_id</span><span class="p">;</span>
-<a name="l-65"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">$bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_user</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">meta_wr_user</span><span class="p">;</span>
+<a name="l-62"></a>  <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_id</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">meta_rd_id</span><span class="p">;</span>
+<a name="l-63"></a>  <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">r_user</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">meta_rd_user</span><span class="p">;</span>
+<a name="l-64"></a>  <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_id</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">meta_wr_id</span><span class="p">;</span>
+<a name="l-65"></a>  <span class="kt">logic</span> <span class="p">[$</span><span class="n">bits</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b_user</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">meta_wr_user</span><span class="p">;</span>
 <a name="l-66"></a>
 <a name="l-67"></a>  <span class="c1">// The two FIFOs which hold the transaction information.</span>
-<a name="l-68"></a>  <span class="k">logic</span> <span class="n">rd_full</span><span class="p">;</span>
-<a name="l-69"></a>  <span class="k">logic</span> <span class="n">wr_full</span><span class="p">;</span>
+<a name="l-68"></a>  <span class="kt">logic</span> <span class="n">rd_full</span><span class="p">;</span>
+<a name="l-69"></a>  <span class="kt">logic</span> <span class="n">wr_full</span><span class="p">;</span>
 <a name="l-70"></a>  <span class="n">meta_rd_t</span> <span class="n">meta_rd</span><span class="p">;</span>
 <a name="l-71"></a>  <span class="n">meta_wr_t</span> <span class="n">meta_wr</span><span class="p">;</span>
 <a name="l-72"></a>

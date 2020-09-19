@@ -622,26 +622,26 @@
 <a name="l-15"></a><span class="c1">// The &quot;tailPtr&quot; points the address of a next pushed entry.</span>
 <a name="l-16"></a><span class="c1">//</span>
 <a name="l-17"></a><span class="k">module</span> <span class="n">QueuePointer</span> <span class="p">#(</span> <span class="k">parameter</span>
-<a name="l-18"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-19"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-20"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-21"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mh">0</span>
+<a name="l-18"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-19"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-20"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-21"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mi">0</span>
 <a name="l-22"></a><span class="p">)(</span>
 <a name="l-23"></a><span class="k">input</span>
-<a name="l-24"></a>    <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-25"></a>    <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
-<a name="l-26"></a>    <span class="k">logic</span> <span class="n">push</span><span class="p">,</span>
-<a name="l-27"></a>    <span class="k">logic</span> <span class="n">pop</span><span class="p">,</span>
+<a name="l-24"></a>    <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-25"></a>    <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-26"></a>    <span class="kt">logic</span> <span class="n">push</span><span class="p">,</span>
+<a name="l-27"></a>    <span class="kt">logic</span> <span class="n">pop</span><span class="p">,</span>
 <a name="l-28"></a><span class="k">output</span>
-<a name="l-29"></a>    <span class="k">logic</span> <span class="n">full</span><span class="p">,</span>
-<a name="l-30"></a>    <span class="k">logic</span> <span class="n">empty</span><span class="p">,</span>
-<a name="l-31"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
-<a name="l-32"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tailPtr</span>
+<a name="l-29"></a>    <span class="kt">logic</span> <span class="n">full</span><span class="p">,</span>
+<a name="l-30"></a>    <span class="kt">logic</span> <span class="n">empty</span><span class="p">,</span>
+<a name="l-31"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
+<a name="l-32"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tailPtr</span>
 <a name="l-33"></a><span class="p">);</span>
 <a name="l-34"></a>
-<a name="l-35"></a>    <span class="k">localparam</span> <span class="n">BIT_WIDTH</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span> <span class="n">SIZE</span> <span class="p">);</span>
-<a name="l-36"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="n">BIT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
-<a name="l-37"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="nl">BIT_WIDTH:</span><span class="mh">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
+<a name="l-35"></a>    <span class="k">localparam</span> <span class="n">BIT_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span> <span class="n">SIZE</span> <span class="p">);</span>
+<a name="l-36"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">BIT_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
+<a name="l-37"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="nl">BIT_WIDTH:</span><span class="mi">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
 <a name="l-38"></a>
 <a name="l-39"></a>    <span class="n">IndexPath</span> <span class="n">regHeadStorage</span><span class="p">,</span> <span class="n">nextHeadStorage</span><span class="p">;</span>
 <a name="l-40"></a>    <span class="n">IndexPath</span> <span class="n">regTailStorage</span><span class="p">,</span> <span class="n">nextTailStorage</span><span class="p">;</span>
@@ -664,15 +664,15 @@
 <a name="l-57"></a>
 <a name="l-58"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-59"></a>        <span class="n">full</span> <span class="o">=</span> <span class="p">(</span> <span class="n">regCount</span> <span class="o">==</span> <span class="n">SIZE</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
-<a name="l-60"></a>        <span class="n">empty</span> <span class="o">=</span> <span class="p">(</span> <span class="n">regCount</span> <span class="o">==</span> <span class="mh">0</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
+<a name="l-60"></a>        <span class="n">empty</span> <span class="o">=</span> <span class="p">(</span> <span class="n">regCount</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
 <a name="l-61"></a>
 <a name="l-62"></a>        <span class="n">nextHeadStorage</span> <span class="o">=</span> <span class="n">regHeadStorage</span><span class="p">;</span>
 <a name="l-63"></a>        <span class="n">nextTailStorage</span> <span class="o">=</span> <span class="n">regTailStorage</span><span class="p">;</span>
 <a name="l-64"></a>        <span class="n">nextCount</span> <span class="o">=</span> <span class="n">regCount</span><span class="p">;</span>
 <a name="l-65"></a>
 <a name="l-66"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">push</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-67"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regTailStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-68"></a>                <span class="n">nextTailStorage</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-67"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regTailStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-68"></a>                <span class="n">nextTailStorage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-69"></a>            <span class="k">end</span>
 <a name="l-70"></a>            <span class="k">else</span> <span class="k">begin</span>
 <a name="l-71"></a>                <span class="n">nextTailStorage</span><span class="o">++</span><span class="p">;</span>
@@ -682,8 +682,8 @@
 <a name="l-75"></a>        <span class="k">end</span>
 <a name="l-76"></a>
 <a name="l-77"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">pop</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-78"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regHeadStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-79"></a>                <span class="n">nextHeadStorage</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-78"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regHeadStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-79"></a>                <span class="n">nextHeadStorage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-80"></a>            <span class="k">end</span>
 <a name="l-81"></a>            <span class="k">else</span> <span class="k">begin</span>
 <a name="l-82"></a>                <span class="n">nextHeadStorage</span><span class="o">++</span><span class="p">;</span>
@@ -706,27 +706,27 @@
 <a name="l-99"></a><span class="c1">// The &quot;tailPtr&quot; points the address of a next pushed entry.</span>
 <a name="l-100"></a><span class="c1">//</span>
 <a name="l-101"></a><span class="k">module</span> <span class="n">QueuePointerWithEntryCount</span> <span class="p">#(</span> <span class="k">parameter</span>
-<a name="l-102"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-103"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-104"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-105"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mh">0</span>
+<a name="l-102"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-103"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-104"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-105"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mi">0</span>
 <a name="l-106"></a><span class="p">)(</span> 
 <a name="l-107"></a><span class="k">input</span> 
-<a name="l-108"></a>    <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-109"></a>    <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
-<a name="l-110"></a>    <span class="k">logic</span> <span class="n">push</span><span class="p">,</span>
-<a name="l-111"></a>    <span class="k">logic</span> <span class="n">pop</span><span class="p">,</span>
+<a name="l-108"></a>    <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-109"></a>    <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-110"></a>    <span class="kt">logic</span> <span class="n">push</span><span class="p">,</span>
+<a name="l-111"></a>    <span class="kt">logic</span> <span class="n">pop</span><span class="p">,</span>
 <a name="l-112"></a><span class="k">output</span>
-<a name="l-113"></a>    <span class="k">logic</span> <span class="n">full</span><span class="p">,</span>
-<a name="l-114"></a>    <span class="k">logic</span> <span class="n">empty</span><span class="p">,</span>
-<a name="l-115"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
-<a name="l-116"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
-<a name="l-117"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">count</span>
+<a name="l-113"></a>    <span class="kt">logic</span> <span class="n">full</span><span class="p">,</span>
+<a name="l-114"></a>    <span class="kt">logic</span> <span class="n">empty</span><span class="p">,</span>
+<a name="l-115"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
+<a name="l-116"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
+<a name="l-117"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count</span>
 <a name="l-118"></a><span class="p">);</span>
 <a name="l-119"></a>
-<a name="l-120"></a>    <span class="k">localparam</span> <span class="n">BIT_WIDTH</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span> <span class="n">SIZE</span> <span class="p">);</span>
-<a name="l-121"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="n">BIT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
-<a name="l-122"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="nl">BIT_WIDTH:</span><span class="mh">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
+<a name="l-120"></a>    <span class="k">localparam</span> <span class="n">BIT_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span> <span class="n">SIZE</span> <span class="p">);</span>
+<a name="l-121"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">BIT_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
+<a name="l-122"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="nl">BIT_WIDTH:</span><span class="mi">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
 <a name="l-123"></a>
 <a name="l-124"></a>    <span class="n">IndexPath</span> <span class="n">regHeadStorage</span><span class="p">,</span> <span class="n">nextHeadStorage</span><span class="p">;</span>
 <a name="l-125"></a>    <span class="n">IndexPath</span> <span class="n">regTailStorage</span><span class="p">,</span> <span class="n">nextTailStorage</span><span class="p">;</span>
@@ -749,15 +749,15 @@
 <a name="l-142"></a>    
 <a name="l-143"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-144"></a>        <span class="n">full</span> <span class="o">=</span> <span class="p">(</span> <span class="n">regCount</span> <span class="o">==</span> <span class="n">SIZE</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
-<a name="l-145"></a>        <span class="n">empty</span> <span class="o">=</span> <span class="p">(</span> <span class="n">regCount</span> <span class="o">==</span> <span class="mh">0</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
+<a name="l-145"></a>        <span class="n">empty</span> <span class="o">=</span> <span class="p">(</span> <span class="n">regCount</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
 <a name="l-146"></a>    
 <a name="l-147"></a>        <span class="n">nextHeadStorage</span> <span class="o">=</span> <span class="n">regHeadStorage</span><span class="p">;</span>
 <a name="l-148"></a>        <span class="n">nextTailStorage</span> <span class="o">=</span> <span class="n">regTailStorage</span><span class="p">;</span>
 <a name="l-149"></a>        <span class="n">nextCount</span> <span class="o">=</span> <span class="n">regCount</span><span class="p">;</span>
 <a name="l-150"></a>
 <a name="l-151"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">push</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-152"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regTailStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-153"></a>                <span class="n">nextTailStorage</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-152"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regTailStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-153"></a>                <span class="n">nextTailStorage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-154"></a>            <span class="k">end</span>
 <a name="l-155"></a>            <span class="k">else</span> <span class="k">begin</span>
 <a name="l-156"></a>                <span class="n">nextTailStorage</span><span class="o">++</span><span class="p">;</span>
@@ -766,8 +766,8 @@
 <a name="l-159"></a>            <span class="n">nextCount</span><span class="o">++</span><span class="p">;</span>
 <a name="l-160"></a>        <span class="k">end</span>
 <a name="l-161"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">pop</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-162"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regHeadStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-163"></a>                <span class="n">nextHeadStorage</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-162"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">regHeadStorage</span> <span class="o">==</span> <span class="n">SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-163"></a>                <span class="n">nextHeadStorage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-164"></a>            <span class="k">end</span>
 <a name="l-165"></a>            <span class="k">else</span> <span class="k">begin</span>
 <a name="l-166"></a>                <span class="n">nextHeadStorage</span><span class="o">++</span><span class="p">;</span>
@@ -792,30 +792,30 @@
 <a name="l-185"></a><span class="c1">// The &quot;tailPtr&quot; points the address of a next pushed entry.</span>
 <a name="l-186"></a><span class="c1">//</span>
 <a name="l-187"></a><span class="k">module</span> <span class="n">MultiWidthQueuePointer</span> <span class="p">#(</span> <span class="k">parameter</span>
-<a name="l-188"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-189"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-190"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-191"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-192"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-193"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
+<a name="l-188"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-189"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-190"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-191"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-192"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-193"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <a name="l-194"></a>    <span class="n">ENABLE_SPECIFIED_ENTRY_NUM</span> <span class="o">=</span> <span class="n">FALSE</span>
 <a name="l-195"></a><span class="p">)(</span>
 <a name="l-196"></a><span class="k">input</span>
-<a name="l-197"></a>    <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-198"></a>    <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
-<a name="l-199"></a>    <span class="k">logic</span> <span class="n">push</span><span class="p">,</span>
-<a name="l-200"></a>    <span class="k">logic</span> <span class="n">pop</span><span class="p">,</span>
-<a name="l-201"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">pushCount</span><span class="p">,</span>
-<a name="l-202"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">popCount</span><span class="p">,</span>
+<a name="l-197"></a>    <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-198"></a>    <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-199"></a>    <span class="kt">logic</span> <span class="n">push</span><span class="p">,</span>
+<a name="l-200"></a>    <span class="kt">logic</span> <span class="n">pop</span><span class="p">,</span>
+<a name="l-201"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">pushCount</span><span class="p">,</span>
+<a name="l-202"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">popCount</span><span class="p">,</span>
 <a name="l-203"></a><span class="k">output</span>
-<a name="l-204"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
-<a name="l-205"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
-<a name="l-206"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">count</span>
+<a name="l-204"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
+<a name="l-205"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
+<a name="l-206"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count</span>
 <a name="l-207"></a><span class="p">);</span>
 <a name="l-208"></a>
-<a name="l-209"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
-<a name="l-210"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
-<a name="l-211"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="k">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mh">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
+<a name="l-209"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
+<a name="l-210"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
+<a name="l-211"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="kt">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mi">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
 <a name="l-212"></a>
 <a name="l-213"></a>    <span class="n">IndexPath</span> <span class="n">regHead</span><span class="p">,</span> <span class="n">nextHead</span><span class="p">;</span>
 <a name="l-214"></a>    <span class="n">IndexPath</span> <span class="n">regTail</span><span class="p">,</span> <span class="n">nextTail</span><span class="p">;</span>
@@ -881,31 +881,31 @@
 <a name="l-274"></a><span class="c1">// Tail pointer and count is recovered in one cycle.</span>
 <a name="l-275"></a><span class="c1">//</span>
 <a name="l-276"></a><span class="k">module</span> <span class="n">SetTailMultiWidthQueuePointer</span> <span class="p">#(</span> <span class="k">parameter</span>
-<a name="l-277"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-278"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-279"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-280"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-281"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-282"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mh">1</span>
+<a name="l-277"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-278"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-279"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-280"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-281"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-282"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mi">1</span>
 <a name="l-283"></a><span class="p">)(</span>
 <a name="l-284"></a><span class="k">input</span>
-<a name="l-285"></a>    <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-286"></a>    <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
-<a name="l-287"></a>    <span class="k">logic</span> <span class="n">push</span><span class="p">,</span>
-<a name="l-288"></a>    <span class="k">logic</span> <span class="n">pop</span><span class="p">,</span>
-<a name="l-289"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">pushCount</span><span class="p">,</span>
-<a name="l-290"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">popCount</span><span class="p">,</span>
-<a name="l-291"></a>    <span class="k">logic</span> <span class="n">setTail</span><span class="p">,</span>
-<a name="l-292"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">setTailPtr</span><span class="p">,</span>
+<a name="l-285"></a>    <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-286"></a>    <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-287"></a>    <span class="kt">logic</span> <span class="n">push</span><span class="p">,</span>
+<a name="l-288"></a>    <span class="kt">logic</span> <span class="n">pop</span><span class="p">,</span>
+<a name="l-289"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">pushCount</span><span class="p">,</span>
+<a name="l-290"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">popCount</span><span class="p">,</span>
+<a name="l-291"></a>    <span class="kt">logic</span> <span class="n">setTail</span><span class="p">,</span>
+<a name="l-292"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">setTailPtr</span><span class="p">,</span>
 <a name="l-293"></a><span class="k">output</span>
-<a name="l-294"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
-<a name="l-295"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
-<a name="l-296"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">count</span>
+<a name="l-294"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
+<a name="l-295"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
+<a name="l-296"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count</span>
 <a name="l-297"></a><span class="p">);</span>
 <a name="l-298"></a>
-<a name="l-299"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
-<a name="l-300"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
-<a name="l-301"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="k">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mh">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
+<a name="l-299"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
+<a name="l-300"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
+<a name="l-301"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="kt">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mi">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
 <a name="l-302"></a>
 <a name="l-303"></a>    <span class="n">IndexPath</span> <span class="n">regHead</span><span class="p">,</span> <span class="n">nextHead</span><span class="p">;</span>
 <a name="l-304"></a>    <span class="n">IndexPath</span> <span class="n">regTail</span><span class="p">,</span> <span class="n">nextTail</span><span class="p">;</span>
@@ -986,31 +986,31 @@
 <a name="l-379"></a><span class="c1">// The &quot;tailPtr&quot; points the address of a next pushed entry.</span>
 <a name="l-380"></a><span class="c1">//</span>
 <a name="l-381"></a><span class="k">module</span> <span class="n">BiTailMultiWidthQueuePointer</span> <span class="p">#(</span> <span class="k">parameter</span>
-<a name="l-382"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-383"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-384"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-385"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-386"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-387"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mh">1</span>
+<a name="l-382"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-383"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-384"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-385"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-386"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-387"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mi">1</span>
 <a name="l-388"></a><span class="p">)(</span>
 <a name="l-389"></a><span class="k">input</span>
-<a name="l-390"></a>    <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-391"></a>    <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
-<a name="l-392"></a>    <span class="k">logic</span> <span class="n">pushTail</span><span class="p">,</span>
-<a name="l-393"></a>    <span class="k">logic</span> <span class="n">popTail</span><span class="p">,</span>
-<a name="l-394"></a>    <span class="k">logic</span> <span class="n">popHead</span><span class="p">,</span>
-<a name="l-395"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">pushTailCount</span><span class="p">,</span>
-<a name="l-396"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">popTailCount</span><span class="p">,</span>
-<a name="l-397"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">popHeadCount</span><span class="p">,</span>
+<a name="l-390"></a>    <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-391"></a>    <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-392"></a>    <span class="kt">logic</span> <span class="n">pushTail</span><span class="p">,</span>
+<a name="l-393"></a>    <span class="kt">logic</span> <span class="n">popTail</span><span class="p">,</span>
+<a name="l-394"></a>    <span class="kt">logic</span> <span class="n">popHead</span><span class="p">,</span>
+<a name="l-395"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">pushTailCount</span><span class="p">,</span>
+<a name="l-396"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">popTailCount</span><span class="p">,</span>
+<a name="l-397"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">popHeadCount</span><span class="p">,</span>
 <a name="l-398"></a><span class="k">output</span>
-<a name="l-399"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
-<a name="l-400"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
-<a name="l-401"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">count</span>
+<a name="l-399"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
+<a name="l-400"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
+<a name="l-401"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count</span>
 <a name="l-402"></a><span class="p">);</span>
 <a name="l-403"></a>
-<a name="l-404"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
-<a name="l-405"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
-<a name="l-406"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="k">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mh">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
+<a name="l-404"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
+<a name="l-405"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
+<a name="l-406"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="kt">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mi">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
 <a name="l-407"></a>
 <a name="l-408"></a>    <span class="n">IndexPath</span> <span class="n">regHead</span><span class="p">,</span> <span class="n">nextHead</span><span class="p">;</span>
 <a name="l-409"></a>    <span class="n">IndexPath</span> <span class="n">regTail</span><span class="p">,</span> <span class="n">nextTail</span><span class="p">;</span>
@@ -1092,33 +1092,33 @@
 <a name="l-485"></a><span class="c1">// Tail pointer and count is recovered in one cycle.</span>
 <a name="l-486"></a><span class="c1">//</span>
 <a name="l-487"></a><span class="k">module</span> <span class="n">SetTailBiTailMultiWidthQueuePointer</span> <span class="p">#(</span> <span class="k">parameter</span>
-<a name="l-488"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-489"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-490"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-491"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>
-<a name="l-492"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>
-<a name="l-493"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mh">1</span>
+<a name="l-488"></a>    <span class="n">SIZE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-489"></a>    <span class="n">INITIAL_HEAD_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-490"></a>    <span class="n">INITIAL_TAIL_PTR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-491"></a>    <span class="n">INITIAL_COUNT</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a name="l-492"></a>    <span class="n">PUSH_WIDTH</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a name="l-493"></a>    <span class="n">POP_WIDTH</span> <span class="o">=</span> <span class="mi">1</span>
 <a name="l-494"></a><span class="p">)(</span>
 <a name="l-495"></a><span class="k">input</span>
-<a name="l-496"></a>    <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-497"></a>    <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
-<a name="l-498"></a>    <span class="k">logic</span> <span class="n">pushTail</span><span class="p">,</span>
-<a name="l-499"></a>    <span class="k">logic</span> <span class="n">popTail</span><span class="p">,</span>
-<a name="l-500"></a>    <span class="k">logic</span> <span class="n">popHead</span><span class="p">,</span>
-<a name="l-501"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">pushTailCount</span><span class="p">,</span>
-<a name="l-502"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">popTailCount</span><span class="p">,</span>
-<a name="l-503"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">popHeadCount</span><span class="p">,</span>
-<a name="l-504"></a>    <span class="k">logic</span> <span class="n">setTail</span><span class="p">,</span>
-<a name="l-505"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">setTailPtr</span><span class="p">,</span>
+<a name="l-496"></a>    <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-497"></a>    <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-498"></a>    <span class="kt">logic</span> <span class="n">pushTail</span><span class="p">,</span>
+<a name="l-499"></a>    <span class="kt">logic</span> <span class="n">popTail</span><span class="p">,</span>
+<a name="l-500"></a>    <span class="kt">logic</span> <span class="n">popHead</span><span class="p">,</span>
+<a name="l-501"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">PUSH_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">pushTailCount</span><span class="p">,</span>
+<a name="l-502"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">popTailCount</span><span class="p">,</span>
+<a name="l-503"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">POP_WIDTH</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">popHeadCount</span><span class="p">,</span>
+<a name="l-504"></a>    <span class="kt">logic</span> <span class="n">setTail</span><span class="p">,</span>
+<a name="l-505"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">setTailPtr</span><span class="p">,</span>
 <a name="l-506"></a><span class="k">output</span>
-<a name="l-507"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
-<a name="l-508"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
-<a name="l-509"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">count</span>
+<a name="l-507"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">headPtr</span><span class="p">,</span>
+<a name="l-508"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tailPtr</span><span class="p">,</span>
+<a name="l-509"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count</span>
 <a name="l-510"></a><span class="p">);</span>
 <a name="l-511"></a>
-<a name="l-512"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
-<a name="l-513"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
-<a name="l-514"></a>    <span class="k">typedef</span> <span class="k">logic</span> <span class="k">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mh">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
+<a name="l-512"></a>    <span class="k">localparam</span> <span class="n">INDEX_BIT_WIDTH</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SIZE</span><span class="p">);</span>
+<a name="l-513"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">INDEX_BIT_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">IndexPath</span><span class="p">;</span>
+<a name="l-514"></a>    <span class="k">typedef</span> <span class="kt">logic</span> <span class="kt">unsigned</span> <span class="p">[</span><span class="nl">INDEX_BIT_WIDTH:</span><span class="mi">0</span><span class="p">]</span> <span class="n">CountPath</span><span class="p">;</span>
 <a name="l-515"></a>
 <a name="l-516"></a>    <span class="n">IndexPath</span> <span class="n">regHead</span><span class="p">,</span> <span class="n">nextHead</span><span class="p">;</span>
 <a name="l-517"></a>    <span class="n">IndexPath</span> <span class="n">regTail</span><span class="p">,</span> <span class="n">nextTail</span><span class="p">;</span>

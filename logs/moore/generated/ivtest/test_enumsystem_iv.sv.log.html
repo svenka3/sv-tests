@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/test_enumsystem.v.html" target="file-frame">third_party/tests/ivtest/ivltests/test_enumsystem.v</a>
 defines: 
-time_elapsed: 0.008s
-ram usage: 10792 KB
+time_elapsed: 0.007s
+ram usage: 10992 KB
 </pre>
 <pre class="log">
 
@@ -34,9 +34,10 @@ init:
 check:
     %2 = prb i3$ %count
     st i3* %count.shadow, %2
+    %clk.prb1 = prb i1$ %clk
     %3 = const i1 0
     %4 = eq i1 %clk.prb, %3
-    %5 = neq i1 %clk.prb, %3
+    %5 = neq i1 %clk.prb1, %3
     %posedge = and i1 %4, %5
     br %posedge, %init, %event
 event:
@@ -77,9 +78,9 @@ loop_exit:
     drv i1$ %en, %7, %2
     halt
 init:
-    %clk.prb = prb i1$ %clk
     wait %check, %clk
 check:
+    %clk.prb = prb i1$ %clk
     %8 = const i1 0
     %9 = eq i1 %clk.prb, %8
     %10 = neq i1 %clk.prb, %8
@@ -94,7 +95,6 @@ event:
 entity @stim (i1$ %clk, i1$ %reset) -&gt; (i3$ %count, i1$ %en) {
     inst %stim.always.55.0 (i1$ %clk, i1$ %reset) -&gt; (i3$ %count)
     inst %stim.initial.85.0 (i1$ %clk) -&gt; (i1$ %en)
-    halt
 }
 
 </pre>

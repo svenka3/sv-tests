@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,37 +17,37 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v</a>
 defines: 
-time_elapsed: 0.012s
-ram usage: 11092 KB
+time_elapsed: 0.010s
+ram usage: 10888 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html#l-15" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v:15</a>:7-59:
    | 
    |       $display(&#34;Failed: pa_out_full, got %b&#34;, pa_out_full);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v:19</a>:7-59:
    | 
    |       $display(&#34;Failed: ca_out_full, got %b&#34;, ca_out_full);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v:23</a>:7-59:
    | 
    |       $display(&#34;Failed: pa_out_part, got %b&#34;, pa_out_part);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v:27</a>:7-59:
    | 
    |       $display(&#34;Failed: ca_out_part, got %b&#34;, ca_out_part);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr2974216b.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/pr2974216b.v:31</a>:15-33:
    | 
    |     if (pass) $display(&#34;PASSED&#34;);
@@ -65,15 +65,22 @@ trigger:
 
 entity @param.param1 (i32$ %in) -&gt; (i32$ %pa_out, i32$ %ca_out) {
     %0 = const i1 0
+    %z_pad = sig i1 %0
+    %1 = sig i1 %0
+    %2 = const time 0s 1d
+    drv i1$ %1, %0, %2
+    con i1$ %z_pad, %1
     %x_pad = sig i1 %0
+    %3 = sig i1 %0
+    drv i1$ %3, %0, %2
+    con i1$ %x_pad, %3
     %concat = prb i32$ %in
-    %1 = const time 0s 1e
-    drv i32$ %ca_out, %concat, %1
+    %4 = const time 0s 1e
+    drv i32$ %ca_out, %concat, %4
     inst %param.param1.always.337.1 (i32$ %in, i1$ %x_pad) -&gt; (i32$ %pa_out)
-    halt
 }
 
-proc %param.param3.always.337.3 (i30$ %in, i1$ %x_pad) -&gt; (i32$ %pa_out) {
+proc %param.param2.always.337.2 (i30$ %in, i1$ %x_pad) -&gt; (i32$ %pa_out) {
 0:
     wait %trigger, %in, %x_pad
 trigger:
@@ -90,22 +97,28 @@ trigger:
     br %0
 }
 
-entity @param.param3 (i30$ %in) -&gt; (i32$ %pa_out, i32$ %ca_out) {
+entity @param.param2 (i30$ %in) -&gt; (i32$ %pa_out, i32$ %ca_out) {
     %0 = const i1 0
     %z_pad = sig i1 %0
+    %1 = sig i1 %0
+    %2 = const time 0s 1d
+    drv i1$ %1, %0, %2
+    con i1$ %z_pad, %1
     %x_pad = sig i1 %0
-    %1 = const i32 0
+    %3 = sig i1 %0
+    drv i1$ %3, %0, %2
+    con i1$ %x_pad, %3
+    %4 = const i32 0
     %in.prb = prb i30$ %in
-    %2 = inss i32 %1, i30 %in.prb, 0, 30
+    %5 = inss i32 %4, i30 %in.prb, 0, 30
     %concat = prb i1$ %z_pad
-    %3 = const i2 0
-    %4 = inss i2 %3, i1 %concat, 0, 1
-    %repeat = inss i2 %4, i1 %concat, 1, 1
-    %concat1 = inss i32 %2, i2 %repeat, 30, 2
-    %5 = const time 0s 1e
-    drv i32$ %ca_out, %concat1, %5
-    inst %param.param3.always.337.3 (i30$ %in, i1$ %x_pad) -&gt; (i32$ %pa_out)
-    halt
+    %6 = const i2 0
+    %7 = inss i2 %6, i1 %concat, 0, 1
+    %repeat = inss i2 %7, i1 %concat, 1, 1
+    %concat1 = inss i32 %5, i2 %repeat, 30, 2
+    %8 = const time 0s 1e
+    drv i32$ %ca_out, %concat1, %8
+    inst %param.param2.always.337.2 (i30$ %in, i1$ %x_pad) -&gt; (i32$ %pa_out)
 }
 
 proc %top.initial.204.0 (i32$ %pa_out_full, i32$ %ca_out_full, i32$ %pa_out_part, i32$ %ca_out_part) -&gt; (i1$ %pass, i32$ %in_full, i30$ %in_part) {
@@ -180,17 +193,9 @@ entity @top () -&gt; () {
     %in_part = sig i30 %2
     %pa_out_part = sig i32 %1
     %ca_out_part = sig i32 %1
-    %in_full.prb = prb i32$ %in_full
-    %3 = sig i32 %1
-    %4 = const time 0s 1e
-    drv i32$ %3, %in_full.prb, %4
-    inst @param.param1 (i32$ %3) -&gt; (i32$ %pa_out_full, i32$ %ca_out_full)
-    %in_part.prb = prb i30$ %in_part
-    %5 = sig i30 %2
-    drv i30$ %5, %in_part.prb, %4
-    inst @param.param3 (i30$ %5) -&gt; (i32$ %pa_out_part, i32$ %ca_out_part)
+    inst @param.param1 (i32$ %in_full) -&gt; (i32$ %pa_out_full, i32$ %ca_out_full)
+    inst @param.param2 (i30$ %in_part) -&gt; (i32$ %pa_out_part, i32$ %ca_out_part)
     inst %top.initial.204.0 (i32$ %pa_out_full, i32$ %ca_out_full, i32$ %pa_out_part, i32$ %ca_out_part) -&gt; (i1$ %pass, i32$ %in_full, i30$ %in_part)
-    halt
 }
 
 </pre>

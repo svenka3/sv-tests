@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,31 +17,31 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/casex3.9C.v.html" target="file-frame">third_party/tests/ivtest/ivltests/casex3.9C.v</a>
 defines: 
-time_elapsed: 0.009s
-ram usage: 10600 KB
+time_elapsed: 0.008s
+ram usage: 10580 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/casex3.9C.v.html" target="file-frame">third_party/tests/ivtest/ivltests/casex3.9C.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/casex3.9C.v.html#l-42" target="file-frame">third_party/tests/ivtest/ivltests/casex3.9C.v:42</a>:9-53:
    | 
    |         $display(&#34;FAILED casex 3.9C - label w/ x: &#34;);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/casex3.9C.v.html#l-50" target="file-frame">third_party/tests/ivtest/ivltests/casex3.9C.v:50</a>:9-53:
    | 
    |         $display(&#34;FAILED casex 3.9C - label w/ x: &#34;);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/casex3.9C.v.html#l-58" target="file-frame">third_party/tests/ivtest/ivltests/casex3.9C.v:58</a>:9-52:
    | 
    |         $display(&#34;FAILED casex 3.9C - label w/ x &#34;);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/casex3.9C.v.html#l-63" target="file-frame">third_party/tests/ivtest/ivltests/casex3.9C.v:63</a>:7-25:
    | 
    |       $display(&#34;PASSED&#34;);
@@ -53,13 +53,13 @@ init:
     %val2.prb = prb i3$ %val2
     wait %check, %val1, %val2
 check:
-    %impledge = neq i3 %val1.prb, %val1.prb
-    %impledge1 = neq i3 %val2.prb, %val2.prb
+    %val1.prb1 = prb i3$ %val1
+    %impledge = neq i3 %val1.prb, %val1.prb1
+    %val2.prb1 = prb i3$ %val2
+    %impledge1 = neq i3 %val2.prb, %val2.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %val1.prb1 = prb i3$ %val1
-    %val2.prb1 = prb i3$ %val2
     %0 = and i3 %val1.prb1, %val2.prb1
     %1 = const i3 0
     %2 = eq i3 %0, %1
@@ -142,7 +142,6 @@ entity @main () -&gt; () {
     %result = sig i3 %1
     inst %main.always.68.0 (i3$ %val1, i3$ %val2) -&gt; (i3$ %result)
     inst %main.initial.216.0 (i3$ %result) -&gt; (i1$ %error, i3$ %val1, i3$ %val2)
-    halt
 }
 
 </pre>

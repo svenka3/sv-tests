@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,25 +17,25 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v</a>
 defines: 
-time_elapsed: 0.009s
-ram usage: 10620 KB
+time_elapsed: 0.008s
+ram usage: 10692 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:23</a>:11-70:
    | 
    |           $display(&#34;FAILED: cont. assign, expected 2&#39;b01, got %b&#34;, a);
    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-29" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:29</a>:11-71:
    | 
    |           $display(&#34;FAILED: proc. assign, expected 2&#39;b01, got %b&#34;, ra);
    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1913937.v.html#l-33" target="file-frame">third_party/tests/ivtest/ivltests/pr1913937.v:33</a>:17-35:
    | 
    |       if (pass) $display(&#34;PASSED&#34;);
@@ -43,17 +43,17 @@ error: unknown system task `$display`
 
 proc %test.initial.151.0 (i2$ %a, i4$ %b, i4$ %c) -&gt; (i1$ %pass, i2$ %ra) {
 0:
-    %1 = prb i2$ %ra
-    %ra.shadow = var i2 %1
-    %2 = prb i1$ %pass
-    %pass.shadow = var i1 %2
+    %1 = prb i1$ %pass
+    %pass.shadow = var i1 %1
+    %2 = prb i2$ %ra
+    %ra.shadow = var i2 %2
     %3 = const i32 1
     wait %4 for %3
 4:
-    %5 = prb i2$ %ra
-    st i2* %ra.shadow, %5
-    %6 = prb i1$ %pass
-    st i1* %pass.shadow, %6
+    %5 = prb i1$ %pass
+    st i1* %pass.shadow, %5
+    %6 = prb i2$ %ra
+    st i2* %ra.shadow, %6
     %a.prb = prb i2$ %a
     %7 = const i2 1
     %8 = neq i2 %a.prb, %7
@@ -100,26 +100,33 @@ entity @test () -&gt; () {
     %1 = const i2 0
     %ra = sig i2 %1
     %a = sig i2 %1
-    %2 = const i4 15
+    %2 = const i4 0
     %b = sig i4 %2
+    %3 = const i4 15
+    %4 = sig i4 %2
+    %5 = const time 0s 1d
+    drv i4$ %4, %3, %5
+    con i4$ %b, %4
     %c = sig i4 %2
+    %6 = sig i4 %2
+    drv i4$ %6, %3, %5
+    con i4$ %c, %6
     %c.prb = prb i4$ %c
-    %3 = const i4 14
-    %4 = and i4 %c.prb, %3
+    %7 = const i4 14
+    %8 = and i4 %c.prb, %7
     %b.prb = prb i4$ %b
-    %5 = and i4 %4, %b.prb
-    %6 = exts i1, i4 %5, 0, 1
-    %7 = exts i1, i4 %5, 1, 1
-    %8 = or i1 %6, %7
-    %9 = exts i1, i4 %5, 2, 1
-    %10 = or i1 %8, %9
-    %11 = exts i1, i4 %5, 3, 1
+    %9 = and i4 %8, %b.prb
+    %10 = exts i1, i4 %9, 0, 1
+    %11 = exts i1, i4 %9, 1, 1
     %12 = or i1 %10, %11
-    %zext = inss i2 %1, i1 %12, 0, 1
-    %13 = const time 0s 1e
-    drv i2$ %a, %zext, %13
+    %13 = exts i1, i4 %9, 2, 1
+    %14 = or i1 %12, %13
+    %15 = exts i1, i4 %9, 3, 1
+    %16 = or i1 %14, %15
+    %zext = inss i2 %1, i1 %16, 0, 1
+    %17 = const time 0s 1e
+    drv i2$ %a, %zext, %17
     inst %test.initial.151.0 (i2$ %a, i4$ %b, i4$ %c) -&gt; (i1$ %pass, i2$ %ra)
-    halt
 }
 
 </pre>

@@ -160,51 +160,51 @@
 <a name="l-10"></a>
 <a name="l-11"></a><span class="k">module</span> <span class="n">ibex_dummy_instr</span> <span class="p">(</span>
 <a name="l-12"></a>    <span class="c1">// Clock and reset</span>
-<a name="l-13"></a>    <span class="k">input</span>  <span class="k">logic</span>        <span class="n">clk_i</span><span class="p">,</span>
-<a name="l-14"></a>    <span class="k">input</span>  <span class="k">logic</span>        <span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-13"></a>    <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-14"></a>    <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-15"></a>
 <a name="l-16"></a>    <span class="c1">// Interface to CSRs</span>
-<a name="l-17"></a>    <span class="k">input</span>  <span class="k">logic</span>        <span class="n">dummy_instr_en_i</span><span class="p">,</span>
-<a name="l-18"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">dummy_instr_mask_i</span><span class="p">,</span>
-<a name="l-19"></a>    <span class="k">input</span>  <span class="k">logic</span>        <span class="n">dummy_instr_seed_en_i</span><span class="p">,</span>
-<a name="l-20"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dummy_instr_seed_i</span><span class="p">,</span>
+<a name="l-17"></a>    <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">dummy_instr_en_i</span><span class="p">,</span>
+<a name="l-18"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">dummy_instr_mask_i</span><span class="p">,</span>
+<a name="l-19"></a>    <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">dummy_instr_seed_en_i</span><span class="p">,</span>
+<a name="l-20"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">dummy_instr_seed_i</span><span class="p">,</span>
 <a name="l-21"></a>
 <a name="l-22"></a>    <span class="c1">// Interface to IF stage</span>
-<a name="l-23"></a>    <span class="k">input</span>  <span class="k">logic</span>        <span class="n">fetch_valid_i</span><span class="p">,</span>
-<a name="l-24"></a>    <span class="k">input</span>  <span class="k">logic</span>        <span class="n">id_in_ready_i</span><span class="p">,</span>
-<a name="l-25"></a>    <span class="k">output</span> <span class="k">logic</span>        <span class="n">insert_dummy_instr_o</span><span class="p">,</span>
-<a name="l-26"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dummy_instr_data_o</span>
+<a name="l-23"></a>    <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">fetch_valid_i</span><span class="p">,</span>
+<a name="l-24"></a>    <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">id_in_ready_i</span><span class="p">,</span>
+<a name="l-25"></a>    <span class="k">output</span> <span class="kt">logic</span>        <span class="n">insert_dummy_instr_o</span><span class="p">,</span>
+<a name="l-26"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">dummy_instr_data_o</span>
 <a name="l-27"></a><span class="p">);</span>
 <a name="l-28"></a>
-<a name="l-29"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">TIMEOUT_CNT_W</span> <span class="o">=</span> <span class="mh">5</span><span class="p">;</span>
-<a name="l-30"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">OP_W</span>          <span class="o">=</span> <span class="mh">5</span><span class="p">;</span>
+<a name="l-29"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">TIMEOUT_CNT_W</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<a name="l-30"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">OP_W</span>          <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
 <a name="l-31"></a>
-<a name="l-32"></a>  <span class="k">typedef</span> <span class="k">enum</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="p">{</span>
-<a name="l-33"></a>    <span class="n">DUMMY_ADD</span> <span class="o">=</span> <span class="mh">2</span><span class="mb">&#39;b00</span><span class="p">,</span>
-<a name="l-34"></a>    <span class="n">DUMMY_MUL</span> <span class="o">=</span> <span class="mh">2</span><span class="mb">&#39;b01</span><span class="p">,</span>
-<a name="l-35"></a>    <span class="n">DUMMY_DIV</span> <span class="o">=</span> <span class="mh">2</span><span class="mb">&#39;b10</span><span class="p">,</span>
-<a name="l-36"></a>    <span class="n">DUMMY_AND</span> <span class="o">=</span> <span class="mh">2</span><span class="mb">&#39;b11</span>
+<a name="l-32"></a>  <span class="k">typedef</span> <span class="k">enum</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="p">{</span>
+<a name="l-33"></a>    <span class="n">DUMMY_ADD</span> <span class="o">=</span> <span class="mb">2&#39;b00</span><span class="p">,</span>
+<a name="l-34"></a>    <span class="n">DUMMY_MUL</span> <span class="o">=</span> <span class="mb">2&#39;b01</span><span class="p">,</span>
+<a name="l-35"></a>    <span class="n">DUMMY_DIV</span> <span class="o">=</span> <span class="mb">2&#39;b10</span><span class="p">,</span>
+<a name="l-36"></a>    <span class="n">DUMMY_AND</span> <span class="o">=</span> <span class="mb">2&#39;b11</span>
 <a name="l-37"></a>  <span class="p">}</span> <span class="n">dummy_instr_e</span><span class="p">;</span>
 <a name="l-38"></a>
 <a name="l-39"></a>  <span class="k">typedef</span> <span class="k">struct</span> <span class="k">packed</span> <span class="p">{</span>
 <a name="l-40"></a>    <span class="n">dummy_instr_e</span>             <span class="n">instr_type</span><span class="p">;</span>
-<a name="l-41"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">OP_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">op_b</span><span class="p">;</span>
-<a name="l-42"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">OP_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">op_a</span><span class="p">;</span>
-<a name="l-43"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cnt</span><span class="p">;</span>
+<a name="l-41"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">OP_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>          <span class="n">op_b</span><span class="p">;</span>
+<a name="l-42"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">OP_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>          <span class="n">op_a</span><span class="p">;</span>
+<a name="l-43"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">cnt</span><span class="p">;</span>
 <a name="l-44"></a>  <span class="p">}</span> <span class="n">lfsr_data_t</span><span class="p">;</span>
-<a name="l-45"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">LFSR_OUT_W</span> <span class="o">=</span> <span class="n">$bits</span><span class="p">(</span><span class="n">lfsr_data_t</span><span class="p">);</span>
+<a name="l-45"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">LFSR_OUT_W</span> <span class="o">=</span> <span class="p">$</span><span class="n">bits</span><span class="p">(</span><span class="n">lfsr_data_t</span><span class="p">);</span>
 <a name="l-46"></a>
 <a name="l-47"></a>  <span class="n">lfsr_data_t</span>               <span class="n">lfsr_data</span><span class="p">;</span>
-<a name="l-48"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dummy_cnt_incr</span><span class="p">,</span> <span class="n">dummy_cnt_threshold</span><span class="p">;</span>
-<a name="l-49"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">dummy_cnt_d</span><span class="p">,</span> <span class="n">dummy_cnt_q</span><span class="p">;</span>
-<a name="l-50"></a>  <span class="k">logic</span>                     <span class="n">dummy_cnt_en</span><span class="p">;</span>
-<a name="l-51"></a>  <span class="k">logic</span>                     <span class="n">lfsr_en</span><span class="p">;</span>
-<a name="l-52"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">LFSR_OUT_W</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>    <span class="n">lfsr_state</span><span class="p">;</span>
-<a name="l-53"></a>  <span class="k">logic</span>                     <span class="n">insert_dummy_instr</span><span class="p">;</span>
-<a name="l-54"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">dummy_set</span><span class="p">;</span>
-<a name="l-55"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>               <span class="n">dummy_opcode</span><span class="p">;</span>
-<a name="l-56"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">dummy_instr</span><span class="p">;</span>
-<a name="l-57"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">dummy_instr_seed_q</span><span class="p">,</span> <span class="n">dummy_instr_seed_d</span><span class="p">;</span>
+<a name="l-48"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">dummy_cnt_incr</span><span class="p">,</span> <span class="n">dummy_cnt_threshold</span><span class="p">;</span>
+<a name="l-49"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">dummy_cnt_d</span><span class="p">,</span> <span class="n">dummy_cnt_q</span><span class="p">;</span>
+<a name="l-50"></a>  <span class="kt">logic</span>                     <span class="n">dummy_cnt_en</span><span class="p">;</span>
+<a name="l-51"></a>  <span class="kt">logic</span>                     <span class="n">lfsr_en</span><span class="p">;</span>
+<a name="l-52"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">LFSR_OUT_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>    <span class="n">lfsr_state</span><span class="p">;</span>
+<a name="l-53"></a>  <span class="kt">logic</span>                     <span class="n">insert_dummy_instr</span><span class="p">;</span>
+<a name="l-54"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>               <span class="n">dummy_set</span><span class="p">;</span>
+<a name="l-55"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>               <span class="n">dummy_opcode</span><span class="p">;</span>
+<a name="l-56"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">dummy_instr</span><span class="p">;</span>
+<a name="l-57"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">dummy_instr_seed_q</span><span class="p">,</span> <span class="n">dummy_instr_seed_d</span><span class="p">;</span>
 <a name="l-58"></a>
 <a name="l-59"></a>  <span class="c1">// Shift the LFSR every time we insert an instruction</span>
 <a name="l-60"></a>  <span class="k">assign</span> <span class="n">lfsr_en</span> <span class="o">=</span> <span class="n">insert_dummy_instr</span> <span class="o">&amp;</span> <span class="n">id_in_ready_i</span><span class="p">;</span>
@@ -220,7 +220,7 @@
 <a name="l-70"></a>  <span class="k">end</span>
 <a name="l-71"></a>
 <a name="l-72"></a>  <span class="n">prim_lfsr</span> <span class="p">#(</span>
-<a name="l-73"></a>      <span class="p">.</span><span class="n">LfsrDw</span>      <span class="p">(</span> <span class="mh">32</span>         <span class="p">),</span>
+<a name="l-73"></a>      <span class="p">.</span><span class="n">LfsrDw</span>      <span class="p">(</span> <span class="mi">32</span>         <span class="p">),</span>
 <a name="l-74"></a>      <span class="p">.</span><span class="n">StateOutDw</span>  <span class="p">(</span> <span class="n">LFSR_OUT_W</span> <span class="p">)</span>
 <a name="l-75"></a>  <span class="p">)</span> <span class="n">lfsr_i</span> <span class="p">(</span>
 <a name="l-76"></a>      <span class="p">.</span><span class="n">clk_i</span>     <span class="p">(</span> <span class="n">clk_i</span>                 <span class="p">),</span>
@@ -237,8 +237,8 @@
 <a name="l-87"></a>
 <a name="l-88"></a>  <span class="c1">// Set count threshold for inserting a new instruction. This is the pseudo-random value from the</span>
 <a name="l-89"></a>  <span class="c1">// LFSR with a mask applied (based on CSR config data) to shorten the period if required.</span>
-<a name="l-90"></a>  <span class="k">assign</span> <span class="n">dummy_cnt_threshold</span> <span class="o">=</span> <span class="n">lfsr_data</span><span class="p">.</span><span class="n">cnt</span> <span class="o">&amp;</span> <span class="p">{</span><span class="n">dummy_instr_mask_i</span><span class="p">,{</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mh">3</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}}};</span>
-<a name="l-91"></a>  <span class="k">assign</span> <span class="n">dummy_cnt_incr</span>      <span class="o">=</span> <span class="n">dummy_cnt_q</span> <span class="o">+</span> <span class="p">{{</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mh">1</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">};</span>
+<a name="l-90"></a>  <span class="k">assign</span> <span class="n">dummy_cnt_threshold</span> <span class="o">=</span> <span class="n">lfsr_data</span><span class="p">.</span><span class="n">cnt</span> <span class="o">&amp;</span> <span class="p">{</span><span class="n">dummy_instr_mask_i</span><span class="p">,{</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mi">3</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}}};</span>
+<a name="l-91"></a>  <span class="k">assign</span> <span class="n">dummy_cnt_incr</span>      <span class="o">=</span> <span class="n">dummy_cnt_q</span> <span class="o">+</span> <span class="p">{{</span><span class="n">TIMEOUT_CNT_W</span><span class="o">-</span><span class="mi">1</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span><span class="mb">1&#39;b1</span><span class="p">};</span>
 <a name="l-92"></a>  <span class="c1">// Clear the counter everytime a new instruction is inserted</span>
 <a name="l-93"></a>  <span class="k">assign</span> <span class="n">dummy_cnt_d</span>         <span class="o">=</span> <span class="n">insert_dummy_instr</span> <span class="o">?</span> <span class="m">&#39;0</span> <span class="o">:</span> <span class="n">dummy_cnt_incr</span><span class="p">;</span>
 <a name="l-94"></a>  <span class="c1">// Increment the counter for each executed instruction while dummy instuctions are</span>
@@ -261,24 +261,24 @@
 <a name="l-111"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-112"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">lfsr_data</span><span class="p">.</span><span class="n">instr_type</span><span class="p">)</span>
 <a name="l-113"></a>      <span class="n">DUMMY_ADD</span> <span class="o">:</span> <span class="k">begin</span>
-<a name="l-114"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mh">7</span><span class="mb">&#39;b0000000</span><span class="p">;</span>
-<a name="l-115"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">;</span>
+<a name="l-114"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mb">7&#39;b0000000</span><span class="p">;</span>
+<a name="l-115"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mb">3&#39;b000</span><span class="p">;</span>
 <a name="l-116"></a>      <span class="k">end</span>
 <a name="l-117"></a>      <span class="n">DUMMY_MUL</span> <span class="o">:</span> <span class="k">begin</span>
-<a name="l-118"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mh">7</span><span class="mb">&#39;b0000001</span><span class="p">;</span>
-<a name="l-119"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">;</span>
+<a name="l-118"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mb">7&#39;b0000001</span><span class="p">;</span>
+<a name="l-119"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mb">3&#39;b000</span><span class="p">;</span>
 <a name="l-120"></a>      <span class="k">end</span>
 <a name="l-121"></a>      <span class="n">DUMMY_DIV</span> <span class="o">:</span> <span class="k">begin</span>
-<a name="l-122"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mh">7</span><span class="mb">&#39;b0000001</span><span class="p">;</span>
-<a name="l-123"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mh">3</span><span class="mb">&#39;b100</span><span class="p">;</span>
+<a name="l-122"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mb">7&#39;b0000001</span><span class="p">;</span>
+<a name="l-123"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mb">3&#39;b100</span><span class="p">;</span>
 <a name="l-124"></a>      <span class="k">end</span>
 <a name="l-125"></a>      <span class="n">DUMMY_AND</span> <span class="o">:</span> <span class="k">begin</span>
-<a name="l-126"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mh">7</span><span class="mb">&#39;b0000000</span><span class="p">;</span>
-<a name="l-127"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mh">3</span><span class="mb">&#39;b111</span><span class="p">;</span>
+<a name="l-126"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mb">7&#39;b0000000</span><span class="p">;</span>
+<a name="l-127"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mb">3&#39;b111</span><span class="p">;</span>
 <a name="l-128"></a>      <span class="k">end</span>
 <a name="l-129"></a>      <span class="k">default</span> <span class="o">:</span> <span class="k">begin</span>
-<a name="l-130"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mh">7</span><span class="mb">&#39;b0000000</span><span class="p">;</span>
-<a name="l-131"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mh">3</span><span class="mb">&#39;b000</span><span class="p">;</span>
+<a name="l-130"></a>        <span class="n">dummy_set</span>    <span class="o">=</span> <span class="mb">7&#39;b0000000</span><span class="p">;</span>
+<a name="l-131"></a>        <span class="n">dummy_opcode</span> <span class="o">=</span> <span class="mb">3&#39;b000</span><span class="p">;</span>
 <a name="l-132"></a>      <span class="k">end</span>
 <a name="l-133"></a>    <span class="k">endcase</span>
 <a name="l-134"></a>  <span class="k">end</span>

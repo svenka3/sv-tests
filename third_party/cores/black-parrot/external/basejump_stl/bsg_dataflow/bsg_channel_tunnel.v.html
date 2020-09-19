@@ -234,13 +234,13 @@
 <a name="l-59"></a><span class="c1">//    implementations of virtual fifos</span>
 <a name="l-60"></a><span class="c1">//</span>
 <a name="l-61"></a>
-<a name="l-62"></a><span class="k">module</span> <span class="n">bsg_channel_tunnel</span> <span class="p">#(</span><span class="k">parameter</span> <span class="n">width_p</span>        <span class="o">=</span> <span class="mh">1</span>
+<a name="l-62"></a><span class="k">module</span> <span class="n">bsg_channel_tunnel</span> <span class="p">#(</span><span class="k">parameter</span> <span class="n">width_p</span>        <span class="o">=</span> <span class="mi">1</span>
 <a name="l-63"></a>                            <span class="p">,</span> <span class="n">num_in_p</span>               <span class="o">=</span> <span class="s">&quot;inv&quot;</span>
 <a name="l-64"></a>                            <span class="p">,</span> <span class="n">remote_credits_p</span>       <span class="o">=</span> <span class="s">&quot;inv&quot;</span>
-<a name="l-65"></a>                            <span class="p">,</span> <span class="n">use_pseudo_large_fifo_p</span> <span class="o">=</span> <span class="mh">0</span>
-<a name="l-66"></a>                            <span class="p">,</span> <span class="n">lg_remote_credits_lp</span>   <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">remote_credits_p</span><span class="o">+</span><span class="mh">1</span><span class="p">)</span>
-<a name="l-67"></a>                            <span class="p">,</span> <span class="n">lg_credit_decimation_p</span> <span class="o">=</span> <span class="no">`BSG_MIN</span><span class="p">(</span><span class="n">lg_remote_credits_lp</span><span class="p">,</span><span class="mh">4</span><span class="p">)</span>
-<a name="l-68"></a>                            <span class="p">,</span> <span class="n">tag_width_lp</span>           <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">num_in_p</span><span class="o">+</span><span class="mh">1</span><span class="p">)</span>
+<a name="l-65"></a>                            <span class="p">,</span> <span class="n">use_pseudo_large_fifo_p</span> <span class="o">=</span> <span class="mi">0</span>
+<a name="l-66"></a>                            <span class="p">,</span> <span class="n">lg_remote_credits_lp</span>   <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">remote_credits_p</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<a name="l-67"></a>                            <span class="p">,</span> <span class="n">lg_credit_decimation_p</span> <span class="o">=</span> <span class="no">`BSG_MIN</span><span class="p">(</span><span class="n">lg_remote_credits_lp</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<a name="l-68"></a>                            <span class="p">,</span> <span class="n">tag_width_lp</span>           <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">num_in_p</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 <a name="l-69"></a>                            <span class="p">,</span> <span class="n">tagged_width_lp</span>        <span class="o">=</span> <span class="n">tag_width_lp</span> <span class="o">+</span> <span class="n">width_p</span>
 <a name="l-70"></a>
 <a name="l-71"></a>                            <span class="p">)</span>
@@ -248,24 +248,24 @@
 <a name="l-73"></a>    <span class="p">,</span><span class="k">input</span> <span class="n">reset_i</span>
 <a name="l-74"></a>
 <a name="l-75"></a>    <span class="c1">// incoming multiplexed data</span>
-<a name="l-76"></a>    <span class="p">,</span><span class="k">input</span>  <span class="p">[</span><span class="n">tagged_width_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">multi_data_i</span>
+<a name="l-76"></a>    <span class="p">,</span><span class="k">input</span>  <span class="p">[</span><span class="n">tagged_width_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">multi_data_i</span>
 <a name="l-77"></a>    <span class="p">,</span><span class="k">input</span>  <span class="n">multi_v_i</span>
 <a name="l-78"></a>    <span class="p">,</span><span class="k">output</span> <span class="n">multi_yumi_o</span>
 <a name="l-79"></a>
 <a name="l-80"></a>    <span class="c1">// outgoing multiplexed data</span>
-<a name="l-81"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">tagged_width_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">multi_data_o</span>
+<a name="l-81"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">tagged_width_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">multi_data_o</span>
 <a name="l-82"></a>    <span class="p">,</span> <span class="k">output</span> <span class="n">multi_v_o</span>
 <a name="l-83"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="n">multi_yumi_i</span>
 <a name="l-84"></a>
 <a name="l-85"></a>    <span class="c1">// incoming demultiplexed data</span>
-<a name="l-86"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">width_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_i</span>
-<a name="l-87"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">v_i</span>
-<a name="l-88"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">yumi_o</span>
+<a name="l-86"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_i</span>
+<a name="l-87"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">v_i</span>
+<a name="l-88"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">yumi_o</span>
 <a name="l-89"></a>
 <a name="l-90"></a>    <span class="c1">// outgoing demultiplexed data</span>
-<a name="l-91"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">width_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_o</span>
-<a name="l-92"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">v_o</span>
-<a name="l-93"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">yumi_i</span>
+<a name="l-91"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o</span>
+<a name="l-92"></a>    <span class="p">,</span> <span class="k">output</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">v_o</span>
+<a name="l-93"></a>    <span class="p">,</span> <span class="k">input</span>  <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">yumi_i</span>
 <a name="l-94"></a>    <span class="p">);</span>
 <a name="l-95"></a>
 <a name="l-96"></a>   <span class="c1">// synopsys translate_off</span>
@@ -273,26 +273,26 @@
 <a name="l-98"></a>     <span class="k">assert</span><span class="p">(</span><span class="n">lg_credit_decimation_p</span> <span class="o">&lt;=</span> <span class="n">lg_remote_credits_lp</span><span class="p">)</span>
 <a name="l-99"></a>       <span class="k">else</span>
 <a name="l-100"></a>         <span class="k">begin</span>
-<a name="l-101"></a>            <span class="n">$error</span><span class="p">(</span><span class="s">&quot;%m bad params; insufficient remote credits 2^%d to allow for decimation factor 2^%d&quot;</span>
+<a name="l-101"></a>            <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;%m bad params; insufficient remote credits 2^%d to allow for decimation factor 2^%d&quot;</span>
 <a name="l-102"></a>                   <span class="p">,</span><span class="n">lg_remote_credits_lp</span><span class="p">,</span><span class="n">lg_credit_decimation_p</span><span class="p">);</span>
-<a name="l-103"></a>            <span class="nb">$finish</span><span class="p">;</span>
+<a name="l-103"></a>            <span class="p">$</span><span class="n">finish</span><span class="p">;</span>
 <a name="l-104"></a>         <span class="k">end</span>
 <a name="l-105"></a>   <span class="k">initial</span>
 <a name="l-106"></a>     <span class="k">assert</span><span class="p">(</span><span class="n">width_p</span> <span class="o">&gt;=</span> <span class="n">num_in_p</span><span class="o">*</span><span class="n">lg_remote_credits_lp</span><span class="p">)</span>
 <a name="l-107"></a>       <span class="k">else</span>
 <a name="l-108"></a>         <span class="k">begin</span>
-<a name="l-109"></a>            <span class="n">$error</span><span class="p">(</span><span class="s">&quot;%m bad params; channel width (%d) must be at least wide enough to route back credits (%d)&quot;</span>
+<a name="l-109"></a>            <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;%m bad params; channel width (%d) must be at least wide enough to route back credits (%d)&quot;</span>
 <a name="l-110"></a>                   <span class="p">,</span><span class="n">width_p</span>
 <a name="l-111"></a>                   <span class="p">,</span><span class="n">num_in_p</span><span class="o">*</span><span class="n">lg_remote_credits_lp</span><span class="p">);</span>
-<a name="l-112"></a>            <span class="nb">$finish</span><span class="p">;</span>
+<a name="l-112"></a>            <span class="p">$</span><span class="n">finish</span><span class="p">;</span>
 <a name="l-113"></a>         <span class="k">end</span>
 <a name="l-114"></a>   <span class="c1">// synopsys translate_on</span>
 <a name="l-115"></a>
-<a name="l-116"></a>   <span class="k">wire</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">lg_remote_credits_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">credit_local_return_data_oi</span><span class="p">;</span>
-<a name="l-117"></a>   <span class="k">wire</span>                                          <span class="n">credit_local_return_v_oi</span><span class="p">;</span>
+<a name="l-116"></a>   <span class="kt">wire</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">lg_remote_credits_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">credit_local_return_data_oi</span><span class="p">;</span>
+<a name="l-117"></a>   <span class="kt">wire</span>                                          <span class="n">credit_local_return_v_oi</span><span class="p">;</span>
 <a name="l-118"></a>
-<a name="l-119"></a>   <span class="k">wire</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">][</span><span class="n">lg_remote_credits_lp</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">credit_remote_return_data_oi</span><span class="p">;</span>
-<a name="l-120"></a>   <span class="k">wire</span>                                          <span class="n">credit_remote_return_yumi_io</span><span class="p">;</span>
+<a name="l-119"></a>   <span class="kt">wire</span> <span class="p">[</span><span class="n">num_in_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">lg_remote_credits_lp</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">credit_remote_return_data_oi</span><span class="p">;</span>
+<a name="l-120"></a>   <span class="kt">wire</span>                                          <span class="n">credit_remote_return_yumi_io</span><span class="p">;</span>
 <a name="l-121"></a>
 <a name="l-122"></a>
 <a name="l-123"></a>   <span class="n">bsg_channel_tunnel_out</span> <span class="p">#(.</span><span class="n">width_p</span>                <span class="p">(</span><span class="n">width_p</span><span class="p">)</span>

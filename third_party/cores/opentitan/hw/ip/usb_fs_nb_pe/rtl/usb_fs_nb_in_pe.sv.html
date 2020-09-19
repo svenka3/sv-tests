@@ -337,65 +337,65 @@
 <a name="l-13"></a><span class="no">`include</span> <span class="s">&quot;prim_assert.sv&quot;</span>
 <a name="l-14"></a>
 <a name="l-15"></a><span class="k">module</span> <span class="n">usb_fs_nb_in_pe</span> <span class="p">#(</span>
-<a name="l-16"></a>  <span class="k">parameter</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">NumInEps</span> <span class="o">=</span> <span class="mh">12</span><span class="p">,</span>
-<a name="l-17"></a>  <span class="k">parameter</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">MaxInPktSizeByte</span> <span class="o">=</span> <span class="mh">32</span><span class="p">,</span>
-<a name="l-18"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">InEpW</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">NumInEps</span><span class="p">),</span> <span class="c1">// derived parameter</span>
-<a name="l-19"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">PktW</span> <span class="o">=</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">MaxInPktSizeByte</span><span class="p">)</span> <span class="c1">// derived parameter</span>
+<a name="l-16"></a>  <span class="k">parameter</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">NumInEps</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+<a name="l-17"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">MaxInPktSizeByte</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+<a name="l-18"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">InEpW</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">NumInEps</span><span class="p">),</span> <span class="c1">// derived parameter</span>
+<a name="l-19"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">PktW</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">MaxInPktSizeByte</span><span class="p">)</span> <span class="c1">// derived parameter</span>
 <a name="l-20"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-21"></a>  <span class="k">input</span>  <span class="k">logic</span>               <span class="n">clk_48mhz_i</span><span class="p">,</span>
-<a name="l-22"></a>  <span class="k">input</span>  <span class="k">logic</span>               <span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-23"></a>  <span class="k">input</span>  <span class="k">logic</span>               <span class="n">link_reset_i</span><span class="p">,</span>
-<a name="l-24"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>         <span class="n">dev_addr_i</span><span class="p">,</span>
+<a name="l-21"></a>  <span class="k">input</span>  <span class="kt">logic</span>               <span class="n">clk_48mhz_i</span><span class="p">,</span>
+<a name="l-22"></a>  <span class="k">input</span>  <span class="kt">logic</span>               <span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-23"></a>  <span class="k">input</span>  <span class="kt">logic</span>               <span class="n">link_reset_i</span><span class="p">,</span>
+<a name="l-24"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">dev_addr_i</span><span class="p">,</span>
 <a name="l-25"></a>
 <a name="l-26"></a>
 <a name="l-27"></a>  <span class="c1">////////////////////</span>
 <a name="l-28"></a>  <span class="c1">// endpoint interface</span>
 <a name="l-29"></a>  <span class="c1">////////////////////</span>
-<a name="l-30"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">in_ep_current_o</span><span class="p">,</span> <span class="c1">// Other signals addressed to this ep</span>
-<a name="l-31"></a>  <span class="k">output</span> <span class="k">logic</span>                  <span class="n">in_ep_rollback_o</span><span class="p">,</span> <span class="c1">// Bad termination, rollback transaction</span>
-<a name="l-32"></a>  <span class="k">output</span> <span class="k">logic</span>                  <span class="n">in_ep_acked_o</span><span class="p">,</span> <span class="c1">// good termination, transaction complete</span>
-<a name="l-33"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">PktW</span> <span class="o">-</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">in_ep_get_addr_o</span><span class="p">,</span> <span class="c1">// Offset requested (0..pktlen)</span>
-<a name="l-34"></a>  <span class="k">output</span> <span class="k">logic</span>                  <span class="n">in_ep_data_get_o</span><span class="p">,</span> <span class="c1">// Accept data (get_addr advances too)</span>
-<a name="l-35"></a>  <span class="k">output</span> <span class="k">logic</span>                  <span class="n">in_ep_newpkt_o</span><span class="p">,</span> <span class="c1">// New IN packet starting (updates in_ep_current_o)</span>
-<a name="l-36"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">in_ep_stall_i</span><span class="p">,</span> <span class="c1">// Endpoint in a stall state</span>
-<a name="l-37"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">in_ep_has_data_i</span><span class="p">,</span> <span class="c1">// Endpoint has data to supply</span>
-<a name="l-38"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">in_ep_data_i</span><span class="p">,</span> <span class="c1">// Data for current get_addr</span>
-<a name="l-39"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">in_ep_data_done_i</span><span class="p">,</span> <span class="c1">// Set when out of data</span>
-<a name="l-40"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">in_ep_iso_i</span><span class="p">,</span> <span class="c1">// Configure endpoint in isochronous mode</span>
+<a name="l-30"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>            <span class="n">in_ep_current_o</span><span class="p">,</span> <span class="c1">// Other signals addressed to this ep</span>
+<a name="l-31"></a>  <span class="k">output</span> <span class="kt">logic</span>                  <span class="n">in_ep_rollback_o</span><span class="p">,</span> <span class="c1">// Bad termination, rollback transaction</span>
+<a name="l-32"></a>  <span class="k">output</span> <span class="kt">logic</span>                  <span class="n">in_ep_acked_o</span><span class="p">,</span> <span class="c1">// good termination, transaction complete</span>
+<a name="l-33"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">PktW</span> <span class="o">-</span> <span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>     <span class="n">in_ep_get_addr_o</span><span class="p">,</span> <span class="c1">// Offset requested (0..pktlen)</span>
+<a name="l-34"></a>  <span class="k">output</span> <span class="kt">logic</span>                  <span class="n">in_ep_data_get_o</span><span class="p">,</span> <span class="c1">// Accept data (get_addr advances too)</span>
+<a name="l-35"></a>  <span class="k">output</span> <span class="kt">logic</span>                  <span class="n">in_ep_newpkt_o</span><span class="p">,</span> <span class="c1">// New IN packet starting (updates in_ep_current_o)</span>
+<a name="l-36"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">in_ep_stall_i</span><span class="p">,</span> <span class="c1">// Endpoint in a stall state</span>
+<a name="l-37"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">in_ep_has_data_i</span><span class="p">,</span> <span class="c1">// Endpoint has data to supply</span>
+<a name="l-38"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>            <span class="n">in_ep_data_i</span><span class="p">,</span> <span class="c1">// Data for current get_addr</span>
+<a name="l-39"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">in_ep_data_done_i</span><span class="p">,</span> <span class="c1">// Set when out of data</span>
+<a name="l-40"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">in_ep_iso_i</span><span class="p">,</span> <span class="c1">// Configure endpoint in isochronous mode</span>
 <a name="l-41"></a>
-<a name="l-42"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">data_toggle_clear_i</span><span class="p">,</span> <span class="c1">// Clear the data toggles for an EP</span>
+<a name="l-42"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">data_toggle_clear_i</span><span class="p">,</span> <span class="c1">// Clear the data toggles for an EP</span>
 <a name="l-43"></a>
 <a name="l-44"></a>  <span class="c1">////////////////////</span>
 <a name="l-45"></a>  <span class="c1">// rx path</span>
 <a name="l-46"></a>  <span class="c1">////////////////////</span>
 <a name="l-47"></a>
 <a name="l-48"></a>  <span class="c1">// Strobed on reception of packet.</span>
-<a name="l-49"></a>  <span class="k">input</span>  <span class="k">logic</span>              <span class="n">rx_pkt_start_i</span><span class="p">,</span>
-<a name="l-50"></a>  <span class="k">input</span>  <span class="k">logic</span>              <span class="n">rx_pkt_end_i</span><span class="p">,</span>
-<a name="l-51"></a>  <span class="k">input</span>  <span class="k">logic</span>              <span class="n">rx_pkt_valid_i</span><span class="p">,</span>
+<a name="l-49"></a>  <span class="k">input</span>  <span class="kt">logic</span>              <span class="n">rx_pkt_start_i</span><span class="p">,</span>
+<a name="l-50"></a>  <span class="k">input</span>  <span class="kt">logic</span>              <span class="n">rx_pkt_end_i</span><span class="p">,</span>
+<a name="l-51"></a>  <span class="k">input</span>  <span class="kt">logic</span>              <span class="n">rx_pkt_valid_i</span><span class="p">,</span>
 <a name="l-52"></a>
 <a name="l-53"></a>  <span class="c1">// Most recent packet received.</span>
-<a name="l-54"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">rx_pid_i</span><span class="p">,</span>
-<a name="l-55"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">rx_addr_i</span><span class="p">,</span>
-<a name="l-56"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">rx_endp_i</span><span class="p">,</span>
+<a name="l-54"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">rx_pid_i</span><span class="p">,</span>
+<a name="l-55"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">rx_addr_i</span><span class="p">,</span>
+<a name="l-56"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">rx_endp_i</span><span class="p">,</span>
 <a name="l-57"></a>
 <a name="l-58"></a>  <span class="c1">////////////////////</span>
 <a name="l-59"></a>  <span class="c1">// tx path</span>
 <a name="l-60"></a>  <span class="c1">////////////////////</span>
 <a name="l-61"></a>
 <a name="l-62"></a>  <span class="c1">// Strobe to send new packet.</span>
-<a name="l-63"></a>  <span class="k">output</span> <span class="k">logic</span>              <span class="n">tx_pkt_start_o</span><span class="p">,</span>
-<a name="l-64"></a>  <span class="k">input</span>  <span class="k">logic</span>              <span class="n">tx_pkt_end_i</span><span class="p">,</span>
+<a name="l-63"></a>  <span class="k">output</span> <span class="kt">logic</span>              <span class="n">tx_pkt_start_o</span><span class="p">,</span>
+<a name="l-64"></a>  <span class="k">input</span>  <span class="kt">logic</span>              <span class="n">tx_pkt_end_i</span><span class="p">,</span>
 <a name="l-65"></a>  <span class="c1">// Packet type to send</span>
-<a name="l-66"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">tx_pid_o</span><span class="p">,</span>
+<a name="l-66"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">tx_pid_o</span><span class="p">,</span>
 <a name="l-67"></a>
 <a name="l-68"></a>  <span class="c1">// Data payload to send if any</span>
-<a name="l-69"></a>  <span class="k">output</span> <span class="k">logic</span>              <span class="n">tx_data_avail_o</span><span class="p">,</span>
-<a name="l-70"></a>  <span class="k">input</span>  <span class="k">logic</span>              <span class="n">tx_data_get_i</span><span class="p">,</span>
-<a name="l-71"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">tx_data_o</span>
+<a name="l-69"></a>  <span class="k">output</span> <span class="kt">logic</span>              <span class="n">tx_data_avail_o</span><span class="p">,</span>
+<a name="l-70"></a>  <span class="k">input</span>  <span class="kt">logic</span>              <span class="n">tx_data_get_i</span><span class="p">,</span>
+<a name="l-71"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">tx_data_o</span>
 <a name="l-72"></a><span class="p">);</span>
 <a name="l-73"></a>  <span class="c1">// suppress warnings</span>
-<a name="l-74"></a>  <span class="k">logic</span>                      <span class="n">unused_1</span><span class="p">,</span> <span class="n">unused_2</span><span class="p">;</span>
+<a name="l-74"></a>  <span class="kt">logic</span>                      <span class="n">unused_1</span><span class="p">,</span> <span class="n">unused_2</span><span class="p">;</span>
 <a name="l-75"></a>  <span class="k">assign</span> <span class="n">unused_1</span> <span class="o">=</span> <span class="n">tx_pkt_end_i</span><span class="p">;</span>
 <a name="l-76"></a>  <span class="k">assign</span> <span class="n">unused_2</span> <span class="o">=</span> <span class="n">rx_pkt_start_i</span><span class="p">;</span>
 <a name="l-77"></a>
@@ -405,7 +405,7 @@
 <a name="l-81"></a>
 <a name="l-82"></a>  <span class="kn">import</span> <span class="nn">usb_consts_pkg::*</span><span class="p">;</span>
 <a name="l-83"></a>
-<a name="l-84"></a>  <span class="k">typedef</span> <span class="k">enum</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="p">{</span>
+<a name="l-84"></a>  <span class="k">typedef</span> <span class="k">enum</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="p">{</span>
 <a name="l-85"></a>    <span class="n">StIdle</span><span class="p">,</span>
 <a name="l-86"></a>    <span class="n">StRcvdIn</span><span class="p">,</span>
 <a name="l-87"></a>    <span class="n">StSendData</span><span class="p">,</span>
@@ -415,27 +415,27 @@
 <a name="l-91"></a>  <span class="n">state_in_e</span>  <span class="n">in_xfr_state</span><span class="p">;</span>
 <a name="l-92"></a>  <span class="n">state_in_e</span>  <span class="n">in_xfr_state_next</span><span class="p">;</span>
 <a name="l-93"></a>
-<a name="l-94"></a>  <span class="k">logic</span> <span class="n">in_xfr_end</span><span class="p">;</span>
+<a name="l-94"></a>  <span class="kt">logic</span> <span class="n">in_xfr_end</span><span class="p">;</span>
 <a name="l-95"></a>
 <a name="l-96"></a>  <span class="k">assign</span> <span class="n">in_ep_acked_o</span> <span class="o">=</span> <span class="n">in_xfr_end</span><span class="p">;</span>
 <a name="l-97"></a>
 <a name="l-98"></a>  <span class="c1">// data toggle state</span>
-<a name="l-99"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_toggle_q</span><span class="p">,</span> <span class="n">data_toggle_d</span><span class="p">;</span>
+<a name="l-99"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">NumInEps</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_toggle_q</span><span class="p">,</span> <span class="n">data_toggle_d</span><span class="p">;</span>
 <a name="l-100"></a>
 <a name="l-101"></a>  <span class="c1">// endpoint data buffer</span>
-<a name="l-102"></a>  <span class="k">logic</span>       <span class="n">token_received</span><span class="p">,</span> <span class="n">setup_token_received</span><span class="p">,</span> <span class="n">in_token_received</span><span class="p">,</span> <span class="n">ack_received</span><span class="p">;</span>
-<a name="l-103"></a>  <span class="k">logic</span>       <span class="n">more_data_to_send</span><span class="p">;</span>
-<a name="l-104"></a>  <span class="k">logic</span>       <span class="n">ep_impl_d</span><span class="p">,</span> <span class="n">ep_impl_q</span><span class="p">;</span>
-<a name="l-105"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">in_ep_current_d</span><span class="p">;</span>
+<a name="l-102"></a>  <span class="kt">logic</span>       <span class="n">token_received</span><span class="p">,</span> <span class="n">setup_token_received</span><span class="p">,</span> <span class="n">in_token_received</span><span class="p">,</span> <span class="n">ack_received</span><span class="p">;</span>
+<a name="l-103"></a>  <span class="kt">logic</span>       <span class="n">more_data_to_send</span><span class="p">;</span>
+<a name="l-104"></a>  <span class="kt">logic</span>       <span class="n">ep_impl_d</span><span class="p">,</span> <span class="n">ep_impl_q</span><span class="p">;</span>
+<a name="l-105"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">in_ep_current_d</span><span class="p">;</span>
 <a name="l-106"></a>
 <a name="l-107"></a>  <span class="c1">// More syntax so can compare with enum</span>
 <a name="l-108"></a>  <span class="n">usb_pid_type_e</span> <span class="n">rx_pid_type</span><span class="p">;</span>
 <a name="l-109"></a>  <span class="n">usb_pid_e</span>      <span class="n">rx_pid</span><span class="p">;</span>
-<a name="l-110"></a>  <span class="k">assign</span> <span class="n">rx_pid_type</span> <span class="o">=</span> <span class="n">usb_pid_type_e</span><span class="p">&#39;(</span><span class="n">rx_pid_i</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
+<a name="l-110"></a>  <span class="k">assign</span> <span class="n">rx_pid_type</span> <span class="o">=</span> <span class="n">usb_pid_type_e</span><span class="p">&#39;(</span><span class="n">rx_pid_i</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span>
 <a name="l-111"></a>  <span class="k">assign</span> <span class="n">rx_pid</span>      <span class="o">=</span> <span class="n">usb_pid_e</span><span class="p">&#39;(</span><span class="n">rx_pid_i</span><span class="p">);</span>
 <a name="l-112"></a>
 <a name="l-113"></a>  <span class="c1">// Is the specified endpoint actually implemented?</span>
-<a name="l-114"></a>  <span class="k">assign</span> <span class="n">ep_impl_d</span> <span class="o">=</span> <span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">rx_endp_i</span><span class="p">}</span> <span class="o">&lt;</span> <span class="n">NumInEps</span><span class="p">;</span>
+<a name="l-114"></a>  <span class="k">assign</span> <span class="n">ep_impl_d</span> <span class="o">=</span> <span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">,</span> <span class="n">rx_endp_i</span><span class="p">}</span> <span class="o">&lt;</span> <span class="n">NumInEps</span><span class="p">;</span>
 <a name="l-115"></a>
 <a name="l-116"></a>  <span class="k">assign</span> <span class="n">token_received</span> <span class="o">=</span>
 <a name="l-117"></a>    <span class="n">rx_pkt_end_i</span> <span class="o">&amp;&amp;</span>
@@ -461,27 +461,27 @@
 <a name="l-137"></a>  <span class="c1">// Make widths work - in_ep_current_d/in_ep_current_o only hold implemented endpoint IDs.</span>
 <a name="l-138"></a>  <span class="c1">// These signals can be used to index signals of NumInEps width.</span>
 <a name="l-139"></a>  <span class="c1">// They are only valid if ep_impl_d/q are set, i.e., if the specified endpoint is implemented.</span>
-<a name="l-140"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">InEpW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">in_ep_index</span><span class="p">;</span>
-<a name="l-141"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">InEpW</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">in_ep_index_d</span><span class="p">;</span>
-<a name="l-142"></a>  <span class="k">assign</span> <span class="n">in_ep_index</span>   <span class="o">=</span> <span class="n">in_ep_current_o</span><span class="p">[</span><span class="mh">0</span> <span class="o">+:</span> <span class="n">InEpW</span><span class="p">];</span>
-<a name="l-143"></a>  <span class="k">assign</span> <span class="n">in_ep_index_d</span> <span class="o">=</span> <span class="n">in_ep_current_d</span><span class="p">[</span><span class="mh">0</span> <span class="o">+:</span> <span class="n">InEpW</span><span class="p">];</span>
+<a name="l-140"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">InEpW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">in_ep_index</span><span class="p">;</span>
+<a name="l-141"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">InEpW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">in_ep_index_d</span><span class="p">;</span>
+<a name="l-142"></a>  <span class="k">assign</span> <span class="n">in_ep_index</span>   <span class="o">=</span> <span class="n">in_ep_current_o</span><span class="p">[</span><span class="mi">0</span> <span class="o">+:</span> <span class="n">InEpW</span><span class="p">];</span>
+<a name="l-143"></a>  <span class="k">assign</span> <span class="n">in_ep_index_d</span> <span class="o">=</span> <span class="n">in_ep_current_d</span><span class="p">[</span><span class="mi">0</span> <span class="o">+:</span> <span class="n">InEpW</span><span class="p">];</span>
 <a name="l-144"></a>
 <a name="l-145"></a>  <span class="k">assign</span> <span class="n">more_data_to_send</span> <span class="o">=</span> <span class="n">ep_impl_q</span> <span class="o">&amp;</span> <span class="n">in_ep_has_data_i</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">in_ep_data_done_i</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">];</span>
 <a name="l-146"></a>
-<a name="l-147"></a>  <span class="k">assign</span> <span class="n">tx_data_avail_o</span> <span class="o">=</span> <span class="k">logic</span><span class="p">&#39;(</span><span class="n">in_xfr_state</span> <span class="o">==</span> <span class="n">StSendData</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">more_data_to_send</span><span class="p">;</span>
+<a name="l-147"></a>  <span class="k">assign</span> <span class="n">tx_data_avail_o</span> <span class="o">=</span> <span class="kt">logic</span><span class="p">&#39;(</span><span class="n">in_xfr_state</span> <span class="o">==</span> <span class="n">StSendData</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">more_data_to_send</span><span class="p">;</span>
 <a name="l-148"></a>
 <a name="l-149"></a>  <span class="c1">////////////////////////////////////////////////////////////////////////////////</span>
 <a name="l-150"></a>  <span class="c1">// in transfer state machine</span>
 <a name="l-151"></a>  <span class="c1">////////////////////////////////////////////////////////////////////////////////</span>
 <a name="l-152"></a>
-<a name="l-153"></a>  <span class="k">logic</span> <span class="n">rollback_in_xfr</span><span class="p">;</span>
+<a name="l-153"></a>  <span class="kt">logic</span> <span class="n">rollback_in_xfr</span><span class="p">;</span>
 <a name="l-154"></a>
 <a name="l-155"></a>  <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-156"></a>    <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">in_xfr_state</span><span class="p">;</span>
-<a name="l-157"></a>    <span class="n">in_xfr_end</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-158"></a>    <span class="n">tx_pkt_start_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
-<a name="l-159"></a>    <span class="n">tx_pid_o</span> <span class="o">=</span> <span class="mh">4</span><span class="mb">&#39;b0000</span><span class="p">;</span>
-<a name="l-160"></a>    <span class="n">rollback_in_xfr</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-157"></a>    <span class="n">in_xfr_end</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-158"></a>    <span class="n">tx_pkt_start_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-159"></a>    <span class="n">tx_pid_o</span> <span class="o">=</span> <span class="mb">4&#39;b0000</span><span class="p">;</span>
+<a name="l-160"></a>    <span class="n">rollback_in_xfr</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-161"></a>    <span class="k">unique</span> <span class="k">case</span> <span class="p">(</span><span class="n">in_xfr_state</span><span class="p">)</span>
 <a name="l-162"></a>      <span class="nl">StIdle:</span> <span class="k">begin</span>
 <a name="l-163"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">in_token_received</span><span class="p">)</span> <span class="k">begin</span>
@@ -492,7 +492,7 @@
 <a name="l-168"></a>      <span class="k">end</span>
 <a name="l-169"></a>
 <a name="l-170"></a>      <span class="nl">StRcvdIn:</span> <span class="k">begin</span>
-<a name="l-171"></a>        <span class="n">tx_pkt_start_o</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span> <span class="c1">// Need to transmit NACK/STALL or DATA</span>
+<a name="l-171"></a>        <span class="n">tx_pkt_start_o</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span> <span class="c1">// Need to transmit NACK/STALL or DATA</span>
 <a name="l-172"></a>
 <a name="l-173"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">ep_impl_q</span> <span class="o">||</span> <span class="n">in_ep_stall_i</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">])</span> <span class="k">begin</span>
 <a name="l-174"></a>          <span class="c1">// We only send STALL for IN transfers if the specified EP:</span>
@@ -505,11 +505,11 @@
 <a name="l-181"></a>          <span class="c1">// We always need to transmit. When no data is available, we send</span>
 <a name="l-182"></a>          <span class="c1">// a zero-length packet</span>
 <a name="l-183"></a>          <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">StSendData</span><span class="p">;</span>
-<a name="l-184"></a>          <span class="n">tx_pid_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">data_toggle_q</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">],</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="p">{</span><span class="n">UsbPidTypeData</span><span class="p">}};</span> <span class="c1">// DATA0/1</span>
+<a name="l-184"></a>          <span class="n">tx_pid_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">data_toggle_q</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">],</span> <span class="mb">1&#39;b0</span><span class="p">,</span> <span class="p">{</span><span class="n">UsbPidTypeData</span><span class="p">}};</span> <span class="c1">// DATA0/1</span>
 <a name="l-185"></a>
 <a name="l-186"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">in_ep_has_data_i</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">])</span> <span class="k">begin</span>
 <a name="l-187"></a>          <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">StSendData</span><span class="p">;</span>
-<a name="l-188"></a>          <span class="n">tx_pid_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">data_toggle_q</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">],</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="p">{</span><span class="n">UsbPidTypeData</span><span class="p">}};</span> <span class="c1">// DATA0/1</span>
+<a name="l-188"></a>          <span class="n">tx_pid_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">data_toggle_q</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">],</span> <span class="mb">1&#39;b0</span><span class="p">,</span> <span class="p">{</span><span class="n">UsbPidTypeData</span><span class="p">}};</span> <span class="c1">// DATA0/1</span>
 <a name="l-189"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-190"></a>          <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">StIdle</span><span class="p">;</span>
 <a name="l-191"></a>          <span class="n">tx_pid_o</span> <span class="o">=</span> <span class="p">{</span><span class="n">UsbPidNak</span><span class="p">};</span> <span class="c1">// NAK</span>
@@ -534,13 +534,13 @@
 <a name="l-210"></a>        <span class="c1">// FIXME: need to handle smash/timeout</span>
 <a name="l-211"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">ack_received</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-212"></a>          <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">StIdle</span><span class="p">;</span>
-<a name="l-213"></a>          <span class="n">in_xfr_end</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-213"></a>          <span class="n">in_xfr_end</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-214"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">in_token_received</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-215"></a>          <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">StRcvdIn</span><span class="p">;</span>
-<a name="l-216"></a>          <span class="n">rollback_in_xfr</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-216"></a>          <span class="n">rollback_in_xfr</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-217"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">rx_pkt_end_i</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-218"></a>          <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">StIdle</span><span class="p">;</span>
-<a name="l-219"></a>          <span class="n">rollback_in_xfr</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-219"></a>          <span class="n">rollback_in_xfr</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-220"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-221"></a>          <span class="n">in_xfr_state_next</span> <span class="o">=</span> <span class="n">StWaitAck</span><span class="p">;</span>
 <a name="l-222"></a>        <span class="k">end</span>
@@ -562,10 +562,10 @@
 <a name="l-238"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_48mhz_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-239"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-240"></a>      <span class="n">in_xfr_state</span> <span class="o">&lt;=</span> <span class="n">StIdle</span><span class="p">;</span>
-<a name="l-241"></a>      <span class="n">in_ep_rollback_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-241"></a>      <span class="n">in_ep_rollback_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-242"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">link_reset_i</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-243"></a>      <span class="n">in_xfr_state</span> <span class="o">&lt;=</span> <span class="n">StIdle</span><span class="p">;</span>
-<a name="l-244"></a>      <span class="n">in_ep_rollback_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-244"></a>      <span class="n">in_ep_rollback_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-245"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-246"></a>      <span class="n">in_xfr_state</span> <span class="o">&lt;=</span> <span class="n">in_xfr_state_next</span><span class="p">;</span>
 <a name="l-247"></a>      <span class="n">in_ep_rollback_o</span> <span class="o">&lt;=</span> <span class="n">rollback_in_xfr</span><span class="p">;</span>
@@ -579,23 +579,23 @@
 <a name="l-255"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">in_xfr_state</span> <span class="o">==</span> <span class="n">StIdle</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-256"></a>        <span class="n">in_ep_get_addr_o</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-257"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">in_xfr_state</span> <span class="o">==</span> <span class="n">StSendData</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">tx_data_get_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-258"></a>        <span class="n">in_ep_get_addr_o</span> <span class="o">&lt;=</span> <span class="n">in_ep_get_addr_o</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-258"></a>        <span class="n">in_ep_get_addr_o</span> <span class="o">&lt;=</span> <span class="n">in_ep_get_addr_o</span> <span class="o">+</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-259"></a>      <span class="k">end</span>
 <a name="l-260"></a>    <span class="k">end</span>
 <a name="l-261"></a>  <span class="k">end</span>
 <a name="l-262"></a>
 <a name="l-263"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_48mhz_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-264"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-265"></a>      <span class="n">in_ep_newpkt_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-265"></a>      <span class="n">in_ep_newpkt_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-266"></a>      <span class="n">in_ep_current_o</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-267"></a>      <span class="n">ep_impl_q</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-267"></a>      <span class="n">ep_impl_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-268"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-269"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">in_token_received</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-270"></a>        <span class="n">in_ep_current_o</span> <span class="o">&lt;=</span> <span class="n">in_ep_current_d</span><span class="p">;</span>
-<a name="l-271"></a>        <span class="n">in_ep_newpkt_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-271"></a>        <span class="n">in_ep_newpkt_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-272"></a>        <span class="n">ep_impl_q</span> <span class="o">&lt;=</span> <span class="n">ep_impl_d</span><span class="p">;</span>
 <a name="l-273"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-274"></a>        <span class="n">in_ep_newpkt_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-274"></a>        <span class="n">in_ep_newpkt_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-275"></a>      <span class="k">end</span>
 <a name="l-276"></a>    <span class="k">end</span>
 <a name="l-277"></a>  <span class="k">end</span>
@@ -604,7 +604,7 @@
 <a name="l-280"></a>    <span class="n">data_toggle_d</span> <span class="o">=</span> <span class="n">data_toggle_q</span><span class="p">;</span>
 <a name="l-281"></a>
 <a name="l-282"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">setup_token_received</span> <span class="o">&amp;&amp;</span> <span class="n">ep_impl_d</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-283"></a>      <span class="n">data_toggle_d</span><span class="p">[</span><span class="n">in_ep_index_d</span><span class="p">]</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-283"></a>      <span class="n">data_toggle_d</span><span class="p">[</span><span class="n">in_ep_index_d</span><span class="p">]</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-284"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">in_xfr_state</span> <span class="o">==</span> <span class="n">StWaitAck</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">ack_received</span> <span class="o">&amp;&amp;</span> <span class="n">ep_impl_q</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-285"></a>      <span class="n">data_toggle_d</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_toggle_q</span><span class="p">[</span><span class="n">in_ep_index</span><span class="p">];</span>
 <a name="l-286"></a>    <span class="k">end</span>
@@ -624,12 +624,12 @@
 <a name="l-300"></a>
 <a name="l-301"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_48mhz_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-302"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-303"></a>      <span class="n">in_ep_data_get_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-303"></a>      <span class="n">in_ep_data_get_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-304"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
 <a name="l-305"></a>      <span class="k">if</span> <span class="p">((</span><span class="n">in_xfr_state</span> <span class="o">==</span> <span class="n">StSendData</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">tx_data_get_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-306"></a>        <span class="n">in_ep_data_get_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a name="l-306"></a>        <span class="n">in_ep_data_get_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-307"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-308"></a>        <span class="n">in_ep_data_get_o</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-308"></a>        <span class="n">in_ep_data_get_o</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-309"></a>      <span class="k">end</span>
 <a name="l-310"></a>    <span class="k">end</span>
 <a name="l-311"></a>  <span class="k">end</span>

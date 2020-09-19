@@ -66,14 +66,14 @@
 <a href="#l-58">58</a>
 <a href="#l-59">59</a>
 <a href="#l-60">60</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="k">module</span> <span class="n">mod_sva_checks</span><span class="p">;</span>
-<a name="l-2"></a>  <span class="k">logic</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">;</span>
-<a name="l-3"></a>  <span class="k">logic</span> <span class="n">clk_a</span><span class="p">,</span> <span class="n">clk_d</span><span class="p">,</span> <span class="n">clk_e1</span><span class="p">,</span> <span class="n">clk_e2</span><span class="p">;</span>
-<a name="l-4"></a>  <span class="k">logic</span> <span class="n">clk_c</span><span class="p">,</span> <span class="n">clk_p</span><span class="p">;</span>
+<a name="l-2"></a>  <span class="kt">logic</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">;</span>
+<a name="l-3"></a>  <span class="kt">logic</span> <span class="n">clk_a</span><span class="p">,</span> <span class="n">clk_d</span><span class="p">,</span> <span class="n">clk_e1</span><span class="p">,</span> <span class="n">clk_e2</span><span class="p">;</span>
+<a name="l-4"></a>  <span class="kt">logic</span> <span class="n">clk_c</span><span class="p">,</span> <span class="n">clk_p</span><span class="p">;</span>
 <a name="l-5"></a>  <span class="k">clocking</span> <span class="n">cb_prog</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_p</span><span class="p">);</span> <span class="k">endclocking</span>
 <a name="l-6"></a>  <span class="k">clocking</span> <span class="n">cb_checker</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_c</span><span class="p">);</span> <span class="k">endclocking</span>
 <a name="l-7"></a>  <span class="k">default</span> <span class="k">clocking</span> <span class="n">cb</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_d</span><span class="p">);</span> <span class="k">endclocking</span>
 <a name="l-8"></a>  <span class="k">sequence</span> <span class="n">e4</span><span class="p">;</span>
-<a name="l-9"></a>    <span class="n">$rose</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="p">##</span><span class="mh">1</span> <span class="n">c</span><span class="p">;</span>
+<a name="l-9"></a>    <span class="p">$</span><span class="n">rose</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="p">##</span><span class="mi">1</span> <span class="n">c</span><span class="p">;</span>
 <a name="l-10"></a>  <span class="k">endsequence</span>
 <a name="l-11"></a>  <span class="c1">// e4 infers posedge clk_a as per clock flow rules</span>
 <a name="l-12"></a>  <span class="nl">a1:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk_a</span><span class="p">)</span> <span class="n">a</span> <span class="o">|=&gt;</span> <span class="n">e4</span><span class="p">.</span><span class="n">triggered</span><span class="p">);</span>
@@ -81,7 +81,7 @@
 <a name="l-14"></a>  <span class="k">sequence</span> <span class="n">e5</span><span class="p">;</span>
 <a name="l-15"></a>    <span class="c1">// e4 will infer posedge clk_e1 as per clock flow rules</span>
 <a name="l-16"></a>    <span class="c1">// wherever e5 is instantiated (with/without a method)</span>
-<a name="l-17"></a>    <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_e1</span><span class="p">)</span> <span class="n">a</span> <span class="p">##[</span><span class="mh">1</span><span class="o">:</span><span class="mh">3</span><span class="p">]</span> <span class="n">e4</span><span class="p">.</span><span class="n">triggered</span> <span class="p">##</span><span class="mh">1</span> <span class="n">c</span><span class="p">;</span>
+<a name="l-17"></a>    <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_e1</span><span class="p">)</span> <span class="n">a</span> <span class="p">##[</span><span class="mi">1</span><span class="o">:</span><span class="mi">3</span><span class="p">]</span> <span class="n">e4</span><span class="p">.</span><span class="n">triggered</span> <span class="p">##</span><span class="mi">1</span> <span class="n">c</span><span class="p">;</span>
 <a name="l-18"></a>  <span class="k">endsequence</span>
 <a name="l-19"></a>  <span class="c1">// e4, used in e5, infers posedge clk_e1 from e5</span>
 <a name="l-20"></a>  <span class="nl">a2:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk_a</span><span class="p">)</span> <span class="n">a</span> <span class="o">|=&gt;</span> <span class="n">e5</span><span class="p">.</span><span class="n">matched</span><span class="p">);</span>
@@ -91,7 +91,7 @@
 <a name="l-24"></a>  <span class="c1">// e4 infers posedge clk_e2 as per clock flow rules</span>
 <a name="l-25"></a>  <span class="nl">a3:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk_a</span><span class="p">)</span> <span class="n">a</span> <span class="o">|=&gt;</span> <span class="n">e6</span><span class="p">(</span><span class="n">e4</span><span class="p">.</span><span class="n">triggered</span><span class="p">));</span>
 <a name="l-26"></a>  <span class="k">sequence</span> <span class="n">e7</span><span class="p">;</span>
-<a name="l-27"></a>    <span class="n">e4</span> <span class="p">##</span><span class="mh">1</span> <span class="n">e6</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+<a name="l-27"></a>    <span class="n">e4</span> <span class="p">##</span><span class="mi">1</span> <span class="n">e6</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
 <a name="l-28"></a>  <span class="k">endsequence</span>
 <a name="l-29"></a>  <span class="c1">// Leading clock of e7 is posedge clk_a as per clock flow rules</span>
 <a name="l-30"></a>  <span class="nl">a4:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk_a</span><span class="p">)</span> <span class="n">a</span> <span class="o">|=&gt;</span> <span class="n">e7</span><span class="p">.</span><span class="n">triggered</span><span class="p">);</span>
@@ -108,14 +108,14 @@
 <a name="l-41"></a>    <span class="k">initial</span> <span class="k">begin</span>
 <a name="l-42"></a>      <span class="c1">// e4 infers default clocking cb_prog</span>
 <a name="l-43"></a>      <span class="k">wait</span> <span class="p">(</span><span class="n">e4</span><span class="p">.</span><span class="n">triggered</span><span class="p">);</span>
-<a name="l-44"></a>      <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;e4 passed&quot;</span><span class="p">);</span>
+<a name="l-44"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;e4 passed&quot;</span><span class="p">);</span>
 <a name="l-45"></a>    <span class="k">end</span>
 <a name="l-46"></a>  <span class="k">endprogram</span> <span class="o">:</span> <span class="n">prog_e4</span>
 <a name="l-47"></a>
 <a name="l-48"></a>  <span class="k">checker</span> <span class="n">check</span><span class="p">(</span><span class="k">input</span> <span class="n">in1</span><span class="p">,</span> <span class="k">input</span> <span class="k">sequence</span> <span class="n">s_f</span><span class="p">);</span>
 <a name="l-49"></a>    <span class="k">default</span> <span class="k">clocking</span> <span class="n">cb_checker</span><span class="p">;</span>
 <a name="l-50"></a>    <span class="k">always</span> <span class="p">@(</span><span class="n">s_f</span><span class="p">)</span>
-<a name="l-51"></a>      <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;sequence triggered&quot;</span><span class="p">);</span>
+<a name="l-51"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;sequence triggered&quot;</span><span class="p">);</span>
 <a name="l-52"></a>    <span class="nl">a4:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span><span class="n">a</span> <span class="o">|=&gt;</span> <span class="n">in1</span><span class="p">);</span>
 <a name="l-53"></a>  <span class="k">endchecker</span> <span class="o">:</span> <span class="n">check</span>
 <a name="l-54"></a>  

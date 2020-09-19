@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_test
 top_module: 
@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v</a>
 defines: 
-time_elapsed: 0.015s
-ram usage: 11276 KB
+time_elapsed: 0.013s
+ram usage: 11496 KB
 </pre>
 <pre class="log">
 
@@ -30,37 +30,37 @@ warning: unsupported elaboration system task
    |       $fatal(1, &#34;BSG ERROR (%M): width_p of %d is not supported. Must be a power of 2 and divisible by 8&#34;, width_p);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v.html#l-77" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v:77</a>:7-71:
    | 
    |       $display(&#34;BSG INFO: bsg_nonsynth_dpi_from_fifo (initial begin)&#34;);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v.html#l-78" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v:78</a>:7-50:
    | 
    |       $display(&#34;BSG INFO:     Instantiation: %M&#34;);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v.html#l-79" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v:79</a>:7-54:
    | 
    |       $display(&#34;BSG INFO:     width_p = %d&#34;, width_p);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v.html#l-80" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v:80</a>:7-54:
    | 
    |       $display(&#34;BSG INFO:     debug_p = %d&#34;, debug_p);
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$fatal`
+warning: unsupported: system task `$fatal`; ignored
   --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v.html#l-86" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v:86</a>:9-74:
    | 
    |         $fatal(1, &#34;BSG ERROR (%M): fini() was not called before $finish&#34;);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v.html#l-235" target="file-frame">third_party/cores/basejump_stl/bsg_test/bsg_nonsynth_dpi_from_fifo.v:235</a>:9-156:
    | 
    |         $display(&#34;BSG DBGINFO (%M@%t): posedge clk_i -- reset_i: %b v_i: %b yumi_o: %b data_i: 0x%x&#34;,
@@ -87,15 +87,19 @@ init:
     %clk_i.prb = prb i1$ %clk_i
     wait %check, %clk_i, %clk_i
 check:
+    %clk_i.prb1 = prb i1$ %clk_i
     %0 = const i1 0
     %1 = eq i1 %clk_i.prb, %0
-    %2 = neq i1 %clk_i.prb, %0
+    %2 = neq i1 %clk_i.prb1, %0
     %posedge = and i1 %1, %2
-    br %posedge, %init, %event
+    %3 = neq i1 %clk_i.prb, %0
+    %4 = eq i1 %clk_i.prb1, %0
+    %negedge = and i1 %4, %3
+    %event_or = or i1 %posedge, %negedge
+    br %event_or, %init, %event
 event:
-    %clk_i.prb1 = prb i1$ %clk_i
-    %3 = const time 0s 1d
-    drv i1$ %edgepol, %clk_i.prb1, %3
+    %5 = const time 0s 1d
+    drv i1$ %edgepol, %clk_i.prb1, %5
     br %init
 }
 
@@ -110,26 +114,29 @@ init:
 check:
     %2 = prb i1$ %yumi_o_n
     st i1* %yumi_o_n.shadow, %2
+    %clk_i.prb1 = prb i1$ %clk_i
     %3 = const i1 0
     %4 = eq i1 %clk_i.prb, %3
-    %5 = neq i1 %clk_i.prb, %3
+    %5 = neq i1 %clk_i.prb1, %3
     %posedge = and i1 %4, %5
-    br %posedge, %init, %event
+    %6 = neq i1 %clk_i.prb, %3
+    %7 = eq i1 %clk_i.prb1, %3
+    %negedge = and i1 %7, %6
+    %event_or = or i1 %posedge, %negedge
+    br %event_or, %init, %event
 event:
-    %clk_i.prb1 = prb i1$ %clk_i
-    %6 = neq i1 %clk_i.prb1, %3
-    %7 = const time 0s 1d
-    br %6, %if_false, %if_true
+    %8 = const time 0s 1d
+    br %5, %if_false, %if_true
 if_true:
-    drv i1$ %yumi_o, %3, %7
+    drv i1$ %yumi_o, %3, %8
     br %if_exit
 if_false:
     %yumi_o_n.shadow.ld = ld i1* %yumi_o_n.shadow
-    drv i1$ %yumi_o, %yumi_o_n.shadow.ld, %7
+    drv i1$ %yumi_o, %yumi_o_n.shadow.ld, %8
     br %if_exit
 if_exit:
-    %8 = const time 0s 1e
-    drv i1$ %yumi_o_n, %3, %8
+    %9 = const time 0s 1e
+    drv i1$ %yumi_o_n, %3, %9
     st i1* %yumi_o_n.shadow, %3
     br %0
 }
@@ -139,9 +146,10 @@ init:
     %clk_i.prb = prb i1$ %clk_i
     wait %check, %clk_i
 check:
+    %clk_i.prb1 = prb i1$ %clk_i
     %0 = const i1 0
     %1 = eq i1 %clk_i.prb, %0
-    %2 = neq i1 %clk_i.prb, %0
+    %2 = neq i1 %clk_i.prb1, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
@@ -155,7 +163,7 @@ event:
     br %init
 }
 
-entity @bsg_nonsynth_dpi_from_fifo (i1$ %clk_i, i1$ %reset_i, i1$ %v_i, i2$ %data_i) -&gt; (i1$ %yumi_o, i1$ %debug_o) {
+entity @bsg_nonsynth_dpi_from_fifo (i1$ %clk_i, i1$ %reset_i, i1$ %v_i, i6909558$ %data_i) -&gt; (i1$ %yumi_o, i1$ %debug_o) {
     %0 = const i1 0
     %init_r = sig i1 %0
     %rx_r = sig i1 %0
@@ -168,7 +176,6 @@ entity @bsg_nonsynth_dpi_from_fifo (i1$ %clk_i, i1$ %reset_i, i1$ %v_i, i2$ %dat
     inst %bsg_nonsynth_dpi_from_fifo.always.856.0 (i1$ %clk_i) -&gt; (i1$ %edgepol)
     inst %bsg_nonsynth_dpi_from_fifo.always.1090.0 (i1$ %clk_i) -&gt; (i1$ %yumi_o, i1$ %yumi_o_n)
     inst %bsg_nonsynth_dpi_from_fifo.always.1168.0 (i1$ %clk_i, i1$ %v_i, i1$ %yumi_o, i1$ %debug_o) -&gt; (i1$ %rx_r, i1$ %v_i_r, i1$ %yumi_o_r)
-    halt
 }
 
 </pre>

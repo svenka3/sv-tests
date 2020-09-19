@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_dirrep.v.html" target="file-frame">third_party/tests/utd-sv/sctag_dirrep.v</a>
 defines: 
-time_elapsed: 0.223s
-ram usage: 13268 KB
+time_elapsed: 0.259s
+ram usage: 13668 KB
 </pre>
 <pre class="log">
 
@@ -126,6 +126,10 @@ module sctag_dirrep (
 	wire [4:0] dir_panel_icd_c4;
 	wire [2:0] lkup_row_addr_dcd_c4;
 	wire [2:0] lkup_row_addr_icd_c4;
+	wire tagdp_lkup_addr11_c5;
+	wire tagdp_lkup_addr11_c4;
+	wire rclk;
+	wire se;
 	dffe_s #(1) ff_tagdp_lkup_addr11_c5(
 		.q(tagdp_lkup_addr11_c5),
 		.din(tagdp_lkup_addr11_c4),
@@ -136,6 +140,7 @@ module sctag_dirrep (
 		.so()
 	);
 	assign dir_error_c7 = |ic_parity_out | |dc_parity_out;
+	wire dir_error_c8;
 	dff_s #(1) ff_dir_error_c8(
 		.q(dir_error_c8),
 		.din(dir_error_c7),
@@ -144,6 +149,8 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire dirrep_dir_wr_par_c4;
+	wire arbdp_dir_wr_par_c3;
 	dff_s #(1) ff_wr_par_c4(
 		.q(dirrep_dir_wr_par_c4),
 		.din(arbdp_dir_wr_par_c3),
@@ -152,6 +159,8 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire dir_vld_c4_l;
+	wire arbctl_dir_vld_c3_l;
 	dff_s #(1) ff_dir_vld_dcd_c4_l(
 		.q(dir_vld_c4_l),
 		.din(arbctl_dir_vld_c3_l),
@@ -160,6 +169,8 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire dc_rd_en_c4;
+	wire arbctl_dc_rd_en_c3;
 	dff_s #(1) ff_dc_rd_en_c4(
 		.q(dc_rd_en_c4),
 		.din(arbctl_dc_rd_en_c3),
@@ -168,6 +179,8 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire ic_rd_en_c4;
+	wire arbctl_ic_rd_en_c3;
 	dff_s #(1) ff_ic_rd_en_c4(
 		.q(ic_rd_en_c4),
 		.din(arbctl_ic_rd_en_c3),
@@ -176,6 +189,8 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire dc_wr_en_c4;
+	wire arbctl_dc_wr_en_c3;
 	dff_s #(1) ff_dc_wr_en_c4(
 		.q(dc_wr_en_c4),
 		.din(arbctl_dc_wr_en_c3),
@@ -184,6 +199,8 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire ic_wr_en_c4;
+	wire arbctl_ic_wr_en_c3;
 	dff_s #(1) ff_ic_wr_en_c4(
 		.q(ic_wr_en_c4),
 		.din(arbctl_ic_wr_en_c3),
@@ -268,6 +285,7 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire lkup_addr8_c4;
 	assign lkup_addr8_c4 = lkup_row_addr_icd_c4[0];
 	assign ic_lkup_panel_dec_c4[0] = lkup_row_addr_icd_c4[2:1] == 2&#39;d0;
 	assign ic_lkup_panel_dec_c4[1] = lkup_row_addr_icd_c4[2:1] == 2&#39;d1;
@@ -297,6 +315,8 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire ic_dir_clear_c4;
+	wire oneshot_dir_clear_c3;
 	dff_s #(1) ff_ic_dir_clear_c4(
 		.q(ic_dir_clear_c4),
 		.din(oneshot_dir_clear_c3),
@@ -305,6 +325,7 @@ module sctag_dirrep (
 		.si(),
 		.so()
 	);
+	wire dc_dir_clear_c4;
 	dff_s #(1) ff_dc_dir_clear_c4(
 		.q(dc_dir_clear_c4),
 		.din(oneshot_dir_clear_c3),

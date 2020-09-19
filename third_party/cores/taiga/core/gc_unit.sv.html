@@ -412,74 +412,74 @@
 <a name="l-26"></a><span class="kn">import</span> <span class="nn">csr_types::*</span><span class="p">;</span>
 <a name="l-27"></a>
 <a name="l-28"></a><span class="k">module</span> <span class="n">gc_unit</span><span class="p">(</span>
-<a name="l-29"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span>
-<a name="l-30"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span>
+<a name="l-29"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span>
+<a name="l-30"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span>
 <a name="l-31"></a>
 <a name="l-32"></a>
 <a name="l-33"></a>        <span class="c1">//Decode</span>
 <a name="l-34"></a>        <span class="n">unit_issue_interface</span><span class="p">.</span><span class="n">unit</span> <span class="n">issue</span><span class="p">,</span>
 <a name="l-35"></a>        <span class="k">input</span> <span class="n">gc_inputs_t</span> <span class="n">gc_inputs</span><span class="p">,</span>
-<a name="l-36"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">gc_flush_required</span><span class="p">,</span>
+<a name="l-36"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">gc_flush_required</span><span class="p">,</span>
 <a name="l-37"></a>        <span class="c1">//Branch miss predict</span>
-<a name="l-38"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">branch_flush</span><span class="p">,</span>
+<a name="l-38"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">branch_flush</span><span class="p">,</span>
 <a name="l-39"></a>        <span class="c1">//instruction misalignement</span>
-<a name="l-40"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">potential_branch_exception</span><span class="p">,</span>
-<a name="l-41"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">branch_exception_is_jump</span><span class="p">,</span>
+<a name="l-40"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">potential_branch_exception</span><span class="p">,</span>
+<a name="l-41"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">branch_exception_is_jump</span><span class="p">,</span>
 <a name="l-42"></a>        <span class="k">input</span> <span class="n">exception_packet_t</span> <span class="n">br_exception</span><span class="p">,</span>
 <a name="l-43"></a>        <span class="c1">//Illegal instruction</span>
-<a name="l-44"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">illegal_instruction</span><span class="p">,</span>
+<a name="l-44"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">illegal_instruction</span><span class="p">,</span>
 <a name="l-45"></a>
 <a name="l-46"></a>        <span class="c1">//Load Store Unit</span>
 <a name="l-47"></a>        <span class="k">input</span> <span class="n">exception_packet_t</span> <span class="n">ls_exception</span><span class="p">,</span>
-<a name="l-48"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">ls_exception_is_store</span><span class="p">,</span>
+<a name="l-48"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">ls_exception_is_store</span><span class="p">,</span>
 <a name="l-49"></a>
 <a name="l-50"></a>        <span class="c1">//TLBs</span>
-<a name="l-51"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">tlb_on</span><span class="p">,</span>
-<a name="l-52"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">ASIDLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">asid</span><span class="p">,</span>
+<a name="l-51"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">tlb_on</span><span class="p">,</span>
+<a name="l-52"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">ASIDLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">asid</span><span class="p">,</span>
 <a name="l-53"></a>
 <a name="l-54"></a>        <span class="c1">//MMUs</span>
 <a name="l-55"></a>        <span class="n">mmu_interface</span><span class="p">.</span><span class="n">csr</span> <span class="n">immu</span><span class="p">,</span>
 <a name="l-56"></a>        <span class="n">mmu_interface</span><span class="p">.</span><span class="n">csr</span> <span class="n">dmmu</span><span class="p">,</span>
 <a name="l-57"></a>
 <a name="l-58"></a>        <span class="c1">//ID Management</span>
-<a name="l-59"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">system_op_or_exception_complete</span><span class="p">,</span>
-<a name="l-60"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">exception_with_rd_complete</span><span class="p">,</span>
+<a name="l-59"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">system_op_or_exception_complete</span><span class="p">,</span>
+<a name="l-60"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">exception_with_rd_complete</span><span class="p">,</span>
 <a name="l-61"></a>        <span class="k">output</span> <span class="n">id_t</span> <span class="n">system_op_or_exception_id</span><span class="p">,</span>
 <a name="l-62"></a>
 <a name="l-63"></a>        <span class="c1">//Exception</span>
-<a name="l-64"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">exception_pc</span><span class="p">,</span>
+<a name="l-64"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">exception_pc</span><span class="p">,</span>
 <a name="l-65"></a>
 <a name="l-66"></a>        <span class="c1">//WB</span>
-<a name="l-67"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">MAX_COMPLETE_COUNT</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">retire_inc</span><span class="p">,</span>
-<a name="l-68"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">instruction_retired</span><span class="p">,</span>
+<a name="l-67"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">MAX_COMPLETE_COUNT</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">retire_inc</span><span class="p">,</span>
+<a name="l-68"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">instruction_retired</span><span class="p">,</span>
 <a name="l-69"></a>        <span class="c1">//unit_writeback_interface.unit gc_wb,</span>
 <a name="l-70"></a>
 <a name="l-71"></a>        <span class="c1">//External</span>
-<a name="l-72"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">interrupt</span><span class="p">,</span>
-<a name="l-73"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">timer_interrupt</span><span class="p">,</span>
+<a name="l-72"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">interrupt</span><span class="p">,</span>
+<a name="l-73"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">timer_interrupt</span><span class="p">,</span>
 <a name="l-74"></a>
 <a name="l-75"></a>        <span class="c1">//Output controls</span>
-<a name="l-76"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">gc_init_clear</span><span class="p">,</span>
-<a name="l-77"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">gc_fetch_hold</span><span class="p">,</span>
-<a name="l-78"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">gc_issue_hold</span><span class="p">,</span>
-<a name="l-79"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">gc_issue_flush</span><span class="p">,</span>
-<a name="l-80"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">gc_fetch_flush</span><span class="p">,</span>
-<a name="l-81"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">gc_fetch_pc_override</span><span class="p">,</span>
-<a name="l-82"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">gc_supress_writeback</span><span class="p">,</span>
+<a name="l-76"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">gc_init_clear</span><span class="p">,</span>
+<a name="l-77"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">gc_fetch_hold</span><span class="p">,</span>
+<a name="l-78"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">gc_issue_hold</span><span class="p">,</span>
+<a name="l-79"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">gc_issue_flush</span><span class="p">,</span>
+<a name="l-80"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">gc_fetch_flush</span><span class="p">,</span>
+<a name="l-81"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">gc_fetch_pc_override</span><span class="p">,</span>
+<a name="l-82"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">gc_supress_writeback</span><span class="p">,</span>
 <a name="l-83"></a>
-<a name="l-84"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">gc_fetch_pc</span><span class="p">,</span>
+<a name="l-84"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">gc_fetch_pc</span><span class="p">,</span>
 <a name="l-85"></a>
 <a name="l-86"></a>        <span class="c1">//Write-back to Load-Store Unit</span>
-<a name="l-87"></a>        <span class="k">output</span> <span class="k">logic</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">csr_rd</span><span class="p">,</span>
+<a name="l-87"></a>        <span class="k">output</span> <span class="kt">logic</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">csr_rd</span><span class="p">,</span>
 <a name="l-88"></a>        <span class="k">output</span> <span class="n">id_t</span> <span class="n">csr_id</span><span class="p">,</span>
-<a name="l-89"></a>        <span class="k">output</span> <span class="k">logic</span> <span class="n">csr_done</span><span class="p">,</span>
-<a name="l-90"></a>        <span class="k">input</span> <span class="k">logic</span> <span class="n">ls_is_idle</span>
+<a name="l-89"></a>        <span class="k">output</span> <span class="kt">logic</span> <span class="n">csr_done</span><span class="p">,</span>
+<a name="l-90"></a>        <span class="k">input</span> <span class="kt">logic</span> <span class="n">ls_is_idle</span>
 <a name="l-91"></a>        <span class="p">);</span>
 <a name="l-92"></a>
 <a name="l-93"></a>    <span class="c1">//Largest depth for TLBs</span>
-<a name="l-94"></a>    <span class="k">localparam</span> <span class="k">int</span> <span class="n">TLB_CLEAR_DEPTH</span> <span class="o">=</span> <span class="p">(</span><span class="n">DTLB_DEPTH</span> <span class="o">&gt;</span> <span class="n">ITLB_DEPTH</span><span class="p">)</span> <span class="o">?</span> <span class="n">DTLB_DEPTH</span> <span class="o">:</span> <span class="n">ITLB_DEPTH</span><span class="p">;</span>
+<a name="l-94"></a>    <span class="k">localparam</span> <span class="kt">int</span> <span class="n">TLB_CLEAR_DEPTH</span> <span class="o">=</span> <span class="p">(</span><span class="n">DTLB_DEPTH</span> <span class="o">&gt;</span> <span class="n">ITLB_DEPTH</span><span class="p">)</span> <span class="o">?</span> <span class="n">DTLB_DEPTH</span> <span class="o">:</span> <span class="n">ITLB_DEPTH</span><span class="p">;</span>
 <a name="l-95"></a>    <span class="c1">//For general reset clear, greater of TLB depth or id-flight memory blocks (MAX_IDS)</span>
-<a name="l-96"></a>    <span class="k">localparam</span> <span class="k">int</span> <span class="n">INIT_CLEAR_DEPTH</span> <span class="o">=</span> <span class="n">ENABLE_S_MODE</span> <span class="o">?</span> <span class="p">(</span><span class="n">TLB_CLEAR_DEPTH</span> <span class="o">&gt;</span> <span class="n">MAX_IDS</span> <span class="o">?</span> <span class="n">TLB_CLEAR_DEPTH</span> <span class="o">:</span> <span class="n">MAX_IDS</span><span class="p">)</span> <span class="o">:</span> <span class="n">MAX_IDS</span><span class="p">;</span>
+<a name="l-96"></a>    <span class="k">localparam</span> <span class="kt">int</span> <span class="n">INIT_CLEAR_DEPTH</span> <span class="o">=</span> <span class="n">ENABLE_S_MODE</span> <span class="o">?</span> <span class="p">(</span><span class="n">TLB_CLEAR_DEPTH</span> <span class="o">&gt;</span> <span class="n">MAX_IDS</span> <span class="o">?</span> <span class="n">TLB_CLEAR_DEPTH</span> <span class="o">:</span> <span class="n">MAX_IDS</span><span class="p">)</span> <span class="o">:</span> <span class="n">MAX_IDS</span><span class="p">;</span>
 <a name="l-97"></a>
 <a name="l-98"></a>    <span class="c1">////////////////////////////////////////////////////</span>
 <a name="l-99"></a>    <span class="c1">//Instructions</span>
@@ -518,41 +518,41 @@
 <a name="l-132"></a>    <span class="n">gc_state</span> <span class="n">next_state</span><span class="p">;</span>
 <a name="l-133"></a>    <span class="n">gc_state</span> <span class="n">prev_state</span><span class="p">;</span>
 <a name="l-134"></a>
-<a name="l-135"></a>    <span class="k">logic</span> <span class="n">init_clear_done</span><span class="p">;</span>
-<a name="l-136"></a>    <span class="k">logic</span> <span class="n">tlb_clear_done</span><span class="p">;</span>
+<a name="l-135"></a>    <span class="kt">logic</span> <span class="n">init_clear_done</span><span class="p">;</span>
+<a name="l-136"></a>    <span class="kt">logic</span> <span class="n">tlb_clear_done</span><span class="p">;</span>
 <a name="l-137"></a>
-<a name="l-138"></a>    <span class="k">logic</span> <span class="n">i_fence_flush</span><span class="p">;</span>
+<a name="l-138"></a>    <span class="kt">logic</span> <span class="n">i_fence_flush</span><span class="p">;</span>
 <a name="l-139"></a>    <span class="n">exception_code_t</span> <span class="n">ecall_code</span><span class="p">;</span>
-<a name="l-140"></a>    <span class="k">logic</span> <span class="n">second_cycle_flush</span><span class="p">;</span>
+<a name="l-140"></a>    <span class="kt">logic</span> <span class="n">second_cycle_flush</span><span class="p">;</span>
 <a name="l-141"></a>
 <a name="l-142"></a>    <span class="c1">//CSR</span>
-<a name="l-143"></a>    <span class="k">logic</span> <span class="n">mret</span><span class="p">;</span>
-<a name="l-144"></a>    <span class="k">logic</span> <span class="n">sret</span><span class="p">;</span>
-<a name="l-145"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">XLEN</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wb_csr</span><span class="p">;</span>
+<a name="l-143"></a>    <span class="kt">logic</span> <span class="n">mret</span><span class="p">;</span>
+<a name="l-144"></a>    <span class="kt">logic</span> <span class="n">sret</span><span class="p">;</span>
+<a name="l-145"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">XLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">wb_csr</span><span class="p">;</span>
 <a name="l-146"></a>    <span class="n">csr_inputs_t</span> <span class="n">csr_inputs</span><span class="p">;</span>
 <a name="l-147"></a>    <span class="n">exception_packet_t</span> <span class="n">gc_exception</span><span class="p">;</span>
 <a name="l-148"></a>    <span class="n">exception_packet_t</span> <span class="n">gc_exception_r</span><span class="p">;</span>
 <a name="l-149"></a>    <span class="n">id_t</span> <span class="n">exception_or_system_id</span><span class="p">;</span>
 <a name="l-150"></a>
 <a name="l-151"></a>    <span class="n">exception_packet_t</span> <span class="n">csr_exception</span><span class="p">;</span>
-<a name="l-152"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">current_privilege</span><span class="p">;</span>
-<a name="l-153"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">trap_pc</span><span class="p">;</span>
-<a name="l-154"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">csr_mepc</span><span class="p">;</span>
-<a name="l-155"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">csr_sepc</span><span class="p">;</span>
+<a name="l-152"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">current_privilege</span><span class="p">;</span>
+<a name="l-153"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">trap_pc</span><span class="p">;</span>
+<a name="l-154"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">csr_mepc</span><span class="p">;</span>
+<a name="l-155"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">csr_sepc</span><span class="p">;</span>
 <a name="l-156"></a>
 <a name="l-157"></a>    <span class="c1">//Write-back handshaking</span>
-<a name="l-158"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">fn3</span><span class="p">;</span>
-<a name="l-159"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">opcode</span><span class="p">;</span>
-<a name="l-160"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">opcode_trim</span><span class="p">;</span>
+<a name="l-158"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">fn3</span><span class="p">;</span>
+<a name="l-159"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">opcode</span><span class="p">;</span>
+<a name="l-160"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">opcode_trim</span><span class="p">;</span>
 <a name="l-161"></a>
-<a name="l-162"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rs1_addr</span><span class="p">;</span>
-<a name="l-163"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rs2_addr</span><span class="p">;</span>
-<a name="l-164"></a>    <span class="k">logic</span> <span class="p">[</span><span class="mh">4</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rd_addr</span><span class="p">;</span>
+<a name="l-162"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rs1_addr</span><span class="p">;</span>
+<a name="l-163"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rs2_addr</span><span class="p">;</span>
+<a name="l-164"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rd_addr</span><span class="p">;</span>
 <a name="l-165"></a>
 <a name="l-166"></a>    <span class="n">gc_inputs_t</span> <span class="n">stage1</span><span class="p">;</span>
-<a name="l-167"></a>    <span class="k">logic</span> <span class="n">processing_csr</span><span class="p">;</span>
-<a name="l-168"></a>    <span class="k">logic</span> <span class="n">csr_ready_to_complete</span><span class="p">;</span>
-<a name="l-169"></a>    <span class="k">logic</span> <span class="n">csr_ready_to_complete_r</span><span class="p">;</span>
+<a name="l-167"></a>    <span class="kt">logic</span> <span class="n">processing_csr</span><span class="p">;</span>
+<a name="l-168"></a>    <span class="kt">logic</span> <span class="n">csr_ready_to_complete</span><span class="p">;</span>
+<a name="l-169"></a>    <span class="kt">logic</span> <span class="n">csr_ready_to_complete_r</span><span class="p">;</span>
 <a name="l-170"></a>    <span class="n">id_t</span> <span class="n">instruction_id</span><span class="p">;</span>
 <a name="l-171"></a>
 <a name="l-172"></a>    <span class="c1">////////////////////////////////////////////////////</span>
@@ -575,20 +575,20 @@
 <a name="l-189"></a>    <span class="k">end</span>
 <a name="l-190"></a>
 <a name="l-191"></a>    <span class="c1">//Instruction decode</span>
-<a name="l-192"></a>    <span class="k">assign</span> <span class="n">opcode</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-193"></a>    <span class="k">assign</span> <span class="n">opcode_trim</span> <span class="o">=</span> <span class="n">opcode</span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">2</span><span class="p">];</span>
-<a name="l-194"></a>    <span class="k">assign</span> <span class="n">fn3</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mh">14</span><span class="o">:</span><span class="mh">12</span><span class="p">];</span>
-<a name="l-195"></a>    <span class="k">assign</span> <span class="n">rs1_addr</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mh">19</span><span class="o">:</span><span class="mh">15</span><span class="p">];</span>
-<a name="l-196"></a>    <span class="k">assign</span> <span class="n">rd_addr</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mh">11</span><span class="o">:</span><span class="mh">7</span><span class="p">];</span>
+<a name="l-192"></a>    <span class="k">assign</span> <span class="n">opcode</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-193"></a>    <span class="k">assign</span> <span class="n">opcode_trim</span> <span class="o">=</span> <span class="n">opcode</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">2</span><span class="p">];</span>
+<a name="l-194"></a>    <span class="k">assign</span> <span class="n">fn3</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mi">14</span><span class="o">:</span><span class="mi">12</span><span class="p">];</span>
+<a name="l-195"></a>    <span class="k">assign</span> <span class="n">rs1_addr</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mi">19</span><span class="o">:</span><span class="mi">15</span><span class="p">];</span>
+<a name="l-196"></a>    <span class="k">assign</span> <span class="n">rd_addr</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mi">11</span><span class="o">:</span><span class="mi">7</span><span class="p">];</span>
 <a name="l-197"></a>
 <a name="l-198"></a>    <span class="c1">////////////////////////////////////////////////////</span>
 <a name="l-199"></a>    <span class="c1">//GC Operation</span>
 <a name="l-200"></a>    <span class="k">assign</span> <span class="n">gc_fetch_flush</span> <span class="o">=</span> <span class="n">branch_flush</span> <span class="o">|</span> <span class="n">gc_fetch_pc_override</span><span class="p">;</span>
 <a name="l-201"></a>
 <a name="l-202"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-203"></a>        <span class="n">gc_fetch_hold</span> <span class="o">&lt;=</span>  <span class="n">next_state</span> <span class="k">inside</span> <span class="p">{</span><span class="n">PRE_CLEAR_STATE</span><span class="p">,</span> <span class="n">INIT_CLEAR_STATE</span><span class="p">};</span>
-<a name="l-204"></a>        <span class="n">gc_issue_hold</span> <span class="o">&lt;=</span> <span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">||</span> <span class="n">second_cycle_flush</span> <span class="o">||</span> <span class="n">processing_csr</span> <span class="o">||</span> <span class="p">(</span><span class="n">next_state</span> <span class="k">inside</span> <span class="p">{</span><span class="n">PRE_CLEAR_STATE</span><span class="p">,</span> <span class="n">INIT_CLEAR_STATE</span><span class="p">,</span> <span class="n">TLB_CLEAR_STATE</span><span class="p">,</span> <span class="n">IQ_DRAIN</span><span class="p">})</span> <span class="o">||</span> <span class="n">potential_branch_exception</span><span class="p">;</span>
-<a name="l-205"></a>        <span class="n">gc_supress_writeback</span> <span class="o">&lt;=</span> <span class="n">next_state</span> <span class="k">inside</span> <span class="p">{</span><span class="n">PRE_CLEAR_STATE</span><span class="p">,</span> <span class="n">INIT_CLEAR_STATE</span><span class="p">,</span> <span class="n">TLB_CLEAR_STATE</span><span class="p">}</span> <span class="o">?</span> <span class="mh">1</span> <span class="o">:</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-203"></a>        <span class="n">gc_fetch_hold</span> <span class="o">&lt;=</span>  <span class="n">next_state</span> <span class="ow">inside</span> <span class="p">{</span><span class="n">PRE_CLEAR_STATE</span><span class="p">,</span> <span class="n">INIT_CLEAR_STATE</span><span class="p">};</span>
+<a name="l-204"></a>        <span class="n">gc_issue_hold</span> <span class="o">&lt;=</span> <span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">||</span> <span class="n">second_cycle_flush</span> <span class="o">||</span> <span class="n">processing_csr</span> <span class="o">||</span> <span class="p">(</span><span class="n">next_state</span> <span class="ow">inside</span> <span class="p">{</span><span class="n">PRE_CLEAR_STATE</span><span class="p">,</span> <span class="n">INIT_CLEAR_STATE</span><span class="p">,</span> <span class="n">TLB_CLEAR_STATE</span><span class="p">,</span> <span class="n">IQ_DRAIN</span><span class="p">})</span> <span class="o">||</span> <span class="n">potential_branch_exception</span><span class="p">;</span>
+<a name="l-205"></a>        <span class="n">gc_supress_writeback</span> <span class="o">&lt;=</span> <span class="n">next_state</span> <span class="ow">inside</span> <span class="p">{</span><span class="n">PRE_CLEAR_STATE</span><span class="p">,</span> <span class="n">INIT_CLEAR_STATE</span><span class="p">,</span> <span class="n">TLB_CLEAR_STATE</span><span class="p">}</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-206"></a>        <span class="n">gc_init_clear</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">next_state</span> <span class="o">==</span> <span class="n">INIT_CLEAR_STATE</span><span class="p">);</span>
 <a name="l-207"></a>    <span class="k">end</span>
 <a name="l-208"></a>
@@ -632,8 +632,8 @@
 <a name="l-246"></a>    <span class="c1">////////////////////////////////////////////////////</span>
 <a name="l-247"></a>    <span class="c1">//mret/sret</span>
 <a name="l-248"></a>    <span class="k">always_ff</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-249"></a>        <span class="n">mret</span> <span class="o">=</span> <span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_ret</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gc_inputs</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">25</span><span class="p">]</span> <span class="o">==</span> <span class="mh">7</span><span class="mb">&#39;b0011000</span><span class="p">);</span>
-<a name="l-250"></a>        <span class="n">sret</span> <span class="o">=</span> <span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_ret</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gc_inputs</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">25</span><span class="p">]</span> <span class="o">==</span> <span class="mh">7</span><span class="mb">&#39;b0001000</span><span class="p">);</span>
+<a name="l-249"></a>        <span class="n">mret</span> <span class="o">=</span> <span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_ret</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gc_inputs</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">25</span><span class="p">]</span> <span class="o">==</span> <span class="mb">7&#39;b0011000</span><span class="p">);</span>
+<a name="l-250"></a>        <span class="n">sret</span> <span class="o">=</span> <span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_ret</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gc_inputs</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">25</span><span class="p">]</span> <span class="o">==</span> <span class="mb">7&#39;b0001000</span><span class="p">);</span>
 <a name="l-251"></a>    <span class="k">end</span>
 <a name="l-252"></a>    <span class="c1">////////////////////////////////////////////////////</span>
 <a name="l-253"></a>    <span class="c1">//Exception handling</span>
@@ -672,7 +672,7 @@
 <a name="l-286"></a>            <span class="n">gc_exception</span><span class="p">.</span><span class="n">tval</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-287"></a>        <span class="k">end</span>
 <a name="l-288"></a>    <span class="k">end</span>
-<a name="l-289"></a>    <span class="k">logic</span> <span class="n">ecall_break_exception</span><span class="p">;</span>
+<a name="l-289"></a>    <span class="kt">logic</span> <span class="n">ecall_break_exception</span><span class="p">;</span>
 <a name="l-290"></a>    <span class="k">assign</span> <span class="n">ecall_break_exception</span> <span class="o">=</span> <span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_ecall</span> <span class="o">|</span> <span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_ebreak</span><span class="p">);</span>
 <a name="l-291"></a>    <span class="k">assign</span> <span class="n">gc_exception</span><span class="p">.</span><span class="n">valid</span> <span class="o">=</span> <span class="n">ENABLE_M_MODE</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ecall_break_exception</span> <span class="o">|</span> <span class="n">ls_exception</span><span class="p">.</span><span class="n">valid</span> <span class="o">|</span> <span class="n">br_exception</span><span class="p">.</span><span class="n">valid</span> <span class="o">|</span> <span class="n">illegal_instruction</span><span class="p">);</span>
 <a name="l-292"></a>
@@ -685,18 +685,18 @@
 <a name="l-299"></a>        <span class="n">gc_fetch_pc_override</span> <span class="o">&lt;=</span> <span class="n">gc_flush_required</span> <span class="o">|</span> <span class="n">second_cycle_flush</span> <span class="o">|</span> <span class="n">ls_exception</span><span class="p">.</span><span class="n">valid</span> <span class="o">|</span> <span class="n">br_exception</span><span class="p">.</span><span class="n">valid</span><span class="p">;</span>
 <a name="l-300"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">gc_exception</span><span class="p">.</span><span class="n">valid</span> <span class="o">|</span> <span class="n">stage1</span><span class="p">.</span><span class="n">is_i_fence</span> <span class="o">|</span> <span class="p">(</span><span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_ret</span><span class="p">))</span> <span class="k">begin</span>
 <a name="l-301"></a>            <span class="n">gc_fetch_pc</span> <span class="o">&lt;=</span> <span class="n">gc_exception</span><span class="p">.</span><span class="n">valid</span> <span class="o">?</span> <span class="n">trap_pc</span> <span class="o">:</span>
-<a name="l-302"></a>                <span class="n">stage1</span><span class="p">.</span><span class="n">is_i_fence</span> <span class="o">?</span> <span class="n">stage1</span><span class="p">.</span><span class="n">pc</span> <span class="o">+</span> <span class="mh">4</span> <span class="o">:</span> <span class="c1">//Could stall on dec_pc valid and use instead of another adder</span>
+<a name="l-302"></a>                <span class="n">stage1</span><span class="p">.</span><span class="n">is_i_fence</span> <span class="o">?</span> <span class="n">stage1</span><span class="p">.</span><span class="n">pc</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">:</span> <span class="c1">//Could stall on dec_pc valid and use instead of another adder</span>
 <a name="l-303"></a>                <span class="n">csr_mepc</span><span class="p">;</span><span class="c1">// gc_inputs.is_ret</span>
 <a name="l-304"></a>        <span class="k">end</span>
 <a name="l-305"></a>    <span class="k">end</span>
 <a name="l-306"></a>
 <a name="l-307"></a>    <span class="c1">////////////////////////////////////////////////////</span>
 <a name="l-308"></a>    <span class="c1">//CSR registers</span>
-<a name="l-309"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">rs1</span> <span class="o">=</span> <span class="n">fn3</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">?</span> <span class="p">{</span><span class="mh">27</span><span class="mb">&#39;b0</span><span class="p">,</span> <span class="n">rs1_addr</span><span class="p">}</span> <span class="o">:</span> <span class="n">stage1</span><span class="p">.</span><span class="n">rs1</span><span class="p">;</span>
-<a name="l-310"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">csr_addr</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">20</span><span class="p">];</span>
-<a name="l-311"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">csr_op</span> <span class="o">=</span> <span class="n">fn3</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
-<a name="l-312"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">rs1_is_zero</span> <span class="o">=</span> <span class="p">(</span><span class="n">rs1_addr</span> <span class="o">==</span> <span class="mh">0</span><span class="p">);</span>
-<a name="l-313"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">rd_is_zero</span> <span class="o">=</span> <span class="p">(</span><span class="n">rd_addr</span> <span class="o">==</span> <span class="mh">0</span><span class="p">);</span>
+<a name="l-309"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">rs1</span> <span class="o">=</span> <span class="n">fn3</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">?</span> <span class="p">{</span><span class="mb">27&#39;b0</span><span class="p">,</span> <span class="n">rs1_addr</span><span class="p">}</span> <span class="o">:</span> <span class="n">stage1</span><span class="p">.</span><span class="n">rs1</span><span class="p">;</span>
+<a name="l-310"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">csr_addr</span> <span class="o">=</span> <span class="n">stage1</span><span class="p">.</span><span class="n">instruction</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">20</span><span class="p">];</span>
+<a name="l-311"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">csr_op</span> <span class="o">=</span> <span class="n">fn3</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-312"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">rs1_is_zero</span> <span class="o">=</span> <span class="p">(</span><span class="n">rs1_addr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+<a name="l-313"></a>    <span class="k">assign</span> <span class="n">csr_inputs</span><span class="p">.</span><span class="n">rd_is_zero</span> <span class="o">=</span> <span class="p">(</span><span class="n">rd_addr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
 <a name="l-314"></a>
 <a name="l-315"></a>    <span class="n">csr_regs</span> <span class="n">csr_registers</span> <span class="p">(</span>
 <a name="l-316"></a>        <span class="p">.</span><span class="n">clk</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span> <span class="p">.</span><span class="n">rst</span><span class="p">(</span><span class="n">rst</span><span class="p">),</span>
@@ -728,9 +728,9 @@
 <a name="l-342"></a>    <span class="c1">//CSR reads are passed through the Load-Store unit</span>
 <a name="l-343"></a>    <span class="c1">//A CSR write is only committed once it is the oldest instruction in the pipeline</span>
 <a name="l-344"></a>    <span class="c1">//while processing a csr operation, gc_issue_hold prevents further instructions from being issued</span>
-<a name="l-345"></a>    <span class="k">assign</span> <span class="n">issue</span><span class="p">.</span><span class="n">ready</span> <span class="o">=</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-345"></a>    <span class="k">assign</span> <span class="n">issue</span><span class="p">.</span><span class="n">ready</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 <a name="l-346"></a>
-<a name="l-347"></a>    <span class="n">set_clr_reg_with_rst</span> <span class="p">#(.</span><span class="n">SET_OVER_CLR</span><span class="p">(</span><span class="mh">0</span><span class="p">),</span> <span class="p">.</span><span class="n">WIDTH</span><span class="p">(</span><span class="mh">1</span><span class="p">),</span> <span class="p">.</span><span class="n">RST_VALUE</span><span class="p">(</span><span class="mh">0</span><span class="p">))</span> <span class="n">processing_csr_m</span> <span class="p">(</span>
+<a name="l-347"></a>    <span class="n">set_clr_reg_with_rst</span> <span class="p">#(.</span><span class="n">SET_OVER_CLR</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">.</span><span class="n">WIDTH</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="p">.</span><span class="n">RST_VALUE</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="n">processing_csr_m</span> <span class="p">(</span>
 <a name="l-348"></a>      <span class="p">.</span><span class="n">clk</span><span class="p">,</span> <span class="p">.</span><span class="n">rst</span><span class="p">,</span>
 <a name="l-349"></a>      <span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">issue</span><span class="p">.</span><span class="n">new_request</span> <span class="o">&amp;</span> <span class="n">gc_inputs</span><span class="p">.</span><span class="n">is_csr</span><span class="p">),</span>
 <a name="l-350"></a>      <span class="p">.</span><span class="n">clr</span><span class="p">(</span><span class="n">csr_ready_to_complete</span><span class="p">),</span>
@@ -758,7 +758,7 @@
 <a name="l-372"></a>    <span class="k">generate</span> <span class="k">if</span> <span class="p">(</span><span class="n">DEBUG_CONVERT_EXCEPTIONS_INTO_ASSERTIONS</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-373"></a>        <span class="nl">unexpected_exception_assertion:</span>
 <a name="l-374"></a>            <span class="k">assert</span> <span class="k">property</span> <span class="p">(@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span> <span class="p">(</span><span class="o">~</span><span class="n">gc_exception</span><span class="p">.</span><span class="n">valid</span><span class="p">))</span>
-<a name="l-375"></a>            <span class="k">else</span> <span class="n">$error</span><span class="p">(</span><span class="s">&quot;unexpected exception occured: %s&quot;</span><span class="p">,</span> <span class="n">gc_exception</span><span class="p">.</span><span class="n">code</span><span class="p">.</span><span class="n">name</span><span class="p">());</span>
+<a name="l-375"></a>            <span class="k">else</span> <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;unexpected exception occured: %s&quot;</span><span class="p">,</span> <span class="n">gc_exception</span><span class="p">.</span><span class="n">code</span><span class="p">.</span><span class="n">name</span><span class="p">());</span>
 <a name="l-376"></a>    <span class="k">end</span> <span class="k">endgenerate</span>
 <a name="l-377"></a>    <span class="no">`endif</span>
 <a name="l-378"></a>

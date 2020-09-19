@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,17 +18,35 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1868991b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1868991b.v</a>
 defines: 
 time_elapsed: 0.005s
-ram usage: 9972 KB
+ram usage: 10408 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/pr1868991b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1868991b.v</a>
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1868991b.v.html#l-7" target="file-frame">third_party/tests/ivtest/ivltests/pr1868991b.v:7</a>:34-45:
-   | 
-   |    wire [7-1:0] select_mpr_inx = dtlreq_addr[7-1:0];
-   |                                  ^^^^^^^^^^^        
-
+entity @test () -&gt; () {
+    %0 = const i32 0
+    %1 = [i32 %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0, %0]
+    %mpr1 = sig [19 x i32] %1
+    %2 = const i30 0
+    %dtlreq_addr = sig i30 %2
+    %3 = const i7 0
+    %select_mpr_inx = sig i7 %3
+    %dtlreq_addr.prb = prb i30$ %dtlreq_addr
+    %4 = exts i7, i30 %dtlreq_addr.prb, 0, 7
+    %5 = sig i7 %3
+    %6 = const time 0s 1d
+    drv i7$ %5, %4, %6
+    con i7$ %select_mpr_inx, %5
+    %select_dcs_mpr = sig i32 %0
+    %mpr1.prb = prb [19 x i32]$ %mpr1
+    %select_mpr_inx.prb = prb i7$ %select_mpr_inx
+    %7 = [19 x i32 %0]
+    %8 = shr [19 x i32] %mpr1.prb, [19 x i32] %7, i7 %select_mpr_inx.prb
+    %9 = extf i32, [19 x i32] %8, 0
+    %10 = sig i32 %0
+    drv i32$ %10, %9, %6
+    con i32$ %select_dcs_mpr, %10
+}
 
 </pre>
 </body>

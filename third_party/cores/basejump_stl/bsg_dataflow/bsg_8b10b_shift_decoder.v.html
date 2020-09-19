@@ -115,23 +115,23 @@
 <a name="l-2"></a>  <span class="p">(</span> <span class="k">input</span>   <span class="n">clk_i</span>
 <a name="l-3"></a>  <span class="p">,</span> <span class="k">input</span>   <span class="n">data_i</span>
 <a name="l-4"></a>
-<a name="l-5"></a>  <span class="p">,</span> <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_o</span>
-<a name="l-6"></a>  <span class="p">,</span> <span class="k">output</span> <span class="k">logic</span>       <span class="n">k_o</span>
-<a name="l-7"></a>  <span class="p">,</span> <span class="k">output</span> <span class="k">logic</span>       <span class="n">v_o</span>
+<a name="l-5"></a>  <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o</span>
+<a name="l-6"></a>  <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span>       <span class="n">k_o</span>
+<a name="l-7"></a>  <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span>       <span class="n">v_o</span>
 <a name="l-8"></a>  
-<a name="l-9"></a>  <span class="p">,</span> <span class="k">output</span> <span class="k">logic</span>       <span class="n">frame_align_o</span>
+<a name="l-9"></a>  <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span>       <span class="n">frame_align_o</span>
 <a name="l-10"></a>  <span class="p">);</span>
 <a name="l-11"></a>
 <a name="l-12"></a>  <span class="c1">// 8b10b decode running disparity and error signals</span>
-<a name="l-13"></a>  <span class="k">wire</span>        <span class="n">decode_rd_r</span><span class="p">,</span> <span class="n">decode_rd_n</span><span class="p">,</span> <span class="n">decode_rd_lo</span><span class="p">;</span>
-<a name="l-14"></a>  <span class="k">wire</span>        <span class="n">decode_data_err_lo</span><span class="p">;</span>
-<a name="l-15"></a>  <span class="k">wire</span>        <span class="n">decode_rd_err_lo</span><span class="p">;</span>
+<a name="l-13"></a>  <span class="kt">wire</span>        <span class="n">decode_rd_r</span><span class="p">,</span> <span class="n">decode_rd_n</span><span class="p">,</span> <span class="n">decode_rd_lo</span><span class="p">;</span>
+<a name="l-14"></a>  <span class="kt">wire</span>        <span class="n">decode_data_err_lo</span><span class="p">;</span>
+<a name="l-15"></a>  <span class="kt">wire</span>        <span class="n">decode_rd_err_lo</span><span class="p">;</span>
 <a name="l-16"></a>
 <a name="l-17"></a>  <span class="c1">// Signal if a RD- or RD+ comma code has been shifted in</span>
-<a name="l-18"></a>  <span class="k">wire</span>        <span class="n">comma_code_rdn</span><span class="p">,</span> <span class="n">comma_code_rdp</span><span class="p">;</span>
+<a name="l-18"></a>  <span class="kt">wire</span>        <span class="n">comma_code_rdn</span><span class="p">,</span> <span class="n">comma_code_rdp</span><span class="p">;</span>
 <a name="l-19"></a>
 <a name="l-20"></a>  <span class="c1">// Signal that indicates that a frame (10b) have arrived</span>
-<a name="l-21"></a>  <span class="k">wire</span>        <span class="n">frame_recv</span><span class="p">;</span>
+<a name="l-21"></a>  <span class="kt">wire</span>        <span class="n">frame_recv</span><span class="p">;</span>
 <a name="l-22"></a>
 <a name="l-23"></a>  <span class="c1">// Input Shift Register</span>
 <a name="l-24"></a>  <span class="c1">//======================</span>
@@ -139,12 +139,12 @@
 <a name="l-26"></a>  <span class="c1">// reset and we need to detect frame alignments. 8b10b shifts LSB first, so</span>
 <a name="l-27"></a>  <span class="c1">// don&#39;t change the shift direction!</span>
 <a name="l-28"></a>
-<a name="l-29"></a>  <span class="k">logic</span> <span class="p">[</span><span class="mh">9</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">shift_reg_r</span><span class="p">;</span>
+<a name="l-29"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">9</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">shift_reg_r</span><span class="p">;</span>
 <a name="l-30"></a>
 <a name="l-31"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span>
 <a name="l-32"></a>    <span class="k">begin</span>
-<a name="l-33"></a>      <span class="n">shift_reg_r</span><span class="p">[</span><span class="mh">8</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">shift_reg_r</span><span class="p">[</span><span class="mh">9</span><span class="o">:</span><span class="mh">1</span><span class="p">];</span>
-<a name="l-34"></a>      <span class="n">shift_reg_r</span><span class="p">[</span><span class="mh">9</span><span class="p">]</span>   <span class="o">&lt;=</span> <span class="n">data_i</span><span class="p">;</span>
+<a name="l-33"></a>      <span class="n">shift_reg_r</span><span class="p">[</span><span class="mi">8</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">shift_reg_r</span><span class="p">[</span><span class="mi">9</span><span class="o">:</span><span class="mi">1</span><span class="p">];</span>
+<a name="l-34"></a>      <span class="n">shift_reg_r</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>   <span class="o">&lt;=</span> <span class="n">data_i</span><span class="p">;</span>
 <a name="l-35"></a>    <span class="k">end</span>
 <a name="l-36"></a>
 <a name="l-37"></a>  <span class="c1">// Comma Code Detection and Frame Alignment</span>
@@ -153,8 +153,8 @@
 <a name="l-40"></a>  <span class="c1">// logic. This means that use of K.28.7 is not allowed. Sending a K.28.7&#39;s</span>
 <a name="l-41"></a>  <span class="c1">// to this channel will likely cause frame misalignment.</span>
 <a name="l-42"></a>
-<a name="l-43"></a>  <span class="k">assign</span> <span class="n">comma_code_rdn</span> <span class="o">=</span> <span class="p">(</span><span class="n">shift_reg_r</span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">7</span><span class="mb">&#39;b1111100</span><span class="p">);</span>    <span class="c1">// Comma code detect (sender was RD-, now RD+)</span>
-<a name="l-44"></a>  <span class="k">assign</span> <span class="n">comma_code_rdp</span> <span class="o">=</span> <span class="p">(</span><span class="n">shift_reg_r</span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">7</span><span class="mb">&#39;b0000011</span><span class="p">);</span>    <span class="c1">// Comma code detect (sender was RD+, now RD-)</span>
+<a name="l-43"></a>  <span class="k">assign</span> <span class="n">comma_code_rdn</span> <span class="o">=</span> <span class="p">(</span><span class="n">shift_reg_r</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mb">7&#39;b1111100</span><span class="p">);</span>    <span class="c1">// Comma code detect (sender was RD-, now RD+)</span>
+<a name="l-44"></a>  <span class="k">assign</span> <span class="n">comma_code_rdp</span> <span class="o">=</span> <span class="p">(</span><span class="n">shift_reg_r</span><span class="p">[</span><span class="mi">6</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mb">7&#39;b0000011</span><span class="p">);</span>    <span class="c1">// Comma code detect (sender was RD+, now RD-)</span>
 <a name="l-45"></a>
 <a name="l-46"></a>  <span class="k">assign</span> <span class="n">frame_align_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">comma_code_rdn</span> <span class="o">|</span> <span class="n">comma_code_rdp</span><span class="p">);</span>
 <a name="l-47"></a>
@@ -163,11 +163,11 @@
 <a name="l-50"></a>  <span class="c1">// Keeps track of where in the 10b frame we are. Resets when a comma code is</span>
 <a name="l-51"></a>  <span class="c1">// detected to realign the frame.</span>
 <a name="l-52"></a>
-<a name="l-53"></a>  <span class="n">bsg_counter_overflow_en</span> <span class="p">#(</span> <span class="p">.</span><span class="n">max_val_p</span><span class="p">(</span><span class="mh">9</span><span class="p">),</span> <span class="p">.</span><span class="n">init_val_p</span><span class="p">(</span><span class="mh">0</span><span class="p">)</span> <span class="p">)</span>
+<a name="l-53"></a>  <span class="n">bsg_counter_overflow_en</span> <span class="p">#(</span> <span class="p">.</span><span class="n">max_val_p</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="p">.</span><span class="n">init_val_p</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>
 <a name="l-54"></a>    <span class="n">frame_counter</span>
 <a name="l-55"></a>      <span class="p">(</span> <span class="p">.</span><span class="n">clk_i</span>     <span class="p">(</span> <span class="n">clk_i</span> <span class="p">)</span>
 <a name="l-56"></a>      <span class="p">,</span> <span class="p">.</span><span class="n">reset_i</span>   <span class="p">(</span> <span class="n">frame_align_o</span> <span class="p">)</span>
-<a name="l-57"></a>      <span class="p">,</span> <span class="p">.</span><span class="n">en_i</span>      <span class="p">(</span> <span class="mh">1</span><span class="mb">&#39;b1</span> <span class="p">)</span>
+<a name="l-57"></a>      <span class="p">,</span> <span class="p">.</span><span class="n">en_i</span>      <span class="p">(</span> <span class="mb">1&#39;b1</span> <span class="p">)</span>
 <a name="l-58"></a>      <span class="p">,</span> <span class="p">.</span><span class="n">count_o</span>   <span class="p">()</span>
 <a name="l-59"></a>      <span class="p">,</span> <span class="p">.</span><span class="n">overflow_o</span><span class="p">(</span> <span class="n">frame_recv</span> <span class="p">)</span>
 <a name="l-60"></a>      <span class="p">);</span>
@@ -183,7 +183,7 @@
 <a name="l-70"></a>
 <a name="l-71"></a>  <span class="k">assign</span> <span class="n">decode_rd_n</span> <span class="o">=</span> <span class="n">frame_align_o</span> <span class="o">?</span> <span class="n">comma_code_rdn</span> <span class="o">:</span> <span class="p">(</span><span class="n">v_o</span> <span class="o">?</span> <span class="n">decode_rd_lo</span> <span class="o">:</span> <span class="n">decode_rd_r</span><span class="p">);</span>
 <a name="l-72"></a>
-<a name="l-73"></a>  <span class="n">bsg_dff</span> <span class="p">#(.</span><span class="n">width_p</span><span class="p">(</span><span class="n">$bits</span><span class="p">(</span><span class="n">decode_rd_r</span><span class="p">)))</span>
+<a name="l-73"></a>  <span class="n">bsg_dff</span> <span class="p">#(.</span><span class="n">width_p</span><span class="p">($</span><span class="n">bits</span><span class="p">(</span><span class="n">decode_rd_r</span><span class="p">)))</span>
 <a name="l-74"></a>    <span class="n">decode_rd_reg</span>
 <a name="l-75"></a>      <span class="p">(</span> <span class="p">.</span><span class="n">clk_i</span> <span class="p">(</span> <span class="n">clk_i</span> <span class="p">)</span>
 <a name="l-76"></a>      <span class="p">,</span> <span class="p">.</span><span class="n">data_i</span><span class="p">(</span> <span class="n">decode_rd_n</span> <span class="p">)</span>
@@ -211,8 +211,8 @@
 <a name="l-98"></a>  <span class="c1">// synopsys translate_off</span>
 <a name="l-99"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span>
 <a name="l-100"></a>    <span class="k">begin</span>
-<a name="l-101"></a>      <span class="k">assert</span> <span class="p">(</span><span class="n">shift_reg_r</span> <span class="o">!==</span> <span class="mh">10</span><span class="mb">&#39;b0001</span><span class="n">_111100</span> <span class="o">&amp;&amp;</span> <span class="n">shift_reg_r</span> <span class="o">!==</span> <span class="mh">10</span><span class="mb">&#39;b1110</span><span class="n">_000011</span><span class="p">)</span> <span class="k">else</span>
-<a name="l-102"></a>        <span class="nb">$display</span><span class="p">(</span><span class="s">&quot;## ERROR (%M) - K.28.7 Code Detected!&quot;</span><span class="p">);</span>
+<a name="l-101"></a>      <span class="k">assert</span> <span class="p">(</span><span class="n">shift_reg_r</span> <span class="o">!==</span> <span class="mb">10&#39;b0001_111100</span> <span class="o">&amp;&amp;</span> <span class="n">shift_reg_r</span> <span class="o">!==</span> <span class="mb">10&#39;b1110_000011</span><span class="p">)</span> <span class="k">else</span>
+<a name="l-102"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;## ERROR (%M) - K.28.7 Code Detected!&quot;</span><span class="p">);</span>
 <a name="l-103"></a>    <span class="k">end</span>
 <a name="l-104"></a>  <span class="c1">// synopsys translate_on</span>
 <a name="l-105"></a>

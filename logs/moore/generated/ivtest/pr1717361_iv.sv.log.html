@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,25 +17,25 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1717361.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1717361.v</a>
 defines: 
-time_elapsed: 0.008s
-ram usage: 10748 KB
+time_elapsed: 0.007s
+ram usage: 10728 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e adding <a href="../../../../third_party/tests/ivtest/ivltests/pr1717361.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1717361.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1717361.v.html#l-13" target="file-frame">third_party/tests/ivtest/ivltests/pr1717361.v:13</a>:2-27:
    | 
    |     $display(&#34;%d %d&#34;, t1, t2);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1717361.v.html#l-20" target="file-frame">third_party/tests/ivtest/ivltests/pr1717361.v:20</a>:2-27:
    | 
    |     $display(&#34;%d %d&#34;, t1, t2);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1717361.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/pr1717361.v:21</a>:2-46:
    | 
    |     $display(&#34;%s&#34;, (t1==t2) ? &#34;PASSED&#34; : &#34;FAIL&#34;);
@@ -83,9 +83,10 @@ init:
     %clk.prb = prb i1$ %clk
     wait %check, %clk
 check:
+    %clk.prb1 = prb i1$ %clk
     %0 = const i1 0
     %1 = eq i1 %clk.prb, %0
-    %2 = neq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb1, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
@@ -124,7 +125,6 @@ entity @adding () -&gt; () {
     %clk = sig i1 %2
     inst %adding.initial.183.0 () -&gt; (i21$ %s3, i21$ %s4, i1$ %clk)
     inst %adding.always.226.0 (i21$ %s3, i21$ %s4, i1$ %clk) -&gt; (i22$ %t1, i22$ %t2)
-    halt
 }
 
 </pre>

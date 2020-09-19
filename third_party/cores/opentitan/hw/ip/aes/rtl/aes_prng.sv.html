@@ -79,31 +79,31 @@
 <a name="l-8"></a><span class="c1">// module primarily for clearing registers. The LFSR can be reseeded using an external interface.</span>
 <a name="l-9"></a>
 <a name="l-10"></a><span class="k">module</span> <span class="n">aes_prng</span> <span class="p">(</span>
-<a name="l-11"></a>  <span class="k">input</span>  <span class="k">logic</span>        <span class="n">clk_i</span><span class="p">,</span>
-<a name="l-12"></a>  <span class="k">input</span>  <span class="k">logic</span>        <span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-11"></a>  <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-12"></a>  <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">rst_ni</span><span class="p">,</span>
 <a name="l-13"></a>
 <a name="l-14"></a>  <span class="c1">// Connections to AES internals, PRNG consumers</span>
-<a name="l-15"></a>  <span class="k">input</span>  <span class="k">logic</span>        <span class="n">data_req_i</span><span class="p">,</span>
-<a name="l-16"></a>  <span class="k">output</span> <span class="k">logic</span>        <span class="n">data_ack_o</span><span class="p">,</span>
-<a name="l-17"></a>  <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_o</span><span class="p">,</span>
-<a name="l-18"></a>  <span class="k">input</span>  <span class="k">logic</span>        <span class="n">reseed_req_i</span><span class="p">,</span>
-<a name="l-19"></a>  <span class="k">output</span> <span class="k">logic</span>        <span class="n">reseed_ack_o</span><span class="p">,</span>
+<a name="l-15"></a>  <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">data_req_i</span><span class="p">,</span>
+<a name="l-16"></a>  <span class="k">output</span> <span class="kt">logic</span>        <span class="n">data_ack_o</span><span class="p">,</span>
+<a name="l-17"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o</span><span class="p">,</span>
+<a name="l-18"></a>  <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">reseed_req_i</span><span class="p">,</span>
+<a name="l-19"></a>  <span class="k">output</span> <span class="kt">logic</span>        <span class="n">reseed_ack_o</span><span class="p">,</span>
 <a name="l-20"></a>
 <a name="l-21"></a>  <span class="c1">// Connections to outer world, LFSR re-seed</span>
-<a name="l-22"></a>  <span class="k">output</span> <span class="k">logic</span>        <span class="n">entropy_req_o</span><span class="p">,</span>
-<a name="l-23"></a>  <span class="k">input</span>  <span class="k">logic</span>        <span class="n">entropy_ack_i</span><span class="p">,</span>
-<a name="l-24"></a>  <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="mh">63</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">entropy_i</span>
+<a name="l-22"></a>  <span class="k">output</span> <span class="kt">logic</span>        <span class="n">entropy_req_o</span><span class="p">,</span>
+<a name="l-23"></a>  <span class="k">input</span>  <span class="kt">logic</span>        <span class="n">entropy_ack_i</span><span class="p">,</span>
+<a name="l-24"></a>  <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">entropy_i</span>
 <a name="l-25"></a><span class="p">);</span>
 <a name="l-26"></a>
-<a name="l-27"></a>  <span class="k">localparam</span> <span class="k">int</span> <span class="k">unsigned</span> <span class="n">DATA_WIDTH</span> <span class="o">=</span> <span class="mh">64</span><span class="p">;</span>
+<a name="l-27"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">DATA_WIDTH</span> <span class="o">=</span> <span class="mi">64</span><span class="p">;</span>
 <a name="l-28"></a>
-<a name="l-29"></a>  <span class="k">logic</span>                  <span class="n">seed_en</span><span class="p">;</span>
-<a name="l-30"></a>  <span class="k">logic</span>                  <span class="n">lfsr_en</span><span class="p">;</span>
-<a name="l-31"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">lfsr_state</span><span class="p">;</span>
-<a name="l-32"></a>  <span class="k">logic</span> <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">scrambled</span><span class="p">;</span>
+<a name="l-29"></a>  <span class="kt">logic</span>                  <span class="n">seed_en</span><span class="p">;</span>
+<a name="l-30"></a>  <span class="kt">logic</span>                  <span class="n">lfsr_en</span><span class="p">;</span>
+<a name="l-31"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">lfsr_state</span><span class="p">;</span>
+<a name="l-32"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">scrambled</span><span class="p">;</span>
 <a name="l-33"></a>
 <a name="l-34"></a>  <span class="c1">// The data requests are fed from the LFSR, reseed requests have the highest priority.</span>
-<a name="l-35"></a>  <span class="k">assign</span> <span class="n">data_ack_o</span>    <span class="o">=</span> <span class="n">reseed_req_i</span> <span class="o">?</span> <span class="mh">1</span><span class="mb">&#39;b0</span> <span class="o">:</span> <span class="n">data_req_i</span><span class="p">;</span>
+<a name="l-35"></a>  <span class="k">assign</span> <span class="n">data_ack_o</span>    <span class="o">=</span> <span class="n">reseed_req_i</span> <span class="o">?</span> <span class="mb">1&#39;b0</span> <span class="o">:</span> <span class="n">data_req_i</span><span class="p">;</span>
 <a name="l-36"></a>
 <a name="l-37"></a>  <span class="c1">// Reseed requests are directly forwarded to the external interface.</span>
 <a name="l-38"></a>  <span class="k">assign</span> <span class="n">reseed_ack_o</span>  <span class="o">=</span> <span class="n">entropy_ack_i</span><span class="p">;</span>

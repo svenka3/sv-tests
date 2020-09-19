@@ -107,29 +107,29 @@
 <a name="l-12"></a>
 <a name="l-13"></a><span class="k">module</span> <span class="n">apb_timer</span>
 <a name="l-14"></a><span class="p">#(</span>
-<a name="l-15"></a>    <span class="k">parameter</span> <span class="n">APB_ADDR_WIDTH</span> <span class="o">=</span> <span class="mh">12</span><span class="p">,</span>  <span class="c1">//APB slaves are 4KB by default</span>
-<a name="l-16"></a>    <span class="k">parameter</span> <span class="n">TIMER_CNT</span> <span class="o">=</span> <span class="mh">2</span> <span class="c1">// how many timers should be instantiated</span>
+<a name="l-15"></a>    <span class="k">parameter</span> <span class="n">APB_ADDR_WIDTH</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>  <span class="c1">//APB slaves are 4KB by default</span>
+<a name="l-16"></a>    <span class="k">parameter</span> <span class="n">TIMER_CNT</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">// how many timers should be instantiated</span>
 <a name="l-17"></a><span class="p">)</span>
 <a name="l-18"></a><span class="p">(</span>
-<a name="l-19"></a>    <span class="k">input</span>  <span class="k">logic</span>                      <span class="n">HCLK</span><span class="p">,</span>
-<a name="l-20"></a>    <span class="k">input</span>  <span class="k">logic</span>                      <span class="n">HRESETn</span><span class="p">,</span>
-<a name="l-21"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">APB_ADDR_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">PADDR</span><span class="p">,</span>
-<a name="l-22"></a>    <span class="k">input</span>  <span class="k">logic</span>               <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">PWDATA</span><span class="p">,</span>
-<a name="l-23"></a>    <span class="k">input</span>  <span class="k">logic</span>                      <span class="n">PWRITE</span><span class="p">,</span>
-<a name="l-24"></a>    <span class="k">input</span>  <span class="k">logic</span>                      <span class="n">PSEL</span><span class="p">,</span>
-<a name="l-25"></a>    <span class="k">input</span>  <span class="k">logic</span>                      <span class="n">PENABLE</span><span class="p">,</span>
-<a name="l-26"></a>    <span class="k">output</span> <span class="k">logic</span>               <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">PRDATA</span><span class="p">,</span>
-<a name="l-27"></a>    <span class="k">output</span> <span class="k">logic</span>                      <span class="n">PREADY</span><span class="p">,</span>
-<a name="l-28"></a>    <span class="k">output</span> <span class="k">logic</span>                      <span class="n">PSLVERR</span><span class="p">,</span>
+<a name="l-19"></a>    <span class="k">input</span>  <span class="kt">logic</span>                      <span class="n">HCLK</span><span class="p">,</span>
+<a name="l-20"></a>    <span class="k">input</span>  <span class="kt">logic</span>                      <span class="n">HRESETn</span><span class="p">,</span>
+<a name="l-21"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">APB_ADDR_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">PADDR</span><span class="p">,</span>
+<a name="l-22"></a>    <span class="k">input</span>  <span class="kt">logic</span>               <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">PWDATA</span><span class="p">,</span>
+<a name="l-23"></a>    <span class="k">input</span>  <span class="kt">logic</span>                      <span class="n">PWRITE</span><span class="p">,</span>
+<a name="l-24"></a>    <span class="k">input</span>  <span class="kt">logic</span>                      <span class="n">PSEL</span><span class="p">,</span>
+<a name="l-25"></a>    <span class="k">input</span>  <span class="kt">logic</span>                      <span class="n">PENABLE</span><span class="p">,</span>
+<a name="l-26"></a>    <span class="k">output</span> <span class="kt">logic</span>               <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">PRDATA</span><span class="p">,</span>
+<a name="l-27"></a>    <span class="k">output</span> <span class="kt">logic</span>                      <span class="n">PREADY</span><span class="p">,</span>
+<a name="l-28"></a>    <span class="k">output</span> <span class="kt">logic</span>                      <span class="n">PSLVERR</span><span class="p">,</span>
 <a name="l-29"></a>
-<a name="l-30"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[(</span><span class="n">TIMER_CNT</span> <span class="o">*</span> <span class="mh">2</span><span class="p">)</span> <span class="o">-</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">irq_o</span> <span class="c1">// overflow and cmp interrupt</span>
+<a name="l-30"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[(</span><span class="n">TIMER_CNT</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">irq_o</span> <span class="c1">// overflow and cmp interrupt</span>
 <a name="l-31"></a><span class="p">);</span>
 <a name="l-32"></a>
-<a name="l-33"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">TIMER_CNT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">psel_int</span><span class="p">,</span> <span class="n">pready</span><span class="p">,</span> <span class="n">pslverr</span><span class="p">;</span>
-<a name="l-34"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">TIMER_CNT</span><span class="p">)</span> <span class="o">-</span> <span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">slave_address_int</span><span class="p">;</span>
-<a name="l-35"></a>    <span class="k">logic</span> <span class="p">[</span><span class="n">TIMER_CNT</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">prdata</span><span class="p">;</span>
+<a name="l-33"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">TIMER_CNT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">psel_int</span><span class="p">,</span> <span class="n">pready</span><span class="p">,</span> <span class="n">pslverr</span><span class="p">;</span>
+<a name="l-34"></a>    <span class="kt">logic</span> <span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">TIMER_CNT</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">slave_address_int</span><span class="p">;</span>
+<a name="l-35"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">TIMER_CNT</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">prdata</span><span class="p">;</span>
 <a name="l-36"></a>
-<a name="l-37"></a>    <span class="k">assign</span> <span class="n">slave_address_int</span> <span class="o">=</span> <span class="n">PADDR</span><span class="p">[</span><span class="n">$clog2</span><span class="p">(</span><span class="n">TIMER_CNT</span><span class="p">)</span><span class="o">+</span> <span class="no">`REGS_MAX_ADR</span> <span class="o">+</span> <span class="mh">1</span><span class="o">:</span><span class="no">`REGS_MAX_ADR</span> <span class="o">+</span> <span class="mh">2</span><span class="p">];</span>
+<a name="l-37"></a>    <span class="k">assign</span> <span class="n">slave_address_int</span> <span class="o">=</span> <span class="n">PADDR</span><span class="p">[$</span><span class="n">clog2</span><span class="p">(</span><span class="n">TIMER_CNT</span><span class="p">)</span><span class="o">+</span> <span class="no">`REGS_MAX_ADR</span> <span class="o">+</span> <span class="mi">1</span><span class="o">:</span><span class="no">`REGS_MAX_ADR</span> <span class="o">+</span> <span class="mi">2</span><span class="p">];</span>
 <a name="l-38"></a>
 <a name="l-39"></a>    <span class="k">always_comb</span>
 <a name="l-40"></a>    <span class="k">begin</span>
@@ -150,8 +150,8 @@
 <a name="l-55"></a>        <span class="k">else</span>
 <a name="l-56"></a>        <span class="k">begin</span>
 <a name="l-57"></a>            <span class="n">PRDATA</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-58"></a>            <span class="n">PREADY</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
-<a name="l-59"></a>            <span class="n">PSLVERR</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+<a name="l-58"></a>            <span class="n">PREADY</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-59"></a>            <span class="n">PSLVERR</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-60"></a>        <span class="k">end</span>
 <a name="l-61"></a>    <span class="k">end</span>
 <a name="l-62"></a>
@@ -159,7 +159,7 @@
 <a name="l-64"></a>    <span class="k">genvar</span> <span class="n">k</span><span class="p">;</span>
 <a name="l-65"></a>
 <a name="l-66"></a>    <span class="k">generate</span>
-<a name="l-67"></a>    <span class="k">for</span><span class="p">(</span><span class="n">k</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">TIMER_CNT</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+<a name="l-67"></a>    <span class="k">for</span><span class="p">(</span><span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">TIMER_CNT</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
 <a name="l-68"></a>    <span class="k">begin</span> <span class="o">:</span> <span class="n">TIMER_GEN</span>
 <a name="l-69"></a>      <span class="n">timer</span> <span class="p">#(</span>
 <a name="l-70"></a>          <span class="p">.</span><span class="n">APB_ADDR_WIDTH</span> <span class="p">(</span> <span class="n">APB_ADDR_WIDTH</span> <span class="p">)</span>
@@ -176,7 +176,7 @@
 <a name="l-81"></a>          <span class="p">.</span><span class="n">PREADY</span>     <span class="p">(</span> <span class="n">pready</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>    <span class="p">),</span>
 <a name="l-82"></a>          <span class="p">.</span><span class="n">PSLVERR</span>    <span class="p">(</span> <span class="n">pslverr</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>   <span class="p">),</span>
 <a name="l-83"></a>
-<a name="l-84"></a>          <span class="p">.</span><span class="n">irq_o</span>      <span class="p">(</span> <span class="n">irq_o</span><span class="p">[</span><span class="mh">2</span><span class="o">*</span><span class="n">k</span><span class="o">+</span><span class="mh">1</span> <span class="o">:</span> <span class="mh">2</span><span class="o">*</span><span class="n">k</span><span class="p">]</span> <span class="p">)</span>
+<a name="l-84"></a>          <span class="p">.</span><span class="n">irq_o</span>      <span class="p">(</span> <span class="n">irq_o</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">k</span><span class="p">]</span> <span class="p">)</span>
 <a name="l-85"></a>      <span class="p">);</span>
 <a name="l-86"></a>    <span class="k">end</span>
 <a name="l-87"></a><span class="k">endgenerate</span>

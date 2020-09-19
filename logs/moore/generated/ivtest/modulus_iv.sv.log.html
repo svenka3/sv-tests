@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,49 +17,49 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v</a>
 defines: 
-time_elapsed: 0.012s
-ram usage: 10652 KB
+time_elapsed: 0.010s
+ram usage: 10780 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e top <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html#l-46" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v:46</a>:10-68:
    | 
    |          $display(&#34;FAILED - wire 1235 mod 0: wresult = %h&#34;,wresult);
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html#l-51" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v:51</a>:10-65:
    | 
    |          $display(&#34;FAILED - reg 1235 mod 0: result = %h&#34;,result);
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html#l-59" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v:59</a>:10-69:
    | 
    |          $display(&#34;FAILED - wire 1235 mod 10: wresult = %h&#34;,wresult);
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html#l-64" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v:64</a>:10-66:
    | 
    |          $display(&#34;FAILED - reg 1235 mod 10: result = %h&#34;,result);
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html#l-73" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v:73</a>:10-69:
    | 
    |          $display(&#34;FAILED - wire 1235 mod 10: wresult = %h&#34;,wresult);
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html#l-78" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v:78</a>:10-66:
    | 
    |          $display(&#34;FAILED - reg 1235 mod 10: result = %h&#34;,result);
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/modulus.v.html#l-84" target="file-frame">third_party/tests/ivtest/ivltests/modulus.v:84</a>:6-24:
    | 
    |      $display(&#34;PASSED&#34;);
@@ -71,12 +71,13 @@ init:
     %wa.prb = prb i8$ %wa
     wait %check, %work, %wa
 check:
-    %impledge = neq i16 %work.prb, %work.prb
-    %impledge1 = neq i8 %wa.prb, %wa.prb
+    %work.prb1 = prb i16$ %work
+    %impledge = neq i16 %work.prb, %work.prb1
+    %wa.prb1 = prb i8$ %wa
+    %impledge1 = neq i8 %wa.prb, %wa.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %work.prb1 = prb i16$ %work
     %0 = const i16 0
     %a.prb = prb i8$ %a
     %zext = inss i16 %0, i8 %a.prb, 0, 8
@@ -225,7 +226,6 @@ entity @top () -&gt; () {
     drv i8$ %wresult, %5, %3
     inst %top.always.85.0 (i8$ %a, i8$ %wa, i16$ %work) -&gt; (i8$ %result)
     inst %top.initial.349.0 (i8$ %result, i8$ %wresult) -&gt; (i8$ %a, i16$ %work, i1$ %error)
-    halt
 }
 
 </pre>

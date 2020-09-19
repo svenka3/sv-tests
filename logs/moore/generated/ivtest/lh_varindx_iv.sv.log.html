@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,24 +18,24 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/lh_varindx.v.html" target="file-frame">third_party/tests/ivtest/ivltests/lh_varindx.v</a>
 defines: 
 time_elapsed: 0.008s
-ram usage: 10676 KB
+ram usage: 10544 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/lh_varindx.v.html" target="file-frame">third_party/tests/ivtest/ivltests/lh_varindx.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lh_varindx.v.html#l-40" target="file-frame">third_party/tests/ivtest/ivltests/lh_varindx.v:40</a>:9-71:
    | 
    |         $display(&#34;FAILED - var index -  a = %b, [b] = %d, c=%b&#34;,a,b,c);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lh_varindx.v.html#l-48" target="file-frame">third_party/tests/ivtest/ivltests/lh_varindx.v:48</a>:9-71:
    | 
    |         $display(&#34;FAILED - var index -  a = %b, [b] = %d, c=%b&#34;,a,b,c);
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lh_varindx.v.html#l-53" target="file-frame">third_party/tests/ivtest/ivltests/lh_varindx.v:53</a>:8-26:
    | 
    |        $display(&#34;PASSED&#34;);
@@ -47,17 +47,17 @@ init:
     %b.prb = prb i4$ %b
     wait %check, %c, %b
 check:
-    %impledge = neq i1 %c.prb, %c.prb
-    %impledge1 = neq i4 %b.prb, %b.prb
+    %c.prb1 = prb i1$ %c
+    %impledge = neq i1 %c.prb, %c.prb1
+    %b.prb1 = prb i4$ %b
+    %impledge1 = neq i4 %b.prb, %b.prb1
     %event_or = or i1 %impledge, %impledge1
     br %event_or, %init, %event
 event:
-    %b.prb1 = prb i4$ %b
     %0 = const i4 0
     %1 = sig i4 %0
     %2 = shr i4$ %a, i4$ %1, i4 %b.prb1
     %3 = exts i1$, i4$ %2, 0, 1
-    %c.prb1 = prb i1$ %c
     %4 = const time 0s 1e
     drv i1$ %3, %c.prb1, %4
     br %init
@@ -65,17 +65,17 @@ event:
 
 proc %main.initial.216.0 () -&gt; (i4$ %a, i4$ %b, i1$ %c, i1$ %error) {
 0:
-    %1 = prb i4$ %a
-    %a.shadow = var i4 %1
-    %2 = prb i1$ %error
-    %error.shadow = var i1 %2
+    %1 = prb i1$ %error
+    %error.shadow = var i1 %1
+    %2 = prb i4$ %a
+    %a.shadow = var i4 %2
     %3 = const i32 1
     wait %4 for %3
 4:
-    %5 = prb i1$ %error
-    st i1* %error.shadow, %5
-    %6 = prb i4$ %a
-    st i4* %a.shadow, %6
+    %5 = prb i4$ %a
+    st i4* %a.shadow, %5
+    %6 = prb i1$ %error
+    st i1* %error.shadow, %6
     %7 = const i4 15
     %8 = const time 0s 1e
     drv i4$ %a, %7, %8
@@ -89,10 +89,10 @@ proc %main.initial.216.0 () -&gt; (i4$ %a, i4$ %b, i1$ %c, i1$ %error) {
     %11 = const i32 1
     wait %12 for %11
 12:
-    %13 = prb i1$ %error
-    st i1* %error.shadow, %13
-    %14 = prb i4$ %a
-    st i4* %a.shadow, %14
+    %13 = prb i4$ %a
+    st i4* %a.shadow, %13
+    %14 = prb i1$ %error
+    st i1* %error.shadow, %14
     %a.shadow.ld = ld i4* %a.shadow
     %15 = const i4 14
     %16 = neq i4 %a.shadow.ld, %15
@@ -109,20 +109,20 @@ if_exit:
     %21 = const i32 1
     wait %22 for %21
 22:
-    %23 = prb i1$ %error
-    st i1* %error.shadow, %23
-    %24 = prb i4$ %a
-    st i4* %a.shadow, %24
+    %23 = prb i4$ %a
+    st i4* %a.shadow, %23
+    %24 = prb i1$ %error
+    st i1* %error.shadow, %24
     %25 = const i4 1
     %26 = const time 0s 1e
     drv i4$ %b, %25, %26
     %27 = const i32 1
     wait %28 for %27
 28:
-    %29 = prb i1$ %error
-    st i1* %error.shadow, %29
-    %30 = prb i4$ %a
-    st i4* %a.shadow, %30
+    %29 = prb i4$ %a
+    st i4* %a.shadow, %29
+    %30 = prb i1$ %error
+    st i1* %error.shadow, %30
     %a.shadow.ld1 = ld i4* %a.shadow
     %31 = const i4 12
     %32 = neq i4 %a.shadow.ld1, %31
@@ -148,7 +148,6 @@ entity @main () -&gt; () {
     %error = sig i1 %1
     inst %main.always.54.0 (i4$ %b, i1$ %c) -&gt; (i4$ %a)
     inst %main.initial.216.0 () -&gt; (i4$ %a, i4$ %b, i1$ %c, i1$ %error)
-    halt
 }
 
 </pre>

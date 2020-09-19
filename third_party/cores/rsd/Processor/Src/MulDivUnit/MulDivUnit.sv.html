@@ -174,7 +174,7 @@
 <a name="l-15"></a>
 <a name="l-16"></a><span class="k">module</span> <span class="n">MulDivUnit</span><span class="p">(</span><span class="n">MulDivUnitIF</span><span class="p">.</span><span class="n">MulDivUnit</span> <span class="n">port</span><span class="p">);</span>
 <a name="l-17"></a>
-<a name="l-18"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">BlockMulUnit</span>
+<a name="l-18"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">BlockMulUnit</span>
 <a name="l-19"></a>        <span class="c1">// MultiplierUnit</span>
 <a name="l-20"></a>        <span class="n">PipelinedMultiplierUnit</span> <span class="p">#(</span>
 <a name="l-21"></a>            <span class="p">.</span><span class="n">BIT_WIDTH</span><span class="p">(</span><span class="n">DATA_WIDTH</span><span class="p">),</span>
@@ -195,18 +195,18 @@
 <a name="l-36"></a>    <span class="c1">// DividerUnit</span>
 <a name="l-37"></a>    <span class="c1">//</span>
 <a name="l-38"></a>
-<a name="l-39"></a>    <span class="k">typedef</span> <span class="k">enum</span> <span class="k">logic</span><span class="p">[</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>
+<a name="l-39"></a>    <span class="k">typedef</span> <span class="k">enum</span> <span class="kt">logic</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>
 <a name="l-40"></a>    <span class="p">{</span>
-<a name="l-41"></a>        <span class="n">DIVIDER_PHASE_FREE</span>       <span class="o">=</span> <span class="mh">0</span><span class="p">,</span>  <span class="c1">// Divider is free</span>
-<a name="l-42"></a>        <span class="n">DIVIDER_PHASE_RESERVED</span>   <span class="o">=</span> <span class="mh">1</span><span class="p">,</span>  <span class="c1">// Divider is not processing but reserved</span>
-<a name="l-43"></a>        <span class="n">DIVIDER_PHASE_PROCESSING</span> <span class="o">=</span> <span class="mh">2</span><span class="p">,</span>  <span class="c1">// In processing</span>
-<a name="l-44"></a>        <span class="n">DIVIDER_PHASE_WAITING</span>    <span class="o">=</span> <span class="mh">3</span>   <span class="c1">// Wait for issuing div from replayqueue</span>
+<a name="l-41"></a>        <span class="n">DIVIDER_PHASE_FREE</span>       <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1">// Divider is free</span>
+<a name="l-42"></a>        <span class="n">DIVIDER_PHASE_RESERVED</span>   <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1">// Divider is not processing but reserved</span>
+<a name="l-43"></a>        <span class="n">DIVIDER_PHASE_PROCESSING</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1">// In processing</span>
+<a name="l-44"></a>        <span class="n">DIVIDER_PHASE_WAITING</span>    <span class="o">=</span> <span class="mi">3</span>   <span class="c1">// Wait for issuing div from replayqueue</span>
 <a name="l-45"></a>    <span class="p">}</span> <span class="n">DividerPhase</span><span class="p">;</span>
 <a name="l-46"></a>    <span class="n">DividerPhase</span> <span class="n">regPhase</span>  <span class="p">[</span><span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">];</span>
 <a name="l-47"></a>    <span class="n">DividerPhase</span> <span class="n">nextPhase</span> <span class="p">[</span><span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">];</span>
-<a name="l-48"></a>    <span class="k">logic</span> <span class="n">finished</span><span class="p">[</span><span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">];</span>
+<a name="l-48"></a>    <span class="kt">logic</span> <span class="n">finished</span><span class="p">[</span><span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">];</span>
 <a name="l-49"></a>
-<a name="l-50"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">BlockDivUnit</span>
+<a name="l-50"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">BlockDivUnit</span>
 <a name="l-51"></a>        <span class="n">DividerUnit</span> <span class="n">divUnit</span><span class="p">(</span>
 <a name="l-52"></a>            <span class="p">.</span><span class="n">clk</span><span class="p">(</span><span class="n">port</span><span class="p">.</span><span class="n">clk</span><span class="p">),</span>
 <a name="l-53"></a>            <span class="p">.</span><span class="n">rst</span><span class="p">(</span><span class="n">port</span><span class="p">.</span><span class="n">rst</span><span class="p">),</span>
@@ -221,7 +221,7 @@
 <a name="l-62"></a>
 <a name="l-63"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">port</span><span class="p">.</span><span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-64"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">port</span><span class="p">.</span><span class="n">rst</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-65"></a>            <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-65"></a>            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-66"></a>                <span class="n">regPhase</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">DIVIDER_PHASE_FREE</span><span class="p">;</span>
 <a name="l-67"></a>            <span class="k">end</span>
 <a name="l-68"></a>        <span class="k">end</span>
@@ -234,7 +234,7 @@
 <a name="l-75"></a>        <span class="n">nextPhase</span> <span class="o">=</span> <span class="n">regPhase</span><span class="p">;</span>
 <a name="l-76"></a>
 <a name="l-77"></a>
-<a name="l-78"></a>        <span class="k">for</span> <span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-78"></a>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MULDIV_ISSUE_WIDTH</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-79"></a>
 <a name="l-80"></a>            <span class="k">case</span> <span class="p">(</span><span class="n">regPhase</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 <a name="l-81"></a>            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>

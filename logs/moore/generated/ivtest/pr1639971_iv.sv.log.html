@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,17 +18,29 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1639971.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1639971.v</a>
 defines: 
 time_elapsed: 0.005s
-ram usage: 10028 KB
+ram usage: 11092 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e RegisterArrayBug01 <a href="../../../../third_party/tests/ivtest/ivltests/pr1639971.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1639971.v</a>
-error: value is not constant
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1639971.v.html#l-4" target="file-frame">third_party/tests/ivtest/ivltests/pr1639971.v:4</a>:29-31:
+error: unknown system task `$monitor`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1639971.v.html#l-9" target="file-frame">third_party/tests/ivtest/ivltests/pr1639971.v:9</a>:7-65:
    | 
-   |    wire [3:0] rf_0_slice0 = rf[0][3:0];
-   |                             ^^         
+   |       $monitor($time,, &#34;rf and slice: %h %h&#34;, rf_0, rf_0_slice0);
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 
+compiler bug: lowering of Expr #119 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr1639971.v.html#l-14" target="file-frame">third_party/tests/ivtest/ivltests/pr1639971.v:14</a>:11-18:
+   | 
+   |       #10 $finish;
+   |           ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1439
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of Expr #119 to hir not implemented&#39;, /rustc/04488afe34512aa4c33566eb16d8c912a3ae04f9/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

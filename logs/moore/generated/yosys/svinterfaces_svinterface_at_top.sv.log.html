@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/svinterfaces/svinterface_at_top.sv.html" target="file-frame">third_party/tools/yosys/tests/svinterfaces/svinterface_at_top.sv</a>
 defines: 
-time_elapsed: 0.013s
-ram usage: 11192 KB
+time_elapsed: 0.012s
+ram usage: 11396 KB
 </pre>
 <pre class="log">
 
@@ -51,7 +51,7 @@ error: value of type `&lt;error&gt;` is not a struct
    |   assign u_MyInterfaceFromTopDown.mysig_out = u_MyInterfaceFromTop.setting ? 10 :  20;
    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^            
 
-proc %SubModule2.param10.always_comb.577.10 (i2$ %u_MyInterfaceInSub3.mysig_out) -&gt; (i22$ %u_MyInterfaceInSub3.other_setting) {
+proc %SubModule2.param7.always_comb.577.7 (i2$ %u_MyInterfaceInSub3.mysig_out) -&gt; (i22$ %u_MyInterfaceInSub3.other_setting) {
 body:
     %u_MyInterfaceInSub3.mysig_out.prb = prb i2$ %u_MyInterfaceInSub3.mysig_out
     %0 = const i2 0
@@ -91,7 +91,7 @@ if_false2:
     br %check
 }
 
-entity @SubModule2.param10 (i1$ %clk, i1$ %rst, i1$ %u_MyInterfaceInSub2.setting, i2$ %u_MyInterfaceInSub2.mysig_out, i1$ %u_MyInterfaceFromTopDown.setting, i1$ %u_MyInterfaceInSub3.setting, i2$ %u_MyInterfaceInSub3.mysig_out) -&gt; (i4$ %u_MyInterfaceInSub2.other_setting, i16$ %u_MyInterfaceInSub2.passThrough, i3$ %u_MyInterfaceFromTopDown.other_setting, i2$ %u_MyInterfaceFromTopDown.mysig_out, i16$ %u_MyInterfaceFromTopDown.passThrough, i22$ %u_MyInterfaceInSub3.other_setting, i16$ %u_MyInterfaceInSub3.passThrough) {
+entity @SubModule2.param7 (i1$ %clk, i1$ %rst, i1$ %u_MyInterfaceInSub2.setting, i2$ %u_MyInterfaceInSub2.mysig_out, i1$ %u_MyInterfaceFromTopDown.setting, i1$ %u_MyInterfaceInSub3.setting, i2$ %u_MyInterfaceInSub3.mysig_out) -&gt; (i4$ %u_MyInterfaceInSub2.other_setting, i16$ %u_MyInterfaceInSub2.passThrough, i3$ %u_MyInterfaceFromTopDown.other_setting, i2$ %u_MyInterfaceFromTopDown.mysig_out, i16$ %u_MyInterfaceFromTopDown.passThrough, i22$ %u_MyInterfaceInSub3.other_setting, i16$ %u_MyInterfaceInSub3.passThrough) {
     %0 = const i2 0
     %1 = const time 0s 1e
     drv i2$ %u_MyInterfaceFromTopDown.mysig_out, %0, %1
@@ -105,7 +105,7 @@ entity @SubModule2.param10 (i1$ %clk, i1$ %rst, i1$ %u_MyInterfaceInSub2.setting
     %8 = exts i8$, i16$ %7, 0, 8
     %9 = const i8 200
     drv i8$ %8, %9, %1
-    inst %SubModule2.param10.always_comb.577.10 (i2$ %u_MyInterfaceInSub3.mysig_out) -&gt; (i22$ %u_MyInterfaceInSub3.other_setting)
+    inst %SubModule2.param7.always_comb.577.7 (i2$ %u_MyInterfaceInSub3.mysig_out) -&gt; (i22$ %u_MyInterfaceInSub3.other_setting)
     %10 = const i4 0
     %11 = const time 0s
     drv i4$ %u_MyInterfaceInSub2.other_setting, %10, %11
@@ -114,48 +114,47 @@ entity @SubModule2.param10 (i1$ %clk, i1$ %rst, i1$ %u_MyInterfaceInSub2.setting
     drv i3$ %u_MyInterfaceFromTopDown.other_setting, %12, %11
     drv i16$ %u_MyInterfaceFromTopDown.passThrough, %5, %11
     drv i16$ %u_MyInterfaceInSub3.passThrough, %5, %11
-    halt
 }
 
-proc %SubModule1.param5.always_ff.302.5 (i1$ %clk, i1$ %rst, i2$ %sig, i1$ %u_MyInterface.setting) -&gt; (i2$ %u_MyInterface.mysig_out) {
+proc %SubModule1.param4.always_ff.302.4 (i1$ %clk, i1$ %rst, i2$ %sig, i1$ %u_MyInterface.setting) -&gt; (i2$ %u_MyInterface.mysig_out) {
 init:
     %clk.prb = prb i1$ %clk
     %rst.prb = prb i1$ %rst
     wait %check, %clk, %rst
 check:
+    %clk.prb1 = prb i1$ %clk
     %0 = const i1 0
     %1 = eq i1 %clk.prb, %0
-    %2 = neq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb1, %0
     %posedge = and i1 %1, %2
+    %rst.prb1 = prb i1$ %rst
     %3 = eq i1 %rst.prb, %0
-    %4 = neq i1 %rst.prb, %0
+    %4 = neq i1 %rst.prb1, %0
     %posedge1 = and i1 %3, %4
     %event_or = or i1 %posedge, %posedge1
     br %event_or, %init, %event
 event:
-    %rst.prb1 = prb i1$ %rst
-    %5 = neq i1 %rst.prb1, %0
-    %6 = const time 0s 1d
-    br %5, %if_false, %if_true
+    %5 = const time 0s 1d
+    br %4, %if_false, %if_true
 if_true:
-    %7 = const i2 0
-    drv i2$ %u_MyInterface.mysig_out, %7, %6
+    %6 = const i2 0
+    drv i2$ %u_MyInterface.mysig_out, %6, %5
     br %init
 if_false:
     %u_MyInterface.setting.prb = prb i1$ %u_MyInterface.setting
-    %8 = neq i1 %u_MyInterface.setting.prb, %0
+    %7 = neq i1 %u_MyInterface.setting.prb, %0
     %sig.prb = prb i2$ %sig
-    br %8, %if_false1, %if_true1
+    br %7, %if_false1, %if_true1
 if_true1:
-    drv i2$ %u_MyInterface.mysig_out, %sig.prb, %6
+    drv i2$ %u_MyInterface.mysig_out, %sig.prb, %5
     br %init
 if_false1:
-    %9 = not i2 %sig.prb
-    drv i2$ %u_MyInterface.mysig_out, %9, %6
+    %8 = not i2 %sig.prb
+    drv i2$ %u_MyInterface.mysig_out, %8, %5
     br %init
 }
 
-entity @SubModule1.param5 (i1$ %clk, i1$ %rst, i1$ %u_MyInterface.setting, i1$ %u_MyInterfaceFromTop.setting, i2$ %sig) -&gt; (i4$ %u_MyInterface.other_setting, i2$ %u_MyInterface.mysig_out, i16$ %u_MyInterface.passThrough, i3$ %u_MyInterfaceFromTop.other_setting, i2$ %u_MyInterfaceFromTop.mysig_out, i16$ %u_MyInterfaceFromTop.passThrough, i22$ %outOther) {
+entity @SubModule1.param4 (i1$ %clk, i1$ %rst, i1$ %u_MyInterface.setting, i1$ %u_MyInterfaceFromTop.setting, i2$ %sig) -&gt; (i4$ %u_MyInterface.other_setting, i2$ %u_MyInterface.mysig_out, i16$ %u_MyInterface.passThrough, i3$ %u_MyInterfaceFromTop.other_setting, i2$ %u_MyInterfaceFromTop.mysig_out, i16$ %u_MyInterfaceFromTop.passThrough, i22$ %outOther) {
     %0 = const i1 0
     %MyInterfaceInstanceInSub.setting = sig i1 %0
     %1 = const i22 0
@@ -170,30 +169,8 @@ entity @SubModule1.param5 (i1$ %clk, i1$ %rst, i1$ %u_MyInterface.setting, i1$ %
     drv i1$ %MyInterfaceInstanceInSub.setting, %0, %4
     %sig.prb = prb i2$ %sig
     drv i2$ %MyInterfaceInstanceInSub.mysig_out, %sig.prb, %4
-    %clk.prb = prb i1$ %clk
-    %5 = sig i1 %0
-    drv i1$ %5, %clk.prb, %4
-    %rst.prb = prb i1$ %rst
-    %6 = sig i1 %0
-    drv i1$ %6, %rst.prb, %4
-    %u_MyInterface.setting.prb = prb i1$ %u_MyInterface.setting
-    %7 = sig i1 %0
-    drv i1$ %7, %u_MyInterface.setting.prb, %4
-    %u_MyInterface.mysig_out.prb = prb i2$ %u_MyInterface.mysig_out
-    %8 = sig i2 %2
-    drv i2$ %8, %u_MyInterface.mysig_out.prb, %4
-    %u_MyInterfaceFromTop.setting.prb = prb i1$ %u_MyInterfaceFromTop.setting
-    %9 = sig i1 %0
-    drv i1$ %9, %u_MyInterfaceFromTop.setting.prb, %4
-    %MyInterfaceInstanceInSub.setting.prb = prb i1$ %MyInterfaceInstanceInSub.setting
-    %10 = sig i1 %0
-    drv i1$ %10, %MyInterfaceInstanceInSub.setting.prb, %4
-    %MyInterfaceInstanceInSub.mysig_out.prb = prb i2$ %MyInterfaceInstanceInSub.mysig_out
-    %11 = sig i2 %2
-    drv i2$ %11, %MyInterfaceInstanceInSub.mysig_out.prb, %4
-    inst @SubModule2.param10 (i1$ %5, i1$ %6, i1$ %7, i2$ %8, i1$ %9, i1$ %10, i2$ %11) -&gt; (i4$ %u_MyInterface.other_setting, i16$ %u_MyInterface.passThrough, i3$ %u_MyInterfaceFromTop.other_setting, i2$ %u_MyInterfaceFromTop.mysig_out, i16$ %u_MyInterfaceFromTop.passThrough, i22$ %MyInterfaceInstanceInSub.other_setting, i16$ %MyInterfaceInstanceInSub.passThrough)
-    inst %SubModule1.param5.always_ff.302.5 (i1$ %clk, i1$ %rst, i2$ %sig, i1$ %u_MyInterface.setting) -&gt; (i2$ %u_MyInterface.mysig_out)
-    halt
+    inst @SubModule2.param7 (i1$ %clk, i1$ %rst, i1$ %u_MyInterface.setting, i2$ %u_MyInterface.mysig_out, i1$ %u_MyInterfaceFromTop.setting, i1$ %MyInterfaceInstanceInSub.setting, i2$ %MyInterfaceInstanceInSub.mysig_out) -&gt; (i4$ %u_MyInterface.other_setting, i16$ %u_MyInterface.passThrough, i3$ %u_MyInterfaceFromTop.other_setting, i2$ %u_MyInterfaceFromTop.mysig_out, i16$ %u_MyInterfaceFromTop.passThrough, i22$ %MyInterfaceInstanceInSub.other_setting, i16$ %MyInterfaceInstanceInSub.passThrough)
+    inst %SubModule1.param4.always_ff.302.4 (i1$ %clk, i1$ %rst, i2$ %sig, i1$ %u_MyInterface.setting) -&gt; (i2$ %u_MyInterface.mysig_out)
 }
 
 entity @TopModule (i1$ %clk, i1$ %rst, i2$ %sig, i1$ %flip, i1$ %interfaceInstanceAtTop.setting) -&gt; (i22$ %outOther, i2$ %sig_out, i3$ %interfaceInstanceAtTop.other_setting, i2$ %interfaceInstanceAtTop.mysig_out, i16$ %interfaceInstanceAtTop.passThrough, i16$ %passThrough) {
@@ -212,23 +189,7 @@ entity @TopModule (i1$ %clk, i1$ %rst, i2$ %sig, i1$ %flip, i1$ %interfaceInstan
     drv i1$ %MyInterfaceInstance.setting, %flip.prb, %4
     %MyInterfaceInstance.passThrough.prb = prb i16$ %MyInterfaceInstance.passThrough
     drv i16$ %passThrough, %MyInterfaceInstance.passThrough.prb, %4
-    %clk.prb = prb i1$ %clk
-    %5 = sig i1 %0
-    drv i1$ %5, %clk.prb, %4
-    %rst.prb = prb i1$ %rst
-    %6 = sig i1 %0
-    drv i1$ %6, %rst.prb, %4
-    %MyInterfaceInstance.setting.prb = prb i1$ %MyInterfaceInstance.setting
-    %7 = sig i1 %0
-    drv i1$ %7, %MyInterfaceInstance.setting.prb, %4
-    %interfaceInstanceAtTop.setting.prb = prb i1$ %interfaceInstanceAtTop.setting
-    %8 = sig i1 %0
-    drv i1$ %8, %interfaceInstanceAtTop.setting.prb, %4
-    %sig.prb = prb i2$ %sig
-    %9 = sig i2 %2
-    drv i2$ %9, %sig.prb, %4
-    inst @SubModule1.param5 (i1$ %5, i1$ %6, i1$ %7, i1$ %8, i2$ %9) -&gt; (i4$ %MyInterfaceInstance.other_setting, i2$ %MyInterfaceInstance.mysig_out, i16$ %MyInterfaceInstance.passThrough, i3$ %interfaceInstanceAtTop.other_setting, i2$ %interfaceInstanceAtTop.mysig_out, i16$ %interfaceInstanceAtTop.passThrough, i22$ %outOther)
-    halt
+    inst @SubModule1.param4 (i1$ %clk, i1$ %rst, i1$ %MyInterfaceInstance.setting, i1$ %interfaceInstanceAtTop.setting, i2$ %sig) -&gt; (i4$ %MyInterfaceInstance.other_setting, i2$ %MyInterfaceInstance.mysig_out, i16$ %MyInterfaceInstance.passThrough, i3$ %interfaceInstanceAtTop.other_setting, i2$ %interfaceInstanceAtTop.mysig_out, i16$ %interfaceInstanceAtTop.passThrough, i22$ %outOther)
 }
 
 </pre>

@@ -128,34 +128,34 @@
 <a name="l-7"></a>
 <a name="l-8"></a><span class="no">`ifdef</span> <span class="n">SCR1_DBGC_EN</span>
 <a name="l-9"></a><span class="k">module</span> <span class="n">scr1_tapc_shift_reg</span> <span class="p">#(</span>
-<a name="l-10"></a>    <span class="k">parameter</span>   <span class="k">int</span> <span class="k">unsigned</span>            <span class="n">SCR1_WIDTH</span>       <span class="o">=</span> <span class="mh">8</span><span class="p">,</span>   <span class="c1">// Register width, bits</span>
-<a name="l-11"></a>    <span class="k">parameter</span>   <span class="k">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">SCR1_RESET_VALUE</span> <span class="o">=</span> <span class="m">&#39;0</span>   <span class="c1">// Register&#39;s value after reset</span>
+<a name="l-10"></a>    <span class="k">parameter</span>   <span class="kt">int</span> <span class="kt">unsigned</span>            <span class="n">SCR1_WIDTH</span>       <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>   <span class="c1">// Register width, bits</span>
+<a name="l-11"></a>    <span class="k">parameter</span>   <span class="kt">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">SCR1_RESET_VALUE</span> <span class="o">=</span> <span class="m">&#39;0</span>   <span class="c1">// Register&#39;s value after reset</span>
 <a name="l-12"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-13"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">clk</span><span class="p">,</span>            <span class="c1">// Clock</span>
-<a name="l-14"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">rst_n</span><span class="p">,</span>          <span class="c1">// Async reset</span>
-<a name="l-15"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">rst_n_sync</span><span class="p">,</span>     <span class="c1">// Sync reset</span>
+<a name="l-13"></a>    <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">clk</span><span class="p">,</span>            <span class="c1">// Clock</span>
+<a name="l-14"></a>    <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">rst_n</span><span class="p">,</span>          <span class="c1">// Async reset</span>
+<a name="l-15"></a>    <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">rst_n_sync</span><span class="p">,</span>     <span class="c1">// Sync reset</span>
 <a name="l-16"></a>                                                    <span class="c1">// TAP FSM&#39;s control signals:</span>
-<a name="l-17"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">fsm_dr_select</span><span class="p">,</span>  <span class="c1">//   - for this DR selection (operation enabling);</span>
-<a name="l-18"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">fsm_dr_capture</span><span class="p">,</span> <span class="c1">//   - to capture parallel input&#39;s data into shift register;</span>
-<a name="l-19"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">fsm_dr_shift</span><span class="p">,</span>   <span class="c1">//   - to enable data shifting;</span>
+<a name="l-17"></a>    <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">fsm_dr_select</span><span class="p">,</span>  <span class="c1">//   - for this DR selection (operation enabling);</span>
+<a name="l-18"></a>    <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">fsm_dr_capture</span><span class="p">,</span> <span class="c1">//   - to capture parallel input&#39;s data into shift register;</span>
+<a name="l-19"></a>    <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">fsm_dr_shift</span><span class="p">,</span>   <span class="c1">//   - to enable data shifting;</span>
 <a name="l-20"></a>                                                    <span class="c1">// Inputs:</span>
-<a name="l-21"></a>    <span class="k">input</span>  <span class="k">logic</span>                    <span class="n">din_serial</span><span class="p">,</span>     <span class="c1">//   - serial (shift_reg[msb/SCR1_WIDTH]);</span>
-<a name="l-22"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">din_parallel</span><span class="p">,</span>   <span class="c1">//   - parallel (shift register&#39;s input).</span>
+<a name="l-21"></a>    <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">din_serial</span><span class="p">,</span>     <span class="c1">//   - serial (shift_reg[msb/SCR1_WIDTH]);</span>
+<a name="l-22"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">din_parallel</span><span class="p">,</span>   <span class="c1">//   - parallel (shift register&#39;s input).</span>
 <a name="l-23"></a>                                                    <span class="c1">// Outputs:</span>
-<a name="l-24"></a>    <span class="k">output</span> <span class="k">logic</span>                    <span class="n">dout_serial</span><span class="p">,</span>    <span class="c1">//   - serial (shift_reg[0]);</span>
-<a name="l-25"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">dout_parallel</span>   <span class="c1">//   - parallel (shift register&#39;s output).</span>
+<a name="l-24"></a>    <span class="k">output</span> <span class="kt">logic</span>                    <span class="n">dout_serial</span><span class="p">,</span>    <span class="c1">//   - serial (shift_reg[0]);</span>
+<a name="l-25"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">dout_parallel</span>   <span class="c1">//   - parallel (shift register&#39;s output).</span>
 <a name="l-26"></a><span class="p">);</span>
 <a name="l-27"></a>
 <a name="l-28"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-29"></a><span class="c1">// Local signals declaration</span>
 <a name="l-30"></a><span class="c1">//-------------------------------------------------------------------------------</span>
-<a name="l-31"></a><span class="k">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">shift_reg</span><span class="p">;</span>
+<a name="l-31"></a><span class="kt">logic</span> <span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">shift_reg</span><span class="p">;</span>
 <a name="l-32"></a>
 <a name="l-33"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-34"></a><span class="c1">// Shift register</span>
 <a name="l-35"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-36"></a><span class="k">generate</span>
-<a name="l-37"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">SCR1_WIDTH</span> <span class="o">&gt;</span> <span class="mh">1</span><span class="p">)</span>
+<a name="l-37"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">SCR1_WIDTH</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
 <a name="l-38"></a>    <span class="k">begin</span> <span class="o">:</span> <span class="n">dr_shift_reg</span>
 <a name="l-39"></a>
 <a name="l-40"></a>        <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">,</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span>
@@ -170,7 +170,7 @@
 <a name="l-49"></a>                <span class="n">shift_reg</span> <span class="o">&lt;=</span> <span class="n">din_parallel</span><span class="p">;</span>
 <a name="l-50"></a>            <span class="k">end</span>
 <a name="l-51"></a>            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">fsm_dr_select</span> <span class="o">&amp;</span> <span class="n">fsm_dr_shift</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-52"></a>                <span class="n">shift_reg</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">din_serial</span><span class="p">,</span> <span class="n">shift_reg</span><span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">1</span><span class="p">]};</span>
+<a name="l-52"></a>                <span class="n">shift_reg</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">din_serial</span><span class="p">,</span> <span class="n">shift_reg</span><span class="p">[</span><span class="n">SCR1_WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">1</span><span class="p">]};</span>
 <a name="l-53"></a>            <span class="k">end</span>
 <a name="l-54"></a>        <span class="k">end</span>
 <a name="l-55"></a>
@@ -204,7 +204,7 @@
 <a name="l-83"></a><span class="c1">//-------------------------------------------------------------------------------</span>
 <a name="l-84"></a><span class="c1">// Serial output</span>
 <a name="l-85"></a><span class="c1">//-------------------------------------------------------------------------------</span>
-<a name="l-86"></a><span class="k">assign</span> <span class="n">dout_serial</span> <span class="o">=</span> <span class="n">shift_reg</span><span class="p">[</span><span class="mh">0</span><span class="p">];</span>
+<a name="l-86"></a><span class="k">assign</span> <span class="n">dout_serial</span> <span class="o">=</span> <span class="n">shift_reg</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
 <a name="l-87"></a>
 <a name="l-88"></a><span class="no">`ifdef</span> <span class="n">SCR1_SIM_ENV</span>
 <a name="l-89"></a><span class="no">`ifndef</span> <span class="n">VERILATOR</span>
@@ -215,7 +215,7 @@
 <a name="l-94"></a><span class="c1">// X checks</span>
 <a name="l-95"></a><span class="n">SCR1_SVA_TAPC_SHIFTREG_XCHECK</span> <span class="o">:</span> <span class="k">assert</span> <span class="k">property</span> <span class="p">(</span>
 <a name="l-96"></a>    <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">disable</span> <span class="k">iff</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span>
-<a name="l-97"></a>    <span class="o">!</span><span class="n">$isunknown</span><span class="p">({</span>
+<a name="l-97"></a>    <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">({</span>
 <a name="l-98"></a>        <span class="n">rst_n_sync</span><span class="p">,</span>
 <a name="l-99"></a>        <span class="n">fsm_dr_select</span><span class="p">,</span>
 <a name="l-100"></a>        <span class="n">fsm_dr_capture</span><span class="p">,</span>
@@ -224,7 +224,7 @@
 <a name="l-103"></a>        <span class="n">din_parallel</span>
 <a name="l-104"></a>    <span class="p">})</span>
 <a name="l-105"></a><span class="p">)</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-106"></a>    <span class="n">$error</span><span class="p">(</span><span class="s">&quot;TAPC Shift Reg error: unknown values&quot;</span><span class="p">);</span>
+<a name="l-106"></a>    <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;TAPC Shift Reg error: unknown values&quot;</span><span class="p">);</span>
 <a name="l-107"></a><span class="k">end</span>
 <a name="l-108"></a>
 <a name="l-109"></a><span class="no">`endif</span> <span class="c1">// VERILATOR</span>

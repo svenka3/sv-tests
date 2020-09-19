@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,31 +17,31 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/br994.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br994.v</a>
 defines: 
-time_elapsed: 0.008s
-ram usage: 10808 KB
+time_elapsed: 0.009s
+ram usage: 10856 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/br994.v.html" target="file-frame">third_party/tests/ivtest/ivltests/br994.v</a>
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br994.v.html#l-27" target="file-frame">third_party/tests/ivtest/ivltests/br994.v:27</a>:3-20:
    | 
    |   $display(&#34;%h&#34;, q);
    |   ^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br994.v.html#l-32" target="file-frame">third_party/tests/ivtest/ivltests/br994.v:32</a>:3-20:
    | 
    |   $display(&#34;%h&#34;, q);
    |   ^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br994.v.html#l-36" target="file-frame">third_party/tests/ivtest/ivltests/br994.v:36</a>:5-23:
    | 
    |     $display(&#34;FAILED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
-error: unknown system task `$display`
+warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/br994.v.html#l-38" target="file-frame">third_party/tests/ivtest/ivltests/br994.v:38</a>:5-23:
    | 
    |     $display(&#34;PASSED&#34;);
@@ -52,9 +52,10 @@ init:
     %clk.prb = prb i1$ %clk
     wait %check, %clk
 check:
+    %clk.prb1 = prb i1$ %clk
     %0 = const i1 0
     %1 = eq i1 %clk.prb, %0
-    %2 = neq i1 %clk.prb, %0
+    %2 = neq i1 %clk.prb1, %0
     %posedge = and i1 %1, %2
     br %posedge, %init, %event
 event:
@@ -157,7 +158,6 @@ entity @test () -&gt; () {
     %failed = sig i1 %0
     inst %test.always.64.0 (i1$ %clk, i1$ %sel, i8$ %a, i7$ %b) -&gt; (i6$ %q)
     inst %test.initial.246.0 (i6$ %q) -&gt; (i1$ %clk, i1$ %sel, i8$ %a, i7$ %b, i1$ %failed)
-    halt
 }
 
 </pre>

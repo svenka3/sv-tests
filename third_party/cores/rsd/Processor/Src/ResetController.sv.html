@@ -56,27 +56,27 @@
 <a name="l-5"></a><span class="kn">import</span> <span class="nn">BasicTypes::*</span><span class="p">;</span>
 <a name="l-6"></a>
 <a name="l-7"></a><span class="k">module</span> <span class="n">ResetController</span> <span class="p">#(</span>
-<a name="l-8"></a>    <span class="k">parameter</span> <span class="n">CYCLE_OF_RESET_SEQUENCE</span> <span class="o">=</span> <span class="mh">10000</span>
+<a name="l-8"></a>    <span class="k">parameter</span> <span class="n">CYCLE_OF_RESET_SEQUENCE</span> <span class="o">=</span> <span class="mi">10000</span>
 <a name="l-9"></a><span class="p">)(</span>
-<a name="l-10"></a>    <span class="k">input</span>  <span class="k">logic</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rstTrigger</span><span class="p">,</span> <span class="n">locked</span><span class="p">,</span>
-<a name="l-11"></a>    <span class="k">output</span> <span class="k">logic</span> <span class="n">rst</span><span class="p">,</span> <span class="n">rstStart</span>
+<a name="l-10"></a>    <span class="k">input</span>  <span class="kt">logic</span> <span class="n">clk</span><span class="p">,</span> <span class="n">rstTrigger</span><span class="p">,</span> <span class="n">locked</span><span class="p">,</span>
+<a name="l-11"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="n">rst</span><span class="p">,</span> <span class="n">rstStart</span>
 <a name="l-12"></a><span class="p">);</span>
-<a name="l-13"></a>    <span class="k">logic</span> <span class="k">unsigned</span> <span class="p">[</span> <span class="n">$clog2</span><span class="p">(</span><span class="n">CYCLE_OF_RESET_SEQUENCE</span><span class="p">)</span><span class="o">:</span><span class="mh">0</span> <span class="p">]</span> <span class="n">count</span><span class="p">;</span>
+<a name="l-13"></a>    <span class="kt">logic</span> <span class="kt">unsigned</span> <span class="p">[</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">CYCLE_OF_RESET_SEQUENCE</span><span class="p">)</span><span class="o">:</span><span class="mi">0</span> <span class="p">]</span> <span class="n">count</span><span class="p">;</span>
 <a name="l-14"></a>    
 <a name="l-15"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">posedge</span> <span class="n">rstTrigger</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-16"></a>        <span class="c1">// --- rst</span>
 <a name="l-17"></a>        <span class="c1">// - rstTriggerがアサートされた後、</span>
 <a name="l-18"></a>        <span class="c1">//   CYCLE_OF_RESET_SEQUENCEサイクルの間アサートされ続ける</span>
 <a name="l-19"></a>        <span class="k">if</span> <span class="p">(</span> <span class="n">rstTrigger</span> <span class="o">||</span> <span class="o">!</span><span class="n">locked</span> <span class="p">)</span> <span class="k">begin</span>
-<a name="l-20"></a>            <span class="n">count</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-20"></a>            <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-21"></a>            <span class="n">rst</span> <span class="o">&lt;=</span> <span class="n">TRUE</span><span class="p">;</span>
 <a name="l-22"></a>        <span class="k">end</span>
 <a name="l-23"></a>        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="n">rst</span> <span class="p">)</span> <span class="k">begin</span>
-<a name="l-24"></a>            <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+<a name="l-24"></a>            <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
 <a name="l-25"></a>            <span class="n">rst</span> <span class="o">&lt;=</span> <span class="p">(</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">CYCLE_OF_RESET_SEQUENCE</span> <span class="o">?</span> <span class="n">FALSE</span> <span class="o">:</span> <span class="n">TRUE</span> <span class="p">);</span>
 <a name="l-26"></a>        <span class="k">end</span>
 <a name="l-27"></a>        <span class="k">else</span> <span class="k">begin</span>
-<a name="l-28"></a>            <span class="n">count</span> <span class="o">&lt;=</span> <span class="mh">0</span><span class="p">;</span>
+<a name="l-28"></a>            <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-29"></a>            <span class="n">rst</span> <span class="o">&lt;=</span> <span class="n">FALSE</span><span class="p">;</span>
 <a name="l-30"></a>        <span class="k">end</span>
 <a name="l-31"></a>    <span class="k">end</span>
@@ -90,7 +90,7 @@
 <a name="l-39"></a>    <span class="c1">//   rstをリセット信号としては使用できない。</span>
 <a name="l-40"></a>    <span class="c1">//   そこで、初期化回路のリセットにはrstStartを用いる。</span>
 <a name="l-41"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-42"></a>        <span class="n">rstStart</span> <span class="o">=</span> <span class="p">(</span> <span class="n">rst</span> <span class="o">&amp;&amp;</span> <span class="n">count</span> <span class="o">==</span> <span class="mh">0</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
+<a name="l-42"></a>        <span class="n">rstStart</span> <span class="o">=</span> <span class="p">(</span> <span class="n">rst</span> <span class="o">&amp;&amp;</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">?</span> <span class="n">TRUE</span> <span class="o">:</span> <span class="n">FALSE</span><span class="p">;</span>
 <a name="l-43"></a>    <span class="k">end</span>
 <a name="l-44"></a><span class="k">endmodule</span>
 </pre></div>

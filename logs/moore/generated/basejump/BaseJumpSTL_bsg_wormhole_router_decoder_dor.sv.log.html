@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v</a>
 defines: 
-time_elapsed: 0.011s
-ram usage: 10912 KB
+time_elapsed: 0.014s
+ram usage: 11864 KB
 </pre>
 <pre class="log">
 
@@ -53,12 +53,127 @@ error: `bsg_noc_pkg` not found
    |                       &amp;&amp; bsg_noc_pkg::S == 4) else $error(&#34;%m: bsg_noc_pkg dirs are inconsistent with this module&#34;);
    |                          ^^^^^^^^^^^                                                                                
 
-error: value is not constant
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v.html#l-35" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v:35</a>:51-64:
+warning: unsupported: immediate assertion; ignored
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v.html#l-73" target="file-frame">third_party/cores/basejump_stl/bsg_noc/bsg_wormhole_router_decoder_dor.v:73</a>:16-294:
    | 
-   |         wire [local_cord_width_p-1:0] targ_cord = target_cord_i[upper_marker_lp-1:lower_marker_lp];
-   |                                                   ^^^^^^^^^^^^^                                    
+   |        initial assert(bsg_noc_pkg::P == 0
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+proc %bsg_wormhole_router_decoder_dor.initial.1288.0 () -&gt; () {
+0:
+    halt
+}
+
+entity @bsg_wormhole_router_decoder_dor (i2$ %target_cord_i, i2$ %my_cord_i) -&gt; (i5$ %req_o) {
+    %0 = const i2 0
+    %eq = sig i2 %0
+    %lt = sig i2 %0
+    %gt = sig i2 %0
+    %1 = exts i1$, i5$ %req_o, 0, 1
+    %eq.prb = prb i2$ %eq
+    %2 = exts i1, i2 %eq.prb, 0, 1
+    %3 = exts i1, i2 %eq.prb, 1, 1
+    %4 = and i1 %2, %3
+    %5 = const time 0s 1e
+    drv i1$ %1, %4, %5
+    %6 = const i3 0
+    %targ_cord = sig i3 %6
+    %7 = sig i3 %6
+    %8 = const time 0s 1d
+    drv i3$ %7, %6, %8
+    con i3$ %targ_cord, %7
+    %my_cord = sig i3 %6
+    %9 = sig i3 %6
+    drv i3$ %9, %6, %8
+    con i3$ %my_cord, %9
+    %10 = exts i1$, i2$ %eq, 0, 1
+    %targ_cord.prb = prb i3$ %targ_cord
+    %my_cord.prb = prb i3$ %my_cord
+    %11 = eq i3 %targ_cord.prb, %my_cord.prb
+    drv i1$ %10, %11, %5
+    %12 = exts i1$, i2$ %lt, 0, 1
+    %13 = ult i3 %targ_cord.prb, %my_cord.prb
+    drv i1$ %12, %13, %5
+    %14 = exts i1$, i2$ %gt, 0, 1
+    %15 = not i1 %2
+    %lt.prb = prb i2$ %lt
+    %16 = exts i1, i2 %lt.prb, 0, 1
+    %17 = not i1 %16
+    %18 = and i1 %15, %17
+    drv i1$ %14, %18, %5
+    %19 = const i6 0
+    %targ_cord1 = sig i6 %19
+    %target_cord_i.prb = prb i2$ %target_cord_i
+    %20 = exts i1, i2 %target_cord_i.prb, 1, 1
+    %21 = inss i2 %0, i1 %20, 0, 1
+    %22 = exts i6, i2 %21, 0, 6
+    %23 = sig i6 %19
+    drv i6$ %23, %22, %8
+    con i6$ %targ_cord1, %23
+    %my_cord1 = sig i6 %19
+    %my_cord_i.prb = prb i2$ %my_cord_i
+    %24 = exts i1, i2 %my_cord_i.prb, 1, 1
+    %25 = inss i2 %0, i1 %24, 0, 1
+    %26 = exts i6, i2 %25, 0, 6
+    %27 = sig i6 %19
+    drv i6$ %27, %26, %8
+    con i6$ %my_cord1, %27
+    %28 = const i32 1
+    %29 = sig i2 %0
+    %30 = shr i2$ %eq, i2$ %29, i32 %28
+    %31 = exts i1$, i2$ %30, 0, 1
+    %targ_cord.prb1 = prb i6$ %targ_cord1
+    %my_cord.prb1 = prb i6$ %my_cord1
+    %32 = eq i6 %targ_cord.prb1, %my_cord.prb1
+    drv i1$ %31, %32, %5
+    %33 = sig i2 %0
+    %34 = shr i2$ %lt, i2$ %33, i32 %28
+    %35 = exts i1$, i2$ %34, 0, 1
+    %36 = ult i6 %targ_cord.prb1, %my_cord.prb1
+    drv i1$ %35, %36, %5
+    %37 = sig i2 %0
+    %38 = shr i2$ %gt, i2$ %37, i32 %28
+    %39 = exts i1$, i2$ %38, 0, 1
+    %40 = inss i2 %0, i1 %3, 0, 1
+    %41 = exts i1, i2 %40, 0, 1
+    %42 = not i1 %41
+    %43 = exts i1, i2 %lt.prb, 1, 1
+    %44 = inss i2 %0, i1 %43, 0, 1
+    %45 = exts i1, i2 %44, 0, 1
+    %46 = not i1 %45
+    %47 = and i1 %42, %46
+    drv i1$ %39, %47, %5
+    %48 = const i5 0
+    %49 = sig i5 %48
+    %50 = shr i5$ %req_o, i5$ %49, i32 %28
+    %51 = exts i1$, i5$ %50, 0, 1
+    drv i1$ %51, %16, %5
+    %52 = const i32 2
+    %53 = sig i5 %48
+    %54 = shr i5$ %req_o, i5$ %53, i32 %52
+    %55 = exts i1$, i5$ %54, 0, 1
+    %gt.prb = prb i2$ %gt
+    %56 = exts i1, i2 %gt.prb, 0, 1
+    drv i1$ %55, %56, %5
+    %57 = const i32 3
+    %58 = sig i5 %48
+    %59 = shr i5$ %req_o, i5$ %58, i32 %57
+    %60 = exts i1$, i5$ %59, 0, 1
+    %61 = and i1 %2, %45
+    drv i1$ %60, %61, %5
+    %62 = const i32 4
+    %63 = sig i5 %48
+    %64 = shr i5$ %req_o, i5$ %63, i32 %62
+    %65 = exts i1$, i5$ %64, 0, 1
+    %66 = exts i1, i2 %gt.prb, 1, 1
+    %67 = inss i2 %0, i1 %66, 0, 1
+    %68 = exts i1, i2 %67, 0, 1
+    %69 = and i1 %2, %68
+    drv i1$ %65, %69, %5
+    inst %bsg_wormhole_router_decoder_dor.initial.1288.0 () -&gt; ()
+    %70 = const time 0s
+    drv i5$ %req_o, %48, %70
+}
 
 </pre>
 </body>
