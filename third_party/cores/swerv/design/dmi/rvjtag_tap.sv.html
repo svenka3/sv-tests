@@ -228,8 +228,9 @@
 <a href="#l-220">220</a>
 <a href="#l-221">221</a>
 <a href="#l-222">222</a>
-<a href="#l-223">223</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
-<a name="l-2"></a><span class="c1">// Copyright 2019 Western Digital Corporation or its affiliates.</span>
+<a href="#l-223">223</a>
+<a href="#l-224">224</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
+<a name="l-2"></a><span class="c1">// Copyright 2019 Western Digital Corporation or it&#39;s affiliates.</span>
 <a name="l-3"></a><span class="c1">//</span>
 <a name="l-4"></a><span class="c1">// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <a name="l-5"></a><span class="c1">// you may not use this file except in compliance with the License.</span>
@@ -403,54 +404,55 @@
 <a name="l-173"></a>                    <span class="k">endcase</span>
 <a name="l-174"></a>                <span class="k">end</span>
 <a name="l-175"></a>    <span class="nl">capture_dr:</span> <span class="k">begin</span>
-<a name="l-176"></a>                    <span class="k">case</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<a name="l-177"></a>                    <span class="n">dr_en</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">:</span>   <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">15</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">idle</span><span class="p">,</span> <span class="n">dmi_stat</span><span class="p">,</span> <span class="n">abits</span><span class="p">,</span> <span class="n">version</span><span class="p">};</span>
-<a name="l-178"></a>                    <span class="n">dr_en</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">:</span>   <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">AWIDTH</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">rd_data</span><span class="p">,</span> <span class="n">rd_status</span><span class="p">};</span>
-<a name="l-179"></a>                    <span class="nl">devid_sel:</span>  <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">32</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">jtag_id</span><span class="p">,</span> <span class="mb">1&#39;b1</span><span class="p">};</span>
-<a name="l-180"></a>                    <span class="k">endcase</span>
-<a name="l-181"></a>                <span class="k">end</span>
-<a name="l-182"></a>    <span class="nl">shift_ir:</span>   <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">5</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span><span class="n">tdi</span><span class="p">,</span> <span class="n">sr</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">1</span><span class="p">]};</span>
-<a name="l-183"></a>    <span class="nl">capture_ir:</span> <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">1</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span><span class="mb">1&#39;b1</span><span class="p">};</span>
-<a name="l-184"></a>    <span class="k">endcase</span>
-<a name="l-185"></a><span class="k">end</span>
-<a name="l-186"></a>
-<a name="l-187"></a><span class="c1">// TDO retiming</span>
-<a name="l-188"></a><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">negedge</span> <span class="n">tck</span> <span class="p">)</span> <span class="n">tdo</span> <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<a name="l-189"></a>
-<a name="l-190"></a><span class="c1">// DMI CS register</span>
-<a name="l-191"></a><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">tck</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">trst</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-192"></a>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">trst</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-193"></a>        <span class="n">dmi_hard_reset</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-194"></a>        <span class="n">dmi_reset</span>      <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-195"></a>    <span class="k">end</span>
-<a name="l-196"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">update_dr</span> <span class="o">&amp;</span> <span class="n">dr_en</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">begin</span>
-<a name="l-197"></a>        <span class="n">dmi_hard_reset</span> <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">[</span><span class="mi">17</span><span class="p">];</span>
-<a name="l-198"></a>        <span class="n">dmi_reset</span>      <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
-<a name="l-199"></a>    <span class="k">end</span>
-<a name="l-200"></a>    <span class="k">else</span> <span class="k">begin</span>
-<a name="l-201"></a>        <span class="n">dmi_hard_reset</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-202"></a>        <span class="n">dmi_reset</span>      <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-203"></a>    <span class="k">end</span>
-<a name="l-204"></a><span class="k">end</span>
-<a name="l-205"></a>
-<a name="l-206"></a><span class="c1">// DR register</span>
-<a name="l-207"></a><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">tck</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">trst</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-208"></a>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">trst</span><span class="p">)</span>
-<a name="l-209"></a>        <span class="n">dr</span> <span class="o">&lt;=</span>  <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-210"></a>    <span class="k">else</span> <span class="k">begin</span>
-<a name="l-211"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">update_dr</span> <span class="o">&amp;</span> <span class="n">dr_en</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<a name="l-212"></a>            <span class="n">dr</span> <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">;</span>
-<a name="l-213"></a>        <span class="k">else</span>
-<a name="l-214"></a>            <span class="n">dr</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">dr</span><span class="p">[</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">2</span><span class="p">],</span><span class="mb">2&#39;b0</span><span class="p">};</span>
-<a name="l-215"></a>    <span class="k">end</span>
-<a name="l-216"></a><span class="k">end</span>
-<a name="l-217"></a>
-<a name="l-218"></a><span class="k">assign</span> <span class="p">{</span><span class="n">wr_addr</span><span class="p">,</span> <span class="n">wr_data</span><span class="p">,</span> <span class="n">wr_en</span><span class="p">,</span> <span class="n">rd_en</span><span class="p">}</span> <span class="o">=</span> <span class="n">dr</span><span class="p">;</span>
-<a name="l-219"></a>
+<a name="l-176"></a>                    <span class="n">nsr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-177"></a>                    <span class="k">case</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a name="l-178"></a>                    <span class="n">dr_en</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">:</span>   <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">15</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">idle</span><span class="p">,</span> <span class="n">dmi_stat</span><span class="p">,</span> <span class="n">abits</span><span class="p">,</span> <span class="n">version</span><span class="p">};</span>
+<a name="l-179"></a>                    <span class="n">dr_en</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">:</span>   <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">AWIDTH</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">rd_data</span><span class="p">,</span> <span class="n">rd_status</span><span class="p">};</span>
+<a name="l-180"></a>                    <span class="nl">devid_sel:</span>  <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">32</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">jtag_id</span><span class="p">,</span> <span class="mb">1&#39;b1</span><span class="p">};</span>
+<a name="l-181"></a>                    <span class="k">endcase</span>
+<a name="l-182"></a>                <span class="k">end</span>
+<a name="l-183"></a>    <span class="nl">shift_ir:</span>   <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">5</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span><span class="n">tdi</span><span class="p">,</span> <span class="n">sr</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">1</span><span class="p">]};</span>
+<a name="l-184"></a>    <span class="nl">capture_ir:</span> <span class="n">nsr</span> <span class="o">=</span> <span class="p">{{</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">1</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span><span class="mb">1&#39;b1</span><span class="p">};</span>
+<a name="l-185"></a>    <span class="k">endcase</span>
+<a name="l-186"></a><span class="k">end</span>
+<a name="l-187"></a>
+<a name="l-188"></a><span class="c1">// TDO retiming</span>
+<a name="l-189"></a><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">negedge</span> <span class="n">tck</span> <span class="p">)</span> <span class="n">tdo</span> <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-190"></a>
+<a name="l-191"></a><span class="c1">// DMI CS register</span>
+<a name="l-192"></a><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">tck</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">trst</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-193"></a>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">trst</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-194"></a>        <span class="n">dmi_hard_reset</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-195"></a>        <span class="n">dmi_reset</span>      <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-196"></a>    <span class="k">end</span>
+<a name="l-197"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">update_dr</span> <span class="o">&amp;</span> <span class="n">dr_en</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">begin</span>
+<a name="l-198"></a>        <span class="n">dmi_hard_reset</span> <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">[</span><span class="mi">17</span><span class="p">];</span>
+<a name="l-199"></a>        <span class="n">dmi_reset</span>      <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+<a name="l-200"></a>    <span class="k">end</span>
+<a name="l-201"></a>    <span class="k">else</span> <span class="k">begin</span>
+<a name="l-202"></a>        <span class="n">dmi_hard_reset</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-203"></a>        <span class="n">dmi_reset</span>      <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-204"></a>    <span class="k">end</span>
+<a name="l-205"></a><span class="k">end</span>
+<a name="l-206"></a>
+<a name="l-207"></a><span class="c1">// DR register</span>
+<a name="l-208"></a><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">tck</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">trst</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-209"></a>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">trst</span><span class="p">)</span>
+<a name="l-210"></a>        <span class="n">dr</span> <span class="o">&lt;=</span>  <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-211"></a>    <span class="k">else</span> <span class="k">begin</span>
+<a name="l-212"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">update_dr</span> <span class="o">&amp;</span> <span class="n">dr_en</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<a name="l-213"></a>            <span class="n">dr</span> <span class="o">&lt;=</span> <span class="n">sr</span><span class="p">;</span>
+<a name="l-214"></a>        <span class="k">else</span>
+<a name="l-215"></a>            <span class="n">dr</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">dr</span><span class="p">[</span><span class="n">USER_DR_LENGTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">2</span><span class="p">],</span><span class="mb">2&#39;b0</span><span class="p">};</span>
+<a name="l-216"></a>    <span class="k">end</span>
+<a name="l-217"></a><span class="k">end</span>
+<a name="l-218"></a>
+<a name="l-219"></a><span class="k">assign</span> <span class="p">{</span><span class="n">wr_addr</span><span class="p">,</span> <span class="n">wr_data</span><span class="p">,</span> <span class="n">wr_en</span><span class="p">,</span> <span class="n">rd_en</span><span class="p">}</span> <span class="o">=</span> <span class="n">dr</span><span class="p">;</span>
 <a name="l-220"></a>
 <a name="l-221"></a>
 <a name="l-222"></a>
-<a name="l-223"></a><span class="k">endmodule</span>
+<a name="l-223"></a>
+<a name="l-224"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
