@@ -314,7 +314,7 @@
 <a name="l-29"></a>    <span class="c1">// store unit output port</span>
 <a name="l-30"></a>    <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">valid_o</span><span class="p">,</span>
 <a name="l-31"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">trans_id_o</span><span class="p">,</span>
-<a name="l-32"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">result_o</span><span class="p">,</span>
+<a name="l-32"></a>    <span class="k">output</span> <span class="n">riscv</span><span class="o">::</span><span class="n">xlen_t</span>             <span class="n">result_o</span><span class="p">,</span>
 <a name="l-33"></a>    <span class="k">output</span> <span class="n">exception_t</span>               <span class="n">ex_o</span><span class="p">,</span>
 <a name="l-34"></a>    <span class="c1">// MMU -&gt; Address Translation</span>
 <a name="l-35"></a>    <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">translation_req_o</span><span class="p">,</span> <span class="c1">// request address translation</span>
@@ -332,7 +332,7 @@
 <a name="l-47"></a>    <span class="k">output</span> <span class="n">dcache_req_i_t</span>            <span class="n">req_port_o</span>
 <a name="l-48"></a><span class="p">);</span>
 <a name="l-49"></a>    <span class="c1">// it doesn&#39;t matter what we are writing back as stores don&#39;t return anything</span>
-<a name="l-50"></a>    <span class="k">assign</span> <span class="n">result_o</span> <span class="o">=</span> <span class="mb">64&#39;b0</span><span class="p">;</span>
+<a name="l-50"></a>    <span class="k">assign</span> <span class="n">result_o</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
 <a name="l-51"></a>
 <a name="l-52"></a>    <span class="k">enum</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="p">{</span>
 <a name="l-53"></a>        <span class="n">IDLE</span><span class="p">,</span>
@@ -348,7 +348,7 @@
 <a name="l-63"></a>    <span class="kt">logic</span> <span class="n">instr_is_amo</span><span class="p">;</span>
 <a name="l-64"></a>    <span class="k">assign</span> <span class="n">instr_is_amo</span> <span class="o">=</span> <span class="n">is_amo</span><span class="p">(</span><span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">operator</span><span class="p">);</span>
 <a name="l-65"></a>    <span class="c1">// keep the data and the byte enable for the second cycle (after address translation)</span>
-<a name="l-66"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">st_data_n</span><span class="p">,</span>      <span class="n">st_data_q</span><span class="p">;</span>
+<a name="l-66"></a>    <span class="n">riscv</span><span class="o">::</span><span class="n">xlen_t</span> <span class="n">st_data_n</span><span class="p">,</span> <span class="n">st_data_q</span><span class="p">;</span>
 <a name="l-67"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">st_be_n</span><span class="p">,</span>        <span class="n">st_be_q</span><span class="p">;</span>
 <a name="l-68"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">st_data_size_n</span><span class="p">,</span> <span class="n">st_data_size_q</span><span class="p">;</span>
 <a name="l-69"></a>    <span class="n">amo_t</span>         <span class="n">amo_op_d</span><span class="p">,</span>       <span class="n">amo_op_q</span><span class="p">;</span>
@@ -465,8 +465,8 @@
 <a name="l-180"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
 <a name="l-181"></a>        <span class="n">st_be_n</span>   <span class="o">=</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">be</span><span class="p">;</span>
 <a name="l-182"></a>        <span class="c1">// don&#39;t shift the data if we are going to perform an AMO as we still need to operate on this data</span>
-<a name="l-183"></a>        <span class="n">st_data_n</span> <span class="o">=</span> <span class="n">instr_is_amo</span> <span class="o">?</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">data</span>
-<a name="l-184"></a>                                 <span class="o">:</span> <span class="n">data_align</span><span class="p">(</span><span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">],</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">data</span><span class="p">);</span>
+<a name="l-183"></a>        <span class="n">st_data_n</span> <span class="o">=</span> <span class="n">instr_is_amo</span> <span class="o">?</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">XLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>
+<a name="l-184"></a>                                 <span class="o">:</span> <span class="n">data_align</span><span class="p">(</span><span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">vaddr</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">],</span> <span class="p">{{</span><span class="mi">64</span><span class="o">-</span><span class="n">riscv</span><span class="o">::</span><span class="n">XLEN</span><span class="p">{</span><span class="mb">1&#39;b0</span><span class="p">}},</span> <span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">riscv</span><span class="o">::</span><span class="n">XLEN</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]});</span>
 <a name="l-185"></a>        <span class="n">st_data_size_n</span> <span class="o">=</span> <span class="n">extract_transfer_size</span><span class="p">(</span><span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">operator</span><span class="p">);</span>
 <a name="l-186"></a>        <span class="c1">// save AMO op for next cycle</span>
 <a name="l-187"></a>        <span class="k">case</span> <span class="p">(</span><span class="n">lsu_ctrl_i</span><span class="p">.</span><span class="n">operator</span><span class="p">)</span>

@@ -147,7 +147,7 @@
 <a name="l-4"></a>    <span class="k">input</span>  <span class="kt">logic</span>                     <span class="n">flush_i</span><span class="p">,</span>
 <a name="l-5"></a>    <span class="k">input</span>  <span class="n">fu_data_t</span>                 <span class="n">fu_data_i</span><span class="p">,</span>
 <a name="l-6"></a>    <span class="k">input</span>  <span class="kt">logic</span>                     <span class="n">mult_valid_i</span><span class="p">,</span>
-<a name="l-7"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">result_o</span><span class="p">,</span>
+<a name="l-7"></a>    <span class="k">output</span> <span class="n">riscv</span><span class="o">::</span><span class="n">xlen_t</span>             <span class="n">result_o</span><span class="p">,</span>
 <a name="l-8"></a>    <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">mult_valid_o</span><span class="p">,</span>
 <a name="l-9"></a>    <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">mult_ready_o</span><span class="p">,</span>
 <a name="l-10"></a>    <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">mult_trans_id_o</span>
@@ -157,8 +157,8 @@
 <a name="l-14"></a>    <span class="kt">logic</span>                     <span class="n">div_ready_i</span><span class="p">;</span> <span class="c1">// receiver of division result is able to accept the result</span>
 <a name="l-15"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">mul_trans_id</span><span class="p">;</span>
 <a name="l-16"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">TRANS_ID_BITS</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">div_trans_id</span><span class="p">;</span>
-<a name="l-17"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">mul_result</span><span class="p">;</span>
-<a name="l-18"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">div_result</span><span class="p">;</span>
+<a name="l-17"></a>    <span class="n">riscv</span><span class="o">::</span><span class="n">xlen_t</span>             <span class="n">mul_result</span><span class="p">;</span>
+<a name="l-18"></a>    <span class="n">riscv</span><span class="o">::</span><span class="n">xlen_t</span>             <span class="n">div_result</span><span class="p">;</span>
 <a name="l-19"></a>
 <a name="l-20"></a>    <span class="kt">logic</span>                     <span class="n">div_valid_op</span><span class="p">;</span>
 <a name="l-21"></a>    <span class="kt">logic</span>                     <span class="n">mul_valid_op</span><span class="p">;</span>
@@ -197,8 +197,8 @@
 <a name="l-54"></a>    <span class="c1">// ---------------------</span>
 <a name="l-55"></a>    <span class="c1">// Division</span>
 <a name="l-56"></a>    <span class="c1">// ---------------------</span>
-<a name="l-57"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">operand_b</span><span class="p">,</span> <span class="n">operand_a</span><span class="p">;</span>  <span class="c1">// input operands after input MUX (input silencing, word operations or full inputs)</span>
-<a name="l-58"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">63</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">result</span><span class="p">;</span>                <span class="c1">// result before result mux</span>
+<a name="l-57"></a>    <span class="n">riscv</span><span class="o">::</span><span class="n">xlen_t</span>           <span class="n">operand_b</span><span class="p">,</span> <span class="n">operand_a</span><span class="p">;</span>  <span class="c1">// input operands after input MUX (input silencing, word operations or full inputs)</span>
+<a name="l-58"></a>    <span class="n">riscv</span><span class="o">::</span><span class="n">xlen_t</span>           <span class="n">result</span><span class="p">;</span>                <span class="c1">// result before result mux</span>
 <a name="l-59"></a>
 <a name="l-60"></a>    <span class="kt">logic</span>        <span class="n">div_signed</span><span class="p">;</span>            <span class="c1">// signed or unsigned division</span>
 <a name="l-61"></a>    <span class="kt">logic</span>        <span class="n">rem</span><span class="p">;</span>                   <span class="c1">// is it a reminder (or not a reminder e.g.: a division)</span>
@@ -245,7 +245,7 @@
 <a name="l-102"></a>    <span class="c1">// Serial Divider</span>
 <a name="l-103"></a>    <span class="c1">// ---------------------</span>
 <a name="l-104"></a>    <span class="n">serdiv</span> <span class="p">#(</span>
-<a name="l-105"></a>        <span class="p">.</span><span class="n">WIDTH</span>       <span class="p">(</span> <span class="mi">64</span> <span class="p">)</span>
+<a name="l-105"></a>        <span class="p">.</span><span class="n">WIDTH</span>       <span class="p">(</span> <span class="n">riscv</span><span class="o">::</span><span class="n">XLEN</span> <span class="p">)</span>
 <a name="l-106"></a>    <span class="p">)</span> <span class="n">i_div</span> <span class="p">(</span>
 <a name="l-107"></a>        <span class="p">.</span><span class="n">clk_i</span>       <span class="p">(</span> <span class="n">clk_i</span>                <span class="p">),</span>
 <a name="l-108"></a>        <span class="p">.</span><span class="n">rst_ni</span>      <span class="p">(</span> <span class="n">rst_ni</span>               <span class="p">),</span>
