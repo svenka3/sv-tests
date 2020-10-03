@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_comm_link.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_comm_link.v</a>
 defines: 
-time_elapsed: 0.796s
-ram usage: 21428 KB
+time_elapsed: 0.773s
+ram usage: 20824 KB
 </pre>
 <pre class="log">
 
@@ -105,16 +105,12 @@ module bsg_comm_link (
 	wire [link_channels_p - 1:0] im_clk_init;
 	wire im_slave_reset_tline_n;
 	wire core_reset_i;
-	wire core_async_reset_danger_o;
 	assign core_async_reset_danger_o = core_reset_i;
-	wire core_clk_i;
-	wire async_reset_i;
 	bsg_sync_sync #(.width_p(1)) core_reset_ss(
 		.oclk_i(core_clk_i),
 		.iclk_data_i(async_reset_i),
 		.oclk_data_o(core_reset_i)
 	);
-	wire io_master_clk_i;
 	bsg_sync_sync #(.width_p(1)) im_reset_ss(
 		.oclk_i(io_master_clk_i),
 		.iclk_data_i(async_reset_i),
@@ -184,7 +180,6 @@ module bsg_comm_link (
 		.oclk_data_o(core_calib_done_prefanout_r)
 	);
 	wire [5:0] core_calib_done_vec_r;
-	wire core_calib_reset_r_o;
 	assign core_calib_reset_r_o = ~core_calib_done_vec_r[0];
 	genvar k;
 	generate

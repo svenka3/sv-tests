@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_vd_dp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_vd_dp.v</a>
 defines: 
-time_elapsed: 0.335s
-ram usage: 13624 KB
+time_elapsed: 0.276s
+ram usage: 13148 KB
 </pre>
 <pre class="log">
 
@@ -106,7 +106,6 @@ module sctag_vd_dp (
 	wire [11:0] valid_byp_c4c5;
 	wire [11:0] dirty_byp_c2c3;
 	wire [11:0] dirty_byp_c4c5;
-	wire vuad_sel_rd;
 	mux2ds #(12) mux_valid_c1(
 		.dout(valid_c1[11:0]),
 		.in0(vuad_array_rd_data_c1[24:13]),
@@ -114,8 +113,6 @@ module sctag_vd_dp (
 		.in1(valid_byp_c1[11:0]),
 		.sel1(~vuad_sel_rd)
 	);
-	wire rclk;
-	wire se;
 	dff_s #(12) ff_valid_c2(
 		.q(valid_c2[11:0]),
 		.din(valid_c1[11:0]),
@@ -133,7 +130,6 @@ module sctag_vd_dp (
 		.so()
 	);
 	assign vuad_dp_valid_c2 = valid_c2;
-	wire sel_vd_wr_data_byp;
 	mux2ds #(13) mux_valid_rd_c2(
 		.dout({parity_rd_c2[3], valid_rd_c2[11:0]}),
 		.in0({parity_wr_data_c6[3], valid_wr_data_c6[11:0]}),
@@ -143,7 +139,6 @@ module sctag_vd_dp (
 	);
 	assign diag_rd_vd_out[25] = parity_rd_c2[3];
 	assign diag_rd_vd_out[23:12] = valid_rd_c2[11:0];
-	wire vuad_sel_c2;
 	mux2ds #(12) mux_valid_byp_c2c3(
 		.dout(valid_byp_c2c3[11:0]),
 		.in0(valid_c2[11:0]),
@@ -151,7 +146,6 @@ module sctag_vd_dp (
 		.in1(valid_byp_c3_in[11:0]),
 		.sel1(~vuad_sel_c2)
 	);
-	wire vuad_sel_c2orc3;
 	mux2ds #(12) mux_valid_byp_c1(
 		.dout(valid_byp_c1[11:0]),
 		.in0(valid_byp_c2c3[11:0]),
@@ -159,7 +153,6 @@ module sctag_vd_dp (
 		.in1(valid_byp_c4c5[11:0]),
 		.sel1(~vuad_sel_c2orc3)
 	);
-	wire valid_rd_parity_c2;
 	zzpar16 parity_vld_rd(
 		.z(valid_rd_parity_c2),
 		.d({3&#39;b000, parity_rd_c2[3], valid_rd_c2[11:0]})
@@ -185,7 +178,6 @@ module sctag_vd_dp (
 		.si(),
 		.so()
 	);
-	wire bistordiag_wr_vd_c4;
 	mux2ds #(13) mux_wr_array_valid_c4(
 		.dout(vuad_array_wr_data_c4[25:13]),
 		.in0({parity_wr_data_c4[3], valid_c4[11:0]}),
@@ -193,7 +185,6 @@ module sctag_vd_dp (
 		.in1(bistordiag_vd_data[25:13]),
 		.sel1(bistordiag_wr_vd_c4)
 	);
-	wire vuad_sel_c4;
 	mux2ds #(12) mux_valid_byp_c4c5(
 		.dout(valid_byp_c4c5[11:0]),
 		.in0(valid_c4[11:0]),
@@ -263,12 +254,10 @@ module sctag_vd_dp (
 		.in1(dirty_byp_c4c5[11:0]),
 		.sel1(~vuad_sel_c2orc3)
 	);
-	wire dirty_rd_parity_c2;
 	zzpar16 parity_dir_rd(
 		.z(dirty_rd_parity_c2),
 		.d({3&#39;b000, parity_rd_c2[2], dirty_rd_c2[11:0]})
 	);
-	wire vuad_sel_c2_d1;
 	mux2ds #(12) mux_dirty_byp_c2_in(
 		.dout(dirty_byp_c2_in[11:0]),
 		.in0(dirty_c2[11:0]),
@@ -285,7 +274,6 @@ module sctag_vd_dp (
 		.so()
 	);
 	assign dirty_byp_c3_in = (dirty_c3 | ({12 {st_to_data_array_c3}} &amp; hit_wayvld_c3)) &amp; ~(({12 {vuad_evict_c3}} &amp; lru_way_c3) | ({12 {wr64_inst_c3}} &amp; hit_wayvld_c3));
-	wire dirty_evict_c3;
 	assign dirty_evict_c3 = vuad_evict_c3 &amp; |(lru_way_c3 &amp; dirty_c3);
 	zzpar16 parity_dir_wr(
 		.z(parity_wr_c3[2]),

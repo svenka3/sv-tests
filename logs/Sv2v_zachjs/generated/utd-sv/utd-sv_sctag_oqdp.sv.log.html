@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_oqdp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_oqdp.v</a>
 defines: 
-time_elapsed: 1.031s
-ram usage: 17072 KB
+time_elapsed: 0.488s
+ram usage: 17852 KB
 </pre>
 <pre class="log">
 
@@ -169,8 +169,6 @@ module sctag_oqdp (
 	wire [2:0] mux2_sel_c8;
 	wire [2:0] out_mux2_sel_c8;
 	assign sel_c8 = oqctl_imiss_hit_c8 | oqctl_diag_acc_c8;
-	wire rclk;
-	wire se;
 	dff_s #(2) ff_arbdp_tid_c8(
 		.q(inst_tid_c8[1:0]),
 		.din(arbdp_inst_tid_c7[1:0]),
@@ -194,7 +192,6 @@ module sctag_oqdp (
 		.si(),
 		.so()
 	);
-	wire arbdp_inst_nc_c7;
 	dff_s #(1) ff_arbdp_nc_c8(
 		.q(inst_nc_c8),
 		.din(arbdp_inst_nc_c7),
@@ -244,7 +241,6 @@ module sctag_oqdp (
 	assign mod_sz_field_st_c7[2] = inst_l1way_c7[0];
 	assign mod_sz_field_st_c7[1] = atm_inst_ack_c7;
 	assign mod_sz_field_st_c7[0] = 1&#39;b0;
-	wire strst_ack_c7;
 	mux2ds #(3) mux_buf_c7(
 		.dout(inval_buf_c7[2:0]),
 		.in0(mod_sz_field_st_c7[2:0]),
@@ -303,7 +299,6 @@ module sctag_oqdp (
 	);
 	assign cpuid_c8[2:0] = ext_inval_data_c8[120:118];
 	assign oqdp_tid_c8 = {cpuid_c8[2:0], tid_c8[1:0]};
-	wire fwd_req_ret_c7;
 	mux2ds #(3) mux_inval_way_c7(
 		.dout(inval_way_c7[2:0]),
 		.in0({2&#39;b00, inst_l1way_c7[1]}),
@@ -395,7 +390,6 @@ module sctag_oqdp (
 		.si(),
 		.so()
 	);
-	wire oqctl_rmo_st_c7;
 	dff_s #(1) ff_rmo_c8(
 		.q(rmo_st_c8),
 		.din(oqctl_rmo_st_c7),
@@ -451,7 +445,6 @@ module sctag_oqdp (
 		.in3({21&#39;b000000000000000000000, arbdp_oqdp_int_ret_c7[17:0]}),
 		.sel3(mux1_sel_data_c7[3])
 	);
-	wire mux_csr_sel_c7;
 	mux2ds #(64) mux_csr_sel(
 		.dout(dir_or_csr_data[63:0]),
 		.in0(dirdp_inval_pckt_c7[63:0]),
@@ -512,7 +505,6 @@ module sctag_oqdp (
 		.so()
 	);
 	wire sel_inval_c8;
-	wire sel_inval_c7;
 	dff_s #(1) ff_sel_inval_c8(
 		.q(sel_inval_c8),
 		.din(sel_inval_c7),
@@ -541,7 +533,6 @@ module sctag_oqdp (
 		.si(),
 		.so()
 	);
-	wire sel_array_out_l;
 	mux2ds #(145) mux_oqarray_dout(
 		.dout(eff_oqarray_dout[144:0]),
 		.in0(oq_array_data_out[144:0]),

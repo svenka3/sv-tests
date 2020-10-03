@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_snpctl.v.html" target="file-frame">third_party/tests/utd-sv/sctag_snpctl.v</a>
 defines: 
-time_elapsed: 0.332s
-ram usage: 12928 KB
+time_elapsed: 0.196s
+ram usage: 12664 KB
 </pre>
 <pre class="log">
 
@@ -104,12 +104,7 @@ module sctag_snpctl (
 	wire [1:0] rdmad_wr_entry_s2_d1;
 	wire [1:0] rdmad_wr_wl_s2;
 	wire dbb_rst_l;
-	wire sctag_jbi_por_req;
 	assign sctag_jbi_por_req = sctag_por_req;
-	wire rclk;
-	wire arst_l;
-	wire grst_l;
-	wire se;
 	dffrl_async #(1) reset_flop(
 		.q(dbb_rst_l),
 		.clk(rclk),
@@ -119,7 +114,6 @@ module sctag_snpctl (
 		.si(),
 		.so()
 	);
-	wire jbi_req_vld_buf;
 	dff_s #(1) ff_jbi_req_vld_s0(
 		.din(jbi_req_vld_buf),
 		.clk(rclk),
@@ -130,7 +124,6 @@ module sctag_snpctl (
 	);
 	assign winv_reset = ~dbb_rst_l;
 	assign winv_en = snpiq_cnt == 5&#39;d1;
-	wire snpdp_rq_winv_s1;
 	dffre_s #(1) ff_winv_rq_active_s2(
 		.din(snpdp_rq_winv_s1),
 		.en(winv_en),
@@ -173,25 +166,15 @@ module sctag_snpctl (
 		.si(),
 		.so()
 	);
-	wire snpctl_wr_ptr;
 	assign snpctl_wr_ptr = wr_ptr;
-	wire snp_hdr1_wen0_s0;
 	assign snp_hdr1_wen0_s0 = (~wr_ptr &amp; (snpiq_cnt == 5&#39;d0)) &amp; jbi_req_vld_s0;
-	wire snp_hdr2_wen0_s1;
 	assign snp_hdr2_wen0_s1 = ~wr_ptr &amp; (snpiq_cnt == 5&#39;d1);
-	wire snp_data1_wen0_s2;
 	assign snp_data1_wen0_s2 = ~wr_ptr &amp; (snpiq_cnt == 5&#39;d2);
-	wire snp_data2_wen0_s3;
 	assign snp_data2_wen0_s3 = ~wr_ptr &amp; (snpiq_cnt == 5&#39;d3);
-	wire snp_hdr1_wen1_s0;
 	assign snp_hdr1_wen1_s0 = (wr_ptr &amp; (snpiq_cnt == 5&#39;d0)) &amp; jbi_req_vld_s0;
-	wire snp_hdr2_wen1_s1;
 	assign snp_hdr2_wen1_s1 = wr_ptr &amp; (snpiq_cnt == 5&#39;d1);
-	wire snp_data1_wen1_s2;
 	assign snp_data1_wen1_s2 = wr_ptr &amp; (snpiq_cnt == 5&#39;d2);
-	wire snp_data2_wen1_s3;
 	assign snp_data2_wen1_s3 = wr_ptr &amp; (snpiq_cnt == 5&#39;d3);
-	wire rdmatag_wr_en_s2;
 	assign rdmatag_wr_en_s2 = winv_rq_active_s2 &amp; (snpiq_cnt == 5&#39;d2);
 	assign rdmadata_wen_s1[0] = snpiq_cnt == 5&#39;d1;
 	assign rdmadata_wen_s1[1] = snpiq_cnt == 5&#39;d2;
@@ -264,7 +247,6 @@ module sctag_snpctl (
 		.si(),
 		.so()
 	);
-	wire snpq_arbctl_vld_px1;
 	assign snpq_arbctl_vld_px1 = |snpq_valid;
 	assign rd_ptr_in = ((~rd_ptr &amp; arbctl_snpsel_c1) | rd_ptr) &amp; ~(rd_ptr &amp; arbctl_snpsel_c1);
 	dffrl_s #(1) ff_rd_ptr(
@@ -276,9 +258,7 @@ module sctag_snpctl (
 		.si(),
 		.so()
 	);
-	wire snpctl_rd_ptr;
 	assign snpctl_rd_ptr = rd_ptr;
-	wire sctag_jbi_iq_dequeue;
 	assign sctag_jbi_iq_dequeue = arbctl_snpsel_c1;
 endmodule
 

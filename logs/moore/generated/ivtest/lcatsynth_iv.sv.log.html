@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -17,24 +17,30 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/lcatsynth.v.html" target="file-frame">third_party/tests/ivtest/ivltests/lcatsynth.v</a>
 defines: 
-time_elapsed: 0.006s
-ram usage: 10444 KB
+time_elapsed: 0.007s
+ram usage: 11136 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e main <a href="../../../../third_party/tests/ivtest/ivltests/lcatsynth.v.html" target="file-frame">third_party/tests/ivtest/ivltests/lcatsynth.v</a>
-error: expression `{q0, q1}` cannot be assigned to
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lcatsynth.v.html#l-10" target="file-frame">third_party/tests/ivtest/ivltests/lcatsynth.v:10</a>:2-10:
+warning: unsupported: system task `$display`; ignored
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lcatsynth.v.html#l-22" target="file-frame">third_party/tests/ivtest/ivltests/lcatsynth.v:22</a>:3-21:
    | 
-   |     {q0, q1} &lt;= 2&#39;b00;
-   |     ^^^^^^^^          
+   |      $display(&#34;FAILED&#34;);
+   |      ^^^^^^^^^^^^^^^^^^ 
 
-error: expression `{q1, q0}` cannot be assigned to
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lcatsynth.v.html#l-12" target="file-frame">third_party/tests/ivtest/ivltests/lcatsynth.v:12</a>:8-16:
+compiler bug: lowering of Expr #124 to hir not implemented
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/lcatsynth.v.html#l-23" target="file-frame">third_party/tests/ivtest/ivltests/lcatsynth.v:23</a>:3-10:
    | 
-   |        {q1, q0} &lt;= {q1, q0} + 1;
-   |        ^^^^^^^^                 
+   |      $finish;
+   |      ^^^^^^^ 
+   = note: Encountered at src/svlog/hir/lowering.rs:1439
 
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;lowering of Expr #124 to hir not implemented&#39;, /rustc/04488afe34512aa4c33566eb16d8c912a3ae04f9/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

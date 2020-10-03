@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_arbaddrdp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_arbaddrdp.v</a>
 defines: 
-time_elapsed: 0.313s
-ram usage: 17072 KB
+time_elapsed: 0.541s
+ram usage: 16496 KB
 </pre>
 <pre class="log">
 
@@ -227,8 +227,6 @@ module sctag_arbaddrdp (
 		.d({err_tag_c4[29:0], 2&#39;b00})
 	);
 	assign tecc_corr_tag_c1[0] = (par_err_tag_c4 &amp; ~cbit_err) ^ err_tag_c4[0];
-	wire rclk;
-	wire se;
 	dff_s #(28) ff_tecc_corr_tag_c2(
 		.din(tecc_corr_tag_c1[27:0]),
 		.clk(rclk),
@@ -237,7 +235,6 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire mux2_snpsel_px2;
 	mux2ds #(40) mux_mux2_instr_px2(
 		.dout(mux2_addr_px2[39:0]),
 		.in0(snpq_arbdp_addr_px2[39:0]),
@@ -245,7 +242,6 @@ module sctag_arbaddrdp (
 		.sel0(mux2_snpsel_px2),
 		.sel1(~mux2_snpsel_px2)
 	);
-	wire mux3_bufsel_px2;
 	mux2ds #(40) mux_mux3_instr_px2(
 		.dout(mux3_addr_px2[39:0]),
 		.in0(mux2_addr_px2[39:0]),
@@ -253,7 +249,6 @@ module sctag_arbaddrdp (
 		.sel0(mux3_bufsel_px2),
 		.sel1(~mux3_bufsel_px2)
 	);
-	wire mux4_c1sel_px2;
 	mux2ds #(40) mux_mux4_instr_px2(
 		.dout(mux4_addr_px2[39:0]),
 		.in0(mux3_addr_px2[39:0]),
@@ -271,7 +266,6 @@ module sctag_arbaddrdp (
 		.enb_l(~data_ecc_idx_en),
 		.tmb_l(~se)
 	);
-	wire data_ecc_idx_reset;
 	dffr_s #(10) ff_data_ecc_idx(
 		.din(data_ecc_idx_plus1[9:0]),
 		.clk(clk_data_ecc_idx),
@@ -289,7 +283,6 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire sel_vuad_bist_px2;
 	mux2ds #(10) mux_vuad_acc_idx_px2(
 		.dout(vuad_acc_idx_px2[9:0]),
 		.in0(data_ecc_idx[9:0]),
@@ -297,7 +290,6 @@ module sctag_arbaddrdp (
 		.sel0(~sel_vuad_bist_px2),
 		.sel1(sel_vuad_bist_px2)
 	);
-	wire sel_decc_or_bist_idx;
 	mux2ds #(10) mux_vuad_idx2_px2(
 		.dout(vuad_idx2_px2[9:0]),
 		.in0(vuad_acc_idx_px2[9:0]),
@@ -322,9 +314,6 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire sel_decc_addr_px2;
-	wire sel_tecc_addr_px2;
-	wire sel_diag_addr_px2;
 	mux3ds #(10) mux_tag_idx_px(
 		.dout(tag_acc_idx_px2[9:0]),
 		.in0(data_ecc_idx[9:0]),
@@ -334,7 +323,6 @@ module sctag_arbaddrdp (
 		.sel1(sel_tecc_addr_px2),
 		.sel2(sel_diag_addr_px2)
 	);
-	wire sel_diag_tag_addr_px2;
 	mux2ds #(10) mux_mux_idx2_px2(
 		.dout(mux_idx2_px2[9:0]),
 		.in0(tag_acc_idx_px2[9:0]),
@@ -342,7 +330,6 @@ module sctag_arbaddrdp (
 		.sel0(sel_diag_tag_addr_px2),
 		.sel1(~sel_diag_tag_addr_px2)
 	);
-	wire sel_lkup_stalled_tag_px2;
 	mux2ds #(10) mux_data_idx_px2(
 		.dout(data_idx_px2[9:0]),
 		.in0(mux_idx2_px2[9:0]),
@@ -359,7 +346,6 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire sel_c2_stall_idx_c1;
 	mux2ds #(10) mux_c2stall(
 		.dout(stall_idx_c1[9:0]),
 		.in0(data_idx_c1[9:0]),
@@ -367,7 +353,6 @@ module sctag_arbaddrdp (
 		.sel0(~sel_c2_stall_idx_c1),
 		.sel1(sel_c2_stall_idx_c1)
 	);
-	wire bist_data_enable_c1;
 	mux2ds #(10) mux_data_idx_c1(
 		.dout(data_bist_idx_c1[9:0]),
 		.in0(stall_idx_c1[9:0]),
@@ -386,7 +371,6 @@ module sctag_arbaddrdp (
 	assign sctag_scdata_set_c2 = data_bist_idx_c2;
 	assign tag_diag_wr_data_c2[39:18] = arbdata_wr_data_c2[27:6];
 	assign tag_diag_wr_data_c2[5:0] = arbdata_wr_data_c2[5:0];
-	wire inc_tag_ecc_cnt_c3_n;
 	mux2ds #(28) mux_tag_acc_data_px2(
 		.dout(tag_acc_data_px2[27:0]),
 		.in0(tecc_corr_tag_c2[27:0]),
@@ -394,7 +378,6 @@ module sctag_arbaddrdp (
 		.sel0(~inc_tag_ecc_cnt_c3_n),
 		.sel1(inc_tag_ecc_cnt_c3_n)
 	);
-	wire diag_or_tecc_write_px2;
 	mux2ds #(28) mux_tag_stalled_data(
 		.dout(mux2_tagdata_px2[27:0]),
 		.in0(tag_acc_data_px2[27:0]),
@@ -402,7 +385,6 @@ module sctag_arbaddrdp (
 		.sel0(diag_or_tecc_write_px2),
 		.sel1(~diag_or_tecc_write_px2)
 	);
-	wire sel_way_px2;
 	mux2ds #(28) mux_tag_wrdata_px2(
 		.dout(tag_wrdata_px2[27:0]),
 		.in0(mux2_tagdata_px2[27:0]),
@@ -437,11 +419,9 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire arbaddr_addr22_c2;
 	assign arbaddr_addr22_c2 = arbdp_addr_c2[22];
 	assign arbdp_addr5to4_c2 = arbdp_addr_c2[5:4];
 	assign arbdp_diag_wr_way_c2 = arbdp_addr_c2[21:18];
-	wire arbdp_addr_start_c2;
 	assign arbdp_addr_start_c2 = arbdp_addr_c2[5:0] == 6&#39;b000000;
 	dff_s #(40) ff_addr_c3(
 		.din(arbdp_addr_c2[39:0]),
@@ -463,7 +443,6 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire arbctl_imiss_hit_c4;
 	mux2ds #(32) mux_tmp_cam_addr_c3(
 		.dout(dir_cam_addr_c3[39:8]),
 		.in0(arbdp_addr_c3[39:8]),
@@ -471,7 +450,6 @@ module sctag_arbaddrdp (
 		.sel0(~arbctl_imiss_hit_c4),
 		.sel1(arbctl_imiss_hit_c4)
 	);
-	wire arbdp_dir_wr_par_c3;
 	assign arbdp_dir_wr_par_c3 = ^arbdp_addr_c3[39:10] ^ csr_wr_dirpinj_en;
 	dff_s #(40) ff_addr_c5(
 		.din(arbdp_addr_c4[39:0]),
@@ -503,7 +481,6 @@ module sctag_arbaddrdp (
 		.so()
 	);
 	assign arbdp_inst_byte_addr_c7 = arbdp_addr_c7[2:0];
-	wire arbdp_addr22_c7;
 	assign arbdp_addr22_c7 = arbdp_addr_c7[22];
 	assign arbdp_line_addr_c7[5:4] = arbdp_addr_c7[5:4];
 	dff_s #(40) ff_addr_c8(
@@ -514,7 +491,6 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire arbaddrdp_addr2_c8;
 	assign arbaddrdp_addr2_c8 = arbdp_addr_c8[2];
 	dff_s #(40) ff_addr_c9(
 		.din(arbdp_addr_c8[39:0]),
@@ -540,7 +516,6 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire arbctl_imiss_hit_c10;
 	mux2ds #(36) mux_arbdp_csr_addr_c9(
 		.dout(arbdp_csr_addr_c9[39:4]),
 		.in0(arbdp_addr_c9[39:4]),
@@ -563,21 +538,14 @@ module sctag_arbaddrdp (
 		.si(),
 		.so()
 	);
-	wire arbdp_addr_c1c2comp_c1;
 	assign arbdp_addr_c1c2comp_c1 = arbdp_addr_c1[39:8] == arbdp_addr_c2[39:8];
-	wire arbdp_addr_c1c3comp_c1;
 	assign arbdp_addr_c1c3comp_c1 = arbdp_addr_c1[39:8] == arbdp_addr_c3[39:8];
-	wire idx_c1c2comp_c1;
 	assign idx_c1c2comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c2[17:8];
-	wire idx_c1c3comp_c1;
 	assign idx_c1c3comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c3[17:8];
-	wire idx_c1c4comp_c1;
 	assign idx_c1c4comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c4[17:8];
-	wire idx_c1c5comp_c1;
 	assign idx_c1c5comp_c1 = arbdp_addr_c1[17:8] == arbdp_addr_c5[17:8];
 	assign evict_addr_c4[39:18] = tagdp_evict_tag_c4[27:6];
 	assign evict_addr_c4[17:8] = arbdp_addr_c4[17:8];
-	wire c1_addr_eq_wb_c4;
 	assign c1_addr_eq_wb_c4 = evict_addr_c4[39:8] == arbdp_addr_c1[39:8];
 	assign tagdp_evict_tag_c4_buf[27:6] = tagdp_evict_tag_c4[27:6];
 endmodule

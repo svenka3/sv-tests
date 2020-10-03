@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sparc_ffu_vis.v.html" target="file-frame">third_party/tests/utd-sv/sparc_ffu_vis.v</a>
 defines: 
-time_elapsed: 0.218s
-ram usage: 11744 KB
+time_elapsed: 0.165s
+ram usage: 11756 KB
 </pre>
 <pre class="log">
 
@@ -89,8 +89,6 @@ module sparc_ffu_vis (
 	wire [63:0] logic_rs2;
 	assign add_in_rs1[63:0] = dp_vis_rs1_data[63:0];
 	assign add_in_rs2[63:0] = dp_vis_rs2_data[63:0] ^ {64 {ctl_vis_subtract}};
-	wire ctl_vis_add32;
-	wire ctl_vis_cin;
 	sparc_ffu_part_add32 part_adder_hi(
 		.z(add_out[63:32]),
 		.add32(ctl_vis_add32),
@@ -113,10 +111,6 @@ module sparc_ffu_vis (
 		.dout(align_rs2[63:8]),
 		.in(dp_vis_rs2_data[63:8])
 	);
-	wire ctl_vis_align0;
-	wire ctl_vis_align2;
-	wire ctl_vis_align4;
-	wire ctl_vis_align6;
 	mux4ds #(72) falign_mux1(
 		.dout(align_data1[71:0]),
 		.in0({align_rs1[63:0], align_rs2[63:56]}),
@@ -128,7 +122,6 @@ module sparc_ffu_vis (
 		.sel2(ctl_vis_align4),
 		.sel3(ctl_vis_align6)
 	);
-	wire ctl_vis_align_odd;
 	dp_mux2es #(64) falign_mux2(
 		.dout(align_out[63:0]),
 		.in0(align_data1[71:8]),
@@ -140,9 +133,6 @@ module sparc_ffu_vis (
 	assign logic_nor[63:0] = ~(logic_rs1[63:0] | logic_rs2[63:0]);
 	assign logic_nand[63:0] = ~(logic_rs1[63:0] &amp; logic_rs2[63:0]);
 	assign logic_xor[63:0] = logic_rs1[63:0] ^ logic_rs2[63:0];
-	wire ctl_vis_log_pass_const;
-	wire ctl_vis_log_pass_rs1;
-	wire ctl_vis_log_pass_rs2;
 	mux3ds #(64) pass_mux(
 		.dout(logic_pass[63:0]),
 		.in0({64 {ctl_vis_log_constant}}),
@@ -152,10 +142,6 @@ module sparc_ffu_vis (
 		.sel1(ctl_vis_log_pass_rs1),
 		.sel2(ctl_vis_log_pass_rs2)
 	);
-	wire ctl_vis_log_sel_nor;
-	wire ctl_vis_log_sel_nand;
-	wire ctl_vis_log_sel_xor;
-	wire ctl_vis_log_sel_pass;
 	mux4ds #(64) logic_mux(
 		.dout(log_out[63:0]),
 		.in0(logic_nor[63:0]),
@@ -167,9 +153,6 @@ module sparc_ffu_vis (
 		.sel2(ctl_vis_log_sel_xor),
 		.sel3(ctl_vis_log_sel_pass)
 	);
-	wire ctl_vis_sel_add;
-	wire ctl_vis_sel_log;
-	wire ctl_vis_sel_align;
 	mux3ds #(64) output_mux(
 		.dout(vis_dp_rd_data[63:0]),
 		.in0(add_out[63:0]),

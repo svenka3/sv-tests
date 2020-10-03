@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/pad_ddr0.v.html" target="file-frame">third_party/tests/utd-sv/pad_ddr0.v</a>
 defines: 
-time_elapsed: 0.258s
-ram usage: 13856 KB
+time_elapsed: 0.283s
+ram usage: 13708 KB
 </pre>
 <pre class="log">
 
@@ -214,10 +214,6 @@ module pad_ddr0 (
 	wire rclk;
 	wire arst2_l;
 	wire ddr_so_pre_latch;
-	wire dram_gdbginit_l;
-	wire dram_grst_l;
-	wire dram_adbginit_l;
-	wire dram_arst_l;
 	bw_clk_cl_ddr_ddr pad_ddr0_header(
 		.gclk(dram_gclk),
 		.ddr_rclk(rclk),
@@ -234,41 +230,6 @@ module pad_ddr0 (
 		.arst2_l(arst2_l),
 		.cluster_cken(clk_ddr0_cken_buf)
 	);
-	wire bscan_update_dr_in;
-	wire bscan_mode_ctl_in;
-	wire bscan_shift_dr_in;
-	wire bscan_clock_dr_in;
-	wire bscan_hiz_l_in;
-	wire ddr_testmode_l;
-	wire test_mode;
-	wire bypass_enable_out;
-	wire ps_select_out;
-	wire ddr_si;
-	wire pad_ddr0_bso;
-	wire pad_ddr0_bsi;
-	wire bscan_mode_ctl_out;
-	wire bscan_update_dr_out;
-	wire bscan_shift_dr_out;
-	wire bscan_clock_dr_out;
-	wire bscan_hiz_l_out;
-	wire bypass_enable;
-	wire ps_select;
-	wire dram0_io_clk_enable;
-	wire dram0_io_cke;
-	wire dram0_io_ras_l;
-	wire dram0_io_write_en_l;
-	wire dram0_io_cas_l;
-	wire dram0_cke;
-	wire io_dram0_data_valid;
-	wire dram0_ras_l;
-	wire dram0_we_l;
-	wire dram0_cas_l;
-	wire dram0_io_pad_clk_inv;
-	wire dram0_io_pad_enable;
-	wire dram0_io_drive_enable;
-	wire dram0_io_channel_disabled;
-	wire dram0_io_drive_data;
-	wire vdd18;
 	ddr_ch ddr0_ddr_ch(
 		.arst_l_out(arst2_l),
 		.afo(afo),
@@ -338,12 +299,6 @@ module pad_ddr0 (
 		.dram_io_drive_data(dram0_io_drive_data),
 		.vdd_h(vdd18)
 	);
-	wire tck;
-	wire ctu_global_snap;
-	wire ctu_io_sscan_se;
-	wire ctu_io_sscan_update;
-	wire pad_ddr0_sscan_out;
-	wire dram01_n_ref_res;
 	bw_io_ddr_impctl_pulldown ddr0_impctl_pulldown(
 		.z(ddr0_ddr1_cbd),
 		.from_csr({vss, vss, vss, vss, vss, vss, vss, vss}),
@@ -367,8 +322,6 @@ module pad_ddr0 (
 	);
 	wire [4:0] ddr0_lpf_code_pre;
 	wire scan3_pre;
-	wire ddr0_dll_bypass_l;
-	wire ctu_ddr0_iodll_rst_l;
 	bw_iodll_code_adjust ddr0_iodll_code_adjust(
 		.bypass_data(ddr0_bypass_data[4:0]),
 		.ddr_clk_in(rclk),
@@ -381,8 +334,6 @@ module pad_ddr0 (
 		.si(scan3_pre),
 		.so(scan3)
 	);
-	wire ddr0_ctu_dll_lock;
-	wire ddr0_ctu_dll_overflow;
 	bw_iodll ddr0_master_dll(
 		.ddr_testmode_l(ddr_testmode_l),
 		.bypass_data(ddr0_bypass_data),
@@ -398,8 +349,6 @@ module pad_ddr0 (
 		.overflow(ddr0_ctu_dll_overflow),
 		.strobe(strobe)
 	);
-	wire pad_ddr0_sscan_in;
-	wire dram01_p_ref_res;
 	bw_io_ddr_impctl_pullup ddr0_impctl_pullup(
 		.z(ddr0_ddr1_cbu),
 		.from_csr({vss, vss, vss, vss, vss, vss, vss, vss}),
@@ -421,17 +370,14 @@ module pad_ddr0 (
 		.ctu_global_snap(ctu_global_snap),
 		.tclk(tck)
 	);
-	wire ddr_se;
 	bw_u1_buf_40x I223(
 		.z(ddr_se_buf),
 		.a(ddr_se)
 	);
-	wire clk_ddr0_cken;
 	bw_u1_buf_40x I225(
 		.z(clk_ddr0_cken_buf),
 		.a(clk_ddr0_cken)
 	);
-	wire ddr_so;
 	bw_u1_scanl_2x lockup_latch(
 		.so(ddr_so),
 		.sd(ddr_so_pre_latch),

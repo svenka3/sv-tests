@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/spu_lsurpt1.v.html" target="file-frame">third_party/tests/utd-sv/spu_lsurpt1.v</a>
 defines: 
 time_elapsed: 0.103s
-ram usage: 11672 KB
+ram usage: 11508 KB
 </pre>
 <pre class="log">
 
@@ -85,8 +85,6 @@ module spu_lsurpt1 (
 	output [39:4] spu_ifu_err_addr_w2;
 	output [1:0] spu_lsu_stxa_ack_tid;
 	output so;
-	wire spu_wen_pcx_wen;
-	wire rclk;
 	dffe_s #(121) pcx_ff(
 		.din({spu_ldstreq_pcx[122:72], spu_ldstreq_pcx[69:0]}),
 		.q({spu_lsu_ldst_pckt[122:72], spu_lsu_ldst_pckt[69:0]}),
@@ -106,7 +104,6 @@ module spu_lsurpt1 (
 		.si(),
 		.so()
 	);
-	wire spu_wen_pcx_7170_sel;
 	dp_mux2es #(2) pcx_7170_mx(
 		.in0(spu_ldstreq_pcx_q[71:70]),
 		.in1(spu_ldstreq_pcx[71:70]),
@@ -133,8 +130,6 @@ module spu_lsurpt1 (
 		.so()
 	);
 	wire reset = ~reset_l;
-	wire spu_ctl_ldxa_data_vld_w2;
-	wire spu_lsu_ldxa_data_vld_w2;
 	dffr_s #(1) ldxa_vld_ff(
 		.din(spu_ctl_ldxa_data_vld_w2),
 		.q(spu_lsu_ldxa_data_vld_w2),
@@ -144,8 +139,6 @@ module spu_lsurpt1 (
 		.si(),
 		.so()
 	);
-	wire spu_ctl_ldxa_illgl_va_w;
-	wire spu_lsu_ldxa_illgl_va_w2;
 	dffr_s #(1) illgl_va_ff(
 		.din(spu_ctl_ldxa_illgl_va_w),
 		.q(spu_lsu_ldxa_illgl_va_w2),
@@ -190,7 +183,6 @@ module spu_lsurpt1 (
 		.so()
 	);
 	assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
-	wire se;
 	dff_s #(2) spu_ifu_ttype_tid_w2_ff(
 		.din(spu_ifu_ttype_tid_w[1:0]),
 		.q(spu_ifu_ttype_tid_w2[1:0]),
@@ -199,8 +191,6 @@ module spu_lsurpt1 (
 		.si(),
 		.so()
 	);
-	wire spu_lsu_unc_error_w;
-	wire spu_lsu_unc_error_w2;
 	dff_s #(1) spu_lsu_unc_error_w2_ff(
 		.din(spu_lsu_unc_error_w),
 		.q(spu_lsu_unc_error_w2),

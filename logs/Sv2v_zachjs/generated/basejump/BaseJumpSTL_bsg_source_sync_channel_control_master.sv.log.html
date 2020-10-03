@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_master.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_master.v</a>
 defines: 
-time_elapsed: 0.501s
-ram usage: 16184 KB
+time_elapsed: 0.596s
+ram usage: 17968 KB
 </pre>
 <pre class="log">
 
@@ -72,7 +72,6 @@ module bsg_source_sync_channel_control_master (
 	reg [tests_lp:0] out_test_pass_n;
 	wire [(((width_p + 1) &gt;&gt; 1) &lt;&lt; 1) - 1:0] inactive_pattern = {(width_p + 1) &gt;&gt; 1 {2&#39;b01}};
 	assign out_override_valid_data_o = out_override_valid_data_r;
-	wire out_override_en_o;
 	assign out_override_en_o = out_override_en_r;
 	assign out_test_pass_r_o = out_test_pass_r[tests_lp:0];
 	reg [4:0] out_calib_code;
@@ -163,8 +162,6 @@ module bsg_source_sync_channel_control_master (
 		end
 	end
 	wire [tests_lp:0] in_phase_X_good;
-	wire in_clk_i;
-	wire out_clk_i;
 	bsg_launch_sync_sync #(.width_p(tests_lp + 1)) in_to_out(
 		.iclk_i(in_clk_i),
 		.iclk_reset_i(1&#39;b0),
@@ -194,7 +191,6 @@ module bsg_source_sync_channel_control_master (
 	reg [(2 * (width_p + 1)) - 1:0] in_consec_neg_pos_match_r;
 	wire in_pos_neg_match = ({in_last_pos_r, in_last_neg_r} + 1&#39;b1) == {in_snoop_valid_data_pos_i, in_snoop_valid_data_neg_i};
 	wire in_neg_pos_match = ({in_last_neg_r, in_last_last_pos_r} + 1&#39;b1) == {in_snoop_valid_data_neg_i, in_last_pos_r};
-	wire out_infinite_credits_o;
 	assign out_infinite_credits_o = out_test_enables[3] | out_test_enables[4];
 	always @(posedge in_clk_i) begin
 		if (in_reset_i) begin

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_credit_to_token.v</a>
 defines: 
-time_elapsed: 0.144s
-ram usage: 13552 KB
+time_elapsed: 0.389s
+ram usage: 13496 KB
 </pre>
 <pre class="log">
 
@@ -44,8 +44,6 @@ module bsg_credit_to_token (
 	wire [step_width_lp - 1:0] down;
 	wire token_ready;
 	wire token_almost_ready;
-	wire clk_i;
-	wire reset_i;
 	bsg_counter_up_down_variable #(
 		.max_val_p(max_val_p),
 		.init_val_p(0),
@@ -65,7 +63,6 @@ module bsg_credit_to_token (
 	assign down = (token_o ? sv2v_cast_2DCAE($unsigned(decimation_p)) : sv2v_cast_2DCAE(0));
 	assign token_ready = count &gt;= decimation_p;
 	assign token_almost_ready = count &gt;= $unsigned(decimation_p - 1);
-	wire token_o;
 	assign token_o = ready_i &amp; (token_ready | (token_almost_ready &amp; credit_i));
 endmodule
 

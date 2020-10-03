@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_byte_banked.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1rw_sync_mask_write_byte_banked.v</a>
 defines: 
-time_elapsed: 0.376s
-ram usage: 14344 KB
+time_elapsed: 0.210s
+ram usage: 14552 KB
 </pre>
 <pre class="log">
 
@@ -59,10 +59,6 @@ module bsg_mem_1rw_sync_mask_write_byte_banked (
 		if (num_depth_bank_p == 1) begin : db1
 			genvar i;
 			for (i = 0; i &lt; num_width_bank_p; i = i + 1) begin : wb
-				wire clk_i;
-				wire reset_i;
-				wire v_i;
-				wire w_i;
 				bsg_mem_1rw_sync_mask_write_byte #(
 					.data_width_p(bank_width_lp),
 					.els_p(bank_depth_lp),
@@ -84,7 +80,6 @@ module bsg_mem_1rw_sync_mask_write_byte_banked (
 			wire [bank_addr_width_lp - 1:0] bank_addr_li = addr_i[depth_bank_idx_width_lp+:bank_addr_width_lp];
 			wire [num_depth_bank_p - 1:0] bank_v_li;
 			wire [(num_depth_bank_p * data_width_p) - 1:0] bank_data_lo;
-			wire v_i;
 			bsg_decode_with_v #(.num_out_p(num_depth_bank_p)) demux_v(
 				.i(depth_bank_idx_li),
 				.v_i(v_i),
@@ -94,9 +89,6 @@ module bsg_mem_1rw_sync_mask_write_byte_banked (
 			for (i = 0; i &lt; num_width_bank_p; i = i + 1) begin : wb
 				genvar j;
 				for (j = 0; j &lt; num_depth_bank_p; j = j + 1) begin : db
-					wire clk_i;
-					wire reset_i;
-					wire w_i;
 					bsg_mem_1rw_sync_mask_write_byte #(
 						.data_width_p(bank_width_lp),
 						.els_p(bank_depth_lp),
@@ -114,7 +106,6 @@ module bsg_mem_1rw_sync_mask_write_byte_banked (
 				end
 			end
 			wire [depth_bank_idx_width_lp - 1:0] depth_bank_idx_r;
-			wire clk_i;
 			bsg_dff_en #(.width_p(depth_bank_idx_width_lp)) depth_bank_idx_dff(
 				.clk_i(clk_i),
 				.en_i(v_i &amp; ~w_i),

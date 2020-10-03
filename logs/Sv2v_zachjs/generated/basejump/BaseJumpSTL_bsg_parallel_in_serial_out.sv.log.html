@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v</a>
 defines: 
-time_elapsed: 0.307s
-ram usage: 14288 KB
+time_elapsed: 0.337s
+ram usage: 14532 KB
 </pre>
 <pre class="log">
 
@@ -28,7 +28,7 @@ module bsg_parallel_in_serial_out (
 	reset_i,
 	valid_i,
 	data_i,
-	ready_o,
+	ready_and_o,
 	valid_o,
 	data_o,
 	yumi_i
@@ -36,91 +36,124 @@ module bsg_parallel_in_serial_out (
 	parameter width_p = -1;
 	parameter els_p = -1;
 	parameter hi_to_lo_p = 0;
+	parameter use_minimal_buffering_p = 0;
 	input clk_i;
 	input reset_i;
 	input valid_i;
 	input [(els_p * width_p) - 1:0] data_i;
-	output ready_o;
+	output ready_and_o;
 	output valid_o;
 	output [width_p - 1:0] data_o;
 	input yumi_i;
-	localparam [0:0] eRX = 0;
-	localparam [0:0] eTX = 1;
+	wire [(els_p * width_p) - 1:0] data_li;
 	generate
-		if (els_p == 1) begin : fifo
-			wire clk_i;
-			wire reset_i;
-			wire ready_o;
-			wire valid_i;
-			wire valid_o;
-			wire yumi_i;
-			bsg_two_fifo #(.width_p(width_p)) two_fifo(
-				.clk_i(clk_i),
-				.reset_i(reset_i),
-				.ready_o(ready_o),
-				.data_i(data_i),
-				.v_i(valid_i),
-				.v_o(valid_o),
-				.data_o(data_o),
-				.yumi_i(yumi_i)
+		if (hi_to_lo_p == 0) begin : lo2hi
+			assign data_li = data_i;
+		end
+		else begin : hi2lo
+			bsg_array_reverse #(
+				.width_p(width_p),
+				.els_p(els_p)
+			) bar(
+				.i(data_i),
+				.o(data_li)
 			);
 		end
+	endgenerate
+	wire fifo0_ready_lo;
+	wire fifo0_v_li;
+	wire fifo_v_lo;
+	wire fifo_yumi_li;
+	wire [(els_p * width_p) - 1:0] fifo_data_lo;
+	generate
+		if (use_minimal_buffering_p == 0) begin : two_fifo
+			bsg_two_fifo #(.width_p(width_p)) fifo0(
+				.clk_i(clk_i),
+				.reset_i(reset_i),
+				.ready_o(fifo0_ready_lo),
+				.data_i(data_li[0+:width_p]),
+				.v_i(fifo0_v_li),
+				.v_o(fifo_v_lo),
+				.data_o(fifo_data_lo[0+:width_p]),
+				.yumi_i(fifo_yumi_li)
+			);
+		end
+		else begin : one_fifo
+			bsg_one_fifo #(.width_p(width_p)) fifo0(
+				.clk_i(clk_i),
+				.reset_i(reset_i),
+				.ready_o(fifo0_ready_lo),
+				.data_i(data_li[0+:width_p]),
+				.v_i(fifo0_v_li),
+				.v_o(fifo_v_lo),
+				.data_o(fifo_data_lo[0+:width_p]),
+				.yumi_i(fifo_yumi_li)
+			);
+		end
+	endgenerate
+	generate
+		if (els_p == 1) begin : bypass
+			assign fifo0_v_li = valid_i;
+			assign ready_and_o = fifo0_ready_lo;
+			assign valid_o = fifo_v_lo;
+			assign data_o = fifo_data_lo;
+			assign fifo_yumi_li = yumi_i;
+		end
 		else begin : piso
+			wire fifo1_ready_lo;
+			wire fifo1_v_li;
+			bsg_one_fifo #(.width_p((els_p - 1) * width_p)) fifo1(
+				.clk_i(clk_i),
+				.reset_i(reset_i),
+				.ready_o(fifo1_ready_lo),
+				.data_i(data_li[width_p * (((els_p - 1) &gt;= 1 ? els_p - 1 : ((els_p - 1) + ((els_p - 1) &gt;= 1 ? els_p - 1 : 3 - els_p)) - 1) - (((els_p - 1) &gt;= 1 ? els_p - 1 : 3 - els_p) - 1))+:width_p * ((els_p - 1) &gt;= 1 ? els_p - 1 : 3 - els_p)]),
+				.v_i(fifo1_v_li),
+				.v_o(),
+				.data_o(fifo_data_lo[width_p * (((els_p - 1) &gt;= 1 ? els_p - 1 : ((els_p - 1) + ((els_p - 1) &gt;= 1 ? els_p - 1 : 3 - els_p)) - 1) - (((els_p - 1) &gt;= 1 ? els_p - 1 : 3 - els_p) - 1))+:width_p * ((els_p - 1) &gt;= 1 ? els_p - 1 : 3 - els_p)]),
+				.yumi_i(fifo_yumi_li)
+			);
+			wire wait_fifo1_r;
+			assign fifo0_v_li = valid_i &amp; ~wait_fifo1_r;
+			assign fifo1_v_li = valid_i;
+			assign ready_and_o = fifo1_ready_lo;
+			if (use_minimal_buffering_p == 0) begin : twobuf
+				bsg_dff_reset_set_clear #(.width_p(1)) wait_fifo1_dff(
+					.clk_i(clk_i),
+					.reset_i(reset_i),
+					.set_i((~wait_fifo1_r &amp; valid_i) &amp; ~fifo1_ready_lo),
+					.clear_i(wait_fifo1_r &amp; fifo1_ready_lo),
+					.data_o(wait_fifo1_r)
+				);
+			end
+			else begin : onebuf
+				assign wait_fifo1_r = 1&#39;b0;
+			end
 			localparam clog2els_lp = $clog2(els_p);
-			reg [0:0] state_r;
-			reg [0:0] state_n;
-			reg [(els_p * width_p) - 1:0] data_r;
-			reg [clog2els_lp - 1:0] shift_ctr_r;
-			wire [clog2els_lp - 1:0] shift_ctr_n;
-			wire done_tx_n;
+			wire [clog2els_lp - 1:0] shift_ctr_r;
 			function automatic [clog2els_lp - 1:0] sv2v_cast_59467;
 				input reg [clog2els_lp - 1:0] inp;
 				sv2v_cast_59467 = inp;
 			endfunction
-			assign done_tx_n = ((state_r == eTX) &amp;&amp; (shift_ctr_r == sv2v_cast_59467(els_p - 1))) &amp;&amp; yumi_i;
-			wire ready_o;
-			assign ready_o = (state_r == eRX) || done_tx_n;
-			always @(posedge clk_i)
-				if (reset_i)
-					state_r &lt;= eRX;
-				else
-					state_r &lt;= state_n;
-			always @(*)
-				if (ready_o &amp; valid_i)
-					state_n = eTX;
-				else if (done_tx_n)
-					state_n = eRX;
-				else
-					state_n = state_r;
-			wire [(els_p * width_p) - 1:0] data_li;
-			if (hi_to_lo_p == 0) begin : lo2hi
-				assign data_li = data_i;
-			end
-			else begin : hi2lo
-				bsg_array_reverse #(
-					.width_p(width_p),
-					.els_p(els_p)
-				) bar(
-					.i(data_i),
-					.o(data_li)
-				);
-			end
-			always @(posedge clk_i)
-				if (reset_i)
-					data_r &lt;= {els_p * width_p {1&#39;sb0}};
-				else if (ready_o &amp; valid_i)
-					data_r &lt;= data_li;
-			always @(posedge clk_i)
-				if (reset_i)
-					shift_ctr_r &lt;= {clog2els_lp {1&#39;sb0}};
-				else if (ready_o &amp; valid_i)
-					shift_ctr_r &lt;= {clog2els_lp {1&#39;sb0}};
-				else
-					shift_ctr_r &lt;= shift_ctr_n;
-			assign shift_ctr_n = (((state_r == eTX) &amp;&amp; yumi_i) &amp;&amp; ~done_tx_n ? shift_ctr_r + 1&#39;b1 : shift_ctr_r);
-			wire valid_o;
-			assign valid_o = state_r == eTX;
-			assign data_o = data_r[shift_ctr_r * width_p+:width_p];
+			assign fifo_yumi_li = (fifo_v_lo &amp;&amp; (shift_ctr_r == sv2v_cast_59467(els_p - 1))) &amp;&amp; yumi_i;
+			bsg_counter_clear_up #(
+				.max_val_p(els_p - 1),
+				.init_val_p(&#39;0)
+			) shift_ctr(
+				.clk_i(clk_i),
+				.reset_i(reset_i),
+				.clear_i(fifo_yumi_li),
+				.up_i((~fifo_yumi_li &amp; fifo_v_lo) &amp; yumi_i),
+				.count_o(shift_ctr_r)
+			);
+			assign valid_o = fifo_v_lo;
+			bsg_mux #(
+				.width_p(width_p),
+				.els_p(els_p)
+			) data_o_mux(
+				.data_i(fifo_data_lo),
+				.sel_i(shift_ctr_r),
+				.data_o(data_o)
+			);
 		end
 	endgenerate
 endmodule

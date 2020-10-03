@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_source_sync_channel_control_slave.v</a>
 defines: 
-time_elapsed: 0.511s
-ram usage: 15700 KB
+time_elapsed: 0.881s
+ram usage: 15288 KB
 </pre>
 <pre class="log">
 
@@ -109,7 +109,6 @@ module bsg_source_sync_channel_control_slave (
 	reg out_override_en_r;
 	reg out_override_en_n;
 	assign out_override_valid_data_o = out_override_valid_data_r;
-	wire out_override_en_o;
 	assign out_override_en_o = out_override_en_r;
 	reg out_reset_r;
 	function automatic [counter_bits_lp - 1:0] sv2v_cast_2CCCC;
@@ -135,13 +134,9 @@ module bsg_source_sync_channel_control_slave (
 	end
 	always @(out_state_r)
 		$display(&#34;## Slave %m entering state %s with in_snoop_valid_data_i %b&#34;, out_state_r.name, in_snoop_valid_data_i);
-	wire out_channel_active_o;
 	assign out_channel_active_o = out_state_r == sActive;
 	wire out_loopback_en = (out_state_r == sPhase3) || (out_state_r == sPhase4);
 	wire out_trigger_mode_alt_en = out_state_r == sPhase4;
-	wire out_clk_i;
-	wire core_clk_i;
-	wire core_loopback_en_o;
 	bsg_launch_sync_sync #(.width_p(1)) out_to_core_lss(
 		.iclk_i(out_clk_i),
 		.iclk_reset_i(1&#39;b0),
@@ -151,7 +146,6 @@ module bsg_source_sync_channel_control_slave (
 		.oclk_data_o(core_loopback_en_o)
 	);
 	wire AWC_ignore;
-	wire in_clk_i;
 	bsg_launch_sync_sync #(.width_p(3)) out_to_in_lss(
 		.iclk_i(out_clk_i),
 		.iclk_reset_i(1&#39;b0),

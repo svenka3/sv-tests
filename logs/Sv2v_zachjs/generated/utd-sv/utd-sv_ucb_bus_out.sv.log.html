@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/ucb_bus_out.v.html" target="file-frame">third_party/tests/utd-sv/ucb_bus_out.v</a>
 defines: 
-time_elapsed: 0.148s
-ram usage: 10656 KB
+time_elapsed: 0.052s
+ram usage: 10648 KB
 </pre>
 <pre class="log">
 
@@ -52,12 +52,8 @@ module ucb_bus_out (
 	wire [REG_WIDTH + 63:0] outdata_buf_next;
 	wire load_outdata;
 	wire shift_outdata;
-	wire vld;
 	assign vld = outdata_vec[0];
 	assign data = outdata_buf[UCB_BUS_WIDTH - 1:0];
-	wire stall;
-	wire clk;
-	wire rst_l;
 	dffrl_ns #(1) stall_d1_ff(
 		.din(stall),
 		.clk(clk),
@@ -65,7 +61,6 @@ module ucb_bus_out (
 		.q(stall_d1)
 	);
 	assign load_outdata = outdata_buf_wr &amp; ~outdata_buf_busy;
-	wire outdata_buf_busy;
 	assign outdata_buf_busy = outdata_vec[0] | stall_d1;
 	assign shift_outdata = outdata_vec[0] &amp; ~stall_d1;
 	assign outdata_vec_next = (load_outdata ? outdata_vec_in : (shift_outdata ? outdata_vec &gt;&gt; 1 : outdata_vec));

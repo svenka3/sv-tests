@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sparc_exu_aluaddsub.v.html" target="file-frame">third_party/tests/utd-sv/sparc_exu_aluaddsub.v</a>
 defines: 
-time_elapsed: 0.186s
-ram usage: 10296 KB
+time_elapsed: 0.088s
+ram usage: 10300 KB
 </pre>
 <pre class="log">
 
@@ -55,8 +55,6 @@ module sparc_exu_aluaddsub (
 	wire [63:0] subtract_e;
 	wire cout64_e;
 	assign subtract_d[63:0] = {64 {ifu_exu_invert_d}};
-	wire clk;
-	wire se;
 	dff_s #(64) sub_dff(
 		.din(subtract_d[63:0]),
 		.clk(clk),
@@ -67,12 +65,8 @@ module sparc_exu_aluaddsub (
 	);
 	assign rs1_data[63:0] = byp_alu_rs1_data_e[63:0];
 	assign rs2_data[63:0] = byp_alu_rs2_data_e[63:0] ^ subtract_e[63:0];
-	wire alu_ecl_adderin2_63_e;
 	assign alu_ecl_adderin2_63_e = rs2_data[63];
-	wire alu_ecl_adderin2_31_e;
 	assign alu_ecl_adderin2_31_e = rs2_data[31];
-	wire ecl_alu_cin_e;
-	wire alu_ecl_cout32_e;
 	sparc_exu_aluadder64 adder(
 		.rs1_data(rs1_data[63:0]),
 		.rs2_data(rs2_data[63:0]),
@@ -81,7 +75,6 @@ module sparc_exu_aluaddsub (
 		.cout32(alu_ecl_cout32_e),
 		.cout64(cout64_e)
 	);
-	wire alu_ecl_cout64_e_l;
 	assign alu_ecl_cout64_e_l = ~cout64_e;
 	sparc_exu_aluspr spr(
 		.rs1_data(rs1_data[63:0]),

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/hdlconvertor/tests/verilog/sram.v.html" target="file-frame">third_party/tests/hdlconvertor/tests/verilog/sram.v</a>
 defines: 
-time_elapsed: 0.012s
-ram usage: 10712 KB
+time_elapsed: 0.013s
+ram usage: 10760 KB
 </pre>
 <pre class="log">
 
@@ -44,22 +44,22 @@ event:
     %i_write.prb = prb i8$ %i_write
     %6 = const i8 0
     %7 = neq i8 %i_write.prb, %6
+    %8 = const time 0s 1d
     %i_addr.prb = prb i8$ %i_addr
-    %8 = [256 x i8 %6]
-    %9 = const time 0s 1d
+    %9 = [256 x i8 %6]
     br %7, %if_false, %if_true
 if_true:
-    %10 = sig [256 x i8] %8
+    %10 = sig [256 x i8] %9
     %11 = shr [256 x i8]$ %memory_array, [256 x i8]$ %10, i8 %i_addr.prb
     %12 = extf i8$, [256 x i8]$ %11, 0
     %i_data.prb = prb i8$ %i_data
-    drv i8$ %12, %i_data.prb, %9
+    drv i8$ %12, %i_data.prb, %8
     br %0
 if_false:
     %memory_array.shadow.ld = ld [256 x i8]* %memory_array.shadow
-    %13 = shr [256 x i8] %memory_array.shadow.ld, [256 x i8] %8, i8 %i_addr.prb
+    %13 = shr [256 x i8] %memory_array.shadow.ld, [256 x i8] %9, i8 %i_addr.prb
     %14 = extf i8, [256 x i8] %13, 0
-    drv i8$ %o_data, %14, %9
+    drv i8$ %o_data, %14, %8
     br %0
 }
 

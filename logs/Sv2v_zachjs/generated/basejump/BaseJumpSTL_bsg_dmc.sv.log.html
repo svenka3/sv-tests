@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc.v</a>
 defines: 
-time_elapsed: 0.338s
-ram usage: 16076 KB
+time_elapsed: 0.430s
+ram usage: 15816 KB
 </pre>
 <pre class="log">
 
@@ -173,7 +173,6 @@ module bsg_dmc (
 	wire dfi_rddata_valid;
 	wire [dq_group_lp - 1:0] dqs_p_li;
 	assign device_temp_o = 12&#39;d0;
-	wire dfi_clk_2x_i;
 	bsg_dmc_clk_rst_gen #(
 		.num_adgs_p(num_adgs_p),
 		.num_lines_p(dq_group_lp)
@@ -188,10 +187,7 @@ module bsg_dmc (
 		.clk_2x_i(dfi_clk_2x_i),
 		.clk_1x_o(dfi_clk_1x_lo)
 	);
-	wire dfi_clk_1x_o;
 	assign dfi_clk_1x_o = dfi_clk_1x_lo;
-	wire ui_clk_i;
-	wire sys_reset_i;
 	bsg_sync_sync #(.width_p(1)) ui_reset_inst(
 		.oclk_i(ui_clk_i),
 		.iclk_data_i(sys_reset_i),
@@ -202,22 +198,7 @@ module bsg_dmc (
 		.iclk_data_i(sys_reset_i),
 		.oclk_data_o(dfi_reset)
 	);
-	wire ui_clk_sync_rst_o;
 	assign ui_clk_sync_rst_o = ui_reset;
-	wire app_en_i;
-	wire app_rdy_o;
-	wire app_wdf_wren_i;
-	wire app_wdf_end_i;
-	wire app_wdf_rdy_o;
-	wire app_rd_data_valid_o;
-	wire app_rd_data_end_o;
-	wire app_ref_req_i;
-	wire app_ref_ack_o;
-	wire app_zq_req_i;
-	wire app_zq_ack_o;
-	wire app_sr_req_i;
-	wire app_sr_active_o;
-	wire init_calib_complete_o;
 	bsg_dmc_controller #(
 		.ui_addr_width_p(ui_addr_width_p),
 		.ui_data_width_p(ui_data_width_p),
@@ -266,15 +247,6 @@ module bsg_dmc (
 		.dmc_p_i(dmc_p_i),
 		.init_calib_complete_o(init_calib_complete_o)
 	);
-	wire ddr_ck_p_o;
-	wire ddr_ck_n_o;
-	wire ddr_cke_o;
-	wire ddr_cs_n_o;
-	wire ddr_ras_n_o;
-	wire ddr_cas_n_o;
-	wire ddr_we_n_o;
-	wire ddr_reset_n_o;
-	wire ddr_odt_o;
 	bsg_dmc_phy #(.dq_data_width_p(dq_data_width_p)) phy(
 		.dfi_clk_1x_i(dfi_clk_1x_lo),
 		.dfi_clk_2x_i(dfi_clk_2x_i),

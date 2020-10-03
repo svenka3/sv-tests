@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_sync_mask_write_var.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_mem/bsg_mem_1r1w_sync_mask_write_var.v</a>
 defines: 
-time_elapsed: 0.326s
-ram usage: 13616 KB
+time_elapsed: 0.380s
+ram usage: 13584 KB
 </pre>
 <pre class="log">
 
@@ -54,26 +54,21 @@ module bsg_mem_1r1w_sync_mask_write_var (
 		;
 	genvar i;
 	generate
-		for (i = 0; i &lt; chunk_size_lp; i = i + 1) begin
-			wire clk_i;
-			wire reset_i;
-			wire r_v_i;
-			bsg_mem_1r1w_sync #(
-				.width_p(mask_width_p),
-				.els_p(els_p),
-				.read_write_same_addr_p(read_write_same_addr_p),
-				.harden_p(harden_p)
-			) mem(
-				.clk_i(clk_i),
-				.reset_i(reset_i),
-				.w_v_i(w_v_i &amp; w_mask_i[i * mask_width_p]),
-				.w_addr_i(w_addr_i),
-				.w_data_i(w_data_i[((i + 1) * mask_width_p) - 1:i * mask_width_p]),
-				.r_v_i(r_v_i),
-				.r_addr_i(r_addr_i),
-				.r_data_o(r_data_o[((i + 1) * mask_width_p) - 1:i * mask_width_p])
-			);
-		end
+		for (i = 0; i &lt; chunk_size_lp; i = i + 1) bsg_mem_1r1w_sync #(
+			.width_p(mask_width_p),
+			.els_p(els_p),
+			.read_write_same_addr_p(read_write_same_addr_p),
+			.harden_p(harden_p)
+		) mem(
+			.clk_i(clk_i),
+			.reset_i(reset_i),
+			.w_v_i(w_v_i &amp; w_mask_i[i * mask_width_p]),
+			.w_addr_i(w_addr_i),
+			.w_data_i(w_data_i[((i + 1) * mask_width_p) - 1:i * mask_width_p]),
+			.r_v_i(r_v_i),
+			.r_addr_i(r_addr_i),
+			.r_data_o(r_data_o[((i + 1) * mask_width_p) - 1:i * mask_width_p])
+		);
 	endgenerate
 endmodule
 

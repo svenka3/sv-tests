@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/lsu_qdp1.v.html" target="file-frame">third_party/tests/utd-sv/lsu_qdp1.v</a>
 defines: 
-time_elapsed: 0.715s
-ram usage: 29264 KB
+time_elapsed: 1.139s
+ram usage: 28948 KB
 </pre>
 <pre class="log">
 
@@ -352,7 +352,6 @@ module lsu_qdp1 (
 	wire lmq0_pcx_pkt_vld;
 	assign lmq0_pcx_pkt_vld = lmq0_pcx_pkt_tmp[64] &amp; ~lsu_ld0_spec_vld_kill_w2;
 	assign lmq0_pcx_pkt[64:0] = {lmq0_pcx_pkt_vld, lmq0_pcx_pkt_tmp[63:44], lmq0_pcx_pkt_way[1:0], lmq0_pcx_pkt_tmp[41:0]};
-	wire ld_sec_hit_thrd0;
 	assign ld_sec_hit_thrd0 = ld_pcx_pkt_g_tmp[39:4] == lmq0_pcx_pkt[39:4];
 	wire lmq1_clk;
 	clken_buf lmq1_clkbuf(
@@ -373,7 +372,6 @@ module lsu_qdp1 (
 	wire lmq1_pcx_pkt_vld;
 	assign lmq1_pcx_pkt_vld = lmq1_pcx_pkt_tmp[64] &amp; ~lsu_ld1_spec_vld_kill_w2;
 	assign lmq1_pcx_pkt[64:0] = {lmq1_pcx_pkt_vld, lmq1_pcx_pkt_tmp[63:44], lmq1_pcx_pkt_way[1:0], lmq1_pcx_pkt_tmp[41:0]};
-	wire ld_sec_hit_thrd1;
 	assign ld_sec_hit_thrd1 = ld_pcx_pkt_g_tmp[39:4] == lmq1_pcx_pkt[39:4];
 	wire lmq2_clk;
 	clken_buf lmq2_clkbuf(
@@ -394,7 +392,6 @@ module lsu_qdp1 (
 	wire lmq2_pcx_pkt_vld;
 	assign lmq2_pcx_pkt_vld = lmq2_pcx_pkt_tmp[64] &amp; ~lsu_ld2_spec_vld_kill_w2;
 	assign lmq2_pcx_pkt[64:0] = {lmq2_pcx_pkt_vld, lmq2_pcx_pkt_tmp[63:44], lmq2_pcx_pkt_way[1:0], lmq2_pcx_pkt_tmp[41:0]};
-	wire ld_sec_hit_thrd2;
 	assign ld_sec_hit_thrd2 = ld_pcx_pkt_g_tmp[39:4] == lmq2_pcx_pkt[39:4];
 	wire lmq3_clk;
 	clken_buf lmq3_clkbuf(
@@ -415,7 +412,6 @@ module lsu_qdp1 (
 	wire lmq3_pcx_pkt_vld;
 	assign lmq3_pcx_pkt_vld = lmq3_pcx_pkt_tmp[64] &amp; ~lsu_ld3_spec_vld_kill_w2;
 	assign lmq3_pcx_pkt[64:0] = {lmq3_pcx_pkt_vld, lmq3_pcx_pkt_tmp[63:44], lmq3_pcx_pkt_way[1:0], lmq3_pcx_pkt_tmp[41:0]};
-	wire ld_sec_hit_thrd3;
 	assign ld_sec_hit_thrd3 = ld_pcx_pkt_g_tmp[39:4] == lmq3_pcx_pkt[39:4];
 	mux4ds #(65) lmq_pthrd_sel(
 		.in0(lmq0_pcx_pkt[64:0]),
@@ -428,15 +424,10 @@ module lsu_qdp1 (
 		.sel3(ld_pcx_rq_sel[3]),
 		.dout(load_pcx_pkt[64:0])
 	);
-	wire lsu_pref_pcx_req;
 	assign lsu_pref_pcx_req = load_pcx_pkt[62];
-	wire lmq0_ldd_vld;
 	assign lmq0_ldd_vld = lmq0_pcx_pkt[53];
-	wire lmq1_ldd_vld;
 	assign lmq1_ldd_vld = lmq1_pcx_pkt[53];
-	wire lmq2_ldd_vld;
 	assign lmq2_ldd_vld = lmq2_pcx_pkt[53];
-	wire lmq3_ldd_vld;
 	assign lmq3_ldd_vld = lmq3_pcx_pkt[53];
 	assign lmq0_pcx_pkt_addr[10:0] = lmq0_pcx_pkt[10:0];
 	assign lmq1_pcx_pkt_addr[10:0] = lmq1_pcx_pkt[10:0];
@@ -446,21 +437,13 @@ module lsu_qdp1 (
 	assign lmq1_ld_rq_type[2:0] = lmq1_pcx_pkt[47:45];
 	assign lmq2_ld_rq_type[2:0] = lmq2_pcx_pkt[47:45];
 	assign lmq3_ld_rq_type[2:0] = lmq3_pcx_pkt[47:45];
-	wire lmq0_l2fill_fpld;
 	assign lmq0_l2fill_fpld = lmq0_pcx_pkt[61];
-	wire lmq1_l2fill_fpld;
 	assign lmq1_l2fill_fpld = lmq1_pcx_pkt[61];
-	wire lmq2_l2fill_fpld;
 	assign lmq2_l2fill_fpld = lmq2_pcx_pkt[61];
-	wire lmq3_l2fill_fpld;
 	assign lmq3_l2fill_fpld = lmq3_pcx_pkt[61];
-	wire lmq0_ncache_ld;
 	assign lmq0_ncache_ld = lmq0_pcx_pkt[44];
-	wire lmq1_ncache_ld;
 	assign lmq1_ncache_ld = lmq1_pcx_pkt[44];
-	wire lmq2_ncache_ld;
 	assign lmq2_ncache_ld = lmq2_pcx_pkt[44];
-	wire lmq3_ncache_ld;
 	assign lmq3_ncache_ld = lmq3_pcx_pkt[44];
 	mux4ds #(42) lmq_dthrd_sel1(
 		.in0({lmq0_pcx_pkt[39:0], lmq0_pcx_pkt[41:40]}),
@@ -884,7 +867,6 @@ module lsu_qdp1 (
 		.so()
 	);
 	wire asi_data_clk;
-	wire lsu_ifu_asi_data_en_l;
 	clken_buf asid_clkbuf(
 		.rclk(clk),
 		.enb_l(lsu_ifu_asi_data_en_l),
@@ -915,7 +897,6 @@ module lsu_qdp1 (
 		.sel3(lsu_diagnstc_data_sel_1hot[3]),
 		.dout(lsu_diagnstc_wr_data_e[63:0])
 	);
-	wire lsu_diagnstc_wr_data_b0;
 	assign lsu_diagnstc_wr_data_b0 = lsu_diagnstc_wr_data_e[0];
 	assign lsu_tlu_st_rs3_data_g[47:3] = tlb_st_data_d1[47:3];
 	assign lsu_mmu_rs3_data_g[63:0] = tlb_st_data_d1[63:0];
@@ -962,7 +943,6 @@ module lsu_qdp1 (
 	);
 	wire [63:0] cache_rdata_w;
 	wire [63:0] cache_rdata_w2;
-	wire lsu_dcache_iob_rd_w;
 	mux2ds #(64) cacherd_sel(
 		.in0(ifu_lsu_ldxa_data_w2[63:0]),
 		.in1(lsu_dcache_rdata_w[63:0]),
@@ -1055,7 +1035,6 @@ module lsu_qdp1 (
 	);
 	wire va_wtchpt0_clk;
 	wire [47:3] va_wtchpt0_addr;
-	wire lsu_va_wtchpt0_wr_en_l;
 	clken_buf clkbf_va_wtchpt0(
 		.rclk(clk),
 		.enb_l(lsu_va_wtchpt0_wr_en_l),
@@ -1072,7 +1051,6 @@ module lsu_qdp1 (
 	);
 	wire va_wtchpt1_clk;
 	wire [47:3] va_wtchpt1_addr;
-	wire lsu_va_wtchpt1_wr_en_l;
 	clken_buf clkbf_va_wtchpt1(
 		.rclk(clk),
 		.enb_l(lsu_va_wtchpt1_wr_en_l),
@@ -1089,7 +1067,6 @@ module lsu_qdp1 (
 	);
 	wire va_wtchpt2_clk;
 	wire [47:3] va_wtchpt2_addr;
-	wire lsu_va_wtchpt2_wr_en_l;
 	clken_buf clkbf_va_wtchpt2(
 		.rclk(clk),
 		.enb_l(lsu_va_wtchpt2_wr_en_l),
@@ -1106,7 +1083,6 @@ module lsu_qdp1 (
 	);
 	wire va_wtchpt3_clk;
 	wire [47:3] va_wtchpt3_addr;
-	wire lsu_va_wtchpt3_wr_en_l;
 	clken_buf clkbf_va_wtchpt3(
 		.rclk(clk),
 		.enb_l(lsu_va_wtchpt3_wr_en_l),
@@ -1122,10 +1098,6 @@ module lsu_qdp1 (
 		.so()
 	);
 	wire [47:3] va_wtchpt_addr;
-	wire thread0_m;
-	wire thread1_m;
-	wire thread2_m;
-	wire thread3_m;
 	mux4ds #(45) va_wtchpt_mx_m(
 		.in0(va_wtchpt0_addr[47:3]),
 		.in1(va_wtchpt1_addr[47:3]),
@@ -1148,9 +1120,7 @@ module lsu_qdp1 (
 		.sel3(thread3_g),
 		.dout(lsu_va_wtchpt_addr[47:3])
 	);
-	wire lsu_va_match_b47_b32_m;
 	assign lsu_va_match_b47_b32_m = lsu_ldst_va_m[47:32] == va_wtchpt_addr[47:32];
-	wire lsu_va_match_b31_b3_m;
 	assign lsu_va_match_b31_b3_m = lsu_ldst_va_m[31:3] == va_wtchpt_addr[31:3];
 	wire [63:0] l2fill_data_m;
 	assign l2fill_data_m[63:0] = lsu_l2fill_data[63:0];

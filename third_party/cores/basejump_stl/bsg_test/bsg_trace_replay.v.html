@@ -224,7 +224,8 @@
 <a href="#l-216">216</a>
 <a href="#l-217">217</a>
 <a href="#l-218">218</a>
-<a href="#l-219">219</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="no">`include</span> <span class="s">&quot;bsg_defines.v&quot;</span>
+<a href="#l-219">219</a>
+<a href="#l-220">220</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="no">`include</span> <span class="s">&quot;bsg_defines.v&quot;</span>
 <a name="l-2"></a>
 <a name="l-3"></a><span class="c1">// MBT 11/26/2014,      bsg_fsb_node_trace_replay</span>
 <a name="l-4"></a><span class="c1">// Shaolin 01/06/2018,  generalized from the bsg_trace_replay</span>
@@ -385,64 +386,65 @@
 <a name="l-159"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-160"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">instr_completed</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">reset_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">done_r</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-161"></a>             <span class="k">case</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
-<a name="l-162"></a>               <span class="nl">eSend:</span> <span class="k">begin</span>
-<a name="l-163"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-164"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay SEND %d&#39;b%b (%m)&quot;</span><span class="p">,</span> <span class="n">payload_width_p</span><span class="p">,</span><span class="n">data_o</span><span class="p">);</span>
-<a name="l-165"></a>                    <span class="k">end</span>
-<a name="l-166"></a>               <span class="k">end</span>
-<a name="l-167"></a>               <span class="nl">eReceive:</span> <span class="k">begin</span>
-<a name="l-168"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">data_i</span> <span class="o">!==</span> <span class="n">data_o</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-169"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
-<a name="l-170"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay RECEIVE unmatched (%m) &quot;</span><span class="p">);</span>
-<a name="l-171"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###    &quot;</span><span class="p">);</span>
-<a name="l-172"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### FAIL (trace mismatch) = %h&quot;</span><span class="p">,</span> <span class="n">data_i</span><span class="p">);</span>
-<a name="l-173"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###              expected = %h</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">data_o</span><span class="p">);</span>
-<a name="l-174"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
-<a name="l-175"></a>                         <span class="k">if</span> <span class="p">(</span><span class="n">finish_on_error_p</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-176"></a>                              <span class="p">$</span><span class="n">finish</span><span class="p">();</span>
-<a name="l-177"></a>                         <span class="k">end</span>
-<a name="l-178"></a>                    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-179"></a>                         <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-180"></a>                              <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay RECEIVE matched %h (%m)&quot;</span><span class="p">,</span> <span class="n">data_o</span><span class="p">);</span>
-<a name="l-181"></a>                         <span class="k">end</span>
-<a name="l-182"></a>                    <span class="k">end</span> <span class="c1">// else: !if(data_i != data_o)</span>
-<a name="l-183"></a>               <span class="k">end</span>
-<a name="l-184"></a>               <span class="nl">eDone:</span> <span class="k">begin</span>
-<a name="l-185"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-186"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
-<a name="l-187"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###### bsg_trace_replay DONE done_o=1 (trace finished addr=%x) (%m)&quot;</span><span class="p">,</span><span class="n">rom_addr_o</span><span class="p">);</span>
-<a name="l-188"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
-<a name="l-189"></a>                    <span class="k">end</span>
-<a name="l-190"></a>               <span class="k">end</span>
-<a name="l-191"></a>               <span class="nl">eFinish:</span> <span class="k">begin</span>
-<a name="l-192"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-193"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
-<a name="l-194"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###### bsg_trace_replay FINISH (trace finished; CALLING $finish) (%m)&quot;</span><span class="p">);</span>
-<a name="l-195"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
-<a name="l-196"></a>                    <span class="k">end</span>
-<a name="l-197"></a>                    <span class="p">$</span><span class="n">finish</span><span class="p">;</span>
-<a name="l-198"></a>               <span class="k">end</span>
-<a name="l-199"></a>               <span class="nl">eCycleDec:</span> <span class="k">begin</span>
-<a name="l-200"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-201"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay CYCLE DEC cycle_ctr_r = %x (%m)&quot;</span><span class="p">,</span><span class="n">cycle_ctr_r</span><span class="p">);</span>
-<a name="l-202"></a>                    <span class="k">end</span>
-<a name="l-203"></a>               <span class="k">end</span>
-<a name="l-204"></a>               <span class="nl">eCycleInit:</span> <span class="k">begin</span>
-<a name="l-205"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-206"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay CYCLE INIT = %x (%m)&quot;</span><span class="p">,</span><span class="n">cycle_ctr_n</span><span class="p">);</span>
-<a name="l-207"></a>                    <span class="k">end</span>
-<a name="l-208"></a>               <span class="k">end</span>
-<a name="l-209"></a>               <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-210"></a>                    <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay UNKNOWN op %x (%m)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">op</span><span class="p">);</span>
-<a name="l-211"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">finish_on_error_p</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-212"></a>                         <span class="p">$</span><span class="n">finish</span><span class="p">();</span>
-<a name="l-213"></a>                    <span class="k">end</span>
-<a name="l-214"></a>               <span class="k">end</span>
-<a name="l-215"></a>             <span class="k">endcase</span> <span class="c1">// case (op)</span>
-<a name="l-216"></a>        <span class="k">end</span> <span class="c1">// if (instr_completed &amp; ~reset_i &amp; ~done_r)</span>
-<a name="l-217"></a>   <span class="k">end</span> <span class="c1">// always @ (negedge clk_i)</span>
-<a name="l-218"></a>
-<a name="l-219"></a><span class="k">endmodule</span>
+<a name="l-162"></a>               <span class="nl">eNop:</span> <span class="k">begin</span> <span class="k">end</span>
+<a name="l-163"></a>               <span class="nl">eSend:</span> <span class="k">begin</span>
+<a name="l-164"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-165"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay SEND %d&#39;b%b (%m)&quot;</span><span class="p">,</span> <span class="n">payload_width_p</span><span class="p">,</span><span class="n">data_o</span><span class="p">);</span>
+<a name="l-166"></a>                    <span class="k">end</span>
+<a name="l-167"></a>               <span class="k">end</span>
+<a name="l-168"></a>               <span class="nl">eReceive:</span> <span class="k">begin</span>
+<a name="l-169"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">data_i</span> <span class="o">!==</span> <span class="n">data_o</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-170"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
+<a name="l-171"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay RECEIVE unmatched (%m) &quot;</span><span class="p">);</span>
+<a name="l-172"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###    &quot;</span><span class="p">);</span>
+<a name="l-173"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### FAIL (trace mismatch) = %h&quot;</span><span class="p">,</span> <span class="n">data_i</span><span class="p">);</span>
+<a name="l-174"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###              expected = %h</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">data_o</span><span class="p">);</span>
+<a name="l-175"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
+<a name="l-176"></a>                         <span class="k">if</span> <span class="p">(</span><span class="n">finish_on_error_p</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-177"></a>                              <span class="p">$</span><span class="n">finish</span><span class="p">();</span>
+<a name="l-178"></a>                         <span class="k">end</span>
+<a name="l-179"></a>                    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-180"></a>                         <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-181"></a>                              <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay RECEIVE matched %h (%m)&quot;</span><span class="p">,</span> <span class="n">data_o</span><span class="p">);</span>
+<a name="l-182"></a>                         <span class="k">end</span>
+<a name="l-183"></a>                    <span class="k">end</span> <span class="c1">// else: !if(data_i != data_o)</span>
+<a name="l-184"></a>               <span class="k">end</span>
+<a name="l-185"></a>               <span class="nl">eDone:</span> <span class="k">begin</span>
+<a name="l-186"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-187"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
+<a name="l-188"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###### bsg_trace_replay DONE done_o=1 (trace finished addr=%x) (%m)&quot;</span><span class="p">,</span><span class="n">rom_addr_o</span><span class="p">);</span>
+<a name="l-189"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
+<a name="l-190"></a>                    <span class="k">end</span>
+<a name="l-191"></a>               <span class="k">end</span>
+<a name="l-192"></a>               <span class="nl">eFinish:</span> <span class="k">begin</span>
+<a name="l-193"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-194"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
+<a name="l-195"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;###### bsg_trace_replay FINISH (trace finished; CALLING $finish) (%m)&quot;</span><span class="p">);</span>
+<a name="l-196"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;############################################################################&quot;</span><span class="p">);</span>
+<a name="l-197"></a>                    <span class="k">end</span>
+<a name="l-198"></a>                    <span class="p">$</span><span class="n">finish</span><span class="p">;</span>
+<a name="l-199"></a>               <span class="k">end</span>
+<a name="l-200"></a>               <span class="nl">eCycleDec:</span> <span class="k">begin</span>
+<a name="l-201"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-202"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay CYCLE DEC cycle_ctr_r = %x (%m)&quot;</span><span class="p">,</span><span class="n">cycle_ctr_r</span><span class="p">);</span>
+<a name="l-203"></a>                    <span class="k">end</span>
+<a name="l-204"></a>               <span class="k">end</span>
+<a name="l-205"></a>               <span class="nl">eCycleInit:</span> <span class="k">begin</span>
+<a name="l-206"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">debug_p</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-207"></a>                         <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay CYCLE INIT = %x (%m)&quot;</span><span class="p">,</span><span class="n">cycle_ctr_n</span><span class="p">);</span>
+<a name="l-208"></a>                    <span class="k">end</span>
+<a name="l-209"></a>               <span class="k">end</span>
+<a name="l-210"></a>               <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-211"></a>                    <span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;### bsg_trace_replay UNKNOWN op %x (%m)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">op</span><span class="p">);</span>
+<a name="l-212"></a>                    <span class="k">if</span> <span class="p">(</span><span class="n">finish_on_error_p</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-213"></a>                         <span class="p">$</span><span class="n">finish</span><span class="p">();</span>
+<a name="l-214"></a>                    <span class="k">end</span>
+<a name="l-215"></a>               <span class="k">end</span>
+<a name="l-216"></a>             <span class="k">endcase</span> <span class="c1">// case (op)</span>
+<a name="l-217"></a>        <span class="k">end</span> <span class="c1">// if (instr_completed &amp; ~reset_i &amp; ~done_r)</span>
+<a name="l-218"></a>   <span class="k">end</span> <span class="c1">// always @ (negedge clk_i)</span>
+<a name="l-219"></a>
+<a name="l-220"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

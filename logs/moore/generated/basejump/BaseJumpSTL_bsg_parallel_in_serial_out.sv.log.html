@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-passed">
+<pre class="test-failed">
 description: Tests imported from basejump
-rc: 0 (means success: 1)
+rc: 1 (means success: 0)
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dataflow
 top_module: 
@@ -17,262 +17,18 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v</a>
 defines: 
-time_elapsed: 0.012s
-ram usage: 11712 KB
+time_elapsed: 0.011s
+ram usage: 11212 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_dataflow -e bsg_parallel_in_serial_out <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v</a>
-proc %bsg_parallel_in_serial_out.always_ff.771.0 (i1$ %clk_i, i1$ %reset_i, i1$ %state_n) -&gt; (i1$ %state_r) {
-init:
-    %clk_i.prb = prb i1$ %clk_i
-    wait %check, %clk_i
-check:
-    %clk_i.prb1 = prb i1$ %clk_i
-    %0 = const i1 0
-    %1 = eq i1 %clk_i.prb, %0
-    %2 = neq i1 %clk_i.prb1, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %reset_i.prb = prb i1$ %reset_i
-    %3 = neq i1 %reset_i.prb, %0
-    %4 = const time 0s 1d
-    br %3, %if_false, %if_true
-if_true:
-    drv i1$ %state_r, %0, %4
-    br %init
-if_false:
-    %state_n.prb = prb i1$ %state_n
-    drv i1$ %state_r, %state_n.prb, %4
-    br %init
-}
+error: `bsg_two_fifo` not found
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v.html#l-70" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_parallel_in_serial_out.v:70</a>:9-21:
+   | 
+   |         bsg_two_fifo
+   |         ^^^^^^^^^^^^
 
-proc %bsg_parallel_in_serial_out.always_comb.825.0 (i1$ %valid_i, [3 x i3]$ %ready_o, i1$ %state_r, i1$ %done_tx_n) -&gt; (i1$ %state_n) {
-body:
-    %0 = const i9 0
-    %ready_o.prb = prb [3 x i3]$ %ready_o
-    %1 = const i3 0
-    %2 = [3 x i3 %1]
-    %3 = exts [2 x i3], [3 x i3] %2, 0, 2
-    %4 = exts [1 x i3], [3 x i3] %ready_o.prb, 2, 1
-    %5 = inss [3 x i3] %2, [2 x i3] %3, 1, 2
-    %6 = inss [3 x i3] %5, [1 x i3] %4, 0, 1
-    %7 = extf i3, [3 x i3] %6, 0
-    %8 = inss i9 %0, i3 %7, 0, 3
-    %9 = exts [1 x i3], [3 x i3] %2, 0, 1
-    %10 = exts [2 x i3], [3 x i3] %ready_o.prb, 1, 2
-    %11 = inss [3 x i3] %2, [1 x i3] %9, 2, 1
-    %12 = inss [3 x i3] %11, [2 x i3] %10, 0, 2
-    %13 = extf i3, [3 x i3] %12, 0
-    %14 = inss i9 %8, i3 %13, 3, 3
-    %15 = extf i3, [3 x i3] %ready_o.prb, 0
-    %concat = inss i9 %14, i3 %15, 6, 3
-    %valid_i.prb = prb i1$ %valid_i
-    %zext = inss i9 %0, i1 %valid_i.prb, 0, 1
-    %16 = and i9 %concat, %zext
-    %17 = neq i9 %16, %0
-    %18 = const time 0s 1e
-    br %17, %if_false, %if_true
-check:
-    wait %body, %valid_i, %ready_o, %state_r, %done_tx_n
-if_true:
-    %19 = const i1 1
-    drv i1$ %state_n, %19, %18
-    br %check
-if_false:
-    %done_tx_n.prb = prb i1$ %done_tx_n
-    %20 = const i1 0
-    %21 = neq i1 %done_tx_n.prb, %20
-    br %21, %if_false1, %if_true1
-if_true1:
-    drv i1$ %state_n, %20, %18
-    br %check
-if_false1:
-    %state_r.prb = prb i1$ %state_r
-    drv i1$ %state_n, %state_r.prb, %18
-    br %check
-}
-
-proc %bsg_parallel_in_serial_out.always_ff.930.0 (i1$ %clk_i, i1$ %reset_i, i1$ %valid_i, [3 x i3]$ %ready_o, [3 x i3]$ %data_li) -&gt; ([3 x i3]$ %data_r) {
-init:
-    %clk_i.prb = prb i1$ %clk_i
-    wait %check, %clk_i
-check:
-    %clk_i.prb1 = prb i1$ %clk_i
-    %0 = const i1 0
-    %1 = eq i1 %clk_i.prb, %0
-    %2 = neq i1 %clk_i.prb1, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %reset_i.prb = prb i1$ %reset_i
-    %3 = neq i1 %reset_i.prb, %0
-    %4 = const i3 0
-    %5 = const time 0s 1d
-    br %3, %if_false, %if_true
-if_true:
-    %6 = [i3 %4, %4, %4]
-    drv [3 x i3]$ %data_r, %6, %5
-    br %init
-if_false:
-    %7 = const i9 0
-    %ready_o.prb = prb [3 x i3]$ %ready_o
-    %8 = [3 x i3 %4]
-    %9 = exts [2 x i3], [3 x i3] %8, 0, 2
-    %10 = exts [1 x i3], [3 x i3] %ready_o.prb, 2, 1
-    %11 = inss [3 x i3] %8, [2 x i3] %9, 1, 2
-    %12 = inss [3 x i3] %11, [1 x i3] %10, 0, 1
-    %13 = extf i3, [3 x i3] %12, 0
-    %14 = inss i9 %7, i3 %13, 0, 3
-    %15 = exts [1 x i3], [3 x i3] %8, 0, 1
-    %16 = exts [2 x i3], [3 x i3] %ready_o.prb, 1, 2
-    %17 = inss [3 x i3] %8, [1 x i3] %15, 2, 1
-    %18 = inss [3 x i3] %17, [2 x i3] %16, 0, 2
-    %19 = extf i3, [3 x i3] %18, 0
-    %20 = inss i9 %14, i3 %19, 3, 3
-    %21 = extf i3, [3 x i3] %ready_o.prb, 0
-    %concat = inss i9 %20, i3 %21, 6, 3
-    %valid_i.prb = prb i1$ %valid_i
-    %zext = inss i9 %7, i1 %valid_i.prb, 0, 1
-    %22 = and i9 %concat, %zext
-    %23 = neq i9 %22, %7
-    br %23, %init, %if_true1
-if_true1:
-    %data_li.prb = prb [3 x i3]$ %data_li
-    drv [3 x i3]$ %data_r, %data_li.prb, %5
-    br %init
-}
-
-proc %bsg_parallel_in_serial_out.always_ff.981.0 (i1$ %clk_i, i1$ %reset_i, i1$ %valid_i, [3 x i3]$ %ready_o, i2$ %shift_ctr_n) -&gt; (i2$ %shift_ctr_r) {
-init:
-    %clk_i.prb = prb i1$ %clk_i
-    wait %check, %clk_i
-check:
-    %clk_i.prb1 = prb i1$ %clk_i
-    %0 = const i1 0
-    %1 = eq i1 %clk_i.prb, %0
-    %2 = neq i1 %clk_i.prb1, %0
-    %posedge = and i1 %1, %2
-    br %posedge, %init, %event
-event:
-    %reset_i.prb = prb i1$ %reset_i
-    %3 = neq i1 %reset_i.prb, %0
-    %4 = const i2 0
-    %5 = const time 0s 1d
-    br %3, %if_false, %if_true
-if_true:
-    drv i2$ %shift_ctr_r, %4, %5
-    br %init
-if_false:
-    %6 = const i9 0
-    %ready_o.prb = prb [3 x i3]$ %ready_o
-    %7 = const i3 0
-    %8 = [3 x i3 %7]
-    %9 = exts [2 x i3], [3 x i3] %8, 0, 2
-    %10 = exts [1 x i3], [3 x i3] %ready_o.prb, 2, 1
-    %11 = inss [3 x i3] %8, [2 x i3] %9, 1, 2
-    %12 = inss [3 x i3] %11, [1 x i3] %10, 0, 1
-    %13 = extf i3, [3 x i3] %12, 0
-    %14 = inss i9 %6, i3 %13, 0, 3
-    %15 = exts [1 x i3], [3 x i3] %8, 0, 1
-    %16 = exts [2 x i3], [3 x i3] %ready_o.prb, 1, 2
-    %17 = inss [3 x i3] %8, [1 x i3] %15, 2, 1
-    %18 = inss [3 x i3] %17, [2 x i3] %16, 0, 2
-    %19 = extf i3, [3 x i3] %18, 0
-    %20 = inss i9 %14, i3 %19, 3, 3
-    %21 = extf i3, [3 x i3] %ready_o.prb, 0
-    %concat = inss i9 %20, i3 %21, 6, 3
-    %valid_i.prb = prb i1$ %valid_i
-    %zext = inss i9 %6, i1 %valid_i.prb, 0, 1
-    %22 = and i9 %concat, %zext
-    %23 = neq i9 %22, %6
-    br %23, %if_false1, %if_true1
-if_true1:
-    drv i2$ %shift_ctr_r, %4, %5
-    br %init
-if_false1:
-    %shift_ctr_n.prb = prb i2$ %shift_ctr_n
-    drv i2$ %shift_ctr_r, %shift_ctr_n.prb, %5
-    br %init
-}
-
-entity @bsg_parallel_in_serial_out (i1$ %clk_i, i1$ %reset_i, i1$ %valid_i, [3 x i3]$ %data_i, i3$ %yumi_i) -&gt; ([3 x i3]$ %ready_o, [3 x i3]$ %valid_o, i3$ %data_o) {
-    %0 = const i1 0
-    %state_r = sig i1 %0
-    %state_n = sig i1 %0
-    %1 = const i3 0
-    %2 = [i3 %1, %1, %1]
-    %data_r = sig [3 x i3] %2
-    %3 = const i2 0
-    %shift_ctr_r = sig i2 %3
-    %shift_ctr_n = sig i2 %3
-    %done_tx_n = sig i1 %0
-    %data_li = sig [3 x i3] %2
-    %state_r.prb = prb i1$ %state_r
-    %4 = const i1 1
-    %5 = eq i1 %state_r.prb, %4
-    %6 = neq i1 %5, %0
-    %shift_ctr_r.prb = prb i2$ %shift_ctr_r
-    %7 = const i2 2
-    %8 = eq i2 %shift_ctr_r.prb, %7
-    %9 = neq i1 %8, %0
-    %10 = and i1 %6, %9
-    %11 = neq i1 %10, %0
-    %yumi_i.prb = prb i3$ %yumi_i
-    %12 = neq i3 %yumi_i.prb, %1
-    %13 = and i1 %11, %12
-    %14 = const time 0s 1e
-    drv i1$ %done_tx_n, %13, %14
-    %15 = const i9 0
-    %16 = eq i1 %state_r.prb, %0
-    %17 = neq i1 %16, %0
-    %done_tx_n.prb = prb i1$ %done_tx_n
-    %18 = neq i1 %done_tx_n.prb, %0
-    %19 = or i1 %17, %18
-    %zext = inss i9 %15, i1 %19, 0, 1
-    %20 = exts i3, i9 %zext, 0, 3
-    %21 = exts i6, i9 %zext, 3, 6
-    %22 = inss i9 %15, i6 %21, 0, 6
-    %23 = exts i3, i9 %22, 0, 3
-    %24 = exts i3, i9 %zext, 6, 3
-    %25 = inss i9 %15, i3 %24, 0, 3
-    %26 = exts i3, i9 %25, 0, 3
-    %27 = [i3 %20, %23, %26]
-    drv [3 x i3]$ %ready_o, %27, %14
-    %28 = and i1 %6, %12
-    %29 = neq i1 %28, %0
-    %30 = not i1 %done_tx_n.prb
-    %31 = neq i1 %30, %0
-    %32 = and i1 %29, %31
-    %33 = neq i1 %32, %0
-    %34 = const i2 1
-    %35 = add i2 %shift_ctr_r.prb, %34
-    %36 = [i2 %shift_ctr_r.prb, %35]
-    %37 = mux [2 x i2] %36, i1 %33
-    drv i2$ %shift_ctr_n, %37, %14
-    %zext1 = inss i9 %15, i1 %5, 0, 1
-    %38 = exts i3, i9 %zext1, 0, 3
-    %39 = exts i6, i9 %zext1, 3, 6
-    %40 = inss i9 %15, i6 %39, 0, 6
-    %41 = exts i3, i9 %40, 0, 3
-    %42 = exts i3, i9 %zext1, 6, 3
-    %43 = inss i9 %15, i3 %42, 0, 3
-    %44 = exts i3, i9 %43, 0, 3
-    %45 = [i3 %38, %41, %44]
-    drv [3 x i3]$ %valid_o, %45, %14
-    %data_r.prb = prb [3 x i3]$ %data_r
-    %46 = [3 x i3 %1]
-    %47 = shr [3 x i3] %data_r.prb, [3 x i3] %46, i2 %shift_ctr_r.prb
-    %48 = extf i3, [3 x i3] %47, 0
-    drv i3$ %data_o, %48, %14
-    %data_i.prb = prb [3 x i3]$ %data_i
-    drv [3 x i3]$ %data_li, %data_i.prb, %14
-    inst %bsg_parallel_in_serial_out.always_ff.771.0 (i1$ %clk_i, i1$ %reset_i, i1$ %state_n) -&gt; (i1$ %state_r)
-    inst %bsg_parallel_in_serial_out.always_comb.825.0 (i1$ %valid_i, [3 x i3]$ %ready_o, i1$ %state_r, i1$ %done_tx_n) -&gt; (i1$ %state_n)
-    inst %bsg_parallel_in_serial_out.always_ff.930.0 (i1$ %clk_i, i1$ %reset_i, i1$ %valid_i, [3 x i3]$ %ready_o, [3 x i3]$ %data_li) -&gt; ([3 x i3]$ %data_r)
-    inst %bsg_parallel_in_serial_out.always_ff.981.0 (i1$ %clk_i, i1$ %reset_i, i1$ %valid_i, [3 x i3]$ %ready_o, i2$ %shift_ctr_n) -&gt; (i2$ %shift_ctr_r)
-}
 
 </pre>
 </body>

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_async/bsg_async_fifo.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_async/bsg_async_fifo.v</a>
 defines: 
-time_elapsed: 0.450s
-ram usage: 14712 KB
+time_elapsed: 0.294s
+ram usage: 13804 KB
 </pre>
 <pre class="log">
 
@@ -58,11 +58,7 @@ module bsg_async_fifo (
 	wire [lg_size_p:0] r_ptr_binary_r;
 	wire [lg_size_p:0] w_ptr_binary_r;
 	wire r_valid_o_tmp;
-	wire r_valid_o;
 	assign r_valid_o = r_valid_o_tmp;
-	wire w_clk_i;
-	wire w_reset_i;
-	wire w_enq_i;
 	bsg_mem_1r1w #(
 		.width_p(width_p - control_width_p),
 		.els_p(size_lp),
@@ -95,7 +91,6 @@ module bsg_async_fifo (
 			);
 		end
 	endgenerate
-	wire r_clk_i;
 	bsg_async_ptr_gray #(.lg_size_p(lg_size_p + 1)) bapg_wr(
 		.w_clk_i(w_clk_i),
 		.w_reset_i(w_reset_i),
@@ -105,8 +100,6 @@ module bsg_async_fifo (
 		.w_ptr_gray_r_o(w_ptr_gray_r),
 		.w_ptr_gray_r_rsync_o(w_ptr_gray_r_rsync)
 	);
-	wire r_reset_i;
-	wire r_deq_i;
 	bsg_async_ptr_gray #(.lg_size_p(lg_size_p + 1)) bapg_rd(
 		.w_clk_i(r_clk_i),
 		.w_reset_i(r_reset_i),
@@ -117,7 +110,6 @@ module bsg_async_fifo (
 		.w_ptr_gray_r_rsync_o(r_ptr_gray_r_wsync)
 	);
 	assign r_valid_o_tmp = r_ptr_gray_r != w_ptr_gray_r_rsync;
-	wire w_full_o;
 	assign w_full_o = w_ptr_gray_r == {~r_ptr_gray_r_wsync[lg_size_p-:2], r_ptr_gray_r_wsync[0+:lg_size_p - 1]};
 	always @(negedge w_clk_i)
 		;

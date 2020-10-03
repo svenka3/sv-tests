@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/c2i_buf.v.html" target="file-frame">third_party/tests/utd-sv/c2i_buf.v</a>
 defines: 
-time_elapsed: 0.066s
-ram usage: 12516 KB
+time_elapsed: 0.165s
+ram usage: 12020 KB
 </pre>
 <pre class="log">
 
@@ -54,13 +54,10 @@ module c2i_buf (
 	wire [((REG_WIDTH + 64) / IOB_UCB_WIDTH) - 1:0] outdata_vec_in;
 	wire outdata_buf_busy;
 	assign dbl_buf_wr = (c2i_packet_vld &amp; ucb_sel) &amp; ~dbl_buf_full;
-	wire ucb_buf_acpt;
 	assign ucb_buf_acpt = dbl_buf_wr;
 	assign dbl_buf_rd = dbl_buf_vld &amp; ~outdata_buf_busy;
 	assign outdata_buf_wr = dbl_buf_rd;
 	assign outdata_vec_in = {(REG_WIDTH + 64) / IOB_UCB_WIDTH {1&#39;b1}};
-	wire rst_l;
-	wire clk;
 	dbl_buf #(REG_WIDTH + 64) dbl_buf(
 		.rst_l(rst_l),
 		.clk(clk),
@@ -71,8 +68,6 @@ module c2i_buf (
 		.vld(dbl_buf_vld),
 		.full(dbl_buf_full)
 	);
-	wire iob_ucb_vld;
-	wire ucb_iob_stall;
 	ucb_bus_out #(
 		IOB_UCB_WIDTH,
 		REG_WIDTH

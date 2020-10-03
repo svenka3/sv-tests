@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/ctu_clsp_clkgn_clksel.v.html" target="file-frame">third_party/tests/utd-sv/ctu_clsp_clkgn_clksel.v</a>
 defines: 
-time_elapsed: 0.203s
-ram usage: 11580 KB
+time_elapsed: 0.172s
+ram usage: 11400 KB
 </pre>
 <pre class="log">
 
@@ -61,22 +61,17 @@ module ctu_clsp_clkgn_clksel (
 	wire clock_dr;
 	wire altclk_sync_l_bar;
 	wire sysclk_sel_bar;
-	wire jtag_clock_dr;
-	wire capture_l;
 	ctu_and2 u_capture_l_gated(
 		.a(jtag_clock_dr),
 		.b(capture_l),
 		.z(nstep_clock_dr)
 	);
-	wire testmode_l;
 	ctu_mux21 u_jtag_clock_mux_gated(
 		.z(clock_dr),
 		.s(testmode_l),
 		.d0(jtag_clock_dr),
 		.d1(nstep_clock_dr)
 	);
-	wire io_pwron_rst_l;
-	wire sysclk;
 	ctu_clksel_async_synchronizer u_mult_sel_clk(
 		.presyncdata(mult_sel),
 		.syncdata(force_alt_clk_sync),
@@ -85,7 +80,6 @@ module ctu_clsp_clkgn_clksel (
 		.clk(sysclk)
 	);
 	wire altclk_sync_pre;
-	wire divbypclk;
 	ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
 		.presyncdata(altclk_sync_pre),
 		.syncdata(altclk_sync_l),
@@ -112,7 +106,6 @@ module ctu_clsp_clkgn_clksel (
 	assign altclk_sync_pre = byp_mult_sel_l;
 	assign bypclk_sync_pre = sel[2];
 	assign tck_sync_pre = sel[1];
-	wire clkout;
 	bw_u1_aoi22_4x u_clkout_gated(
 		.a1(bypclk_sync),
 		.a2(divbypclk),
@@ -130,7 +123,6 @@ module ctu_clsp_clkgn_clksel (
 		.b2(force_alt_clk_sync),
 		.z(sysclk_sel_bar)
 	);
-	wire sysclk_sel;
 	ctu_inv u_sysclk_sel_gated(
 		.z(sysclk_sel),
 		.a(sysclk_sel_bar)

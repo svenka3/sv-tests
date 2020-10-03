@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sparc_exu_ecl_divcntl.v.html" target="file-frame">third_party/tests/utd-sv/sparc_exu_ecl_divcntl.v</a>
 defines: 
-time_elapsed: 0.415s
-ram usage: 13872 KB
+time_elapsed: 0.429s
+ram usage: 14632 KB
 </pre>
 <pre class="log">
 
@@ -177,12 +177,8 @@ module sparc_exu_ecl_divcntl (
 	wire reset_cnt;
 	wire [5:0] cntr;
 	wire cntris63;
-	wire divcntl_wb_req_g;
 	assign divcntl_wb_req_g = div_state[5] | (~((div_state[5] | div_state[3]) | div_state[4]) &amp; mdqctl_divcntl_muldone);
-	wire ecl_div_sel_div;
 	assign ecl_div_sel_div = ~(~((div_state[5] | div_state[3]) | div_state[4]) &amp; mdqctl_divcntl_muldone);
-	wire clk;
-	wire se;
 	dff_s #(6) divstate_dff(
 		.din(next_state[5:0]),
 		.clk(clk),
@@ -191,15 +187,10 @@ module sparc_exu_ecl_divcntl (
 		.si(),
 		.so()
 	);
-	wire ecl_div_almostlast_cycle;
 	assign ecl_div_almostlast_cycle = go_last_calc &amp; ~ecl_div_ld_inputs;
-	wire ecl_div_sel_adder;
 	assign ecl_div_sel_adder = (div_state[1] | div_state[2]) &amp; ~ecl_div_ld_inputs;
-	wire ecl_div_last_cycle;
 	assign ecl_div_last_cycle = div_state[2];
-	wire ecl_div_ld_inputs;
 	assign ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
-	wire ecl_div_keep_d;
 	assign ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
 	assign reset_cnt = ~div_state[1];
 	assign stay_idle = div_state[0] &amp; ~mdqctl_divcntl_input_vld;
@@ -224,9 +215,7 @@ module sparc_exu_ecl_divcntl (
 		.se(se)
 	);
 	assign cntris63 = ((((cntr[5] &amp; cntr[4]) &amp; cntr[3]) &amp; cntr[2]) &amp; cntr[1]) &amp; cntr[0];
-	wire ecl_div_dividend_sign;
 	assign ecl_div_dividend_sign = ecl_div_signed_div &amp; div_ecl_dividend_msb;
-	wire ecl_div_xinmask;
 	assign ecl_div_xinmask = div_ecl_divisorin_31 &amp; ecl_div_signed_div;
 	assign divisor_sign = div_ecl_x_msb &amp; ecl_div_signed_div;
 	assign adderin1_64 = div_ecl_d_msb;
@@ -242,14 +231,12 @@ module sparc_exu_ecl_divcntl (
 		.sel0(~ecl_div_ld_inputs),
 		.sel1(ecl_div_ld_inputs)
 	);
-	wire div_ecl_cout64;
 	dp_mux2es qnext_cout_mux(
 		.dout(q_next),
 		.in0(q_next_nocout[1]),
 		.in1(q_next_nocout[0]),
 		.sel(div_ecl_cout64)
 	);
-	wire ecl_div_newq;
 	dff_s q_dff(
 		.din(q_next),
 		.clk(clk),
@@ -259,7 +246,6 @@ module sparc_exu_ecl_divcntl (
 		.so()
 	);
 	assign firstlast_sub = (~ecl_div_almostlast_cycle &amp; ~ecl_div_muls) &amp; (~ecl_div_signed_div | ~(div_ecl_dividend_msb ^ ~div_ecl_xin_msb_l));
-	wire ecl_div_keepx;
 	assign ecl_div_keepx = ~(ecl_div_ld_inputs | ecl_div_almostlast_cycle);
 	mux2ds #(2) subnext_mux(
 		.dout(sub_next_nocout[1:0]),
@@ -282,10 +268,8 @@ module sparc_exu_ecl_divcntl (
 		.si(),
 		.so()
 	);
-	wire ecl_div_subtract_l;
 	assign ecl_div_subtract_l = ~subtract;
 	assign detect_zero = div_ecl_detect_zero_low &amp; div_ecl_detect_zero_high;
-	wire ecl_div_cin;
 	assign ecl_div_cin = (ecl_div_last_cycle ? last_cin : subtract);
 	assign new_zero_rem_with_zero = ~ecl_div_ld_inputs &amp; (~div_ecl_d_62 | ecl_div_almostlast_cycle);
 	assign new_zero_rem_no_zero = zero_rem_q &amp; new_zero_rem_with_zero;
@@ -331,19 +315,12 @@ module sparc_exu_ecl_divcntl (
 		.si(),
 		.so()
 	);
-	wire ecl_div_sel_64b;
 	assign ecl_div_sel_64b = ecl_div_div64 | ecl_div_muls;
-	wire ecl_div_sel_u32;
 	assign ecl_div_sel_u32 = ~ecl_div_sel_64b &amp; ~ecl_div_signed_div;
-	wire ecl_div_sel_pos32;
 	assign ecl_div_sel_pos32 = (~ecl_div_sel_64b &amp; ecl_div_signed_div) &amp; (gencc_in_msb_l_d1 | large_neg_ovfl);
-	wire ecl_div_sel_neg32;
 	assign ecl_div_sel_neg32 = ((~ecl_div_sel_64b &amp; ecl_div_signed_div) &amp; ~gencc_in_msb_l_d1) &amp; ~large_neg_ovfl;
-	wire ecl_div_upper32_zero;
 	assign ecl_div_upper32_zero = upper32_equal_d1 &amp; gencc_in_msb_l_d1;
-	wire ecl_div_upper33_zero;
 	assign ecl_div_upper33_zero = (upper32_equal_d1 &amp; gencc_in_msb_l_d1) &amp; ~gencc_in_31_d1;
-	wire ecl_div_upper33_one;
 	assign ecl_div_upper33_one = (upper32_equal_d1 &amp; ~gencc_in_msb_l_d1) &amp; gencc_in_31_d1;
 	assign unsign_ovfl = (ecl_div_sel_u32 &amp; ~ecl_div_upper32_zero) &amp; sel_div_d1;
 	assign pos_ovfl = (ecl_div_sel_pos32 &amp; ~ecl_div_upper33_zero) &amp; sel_div_d1;

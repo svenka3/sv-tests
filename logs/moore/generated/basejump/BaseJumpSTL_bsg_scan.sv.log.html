@@ -7,9 +7,9 @@
 </head>
 <body>
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
-<pre class="test-failed">
+<pre class="test-passed">
 description: Tests imported from basejump
-rc: 1 (means success: 0)
+rc: 0 (means success: 1)
 tags: basejump
 incdirs: /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc
 top_module: 
@@ -17,53 +17,36 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v</a>
 defines: 
-time_elapsed: 0.007s
-ram usage: 9056 KB
+time_elapsed: 0.011s
+ram usage: 11564 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_noc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -I /tmpfs/src/github/sv-tests/third_party/cores/basejump_stl/bsg_misc -e bsg_scan <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v</a>
-
-fatal: unknown compiler directive &#39;`BSG_HIDE_FROM_VERILATOR&#39;
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html#l-59" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v:59</a>:9-33:
+warning: unsupported: immediate assertion; ignored
+  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html#l-55" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v:55</a>:7-132:
    | 
-   |         `BSG_HIDE_FROM_VERILATOR(#1)
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^    
+   |       assert( $countones({xor_p[0], and_p[0], or_p[0]}) == 1)
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+proc %bsg_scan.initial.623.0 () -&gt; () {
+0:
+    halt
+}
 
-error: expected statement, found `(` instead
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html#l-59" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v:59</a>:33-34:
-   | 
-   |         `BSG_HIDE_FROM_VERILATOR(#1)
-   |                                 ^   
-
-
-note: parsing as assign statement:
-
-
-error: expected expression, found `#` instead
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html#l-59" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v:59</a>:34-35:
-   | 
-   |         `BSG_HIDE_FROM_VERILATOR(#1)
-   |                                  ^  
-
-
-note: parsing as expression statement:
-
-
-error: expected expression, found `#` instead
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html#l-59" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v:59</a>:34-35:
-   | 
-   |         `BSG_HIDE_FROM_VERILATOR(#1)
-   |                                  ^  
-
-
-error: expected `endmodule`, but found `if` instead
-  --&gt; <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_scan.v.html#l-68" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_scan.v:68</a>:4-6:
-   | 
-   |    if (lo_to_hi_p)
-   |    ^^             
-
+entity @bsg_scan (i3$ %i) -&gt; (i3$ %o) {
+    %0 = const i3 0
+    %1 = [i3 %0]
+    %t = sig [1 x i3] %1
+    %2 = extf i3$, [1 x i3]$ %t, 0
+    %i.prb = prb i3$ %i
+    %3 = const time 0s 1e
+    drv i3$ %2, %i.prb, %3
+    %t.prb = prb [1 x i3]$ %t
+    %4 = extf i3, [1 x i3] %t.prb, 0
+    drv i3$ %o, %4, %3
+    inst %bsg_scan.initial.623.0 () -&gt; ()
+}
 
 </pre>
 </body>

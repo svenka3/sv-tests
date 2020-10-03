@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/i2c_fdp.v.html" target="file-frame">third_party/tests/utd-sv/i2c_fdp.v</a>
 defines: 
-time_elapsed: 0.079s
-ram usage: 12508 KB
+time_elapsed: 0.284s
+ram usage: 12180 KB
 </pre>
 <pre class="log">
 
@@ -62,7 +62,6 @@ module i2c_fdp (
 	wire [152:0] int_buf_dout_d1;
 	wire [152:0] io_buf_dout_d1;
 	assign iob_cpx_req_next = ({8 {int_buf_sel_next}} &amp; int_buf_cpx_req) | ({8 {io_buf_sel_next}} &amp; io_buf_cpx_req);
-	wire cpu_clk;
 	dff_ns #(8) iob_cpx_req_cq_ff(
 		.din(iob_cpx_req_next),
 		.clk(cpu_clk),
@@ -79,7 +78,6 @@ module i2c_fdp (
 		.clk(cpu_clk),
 		.q(iob_cpx_data_ca)
 	);
-	wire int_buf_rd;
 	dffe_ns #(153) int_buf_dout_d1_ff(
 		.din(int_buf_dout),
 		.en(int_buf_rd),
@@ -87,7 +85,6 @@ module i2c_fdp (
 		.q(int_buf_dout_d1)
 	);
 	assign {int_buf_cpx_req, int_buf_cpx_data} = int_buf_dout_d1;
-	wire io_buf_rd;
 	dffe_ns #(153) io_buf_dout_d1_ff(
 		.din(io_buf_dout),
 		.en(io_buf_rd),

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_dir_ctl.v.html" target="file-frame">third_party/tests/utd-sv/sctag_dir_ctl.v</a>
 defines: 
-time_elapsed: 0.122s
-ram usage: 10612 KB
+time_elapsed: 0.071s
+ram usage: 10552 KB
 </pre>
 <pre class="log">
 
@@ -72,12 +72,9 @@ module sctag_dir_ctl (
 	wire rd_data_sel_left_c5;
 	wire rd_data_sel_right_c5;
 	wire [3:0] rd_data_en_c5;
-	wire warm_rst_c4;
 	assign warm_rst_c4 = dir_clear_c4_buf;
 	assign rd_data_en_c4 = {4 {rd_en_c4_buf}} &amp; rw_dec_c4_buf;
 	assign wr_data_en_c4 = {4 {wr_en_c4_buf &amp; ~warm_rst_c4}} &amp; rw_dec_c4_buf;
-	wire rclk;
-	wire se;
 	dffe_s #(2) ff_rd_data_en_c5_en(
 		.q(rd_data_en_c5[1:0]),
 		.din(rd_data_en_c4[1:0]),
@@ -95,12 +92,9 @@ module sctag_dir_ctl (
 		.si(),
 		.so()
 	);
-	wire rd_data_sel0_c5;
 	assign rd_data_sel0_c5 = rd_data_en_c5[0];
-	wire rd_data_sel1_c5;
 	assign rd_data_sel1_c5 = rd_data_en_c5[1];
 	assign rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2];
-	wire rd_data_sel_left_c6;
 	dff_s #(1) ff_rd_data_sel_left_c6(
 		.q(rd_data_sel_left_c6),
 		.din(rd_data_sel_left_c5),
@@ -110,7 +104,6 @@ module sctag_dir_ctl (
 		.so()
 	);
 	assign rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3];
-	wire rd_data_sel_right_c6;
 	dff_s #(1) ff_rd_data_sel_right_c6(
 		.q(rd_data_sel_right_c6),
 		.din(rd_data_sel_right_c5),

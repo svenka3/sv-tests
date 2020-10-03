@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_counter_clear_up_one_hot.v</a>
 defines: 
-time_elapsed: 0.009s
-ram usage: 11208 KB
+time_elapsed: 0.010s
+ram usage: 11324 KB
 </pre>
 <pre class="log">
 
@@ -48,14 +48,20 @@ if_exit:
     %6 = neq i1 %up_i.prb, %3
     br %6, %if_exit1, %if_true1
 if_true1:
-    %7 = const i2 0
-    drv i2$ %bits_n, %7, %2
-    st i2* %bits_n.shadow, %7
+    %7 = const i4 0
+    %bits_n.shadow.ld = ld i2* %bits_n.shadow
+    %8 = exts i1, i2 %bits_n.shadow.ld, 0, 1
+    %9 = inss i4 %7, i1 %8, 0, 1
+    %10 = const i3 0
+    %concat = inss i4 %9, i3 %10, 1, 3
+    %11 = exts i2, i4 %concat, 0, 2
+    drv i2$ %bits_n, %11, %2
+    st i2* %bits_n.shadow, %11
     br %if_exit1
 if_exit1:
     %reset_i.prb = prb i1$ %reset_i
-    %8 = neq i1 %reset_i.prb, %3
-    br %8, %check, %if_true2
+    %12 = neq i1 %reset_i.prb, %3
+    br %12, %check, %if_true2
 if_true2:
     drv i2$ %bits_n, %5, %2
     st i2* %bits_n.shadow, %5
@@ -82,8 +88,8 @@ event:
     %5 = neq i1 %4, %0
     br %5, %init, %if_true
 if_true:
-    %bits_n.prb = prb i2$ %bits_n
     %6 = const time 0s 1d
+    %bits_n.prb = prb i2$ %bits_n
     drv i2$ %bits_r, %bits_n.prb, %6
     br %init
 }

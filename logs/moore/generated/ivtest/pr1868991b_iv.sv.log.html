@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr1868991b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr1868991b.v</a>
 defines: 
 time_elapsed: 0.006s
-ram usage: 10456 KB
+ram usage: 10512 KB
 </pre>
 <pre class="log">
 
@@ -40,12 +40,14 @@ entity @test () -&gt; () {
     %select_dcs_mpr = sig i32 %0
     %mpr1.prb = prb [19 x i32]$ %mpr1
     %select_mpr_inx.prb = prb i7$ %select_mpr_inx
-    %7 = [19 x i32 %0]
-    %8 = shr [19 x i32] %mpr1.prb, [19 x i32] %7, i7 %select_mpr_inx.prb
-    %9 = extf i32, [19 x i32] %8, 0
-    %10 = sig i32 %0
-    drv i32$ %10, %9, %6
-    con i32$ %select_dcs_mpr, %10
+    %7 = const i7 16
+    %8 = sub i7 %select_mpr_inx.prb, %7
+    %9 = [19 x i32 %0]
+    %10 = shr [19 x i32] %mpr1.prb, [19 x i32] %9, i7 %8
+    %11 = extf i32, [19 x i32] %10, 0
+    %12 = sig i32 %0
+    drv i32$ %12, %11, %6
+    con i32$ %select_dcs_mpr, %12
 }
 
 </pre>

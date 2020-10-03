@@ -276,7 +276,9 @@
 <a href="#l-268">268</a>
 <a href="#l-269">269</a>
 <a href="#l-270">270</a>
-<a href="#l-271">271</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// bsg_nonsynth_dpi_to_fifo: A FIFO Interface for transmitting FIFO</span>
+<a href="#l-271">271</a>
+<a href="#l-272">272</a>
+<a href="#l-273">273</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// bsg_nonsynth_dpi_to_fifo: A FIFO Interface for transmitting FIFO</span>
 <a name="l-2"></a><span class="c1">// data from C/C++ into simulation via DPI</span>
 <a name="l-3"></a><span class="c1">// </span>
 <a name="l-4"></a><span class="c1">// Parameters: </span>
@@ -326,227 +328,229 @@
 <a name="l-48"></a><span class="c1">//</span>
 <a name="l-49"></a><span class="c1">//   For safe operation of this interface use the bsg_nonsynth_fifo_to_dpi</span>
 <a name="l-50"></a><span class="c1">//   class provided in bsg_nonsynth_fifo.hpp header.</span>
-<a name="l-51"></a><span class="k">module</span> <span class="n">bsg_nonsynth_dpi_to_fifo</span>
-<a name="l-52"></a>  <span class="p">#(</span>
-<a name="l-53"></a>    <span class="k">parameter</span> <span class="n">width_p</span> <span class="o">=</span> <span class="s">&quot;inv&quot;</span>
-<a name="l-54"></a>    <span class="p">,</span><span class="k">parameter</span> <span class="kt">bit</span> <span class="n">debug_p</span> <span class="o">=</span> <span class="mi">0</span>
-<a name="l-55"></a>    <span class="p">)</span>
-<a name="l-56"></a>   <span class="p">(</span>
-<a name="l-57"></a>    <span class="k">input</span> <span class="n">clk_i</span>
-<a name="l-58"></a>    <span class="p">,</span> <span class="k">input</span> <span class="n">reset_i</span>
-<a name="l-59"></a>      
-<a name="l-60"></a>    <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span> <span class="n">v_o</span>
-<a name="l-61"></a>    <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o</span>
-<a name="l-62"></a>    <span class="p">,</span> <span class="k">input</span> <span class="n">ready_i</span>
-<a name="l-63"></a>      
-<a name="l-64"></a>    <span class="p">,</span> <span class="k">output</span> <span class="kt">bit</span> <span class="n">debug_o</span><span class="p">);</span>
-<a name="l-65"></a>
-<a name="l-66"></a>   <span class="c1">// This bit tracks whether initialize has been called. If data is</span>
-<a name="l-67"></a>   <span class="c1">// sent and recieved before init() is called, then this module will</span>
-<a name="l-68"></a>   <span class="c1">// call $fatal</span>
-<a name="l-69"></a>   <span class="kt">bit</span>    <span class="n">init_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<a name="l-70"></a>   <span class="c1">// This bit checks whether bsg_dpi_fifo_tx() has been called multiple times in a</span>
-<a name="l-71"></a>   <span class="c1">// cycle.</span>
-<a name="l-72"></a>   <span class="kt">bit</span>    <span class="n">tx_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<a name="l-73"></a>   
-<a name="l-74"></a>   <span class="c1">// Check if width_p is a ctype width. call $fatal, if not.</span>
-<a name="l-75"></a>   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">width_p</span> <span class="ow">inside</span> <span class="p">{</span><span class="mi">32&#39;d8</span><span class="p">,</span> <span class="mi">32&#39;d16</span><span class="p">,</span> <span class="mi">32&#39;d32</span><span class="p">,</span> <span class="mi">32&#39;d64</span><span class="p">,</span> <span class="mi">32&#39;d128</span><span class="p">}))</span> <span class="k">begin</span>
-<a name="l-76"></a>      <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): width_p of %d is not supported. Must be a power of 2 and divisible by 8&quot;</span><span class="p">,</span> <span class="n">width_p</span><span class="p">);</span>
-<a name="l-77"></a>   <span class="k">end</span>
-<a name="l-78"></a>
-<a name="l-79"></a>   <span class="c1">// Print module parameters to the console and set the intial debug</span>
-<a name="l-80"></a>   <span class="c1">// value</span>
-<a name="l-81"></a>   <span class="k">initial</span> <span class="k">begin</span>
-<a name="l-82"></a>      <span class="n">debug_o</span> <span class="o">=</span> <span class="n">debug_p</span><span class="p">;</span>
-<a name="l-83"></a>
-<a name="l-84"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO: bsg_nonsynth_dpi_to_fifo (initial begin)&quot;</span><span class="p">);</span>
-<a name="l-85"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO:     Instantiation: %M&quot;</span><span class="p">);</span>
-<a name="l-86"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO:     width_p = %d&quot;</span><span class="p">,</span> <span class="n">width_p</span><span class="p">);</span>
-<a name="l-87"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO:     debug_p = %d&quot;</span><span class="p">,</span> <span class="n">debug_p</span><span class="p">);</span>
-<a name="l-88"></a>   <span class="k">end</span>
-<a name="l-89"></a>
-<a name="l-90"></a>   <span class="c1">// This checks that fini was called before $finish</span>
-<a name="l-91"></a>   <span class="k">final</span> <span class="k">begin</span>
-<a name="l-92"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">init_r</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span>
-<a name="l-93"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): fini() was not called before $finish&quot;</span><span class="p">);</span>
-<a name="l-94"></a>   <span class="k">end</span>
-<a name="l-95"></a>   
-<a name="l-96"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_init</span><span class="p">;</span>
-<a name="l-97"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_fini</span><span class="p">;</span>
-<a name="l-98"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_debug</span><span class="p">;</span>
-<a name="l-99"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_width</span><span class="p">;</span>
-<a name="l-100"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_fifo_tx</span><span class="p">;</span>
-<a name="l-101"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_fifo_is_window</span><span class="p">;</span>
-<a name="l-102"></a>   
-<a name="l-103"></a>   <span class="c1">// Set or unset the debug_o output bit. If a state change occurs</span>
-<a name="l-104"></a>   <span class="c1">// (0-&gt;1 or 1-&gt;0) then module will print DEBUG ENABLED / DEBUG</span>
-<a name="l-105"></a>   <span class="c1">// DISABLED. No messages are printed if a state change does not</span>
-<a name="l-106"></a>   <span class="c1">// occur.</span>
-<a name="l-107"></a>   <span class="k">function</span> <span class="kt">void</span> <span class="n">bsg_dpi_debug</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="n">switch_i</span><span class="p">);</span>
-<a name="l-108"></a>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">debug_o</span> <span class="o">&amp;</span> <span class="n">switch_i</span><span class="p">)</span>
-<a name="l-109"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): DEBUG ENABLED&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
-<a name="l-110"></a>      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">debug_o</span> <span class="o">&amp;</span> <span class="o">!</span><span class="n">switch_i</span><span class="p">)</span> 
-<a name="l-111"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): DEBUG DISABLED&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
-<a name="l-112"></a>
-<a name="l-113"></a>      <span class="n">debug_o</span> <span class="o">=</span> <span class="n">switch_i</span><span class="p">;</span>
-<a name="l-114"></a>   <span class="k">endfunction</span>
-<a name="l-115"></a>
-<a name="l-116"></a>   <span class="c1">// Silly, but useful.</span>
-<a name="l-117"></a>   <span class="k">function</span> <span class="kt">int</span> <span class="n">bsg_dpi_width</span><span class="p">();</span>
-<a name="l-118"></a>      <span class="k">return</span> <span class="n">width_p</span><span class="p">;</span>
-<a name="l-119"></a>   <span class="k">endfunction</span>
-<a name="l-120"></a>
-<a name="l-121"></a>   <span class="c1">// Initialize this FIFO DPI Interface</span>
-<a name="l-122"></a>   <span class="k">function</span> <span class="kt">void</span> <span class="n">bsg_dpi_init</span><span class="p">();</span>
-<a name="l-123"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
-<a name="l-124"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): bsg_dpi_init() called&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
-<a name="l-125"></a>
-<a name="l-126"></a>      <span class="k">if</span><span class="p">(</span><span class="n">init_r</span><span class="p">)</span>
-<a name="l-127"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_init() already called&quot;</span><span class="p">);</span>
-<a name="l-128"></a>
-<a name="l-129"></a>      <span class="n">init_r</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<a name="l-130"></a>   <span class="k">endfunction</span>
-<a name="l-131"></a>
-<a name="l-132"></a>   <span class="c1">// Terminate this FIFO DPI Interface</span>
-<a name="l-133"></a>   <span class="k">function</span> <span class="kt">void</span> <span class="n">bsg_dpi_fini</span><span class="p">();</span>
-<a name="l-134"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
-<a name="l-135"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): bsg_dpi_fini() called&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
-<a name="l-136"></a>
-<a name="l-137"></a>      <span class="k">if</span><span class="p">(</span><span class="o">~</span><span class="n">init_r</span><span class="p">)</span>
-<a name="l-138"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fini() already called&quot;</span><span class="p">);</span>
-<a name="l-139"></a>
-<a name="l-140"></a>      <span class="n">init_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<a name="l-141"></a>   <span class="k">endfunction</span>
-<a name="l-142"></a>
-<a name="l-143"></a>   <span class="c1">// bsg_dpi_fifo_tx(input logic [width_p-1:0] data_i) -- Provide data_i</span>
-<a name="l-144"></a>   <span class="c1">// to the FIFO interface on data_o and set v_o. When the consumer</span>
-<a name="l-145"></a>   <span class="c1">// is ready (ready_i == 1) this function will return 1 to indicate</span>
-<a name="l-146"></a>   <span class="c1">// that the consumer accepted the data. When the consumer is not</span>
-<a name="l-147"></a>   <span class="c1">// ready this function will return 0 to indicate that the consumer</span>
-<a name="l-148"></a>   <span class="c1">// did not accept the data.</span>
-<a name="l-149"></a>   <span class="c1">//</span>
-<a name="l-150"></a>   <span class="c1">// If the data is not consumed, the host C/C++ program MUST call</span>
-<a name="l-151"></a>   <span class="c1">// this method again on the next cycle with the same arguments</span>
-<a name="l-152"></a>   <span class="c1">// (i.e. data_i should remain constant across calls). Not doing</span>
-<a name="l-153"></a>   <span class="c1">// this will cause $fatal to be called to indicate a protocol</span>
-<a name="l-154"></a>   <span class="c1">// violation because v_o will return to 0 in the next cycle.</span>
-<a name="l-155"></a>   <span class="c1">//</span>
-<a name="l-156"></a>   <span class="c1">// bsg_dpi_fifo_tx() MUST be called after the positive edge of clk_i is</span>
-<a name="l-157"></a>   <span class="c1">// evaluated. It MUST be called only once per cycle. Failure will</span>
-<a name="l-158"></a>   <span class="c1">// cause an error and a call to $fatal.</span>
-<a name="l-159"></a>
-<a name="l-160"></a>   <span class="c1">// We set v_o_n so that we can signal a read to the producer on the</span>
-<a name="l-161"></a>   <span class="c1">// NEXT positive edge. v_o_n flows to v_o on the negative edge of</span>
-<a name="l-162"></a>   <span class="c1">// clk_i</span>
-<a name="l-163"></a>   <span class="kt">logic</span> <span class="n">v_o_n</span><span class="p">;</span>
-<a name="l-164"></a>   <span class="c1">// Same as above, but with data_o.</span>
-<a name="l-165"></a>   <span class="kt">logic</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o_n</span><span class="p">;</span>
-<a name="l-166"></a>   
-<a name="l-167"></a>   <span class="c1">// We track the &quot;last&quot; data_o and last ready_i values to detect</span>
-<a name="l-168"></a>   <span class="c1">// protocol violations. These are captured on the positive edge of</span>
-<a name="l-169"></a>   <span class="c1">// the clock</span>
-<a name="l-170"></a>   <span class="kt">reg</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o_r</span><span class="p">;</span>
-<a name="l-171"></a>   <span class="kt">reg</span>               <span class="n">ready_i_r</span><span class="p">;</span>
-<a name="l-172"></a>
-<a name="l-173"></a>   <span class="c1">// We track the polarity of the current edge so that we can call</span>
-<a name="l-174"></a>   <span class="c1">// $fatal when $rx is called during the wrong phase of clk_i.</span>
-<a name="l-175"></a>   <span class="kt">reg</span>               <span class="n">edgepol</span><span class="p">;</span>
-<a name="l-176"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-177"></a>      <span class="n">edgepol</span> <span class="o">&lt;=</span> <span class="n">clk_i</span><span class="p">;</span>
-<a name="l-178"></a>   <span class="k">end</span>
-<a name="l-179"></a>
-<a name="l-180"></a>
-<a name="l-181"></a>   <span class="c1">// TODO: Check that tx isn&#39;t called multiple times in a cycle</span>
-<a name="l-182"></a>   <span class="k">function</span> <span class="kt">bit</span> <span class="n">bsg_dpi_fifo_tx</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_bi</span><span class="p">);</span>
-<a name="l-183"></a>
-<a name="l-184"></a>      <span class="k">if</span><span class="p">(</span><span class="n">init_r</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-185"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() called before init()&quot;</span><span class="p">);</span>
-<a name="l-186"></a>      <span class="k">end</span>
-<a name="l-187"></a>
-<a name="l-188"></a>      <span class="k">if</span><span class="p">(</span><span class="n">reset_i</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-189"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() called while reset_i === 1&quot;</span><span class="p">);</span>
-<a name="l-190"></a>      <span class="k">end</span>      
-<a name="l-191"></a>
-<a name="l-192"></a>      <span class="k">if</span><span class="p">(</span><span class="n">tx_r</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-193"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() called multiple times in a clk_i cycle&quot;</span><span class="p">);</span>
-<a name="l-194"></a>      <span class="k">end</span>
-<a name="l-195"></a>
-<a name="l-196"></a>      <span class="k">if</span><span class="p">(</span><span class="n">clk_i</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-197"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() must be called when clk_i == 1&quot;</span><span class="p">);</span>
-<a name="l-198"></a>      <span class="k">end</span>
-<a name="l-199"></a>
-<a name="l-200"></a>      <span class="k">if</span><span class="p">(</span><span class="n">edgepol</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-201"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() must be called after the positive edge of clk_i has been evaluated&quot;</span><span class="p">);</span>
-<a name="l-202"></a>      <span class="k">end</span>
-<a name="l-203"></a>
-<a name="l-204"></a>      <span class="k">if</span><span class="p">((</span><span class="n">ready_i_r</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">v_o</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">data_bi</span> <span class="o">===</span> <span class="n">data_o_r</span><span class="p">))</span> <span class="k">begin</span>
-<a name="l-205"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() argument data_bi must be constant across calls/cycles when the consumer is not ready&quot;</span><span class="p">);</span>
-<a name="l-206"></a>      <span class="k">end</span>
-<a name="l-207"></a>
-<a name="l-208"></a>      <span class="c1">// These will flow to their respective outputs on the next</span>
-<a name="l-209"></a>      <span class="c1">// negative clock edge.</span>
-<a name="l-210"></a>      <span class="n">v_o_n</span> <span class="o">=</span> <span class="m">&#39;1</span><span class="p">;</span>
-<a name="l-211"></a>      <span class="n">data_o_n</span> <span class="o">=</span> <span class="n">data_bi</span><span class="p">;</span>
-<a name="l-212"></a>
-<a name="l-213"></a>      <span class="n">tx_r</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<a name="l-214"></a>      
-<a name="l-215"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
-<a name="l-216"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): bsg_dpi_fifo_tx() called -- ready_i: %b, data_o_n: 0x%x&quot;</span><span class="p">,</span> 
-<a name="l-217"></a>                 <span class="p">$</span><span class="kt">time</span><span class="p">,</span> <span class="n">ready_i</span><span class="p">,</span> <span class="n">data_bi</span><span class="p">);</span>
-<a name="l-218"></a>
-<a name="l-219"></a>      <span class="k">return</span> <span class="p">(</span><span class="n">ready_i</span> <span class="o">===</span> <span class="mi">1</span><span class="p">);</span>
-<a name="l-220"></a>   <span class="k">endfunction</span>
-<a name="l-221"></a>
-<a name="l-222"></a>   <span class="c1">// The function bsg_dpi_fifo_is_window returns true if the interface is</span>
-<a name="l-223"></a>   <span class="c1">// in a valid time-window to call bsg_dpi_fifo_tx()</span>
-<a name="l-224"></a>   <span class="k">function</span> <span class="kt">bit</span> <span class="n">bsg_dpi_fifo_is_window</span><span class="p">();</span>
-<a name="l-225"></a>      <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="n">tx_r</span> <span class="o">&amp;</span> <span class="n">clk_i</span> <span class="o">&amp;</span> <span class="n">edgepol</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">reset_i</span><span class="p">);</span>
-<a name="l-226"></a>   <span class="k">endfunction</span>
-<a name="l-227"></a>
-<a name="l-228"></a>
-<a name="l-229"></a>   <span class="c1">// We set v_o and data_o on a negative clock edge so that it is</span>
-<a name="l-230"></a>   <span class="c1">// seen on the next positive edge. v_o_n and data_o_n hold the &quot;next&quot;</span>
-<a name="l-231"></a>   <span class="c1">// values for v_o and data_o.</span>
-<a name="l-232"></a>   <span class="c1">//</span>
-<a name="l-233"></a>   <span class="c1">// We proactively clear v_o by setting v_o_n to 0 in case ready_i ==</span>
-<a name="l-234"></a>   <span class="c1">// 1 on the positive edge. If ready_i == 1, and we don&#39;t set v_o_n</span>
-<a name="l-235"></a>   <span class="c1">// here, then the user will have to call tx again to clear v_o even</span>
-<a name="l-236"></a>   <span class="c1">// though they aren&#39;t sending data. If ready_i === 0 then the user</span>
-<a name="l-237"></a>   <span class="c1">// MUST call tx again and v_o will be set to 1 again, otherwise</span>
-<a name="l-238"></a>   <span class="c1">// $fatal will be called because dropping v_o without ready_i === 1</span>
-<a name="l-239"></a>   <span class="c1">// is a protocol violation. </span>
-<a name="l-240"></a>   <span class="c1">//</span>
-<a name="l-241"></a>   <span class="c1">// If the user wants to send NEW data after ready_i === 1, they</span>
-<a name="l-242"></a>   <span class="c1">// will call bsg_dpi_fifo_tx() and v_o will be set to 1 again.</span>
-<a name="l-243"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-244"></a>      <span class="c1">// If the user fails to call bsg_dpi_fifo_tx() AGAIN (v_o_n === 0) after a</span>
-<a name="l-245"></a>      <span class="c1">// data beat was not accepted (v_o == 1 &amp;&amp; ready_i == 0) that is</span>
-<a name="l-246"></a>      <span class="c1">// a protocol error.</span>
-<a name="l-247"></a>      <span class="k">if</span><span class="p">(</span><span class="n">v_o_n</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_o</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;</span> <span class="n">ready_i_r</span> <span class="o">===</span> <span class="mi">0</span><span class="p">))</span> <span class="k">begin</span>
-<a name="l-248"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR: bsg_dpi_fifo_tx() was not called again on the cycle after the consumer was not ready&quot;</span><span class="p">);</span>
-<a name="l-249"></a>      <span class="k">end</span>
-<a name="l-250"></a>
-<a name="l-251"></a>      <span class="n">data_o</span> <span class="o">&lt;=</span> <span class="n">data_o_n</span><span class="p">;</span>
-<a name="l-252"></a>      <span class="n">v_o</span> <span class="o">&lt;=</span> <span class="n">v_o_n</span><span class="p">;</span>
-<a name="l-253"></a>
-<a name="l-254"></a>      <span class="n">v_o_n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<a name="l-255"></a>   <span class="k">end</span>
-<a name="l-256"></a>
-<a name="l-257"></a>   <span class="c1">// Save the last ready_i and data_o values for protocol checking</span>
-<a name="l-258"></a>   <span class="c1">// and reset tx_r to 0 to</span>
-<a name="l-259"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-260"></a>      <span class="n">ready_i_r</span> <span class="o">&lt;=</span> <span class="n">ready_i</span><span class="p">;</span>
-<a name="l-261"></a>      <span class="n">data_o_r</span> <span class="o">&lt;=</span> <span class="n">data_o</span><span class="p">;</span>
-<a name="l-262"></a>
-<a name="l-263"></a>      <span class="n">tx_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<a name="l-264"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
-<a name="l-265"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): posedge clk_i -- reset_i: %b v_o: %b ready_i: %b data_i: 0x%x&quot;</span><span class="p">,</span>
-<a name="l-266"></a>                 <span class="p">$</span><span class="kt">time</span><span class="p">,</span> <span class="n">reset_i</span><span class="p">,</span> <span class="n">v_o</span><span class="p">,</span> <span class="n">ready_i</span><span class="p">,</span> <span class="n">data_o</span><span class="p">);</span>
-<a name="l-267"></a>   <span class="k">end</span>
-<a name="l-268"></a>   
-<a name="l-269"></a>   
-<a name="l-270"></a>
-<a name="l-271"></a><span class="k">endmodule</span> <span class="c1">// bsg_nonsynth_dpi_to_fifo</span>
+<a name="l-51"></a><span class="no">`include</span> <span class="s">&quot;bsg_defines.v&quot;</span>
+<a name="l-52"></a>
+<a name="l-53"></a><span class="k">module</span> <span class="n">bsg_nonsynth_dpi_to_fifo</span>
+<a name="l-54"></a>  <span class="p">#(</span>
+<a name="l-55"></a>    <span class="k">parameter</span> <span class="n">width_p</span> <span class="o">=</span> <span class="s">&quot;inv&quot;</span>
+<a name="l-56"></a>    <span class="p">,</span><span class="k">parameter</span> <span class="kt">bit</span> <span class="n">debug_p</span> <span class="o">=</span> <span class="mi">0</span>
+<a name="l-57"></a>    <span class="p">)</span>
+<a name="l-58"></a>   <span class="p">(</span>
+<a name="l-59"></a>    <span class="k">input</span> <span class="n">clk_i</span>
+<a name="l-60"></a>    <span class="p">,</span> <span class="k">input</span> <span class="n">reset_i</span>
+<a name="l-61"></a>      
+<a name="l-62"></a>    <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span> <span class="n">v_o</span>
+<a name="l-63"></a>    <span class="p">,</span> <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o</span>
+<a name="l-64"></a>    <span class="p">,</span> <span class="k">input</span> <span class="n">ready_i</span>
+<a name="l-65"></a>      
+<a name="l-66"></a>    <span class="p">,</span> <span class="k">output</span> <span class="kt">bit</span> <span class="n">debug_o</span><span class="p">);</span>
+<a name="l-67"></a>
+<a name="l-68"></a>   <span class="c1">// This bit tracks whether initialize has been called. If data is</span>
+<a name="l-69"></a>   <span class="c1">// sent and recieved before init() is called, then this module will</span>
+<a name="l-70"></a>   <span class="c1">// call $fatal</span>
+<a name="l-71"></a>   <span class="kt">bit</span>    <span class="n">init_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="l-72"></a>   <span class="c1">// This bit checks whether bsg_dpi_fifo_tx() has been called multiple times in a</span>
+<a name="l-73"></a>   <span class="c1">// cycle.</span>
+<a name="l-74"></a>   <span class="kt">bit</span>    <span class="n">tx_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="l-75"></a>   
+<a name="l-76"></a>   <span class="c1">// Check if width_p is a ctype width. call $fatal, if not.</span>
+<a name="l-77"></a>   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">width_p</span> <span class="ow">inside</span> <span class="p">{</span><span class="mi">32&#39;d8</span><span class="p">,</span> <span class="mi">32&#39;d16</span><span class="p">,</span> <span class="mi">32&#39;d32</span><span class="p">,</span> <span class="mi">32&#39;d64</span><span class="p">,</span> <span class="mi">32&#39;d128</span><span class="p">}))</span> <span class="k">begin</span>
+<a name="l-78"></a>      <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): width_p of %d is not supported. Must be a power of 2 and divisible by 8&quot;</span><span class="p">,</span> <span class="n">width_p</span><span class="p">);</span>
+<a name="l-79"></a>   <span class="k">end</span>
+<a name="l-80"></a>
+<a name="l-81"></a>   <span class="c1">// Print module parameters to the console and set the intial debug</span>
+<a name="l-82"></a>   <span class="c1">// value</span>
+<a name="l-83"></a>   <span class="k">initial</span> <span class="k">begin</span>
+<a name="l-84"></a>      <span class="n">debug_o</span> <span class="o">=</span> <span class="n">debug_p</span><span class="p">;</span>
+<a name="l-85"></a>
+<a name="l-86"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO: bsg_nonsynth_dpi_to_fifo (initial begin)&quot;</span><span class="p">);</span>
+<a name="l-87"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO:     Instantiation: %M&quot;</span><span class="p">);</span>
+<a name="l-88"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO:     width_p = %d&quot;</span><span class="p">,</span> <span class="n">width_p</span><span class="p">);</span>
+<a name="l-89"></a>      <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG INFO:     debug_p = %d&quot;</span><span class="p">,</span> <span class="n">debug_p</span><span class="p">);</span>
+<a name="l-90"></a>   <span class="k">end</span>
+<a name="l-91"></a>
+<a name="l-92"></a>   <span class="c1">// This checks that fini was called before $finish</span>
+<a name="l-93"></a>   <span class="k">final</span> <span class="k">begin</span>
+<a name="l-94"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">init_r</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span>
+<a name="l-95"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): fini() was not called before $finish&quot;</span><span class="p">);</span>
+<a name="l-96"></a>   <span class="k">end</span>
+<a name="l-97"></a>   
+<a name="l-98"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_init</span><span class="p">;</span>
+<a name="l-99"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_fini</span><span class="p">;</span>
+<a name="l-100"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_debug</span><span class="p">;</span>
+<a name="l-101"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_width</span><span class="p">;</span>
+<a name="l-102"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_fifo_tx</span><span class="p">;</span>
+<a name="l-103"></a>   <span class="k">export</span> <span class="s">&quot;DPI-C&quot;</span> <span class="k">function</span> <span class="n">bsg_dpi_fifo_is_window</span><span class="p">;</span>
+<a name="l-104"></a>   
+<a name="l-105"></a>   <span class="c1">// Set or unset the debug_o output bit. If a state change occurs</span>
+<a name="l-106"></a>   <span class="c1">// (0-&gt;1 or 1-&gt;0) then module will print DEBUG ENABLED / DEBUG</span>
+<a name="l-107"></a>   <span class="c1">// DISABLED. No messages are printed if a state change does not</span>
+<a name="l-108"></a>   <span class="c1">// occur.</span>
+<a name="l-109"></a>   <span class="k">function</span> <span class="kt">void</span> <span class="n">bsg_dpi_debug</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="n">switch_i</span><span class="p">);</span>
+<a name="l-110"></a>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">debug_o</span> <span class="o">&amp;</span> <span class="n">switch_i</span><span class="p">)</span>
+<a name="l-111"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): DEBUG ENABLED&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+<a name="l-112"></a>      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">debug_o</span> <span class="o">&amp;</span> <span class="o">!</span><span class="n">switch_i</span><span class="p">)</span> 
+<a name="l-113"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): DEBUG DISABLED&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+<a name="l-114"></a>
+<a name="l-115"></a>      <span class="n">debug_o</span> <span class="o">=</span> <span class="n">switch_i</span><span class="p">;</span>
+<a name="l-116"></a>   <span class="k">endfunction</span>
+<a name="l-117"></a>
+<a name="l-118"></a>   <span class="c1">// Silly, but useful.</span>
+<a name="l-119"></a>   <span class="k">function</span> <span class="kt">int</span> <span class="n">bsg_dpi_width</span><span class="p">();</span>
+<a name="l-120"></a>      <span class="k">return</span> <span class="n">width_p</span><span class="p">;</span>
+<a name="l-121"></a>   <span class="k">endfunction</span>
+<a name="l-122"></a>
+<a name="l-123"></a>   <span class="c1">// Initialize this FIFO DPI Interface</span>
+<a name="l-124"></a>   <span class="k">function</span> <span class="kt">void</span> <span class="n">bsg_dpi_init</span><span class="p">();</span>
+<a name="l-125"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
+<a name="l-126"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): bsg_dpi_init() called&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+<a name="l-127"></a>
+<a name="l-128"></a>      <span class="k">if</span><span class="p">(</span><span class="n">init_r</span><span class="p">)</span>
+<a name="l-129"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_init() already called&quot;</span><span class="p">);</span>
+<a name="l-130"></a>
+<a name="l-131"></a>      <span class="n">init_r</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="l-132"></a>   <span class="k">endfunction</span>
+<a name="l-133"></a>
+<a name="l-134"></a>   <span class="c1">// Terminate this FIFO DPI Interface</span>
+<a name="l-135"></a>   <span class="k">function</span> <span class="kt">void</span> <span class="n">bsg_dpi_fini</span><span class="p">();</span>
+<a name="l-136"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
+<a name="l-137"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): bsg_dpi_fini() called&quot;</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+<a name="l-138"></a>
+<a name="l-139"></a>      <span class="k">if</span><span class="p">(</span><span class="o">~</span><span class="n">init_r</span><span class="p">)</span>
+<a name="l-140"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fini() already called&quot;</span><span class="p">);</span>
+<a name="l-141"></a>
+<a name="l-142"></a>      <span class="n">init_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="l-143"></a>   <span class="k">endfunction</span>
+<a name="l-144"></a>
+<a name="l-145"></a>   <span class="c1">// bsg_dpi_fifo_tx(input logic [width_p-1:0] data_i) -- Provide data_i</span>
+<a name="l-146"></a>   <span class="c1">// to the FIFO interface on data_o and set v_o. When the consumer</span>
+<a name="l-147"></a>   <span class="c1">// is ready (ready_i == 1) this function will return 1 to indicate</span>
+<a name="l-148"></a>   <span class="c1">// that the consumer accepted the data. When the consumer is not</span>
+<a name="l-149"></a>   <span class="c1">// ready this function will return 0 to indicate that the consumer</span>
+<a name="l-150"></a>   <span class="c1">// did not accept the data.</span>
+<a name="l-151"></a>   <span class="c1">//</span>
+<a name="l-152"></a>   <span class="c1">// If the data is not consumed, the host C/C++ program MUST call</span>
+<a name="l-153"></a>   <span class="c1">// this method again on the next cycle with the same arguments</span>
+<a name="l-154"></a>   <span class="c1">// (i.e. data_i should remain constant across calls). Not doing</span>
+<a name="l-155"></a>   <span class="c1">// this will cause $fatal to be called to indicate a protocol</span>
+<a name="l-156"></a>   <span class="c1">// violation because v_o will return to 0 in the next cycle.</span>
+<a name="l-157"></a>   <span class="c1">//</span>
+<a name="l-158"></a>   <span class="c1">// bsg_dpi_fifo_tx() MUST be called after the positive edge of clk_i is</span>
+<a name="l-159"></a>   <span class="c1">// evaluated. It MUST be called only once per cycle. Failure will</span>
+<a name="l-160"></a>   <span class="c1">// cause an error and a call to $fatal.</span>
+<a name="l-161"></a>
+<a name="l-162"></a>   <span class="c1">// We set v_o_n so that we can signal a read to the producer on the</span>
+<a name="l-163"></a>   <span class="c1">// NEXT positive edge. v_o_n flows to v_o on the negative edge of</span>
+<a name="l-164"></a>   <span class="c1">// clk_i</span>
+<a name="l-165"></a>   <span class="kt">logic</span> <span class="n">v_o_n</span><span class="p">;</span>
+<a name="l-166"></a>   <span class="c1">// Same as above, but with data_o.</span>
+<a name="l-167"></a>   <span class="kt">logic</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o_n</span><span class="p">;</span>
+<a name="l-168"></a>   
+<a name="l-169"></a>   <span class="c1">// We track the &quot;last&quot; data_o and last ready_i values to detect</span>
+<a name="l-170"></a>   <span class="c1">// protocol violations. These are captured on the positive edge of</span>
+<a name="l-171"></a>   <span class="c1">// the clock</span>
+<a name="l-172"></a>   <span class="kt">reg</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_o_r</span><span class="p">;</span>
+<a name="l-173"></a>   <span class="kt">reg</span>               <span class="n">ready_i_r</span><span class="p">;</span>
+<a name="l-174"></a>
+<a name="l-175"></a>   <span class="c1">// We track the polarity of the current edge so that we can call</span>
+<a name="l-176"></a>   <span class="c1">// $fatal when $rx is called during the wrong phase of clk_i.</span>
+<a name="l-177"></a>   <span class="kt">reg</span>               <span class="n">edgepol</span><span class="p">;</span>
+<a name="l-178"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-179"></a>      <span class="n">edgepol</span> <span class="o">&lt;=</span> <span class="n">clk_i</span><span class="p">;</span>
+<a name="l-180"></a>   <span class="k">end</span>
+<a name="l-181"></a>
+<a name="l-182"></a>
+<a name="l-183"></a>   <span class="c1">// TODO: Check that tx isn&#39;t called multiple times in a cycle</span>
+<a name="l-184"></a>   <span class="k">function</span> <span class="kt">bit</span> <span class="n">bsg_dpi_fifo_tx</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="n">width_p</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">data_bi</span><span class="p">);</span>
+<a name="l-185"></a>
+<a name="l-186"></a>      <span class="k">if</span><span class="p">(</span><span class="n">init_r</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-187"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() called before init()&quot;</span><span class="p">);</span>
+<a name="l-188"></a>      <span class="k">end</span>
+<a name="l-189"></a>
+<a name="l-190"></a>      <span class="k">if</span><span class="p">(</span><span class="n">reset_i</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-191"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() called while reset_i === 1&quot;</span><span class="p">);</span>
+<a name="l-192"></a>      <span class="k">end</span>      
+<a name="l-193"></a>
+<a name="l-194"></a>      <span class="k">if</span><span class="p">(</span><span class="n">tx_r</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-195"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() called multiple times in a clk_i cycle&quot;</span><span class="p">);</span>
+<a name="l-196"></a>      <span class="k">end</span>
+<a name="l-197"></a>
+<a name="l-198"></a>      <span class="k">if</span><span class="p">(</span><span class="n">clk_i</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-199"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() must be called when clk_i == 1&quot;</span><span class="p">);</span>
+<a name="l-200"></a>      <span class="k">end</span>
+<a name="l-201"></a>
+<a name="l-202"></a>      <span class="k">if</span><span class="p">(</span><span class="n">edgepol</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-203"></a>        <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() must be called after the positive edge of clk_i has been evaluated&quot;</span><span class="p">);</span>
+<a name="l-204"></a>      <span class="k">end</span>
+<a name="l-205"></a>
+<a name="l-206"></a>      <span class="k">if</span><span class="p">((</span><span class="n">ready_i_r</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">v_o</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">data_bi</span> <span class="o">===</span> <span class="n">data_o_r</span><span class="p">))</span> <span class="k">begin</span>
+<a name="l-207"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR (%M): bsg_dpi_fifo_tx() argument data_bi must be constant across calls/cycles when the consumer is not ready&quot;</span><span class="p">);</span>
+<a name="l-208"></a>      <span class="k">end</span>
+<a name="l-209"></a>
+<a name="l-210"></a>      <span class="c1">// These will flow to their respective outputs on the next</span>
+<a name="l-211"></a>      <span class="c1">// negative clock edge.</span>
+<a name="l-212"></a>      <span class="n">v_o_n</span> <span class="o">=</span> <span class="m">&#39;1</span><span class="p">;</span>
+<a name="l-213"></a>      <span class="n">data_o_n</span> <span class="o">=</span> <span class="n">data_bi</span><span class="p">;</span>
+<a name="l-214"></a>
+<a name="l-215"></a>      <span class="n">tx_r</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="l-216"></a>      
+<a name="l-217"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
+<a name="l-218"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): bsg_dpi_fifo_tx() called -- ready_i: %b, data_o_n: 0x%x&quot;</span><span class="p">,</span> 
+<a name="l-219"></a>                 <span class="p">$</span><span class="kt">time</span><span class="p">,</span> <span class="n">ready_i</span><span class="p">,</span> <span class="n">data_bi</span><span class="p">);</span>
+<a name="l-220"></a>
+<a name="l-221"></a>      <span class="k">return</span> <span class="p">(</span><span class="n">ready_i</span> <span class="o">===</span> <span class="mi">1</span><span class="p">);</span>
+<a name="l-222"></a>   <span class="k">endfunction</span>
+<a name="l-223"></a>
+<a name="l-224"></a>   <span class="c1">// The function bsg_dpi_fifo_is_window returns true if the interface is</span>
+<a name="l-225"></a>   <span class="c1">// in a valid time-window to call bsg_dpi_fifo_tx()</span>
+<a name="l-226"></a>   <span class="k">function</span> <span class="kt">bit</span> <span class="n">bsg_dpi_fifo_is_window</span><span class="p">();</span>
+<a name="l-227"></a>      <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="n">tx_r</span> <span class="o">&amp;</span> <span class="n">clk_i</span> <span class="o">&amp;</span> <span class="n">edgepol</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">reset_i</span><span class="p">);</span>
+<a name="l-228"></a>   <span class="k">endfunction</span>
+<a name="l-229"></a>
+<a name="l-230"></a>
+<a name="l-231"></a>   <span class="c1">// We set v_o and data_o on a negative clock edge so that it is</span>
+<a name="l-232"></a>   <span class="c1">// seen on the next positive edge. v_o_n and data_o_n hold the &quot;next&quot;</span>
+<a name="l-233"></a>   <span class="c1">// values for v_o and data_o.</span>
+<a name="l-234"></a>   <span class="c1">//</span>
+<a name="l-235"></a>   <span class="c1">// We proactively clear v_o by setting v_o_n to 0 in case ready_i ==</span>
+<a name="l-236"></a>   <span class="c1">// 1 on the positive edge. If ready_i == 1, and we don&#39;t set v_o_n</span>
+<a name="l-237"></a>   <span class="c1">// here, then the user will have to call tx again to clear v_o even</span>
+<a name="l-238"></a>   <span class="c1">// though they aren&#39;t sending data. If ready_i === 0 then the user</span>
+<a name="l-239"></a>   <span class="c1">// MUST call tx again and v_o will be set to 1 again, otherwise</span>
+<a name="l-240"></a>   <span class="c1">// $fatal will be called because dropping v_o without ready_i === 1</span>
+<a name="l-241"></a>   <span class="c1">// is a protocol violation. </span>
+<a name="l-242"></a>   <span class="c1">//</span>
+<a name="l-243"></a>   <span class="c1">// If the user wants to send NEW data after ready_i === 1, they</span>
+<a name="l-244"></a>   <span class="c1">// will call bsg_dpi_fifo_tx() and v_o will be set to 1 again.</span>
+<a name="l-245"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-246"></a>      <span class="c1">// If the user fails to call bsg_dpi_fifo_tx() AGAIN (v_o_n === 0) after a</span>
+<a name="l-247"></a>      <span class="c1">// data beat was not accepted (v_o == 1 &amp;&amp; ready_i == 0) that is</span>
+<a name="l-248"></a>      <span class="c1">// a protocol error.</span>
+<a name="l-249"></a>      <span class="k">if</span><span class="p">(</span><span class="n">v_o_n</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_o</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;</span> <span class="n">ready_i_r</span> <span class="o">===</span> <span class="mi">0</span><span class="p">))</span> <span class="k">begin</span>
+<a name="l-250"></a>         <span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;BSG ERROR: bsg_dpi_fifo_tx() was not called again on the cycle after the consumer was not ready&quot;</span><span class="p">);</span>
+<a name="l-251"></a>      <span class="k">end</span>
+<a name="l-252"></a>
+<a name="l-253"></a>      <span class="n">data_o</span> <span class="o">&lt;=</span> <span class="n">data_o_n</span><span class="p">;</span>
+<a name="l-254"></a>      <span class="n">v_o</span> <span class="o">&lt;=</span> <span class="n">v_o_n</span><span class="p">;</span>
+<a name="l-255"></a>
+<a name="l-256"></a>      <span class="n">v_o_n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="l-257"></a>   <span class="k">end</span>
+<a name="l-258"></a>
+<a name="l-259"></a>   <span class="c1">// Save the last ready_i and data_o values for protocol checking</span>
+<a name="l-260"></a>   <span class="c1">// and reset tx_r to 0 to</span>
+<a name="l-261"></a>   <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-262"></a>      <span class="n">ready_i_r</span> <span class="o">&lt;=</span> <span class="n">ready_i</span><span class="p">;</span>
+<a name="l-263"></a>      <span class="n">data_o_r</span> <span class="o">&lt;=</span> <span class="n">data_o</span><span class="p">;</span>
+<a name="l-264"></a>
+<a name="l-265"></a>      <span class="n">tx_r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="l-266"></a>      <span class="k">if</span><span class="p">(</span><span class="n">debug_o</span><span class="p">)</span>
+<a name="l-267"></a>        <span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;BSG DBGINFO (%M@%t): posedge clk_i -- reset_i: %b v_o: %b ready_i: %b data_i: 0x%x&quot;</span><span class="p">,</span>
+<a name="l-268"></a>                 <span class="p">$</span><span class="kt">time</span><span class="p">,</span> <span class="n">reset_i</span><span class="p">,</span> <span class="n">v_o</span><span class="p">,</span> <span class="n">ready_i</span><span class="p">,</span> <span class="n">data_o</span><span class="p">);</span>
+<a name="l-269"></a>   <span class="k">end</span>
+<a name="l-270"></a>   
+<a name="l-271"></a>   
+<a name="l-272"></a>
+<a name="l-273"></a><span class="k">endmodule</span> <span class="c1">// bsg_nonsynth_dpi_to_fifo</span>
 </pre></div>
 </td></tr></table>
   </body>

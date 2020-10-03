@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sctag_ua_dp.v.html" target="file-frame">third_party/tests/utd-sv/sctag_ua_dp.v</a>
 defines: 
-time_elapsed: 0.434s
-ram usage: 13808 KB
+time_elapsed: 0.394s
+ram usage: 13172 KB
 </pre>
 <pre class="log">
 
@@ -110,7 +110,6 @@ module sctag_ua_dp (
 	wire [11:0] used_byp_c4c5;
 	wire [11:0] alloc_byp_c2c3;
 	wire [11:0] alloc_byp_c4c5;
-	wire vuad_sel_rd;
 	mux2ds #(12) mux_used_c1(
 		.dout(used_c1[11:0]),
 		.in0(vuad_array_rd_data_c1[50:39]),
@@ -118,8 +117,6 @@ module sctag_ua_dp (
 		.in1(used_byp_c1[11:0]),
 		.sel1(~vuad_sel_rd)
 	);
-	wire rclk;
-	wire se;
 	dff_s #(12) ff_used_c2(
 		.q(used_c2[11:0]),
 		.din(used_c1[11:0]),
@@ -137,7 +134,6 @@ module sctag_ua_dp (
 		.so()
 	);
 	assign vuad_dp_used_c2 = used_c2;
-	wire sel_ua_wr_data_byp;
 	mux2ds #(13) mux_used_rd_c2(
 		.dout({parity_rd_c2[1], used_rd_c2[11:0]}),
 		.in0({parity_wr_data_c6[1], used_wr_data_c6[11:0]}),
@@ -147,7 +143,6 @@ module sctag_ua_dp (
 	);
 	assign diag_rd_ua_out[25] = parity_rd_c2[1];
 	assign diag_rd_ua_out[23:12] = used_rd_c2[11:0];
-	wire vuad_sel_c2;
 	mux2ds #(12) mux_used_byp_c2c3(
 		.dout(used_byp_c2c3[11:0]),
 		.in0(used_c2[11:0]),
@@ -155,7 +150,6 @@ module sctag_ua_dp (
 		.in1(used_byp_c3_in[11:0]),
 		.sel1(~vuad_sel_c2)
 	);
-	wire vuad_sel_c2orc3;
 	mux2ds #(12) mux_used_byp_c1(
 		.dout(used_byp_c1[11:0]),
 		.in0(used_byp_c2c3[11:0]),
@@ -163,7 +157,6 @@ module sctag_ua_dp (
 		.in1(used_byp_c4c5[11:0]),
 		.sel1(~vuad_sel_c2orc3)
 	);
-	wire used_rd_parity_c2;
 	zzpar16 parity_used_rd(
 		.z(used_rd_parity_c2),
 		.d({3&#39;b000, parity_rd_c2[1], used_rd_c2[11:0]})
@@ -189,7 +182,6 @@ module sctag_ua_dp (
 		.si(),
 		.so()
 	);
-	wire bistordiag_wr_ua_c4;
 	mux2ds #(13) mux_wr_array_used_c4(
 		.dout(vuad_array_wr_data_c4[51:39]),
 		.in0({parity_wr_data_c4[1], used_c4[11:0]}),
@@ -197,7 +189,6 @@ module sctag_ua_dp (
 		.in1(bistordiag_ua_data[25:13]),
 		.sel1(bistordiag_wr_ua_c4)
 	);
-	wire vuad_sel_c4;
 	mux2ds #(12) mux_used_byp_c4c5(
 		.dout(used_byp_c4c5[11:0]),
 		.in0(used_c4[11:0]),
@@ -268,12 +259,10 @@ module sctag_ua_dp (
 		.in1(alloc_byp_c4c5[11:0]),
 		.sel1(~vuad_sel_c2orc3)
 	);
-	wire alloc_rd_parity_c2;
 	zzpar16 parity_dir_rd(
 		.z(alloc_rd_parity_c2),
 		.d({3&#39;b000, parity_rd_c2[0], alloc_rd_c2[11:0]})
 	);
-	wire vuad_sel_c2_d1;
 	mux2ds #(12) mux_alloc_byp_c2_in(
 		.dout(alloc_byp_c2_in[11:0]),
 		.in0(alloc_c2[11:0]),

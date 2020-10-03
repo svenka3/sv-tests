@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_full.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_serial_in_parallel_out_full.v</a>
 defines: 
-time_elapsed: 0.211s
-ram usage: 13984 KB
+time_elapsed: 0.153s
+ram usage: 13644 KB
 </pre>
 <pre class="log">
 
@@ -67,9 +67,6 @@ module bsg_serial_in_parallel_out_full (
 	wire [els_p - 1:0] fifo_ready_lo;
 	wire [els_p - 1:0] fifo_valid_lo;
 	assign v_o = &amp;fifo_valid_lo;
-	wire clk_i;
-	wire reset_i;
-	wire v_i;
 	bsg_round_robin_1_to_n #(
 		.width_p(width_p),
 		.num_out_p(els_p)
@@ -85,7 +82,6 @@ module bsg_serial_in_parallel_out_full (
 	generate
 		for (i = 0; i &lt; els_p; i = i + 1) begin : fifos
 			if ((i == 0) &amp;&amp; (use_minimal_buffering_p == 0)) begin : twofifo
-				wire yumi_i;
 				bsg_two_fifo #(.width_p(width_p)) fifo(
 					.clk_i(clk_i),
 					.reset_i(reset_i),
@@ -98,7 +94,6 @@ module bsg_serial_in_parallel_out_full (
 				);
 			end
 			else begin : onefifo
-				wire yumi_i;
 				bsg_one_fifo #(.width_p(width_p)) fifo(
 					.clk_i(clk_i),
 					.reset_i(reset_i),

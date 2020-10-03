@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: Test imported from ivtest
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 tags: ivtest
 incdirs: /tmpfs/src/github/sv-tests/third_party/tests/ivtest /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests
 top_module: 
@@ -18,17 +18,11 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/assign_op_type.v.html" target="file-frame">third_party/tests/ivtest/ivltests/assign_op_type.v</a>
 defines: 
 time_elapsed: 0.008s
-ram usage: 10288 KB
+ram usage: 10876 KB
 </pre>
 <pre class="log">
 
 moore -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest -I /tmpfs/src/github/sv-tests/third_party/tests/ivtest/ivltests -e test <a href="../../../../third_party/tests/ivtest/ivltests/assign_op_type.v.html" target="file-frame">third_party/tests/ivtest/ivltests/assign_op_type.v</a>
-error: expression `{d}` cannot be assigned to
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/assign_op_type.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/assign_op_type.v:19</a>:3-6:
-   | 
-   |   {d} += a;
-   |   ^^^      
-
 warning: unsupported: system task `$display`; ignored
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/assign_op_type.v.html#l-21" target="file-frame">third_party/tests/ivtest/ivltests/assign_op_type.v:21</a>:3-21:
    | 
@@ -65,6 +59,21 @@ warning: unsupported: system task `$display`; ignored
    |     $display(&#34;PASSED&#34;);
    |     ^^^^^^^^^^^^^^^^^^ 
 
+compiler bug: type assertion failed: `logic [7:0]` != `reg signed [7:0]`
+  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/assign_op_type.v.html#l-19" target="file-frame">third_party/tests/ivtest/ivltests/assign_op_type.v:19</a>:3-12:
+   | 
+   |   {d} += a;
+   |   ^^^^^^^^^
+   = note: Type mismatch:
+   = note:     Left-hand side:  `logic [7:0]`
+   = note:     Right-hand side: `reg signed [7:0]`
+   = note: Encountered at src/svlog/codegen.rs:2003
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;type assertion failed: `logic [7:0]` != `reg signed [7:0]`&#39;, /rustc/04488afe34512aa4c33566eb16d8c912a3ae04f9/src/libstd/macros.rs:16:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>

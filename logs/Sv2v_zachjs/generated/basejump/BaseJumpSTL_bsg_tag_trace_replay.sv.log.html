@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_tag/bsg_tag_trace_replay.v</a>
 defines: 
-time_elapsed: 0.290s
-ram usage: 13988 KB
+time_elapsed: 0.334s
+ram usage: 13924 KB
 </pre>
 <pre class="log">
 
@@ -68,13 +68,6 @@ module bsg_tag_trace_replay (
 		input reg [trace_ring_width_lp - 1:0] inp;
 		sv2v_cast_C5888 = inp;
 	endfunction
-	wire clk_i;
-	wire reset_i;
-	wire en_i;
-	wire valid_i;
-	wire ready_o;
-	wire done_o;
-	wire error_o;
 	bsg_fsb_node_trace_replay #(
 		.ring_width_p(trace_ring_width_lp),
 		.rom_addr_width_p(rom_addr_width_p)
@@ -98,9 +91,6 @@ module bsg_tag_trace_replay (
 	wire [trace_ring_width_lp + 1:0] data_n = {1&#39;b0, payload_n, header_n, 1&#39;b1};
 	wire piso_ready_lo;
 	assign tr_yumi_li = piso_ready_lo &amp; tr_valid_lo;
-	wire valid_o;
-	wire tag_data_o;
-	wire yumi_i;
 	bsg_parallel_in_serial_out #(
 		.width_p(1),
 		.els_p(trace_ring_width_lp + 2)
@@ -109,7 +99,7 @@ module bsg_tag_trace_replay (
 		.reset_i(reset_i),
 		.valid_i(tr_valid_lo),
 		.data_i(data_n),
-		.ready_o(piso_ready_lo),
+		.ready_and_o(piso_ready_lo),
 		.valid_o(valid_o),
 		.data_o(tag_data_o),
 		.yumi_i(yumi_i)

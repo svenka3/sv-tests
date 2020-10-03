@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v</a>
 defines: 
 time_elapsed: 0.009s
-ram usage: 11092 KB
+ram usage: 11076 KB
 </pre>
 <pre class="log">
 
@@ -71,28 +71,77 @@ error: `N2100` not found
    |     ADDERXY XX127 (N1076, N1044, N2131, N2100, VSS, VSS);
    |                                         ^^^^^            
 
-error: expression `{X31, X00}` cannot be assigned to
+compiler bug: mir lvalue should have been simplified by its parent assignment; Lvalue {
+    id: n577,
+    origin: n37,
+    env: p0,
+    span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v</a>&#34;):106-116,
+    ty: logic [1:0],
+    kind: Concat(
+        [
+            Lvalue {
+                id: n575,
+                origin: n33,
+                env: p0,
+                span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v</a>&#34;):107-110,
+                ty: logic,
+                kind: Var(
+                    n21,
+                ),
+            },
+            Lvalue {
+                id: n576,
+                origin: n36,
+                env: p0,
+                span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v</a>&#34;):112-115,
+                ty: logic,
+                kind: Var(
+                    n20,
+                ),
+            },
+        ],
+    ),
+}
   --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html#l-6" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v:6</a>:12-22:
    | 
    |     assign {X31, X00} = state ;
    |            ^^^^^^^^^^          
-
-compiler bug: VarDeclName with weird parent PortDecl(PortDecl #258)
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html#l-28" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v:28</a>:18-21:
-   | 
-   |     output cout, sum;
-   |                  ^^^ 
-   = note: Encountered at src/svlog/typeck.rs:62
-   = note: Needed to compute the type of the expression:
-  --&gt; <a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html#l-31" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v:31</a>:12-15:
-   | 
-   |     assign sum = total[0] ;
-   |            ^^^             
+   = note: Encountered at src/svlog/codegen.rs:1856
 
 You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
 [1]: https://github.com/fabianschuiki/moore
 
-thread &#39;main&#39; panicked at &#39;VarDeclName with weird parent PortDecl(PortDecl #258)&#39;, /rustc/04488afe34512aa4c33566eb16d8c912a3ae04f9/src/libstd/macros.rs:16:9
+thread &#39;main&#39; panicked at &#39;mir lvalue should have been simplified by its parent assignment; Lvalue {
+    id: n577,
+    origin: n37,
+    env: p0,
+    span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v</a>&#34;):106-116,
+    ty: logic [1:0],
+    kind: Concat(
+        [
+            Lvalue {
+                id: n575,
+                origin: n33,
+                env: p0,
+                span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v</a>&#34;):107-110,
+                ty: logic,
+                kind: Var(
+                    n21,
+                ),
+            },
+            Lvalue {
+                id: n576,
+                origin: n36,
+                env: p0,
+                span: Source(1; &#34;<a href="../../../../third_party/tests/ivtest/ivltests/pr910.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr910.v</a>&#34;):112-115,
+                ty: logic,
+                kind: Var(
+                    n20,
+                ),
+            },
+        ],
+    ),
+}&#39;, /rustc/04488afe34512aa4c33566eb16d8c912a3ae04f9/src/libstd/macros.rs:16:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>

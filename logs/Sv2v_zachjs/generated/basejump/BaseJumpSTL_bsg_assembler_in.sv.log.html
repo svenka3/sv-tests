@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_in.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_in.v</a>
 defines: 
-time_elapsed: 0.348s
-ram usage: 14104 KB
+time_elapsed: 0.148s
+ram usage: 13612 KB
 </pre>
 <pre class="log">
 
@@ -58,8 +58,6 @@ module bsg_assembler_in (
 	wire [num_out_p - 1:0] fifo_not_full_vec;
 	wire [num_out_p - 1:0] fifo_valid_vec;
 	wire [(num_out_p * width_p) - 1:0] fifo_data_vec;
-	wire clk;
-	wire reset;
 	bsg_round_robin_fifo_to_fifo #(
 		.width_p(width_p),
 		.num_in_p(num_in_p),
@@ -80,7 +78,6 @@ module bsg_assembler_in (
 	genvar i;
 	generate
 		for (i = 0; i &lt; num_out_p; i = i + 1) begin : fifos
-			wire yumi_i;
 			bsg_two_fifo #(.width_p(width_p)) ring_packet_fifo(
 				.clk_i(clk),
 				.reset_i(reset),
@@ -93,7 +90,6 @@ module bsg_assembler_in (
 			);
 		end
 	endgenerate
-	wire valid_o;
 	assign valid_o = &amp;fifo_valid_vec &amp; calibration_done_i;
 endmodule
 

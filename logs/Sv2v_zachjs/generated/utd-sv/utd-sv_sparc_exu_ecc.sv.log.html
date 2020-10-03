@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/sparc_exu_ecc.v.html" target="file-frame">third_party/tests/utd-sv/sparc_exu_ecc.v</a>
 defines: 
-time_elapsed: 0.165s
-ram usage: 11932 KB
+time_elapsed: 0.134s
+ram usage: 11824 KB
 </pre>
 <pre class="log">
 
@@ -99,7 +99,6 @@ module sparc_exu_ecc (
 	wire [63:0] exu_lsu_rs3_data_m;
 	wire [63:0] error_data_m;
 	assign clk = rclk;
-	wire se;
 	dff_s #(8) rs1_ecc_d2e(
 		.din(byp_ecc_rs1_synd_d[7:0]),
 		.clk(clk),
@@ -124,9 +123,6 @@ module sparc_exu_ecc (
 		.si(),
 		.so()
 	);
-	wire ecl_ecc_rs1_use_rf_e;
-	wire ecc_ecl_rs1_ce;
-	wire ecc_ecl_rs1_ue;
 	zzecc_exu_chkecc2 chk_rs1(
 		.d(byp_ecc_rcc_data_e[63:0]),
 		.vld(ecl_ecc_rs1_use_rf_e),
@@ -136,9 +132,6 @@ module sparc_exu_ecc (
 		.ue(ecc_ecl_rs1_ue),
 		.ne()
 	);
-	wire ecl_ecc_rs2_use_rf_e;
-	wire ecc_ecl_rs2_ce;
-	wire ecc_ecl_rs2_ue;
 	zzecc_exu_chkecc2 chk_rs2(
 		.d(byp_alu_rs2_data_e[63:0]),
 		.vld(ecl_ecc_rs2_use_rf_e),
@@ -148,9 +141,6 @@ module sparc_exu_ecc (
 		.ue(ecc_ecl_rs2_ue),
 		.ne()
 	);
-	wire ecl_ecc_rs3_use_rf_e;
-	wire ecc_ecl_rs3_ce;
-	wire ecc_ecl_rs3_ue;
 	zzecc_exu_chkecc2 chk_rs3(
 		.d(byp_ecc_rs3_data_e[63:0]),
 		.vld(ecl_ecc_rs3_use_rf_e),
@@ -229,9 +219,6 @@ module sparc_exu_ecc (
 		.sel1(sel_rs2_m),
 		.sel2(sel_rs3_m)
 	);
-	wire ecl_ecc_log_rs1_m;
-	wire ecl_ecc_log_rs2_m;
-	wire ecl_ecc_log_rs3_m;
 	mux3ds #(7) syn_log_mux(
 		.dout(exu_ifu_err_synd_m[6:0]),
 		.in0(rs1_err_m[6:0]),

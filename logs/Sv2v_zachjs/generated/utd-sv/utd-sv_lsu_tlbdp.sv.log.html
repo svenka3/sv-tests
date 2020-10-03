@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/lsu_tlbdp.v.html" target="file-frame">third_party/tests/utd-sv/lsu_tlbdp.v</a>
 defines: 
-time_elapsed: 0.168s
-ram usage: 12984 KB
+time_elapsed: 0.318s
+ram usage: 12668 KB
 </pre>
 <pre class="log">
 
@@ -102,8 +102,6 @@ module lsu_tlbdp (
 	wire clk;
 	assign clk = rclk;
 	wire dtlb_bypass_m;
-	wire lsu_dtlb_bypass_e;
-	wire se;
 	dff_s #(1) dtlb_bypass_stgm(
 		.din(lsu_dtlb_bypass_e),
 		.q(dtlb_bypass_m),
@@ -112,7 +110,6 @@ module lsu_tlbdp (
 		.si(),
 		.so()
 	);
-	wire ifu_lsu_ld_inst_e;
 	wire ld_inst_vld_m;
 	dff_s #(1) ld_inst_vld_stgm(
 		.din(ifu_lsu_ld_inst_e),
@@ -122,7 +119,6 @@ module lsu_tlbdp (
 		.si(),
 		.so()
 	);
-	wire stb_cam_vld;
 	assign stb_cam_vld = (ld_inst_vld_m &amp; (tlb_cam_hit | dtlb_bypass_m)) &amp; ~(asi_internal_m &amp; lsu_alt_space_m);
 	wire [58:0] tlb_rd_tte_tag_buf;
 	wire [42:0] tlb_rd_tte_data_buf;
@@ -138,7 +134,6 @@ module lsu_tlbdp (
 	assign tlb_pgnum_buf[39:10] = ~tlb_pgnum_l[39:10];
 	assign tlb_pgnum_buf2[39:37] = ~tlb_pgnum_l[39:37];
 	assign tlb_rd_tte_data_buf[42:0] = tlb_rd_tte_data[42:0];
-	wire tlb_rd_tte_data_ie_buf;
 	assign tlb_rd_tte_data_ie_buf = tlb_rd_tte_data_buf[9];
 	assign tlb_rd_tte_data_27_22_sel_buf = tlb_rd_tte_data_buf[23];
 	assign tlb_rd_tte_data_21_16_sel_buf = tlb_rd_tte_data_buf[16];
@@ -152,9 +147,7 @@ module lsu_tlbdp (
 	wire lsu_rd_tte_tag_parity;
 	assign lsu_rd_tte_data_parity = ^tlb_rd_tte_data_buf[41:0];
 	assign lsu_rd_tte_tag_parity = ^{tlb_rd_tte_tag_buf[58:55], tlb_rd_tte_tag_buf[53:27], tlb_rd_tte_tag_buf[25], tlb_rd_tte_tag_buf[23:0]};
-	wire tte_data_parity_error;
 	assign tte_data_parity_error = tlb_rd_tte_data_parity ^ lsu_rd_tte_data_parity;
-	wire tte_tag_parity_error;
 	assign tte_tag_parity_error = tlb_rd_tte_tag_parity ^ lsu_rd_tte_tag_parity;
 	assign cache_way_hit_buf1[3:0] = cache_way_hit[3:0];
 	assign cache_way_hit_buf2[3:0] = cache_way_hit[3:0];

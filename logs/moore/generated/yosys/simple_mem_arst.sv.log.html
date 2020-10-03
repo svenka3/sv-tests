@@ -18,7 +18,7 @@ mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/simple/mem_arst.v.html" target="file-frame">third_party/tools/yosys/tests/simple/mem_arst.v</a>
 defines: 
 time_elapsed: 0.008s
-ram usage: 10896 KB
+ram usage: 10756 KB
 </pre>
 <pre class="log">
 
@@ -35,10 +35,10 @@ init:
     %Clk_i.prb = prb i1$ %Clk_i
     wait %check, %Reset_n_i, %Clk_i
 check:
-    %3 = prb i32$ %i
-    st i32* %i.shadow, %3
-    %4 = prb [16 x i4]$ %Mem
-    st [16 x i4]* %Mem.shadow, %4
+    %3 = prb [16 x i4]$ %Mem
+    st [16 x i4]* %Mem.shadow, %3
+    %4 = prb i32$ %i
+    st i32* %i.shadow, %4
     %Reset_n_i.prb1 = prb i1$ %Reset_n_i
     %5 = const i1 0
     %6 = neq i1 %Reset_n_i.prb, %5
@@ -54,12 +54,12 @@ event:
     %10 = neq i1 %Reset_n_i.prb1, %5
     %11 = not i1 %10
     %12 = neq i1 %11, %5
-    %13 = const i4 0
-    %14 = const time 0s 1d
-    %15 = [16 x i4 %13]
+    %13 = const time 0s 1d
+    %14 = const i4 0
+    %15 = [16 x i4 %14]
     br %12, %if_false, %if_true
 if_true:
-    drv i4$ %Data_o, %13, %14
+    drv i4$ %Data_o, %14, %13
     %16 = const i32 0
     %17 = const time 0s 1e
     drv i32$ %i, %16, %17
@@ -70,9 +70,9 @@ if_false:
     %Addr_i.prb = prb i4$ %Addr_i
     %18 = shr [16 x i4] %Mem.shadow.ld, [16 x i4] %15, i4 %Addr_i.prb
     %19 = extf i4, [16 x i4] %18, 0
-    drv i4$ %Data_o, %19, %14
+    drv i4$ %Data_o, %19, %13
     %WR_i.prb = prb i4$ %WR_i
-    %20 = neq i4 %WR_i.prb, %13
+    %20 = neq i4 %WR_i.prb, %14
     br %20, %0, %if_true1
 loop_body:
     %i.shadow.ld = ld i32* %i.shadow
@@ -84,7 +84,7 @@ loop_continue:
     %23 = sig [16 x i4] %15
     %24 = shr [16 x i4]$ %Mem, [16 x i4]$ %23, i32 %i.shadow.ld1
     %25 = extf i4$, [16 x i4]$ %24, 0
-    drv i4$ %25, %13, %14
+    drv i4$ %25, %14, %13
     %i.shadow.ld2 = ld i32* %i.shadow
     %26 = const i32 1
     %27 = add i32 %i.shadow.ld2, %26
@@ -96,7 +96,7 @@ if_true1:
     %29 = shr [16 x i4]$ %Mem, [16 x i4]$ %28, i4 %Addr_i.prb
     %30 = extf i4$, [16 x i4]$ %29, 0
     %Data_i.prb = prb i4$ %Data_i
-    drv i4$ %30, %Data_i.prb, %14
+    drv i4$ %30, %Data_i.prb, %13
     br %0
 }
 

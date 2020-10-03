@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dataflow/bsg_ready_to_credit_flow_converter.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dataflow/bsg_ready_to_credit_flow_converter.v</a>
 defines: 
-time_elapsed: 0.323s
-ram usage: 13656 KB
+time_elapsed: 0.257s
+ram usage: 13304 KB
 </pre>
 <pre class="log">
 
@@ -45,9 +45,7 @@ module bsg_ready_to_credit_flow_converter (
 	wire [step_width_lp - 1:0] up;
 	wire [step_width_lp - 1:0] down;
 	wire [ptr_width_lp - 1:0] credit_cnt;
-	wire ready_o;
 	assign ready_o = credit_cnt != 0;
-	wire v_o;
 	assign v_o = v_i &amp; ready_o;
 	function automatic [step_width_lp - 1:0] sv2v_cast_2DCAE;
 		input reg [step_width_lp - 1:0] inp;
@@ -55,8 +53,6 @@ module bsg_ready_to_credit_flow_converter (
 	endfunction
 	assign up = (credit_i ? sv2v_cast_2DCAE($unsigned(decimation_p)) : sv2v_cast_2DCAE(0));
 	assign down = {{step_width_lp - 1 {1&#39;b0}}, v_o};
-	wire clk_i;
-	wire reset_i;
 	bsg_counter_up_down_variable #(
 		.max_val_p(credit_max_val_p),
 		.init_val_p(credit_initial_p),

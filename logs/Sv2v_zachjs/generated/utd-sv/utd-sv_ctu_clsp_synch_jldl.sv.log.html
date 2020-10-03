@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/ctu_clsp_synch_jldl.v.html" target="file-frame">third_party/tests/utd-sv/ctu_clsp_synch_jldl.v</a>
 defines: 
-time_elapsed: 0.565s
-ram usage: 13064 KB
+time_elapsed: 0.191s
+ram usage: 13200 KB
 </pre>
 <pre class="log">
 
@@ -129,10 +129,6 @@ module ctu_clsp_synch_jldl (
 	output start_clk_dl;
 	wire jbus_rx_sync_gated;
 	assign jbus_rx_sync_gated = jbus_rx_sync &amp; start_clk_cl;
-	wire start_clk_cl;
-	wire start_clk_dl;
-	wire ctu_dram_tx_sync_early;
-	wire cmp_clk;
 	dffrle_ns u_start_clk_dl(
 		.din(start_clk_cl),
 		.q(start_clk_dl),
@@ -140,24 +136,18 @@ module ctu_clsp_synch_jldl (
 		.rst_l(start_clk_cl),
 		.clk(cmp_clk)
 	);
-	wire ctu_dram02_dram_cken_dl;
-	wire ctu_dram02_cken_cl;
 	ctu_synch_cl_dl u_ctu_dram02_dram_cken(
 		.syncdata(ctu_dram02_dram_cken_dl),
 		.cmp_clk(cmp_clk),
 		.ctu_dram_tx_sync_early(ctu_dram_tx_sync_early),
 		.presyncdata(ctu_dram02_cken_cl)
 	);
-	wire ctu_dram13_dram_cken_dl;
-	wire ctu_dram13_cken_cl;
 	ctu_synch_cl_dl u_ctu_dram13_dram_cken(
 		.syncdata(ctu_dram13_dram_cken_dl),
 		.cmp_clk(cmp_clk),
 		.ctu_dram_tx_sync_early(ctu_dram_tx_sync_early),
 		.presyncdata(ctu_dram13_cken_cl)
 	);
-	wire coin_edge;
-	wire io_pwron_rst_l;
 	ctu_synch_jl_dl #(3) u_ctu_ddr0_dll_delayctr(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_ddr0_dll_delayctr[2:0]),
@@ -190,8 +180,6 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_ddr3_dll_delayctr_jl[2:0])
 	);
-	wire ctu_dll0_byp_l;
-	wire ctu_dll0_byp_l_jl;
 	ctu_synch_jl_dl u_ctu_dll0_byp_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_dll0_byp_l),
@@ -200,8 +188,6 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_dll0_byp_l_jl)
 	);
-	wire ctu_dll1_byp_l;
-	wire ctu_dll1_byp_l_jl;
 	ctu_synch_jl_dl u_ctu_dll1_byp_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_dll1_byp_l),
@@ -210,8 +196,6 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_dll1_byp_l_jl)
 	);
-	wire ctu_dll2_byp_l;
-	wire ctu_dll2_byp_l_jl;
 	ctu_synch_jl_dl u_ctu_dll2_byp_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_dll2_byp_l),
@@ -220,8 +204,6 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_dll2_byp_l_jl)
 	);
-	wire ctu_dll3_byp_l;
-	wire ctu_dll3_byp_l_jl;
 	ctu_synch_jl_dl u_ctu_dll3_byp_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_dll3_byp_l),
@@ -262,40 +244,30 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_dll3_byp_val_jl[4:0])
 	);
-	wire ctu_ddr0_dram_cken_dl;
-	wire ctu_ddr0_cken_cl;
 	ctu_synch_cl_dl u_ctu_ddr0_dram_cken(
 		.syncdata(ctu_ddr0_dram_cken_dl),
 		.cmp_clk(cmp_clk),
 		.ctu_dram_tx_sync_early(ctu_dram_tx_sync_early),
 		.presyncdata(ctu_ddr0_cken_cl)
 	);
-	wire ctu_ddr1_dram_cken_dl;
-	wire ctu_ddr1_cken_cl;
 	ctu_synch_cl_dl u_ctu_ddr1_dram_cken(
 		.syncdata(ctu_ddr1_dram_cken_dl),
 		.cmp_clk(cmp_clk),
 		.ctu_dram_tx_sync_early(ctu_dram_tx_sync_early),
 		.presyncdata(ctu_ddr1_cken_cl)
 	);
-	wire ctu_ddr2_dram_cken_dl;
-	wire ctu_ddr2_cken_cl;
 	ctu_synch_cl_dl u_ctu_ddr2_dram_cken(
 		.syncdata(ctu_ddr2_dram_cken_dl),
 		.cmp_clk(cmp_clk),
 		.ctu_dram_tx_sync_early(ctu_dram_tx_sync_early),
 		.presyncdata(ctu_ddr2_cken_cl)
 	);
-	wire ctu_ddr3_dram_cken_dl;
-	wire ctu_ddr3_cken_cl;
 	ctu_synch_cl_dl u_ctu_ddr3_dram_cken(
 		.syncdata(ctu_ddr3_dram_cken_dl),
 		.cmp_clk(cmp_clk),
 		.ctu_dram_tx_sync_early(ctu_dram_tx_sync_early),
 		.presyncdata(ctu_ddr3_cken_cl)
 	);
-	wire ctu_ddr0_iodll_rst_l;
-	wire ctu_ddr0_iodll_rst_jl_l;
 	ctu_synch_jl_dl u_ctu_ddr0_iodll_rst_dl_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_ddr0_iodll_rst_l),
@@ -304,8 +276,6 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_ddr0_iodll_rst_jl_l)
 	);
-	wire ctu_ddr1_iodll_rst_l;
-	wire ctu_ddr1_iodll_rst_jl_l;
 	ctu_synch_jl_dl u_ctu_ddr1_iodll_rst_dl_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_ddr1_iodll_rst_l),
@@ -314,8 +284,6 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_ddr1_iodll_rst_jl_l)
 	);
-	wire ctu_ddr2_iodll_rst_l;
-	wire ctu_ddr2_iodll_rst_jl_l;
 	ctu_synch_jl_dl u_ctu_ddr2_iodll_rst_dl_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_ddr2_iodll_rst_l),
@@ -324,8 +292,6 @@ module ctu_clsp_synch_jldl (
 		.arst_l(io_pwron_rst_l),
 		.presyncdata(ctu_ddr2_iodll_rst_jl_l)
 	);
-	wire ctu_ddr3_iodll_rst_l;
-	wire ctu_ddr3_iodll_rst_jl_l;
 	ctu_synch_jl_dl u_ctu_ddr3_iodll_rst_dl_l(
 		.jbus_rx_sync(jbus_rx_sync_gated),
 		.syncdata(ctu_ddr3_iodll_rst_l),

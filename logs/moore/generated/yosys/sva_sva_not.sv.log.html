@@ -55,12 +55,12 @@ check:
 event:
     %reset.prb = prb i1$ %reset
     %6 = neq i1 %reset.prb, %3
-    %7 = const i3 0
-    %8 = const time 0s 1d
+    %7 = const time 0s 1d
+    %8 = const i3 0
     br %6, %if_false, %if_true
 if_true:
-    drv i3$ %cnt, %7, %8
-    drv i1$ %pong, %3, %8
+    drv i3$ %cnt, %8, %7
+    drv i1$ %pong, %3, %7
     br %0
 if_false:
     %cnt.shadow.ld = ld i3* %cnt.shadow
@@ -70,15 +70,15 @@ if_false:
     %11 = or i1 %9, %10
     %12 = exts i1, i3 %cnt.shadow.ld1, 2, 1
     %13 = or i1 %11, %12
-    %zext = inss i3 %7, i1 %13, 0, 1
+    %zext = inss i3 %8, i1 %13, 0, 1
     %14 = sub i3 %cnt.shadow.ld, %zext
-    drv i3$ %cnt, %14, %8
+    drv i3$ %cnt, %14, %7
     %15 = const i32 0
     %cnt.shadow.ld2 = ld i3* %cnt.shadow
     %zext1 = inss i32 %15, i3 %cnt.shadow.ld2, 0, 3
     %16 = const i32 1
     %17 = eq i32 %zext1, %16
-    drv i1$ %pong, %17, %8
+    drv i1$ %pong, %17, %7
     %ping.prb = prb i1$ %ping
     %18 = neq i1 %ping.prb, %3
     br %18, %0, %if_true1
@@ -88,7 +88,7 @@ if_true1:
     %zext2 = inss i32 %15, i2 %cfg.prb, 0, 2
     %20 = add i32 %19, %zext2
     %21 = exts i3, i32 %20, 0, 3
-    drv i3$ %cnt, %21, %8
+    drv i3$ %cnt, %21, %7
     br %0
 }
 

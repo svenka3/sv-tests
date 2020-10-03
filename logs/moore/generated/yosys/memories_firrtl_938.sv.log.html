@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/memories/firrtl_938.v.html" target="file-frame">third_party/tools/yosys/tests/memories/firrtl_938.v</a>
 defines: 
-time_elapsed: 0.007s
-ram usage: 10652 KB
+time_elapsed: 0.008s
+ram usage: 10848 KB
 </pre>
 <pre class="log">
 
@@ -43,25 +43,25 @@ check:
 event:
     %we_a.prb = prb i6$ %we_a
     %6 = neq i6 %we_a.prb, %3
+    %7 = const time 0s 1d
     %addr_a.prb = prb i6$ %addr_a
-    %7 = const i8 0
-    %8 = const time 0s 1d
+    %8 = const i8 0
     br %6, %if_exit, %if_true
 if_true:
-    %9 = [64 x i8 %7]
+    %9 = [64 x i8 %8]
     %10 = sig [64 x i8] %9
     %11 = shr [64 x i8]$ %ram, [64 x i8]$ %10, i6 %addr_a.prb
     %12 = extf i8$, [64 x i8]$ %11, 0
     %data_a.prb = prb i8$ %data_a
-    drv i8$ %12, %data_a.prb, %8
-    drv i8$ %q_a, %data_a.prb, %8
+    drv i8$ %12, %data_a.prb, %7
+    drv i8$ %q_a, %data_a.prb, %7
     br %if_exit
 if_exit:
     %ram.shadow.ld = ld [64 x i8]* %ram.shadow
-    %13 = [64 x i8 %7]
+    %13 = [64 x i8 %8]
     %14 = shr [64 x i8] %ram.shadow.ld, [64 x i8] %13, i6 %addr_a.prb
     %15 = extf i8, [64 x i8] %14, 0
-    drv i8$ %q_a, %15, %8
+    drv i8$ %q_a, %15, %7
     br %0
 }
 

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/ctu_sync_header.v.html" target="file-frame">third_party/tests/utd-sv/ctu_sync_header.v</a>
 defines: 
-time_elapsed: 0.085s
-ram usage: 12072 KB
+time_elapsed: 0.142s
+ram usage: 11712 KB
 </pre>
 <pre class="log">
 
@@ -67,20 +67,16 @@ module ctu_sync_header (
 	wire [2:0] pulse_cnt_nxt;
 	wire [2:0] pulse_cnt;
 	wire pulse_filter;
-	wire ctu_dram_tx_sync;
-	wire cmp_gclk;
 	dff_ns u_ctu_dram_tx_sync_dly1(
 		.q(ctu_dram_tx_sync_dly1),
 		.din(ctu_dram_tx_sync),
 		.clk(cmp_gclk)
 	);
-	wire ctu_jbus_tx_sync;
 	dff_ns u_ctu_jbus_tx_sync_dly1(
 		.q(ctu_jbus_tx_sync_dly1),
 		.din(ctu_jbus_tx_sync),
 		.clk(cmp_gclk)
 	);
-	wire ctu_jbus_rx_sync;
 	dff_ns u_ctu_jbus_rx_sync_dly1(
 		.q(ctu_jbus_rx_sync_dly1),
 		.din(ctu_jbus_rx_sync),
@@ -111,10 +107,6 @@ module ctu_sync_header (
 		.din(ctu_jbus_rx_sync_dly2),
 		.clk(cmp_gclk)
 	);
-	wire so;
-	wire cmp_clk;
-	wire si;
-	wire se;
 	cluster_header_sync u_ctu_cluster_header_sync(
 		.dram_tx_sync_local(dram_tx_sync_local),
 		.jbus_rx_sync_local(jbus_rx_sync_local),
@@ -132,7 +124,6 @@ module ctu_sync_header (
 	);
 	assign pulse_cnt_dn_nxt = pulse_cnt == 3&#39;b111;
 	assign pulse_cnt_nxt = (~pulse_cnt_dn_nxt ? pulse_cnt + 3&#39;b001 : pulse_cnt);
-	wire start_clk_early_jl;
 	dffrl_async_ns #(3) u_pulse_cnt(
 		.din(pulse_cnt_nxt),
 		.clk(cmp_clk),
@@ -146,21 +137,18 @@ module ctu_sync_header (
 		.q(pulse_filter)
 	);
 	assign jbus_rx_sync_nxt = jbus_rx_sync_local &amp; pulse_filter;
-	wire jbus_rx_sync;
 	dff_ns u_jbus_rx_sync(
 		.q(jbus_rx_sync),
 		.din(jbus_rx_sync_nxt),
 		.clk(cmp_clk)
 	);
 	assign jbus_tx_sync_nxt = jbus_tx_sync_local &amp; pulse_filter;
-	wire jbus_tx_sync;
 	dff_ns u_jbus_tx_sync(
 		.q(jbus_tx_sync),
 		.din(jbus_tx_sync_nxt),
 		.clk(cmp_clk)
 	);
 	assign ctu_dram_tx_sync_early_nxt = dram_tx_sync_local &amp; pulse_filter;
-	wire ctu_dram_tx_sync_early;
 	dff_ns u_dram_tx_sync_early(
 		.q(ctu_dram_tx_sync_early),
 		.din(ctu_dram_tx_sync_early_nxt),

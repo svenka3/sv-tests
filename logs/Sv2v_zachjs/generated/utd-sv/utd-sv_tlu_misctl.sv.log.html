@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/tlu_misctl.v.html" target="file-frame">third_party/tests/utd-sv/tlu_misctl.v</a>
 defines: 
-time_elapsed: 0.514s
-ram usage: 15312 KB
+time_elapsed: 0.473s
+ram usage: 15304 KB
 </pre>
 <pre class="log">
 
@@ -163,7 +163,6 @@ module tlu_misctl (
 	wire tlu_pic_twobelow_m;
 	wire local_rst;
 	assign clk = rclk;
-	wire se;
 	dff_s #(8) dff_tsa0_ccr_m(
 		.din(tsa0_rdata_ccr[7:0]),
 		.q(tsa0_ccr_m[7:0]),
@@ -260,9 +259,7 @@ module tlu_misctl (
 	);
 	assign cwp_xor_m[2:0] = trap_old_cwp_m[2:0] ^ tlu_exu_cwp_m[2:0];
 	assign cwp_no_change_m = ~|cwp_xor_m[2:0];
-	wire tlu_cwp_no_change_m;
 	assign tlu_cwp_no_change_m = cwp_no_change_m;
-	wire tsa_rd_vld_e;
 	dff_s dff_tsa_rd_vld_m(
 		.din(tsa_rd_vld_e),
 		.q(tsa_rd_vld_m),
@@ -342,7 +339,6 @@ module tlu_misctl (
 	assign tlu_sscan_misctl_data[8:0] = misctl_sscan_test_data[8:0];
 	assign normal_trap_pc_w1[48:0] = {1&#39;b0, tlu_partial_trap_pc_w1[33:0], tlu_final_offset_w1[8:0], 5&#39;b00000};
 	assign normal_trap_npc_w1[48:0] = {1&#39;b0, tlu_partial_trap_pc_w1[33:0], tlu_final_offset_w1[8:0], 5&#39;b00100};
-	wire tlu_restore_pc_sel_w1;
 	mux2ds #(49) mx_trap_pc_w1(
 		.in0(normal_trap_pc_w1[48:0]),
 		.in1(tlu_restore_pc_w1[48:0]),
@@ -418,7 +414,6 @@ module tlu_misctl (
 	);
 	assign tlu_npc_new_w[48:0] = npc_new_w[48:0];
 	assign local_rst = tlu_rst;
-	wire tlu_pic_onebelow_e;
 	dffr_s dffr_tlu_exu_pic_onebelow_m(
 		.din(tlu_pic_onebelow_e),
 		.q(tlu_pic_onebelow_m),
@@ -428,7 +423,6 @@ module tlu_misctl (
 		.si(),
 		.so()
 	);
-	wire tlu_pic_twobelow_e;
 	dffr_s dffr_tlu_exu_pic_twobelow_m(
 		.din(tlu_pic_twobelow_e),
 		.q(tlu_pic_twobelow_m),
@@ -438,9 +432,7 @@ module tlu_misctl (
 		.si(),
 		.so()
 	);
-	wire tlu_exu_pic_onebelow_m;
 	assign tlu_exu_pic_onebelow_m = tlu_pic_onebelow_m &amp; tlu_pic_cnt_en_m;
-	wire tlu_exu_pic_twobelow_m;
 	assign tlu_exu_pic_twobelow_m = tlu_pic_twobelow_m &amp; tlu_pic_cnt_en_m;
 endmodule
 

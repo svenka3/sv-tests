@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tools/yosys/tests/sva/basic01.sv.html" target="file-frame">third_party/tools/yosys/tests/sva/basic01.sv</a>
 defines: 
-time_elapsed: 0.007s
-ram usage: 10576 KB
+time_elapsed: 0.008s
+ram usage: 10572 KB
 </pre>
 <pre class="log">
 
@@ -53,14 +53,14 @@ check:
     %posedge = and i1 %4, %5
     br %posedge, %init, %event
 event:
+    %6 = const time 0s 1d
     %ctrl.prb = prb i1$ %ctrl
-    %6 = neq i1 %ctrl.prb, %3
-    %7 = not i1 %6
-    %8 = const time 0s 1d
-    drv i1$ %read, %7, %8
-    drv i1$ %write, %ctrl.prb, %8
+    %7 = neq i1 %ctrl.prb, %3
+    %8 = not i1 %7
+    drv i1$ %read, %8, %6
+    drv i1$ %write, %ctrl.prb, %6
     %write.shadow.ld = ld i1* %write.shadow
-    drv i1$ %ready, %write.shadow.ld, %8
+    drv i1$ %ready, %write.shadow.ld, %6
     br %0
 }
 

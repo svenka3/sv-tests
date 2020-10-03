@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_level_shift_node_domain.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_level_shift_node_domain.v</a>
 defines: 
-time_elapsed: 0.341s
-ram usage: 13840 KB
+time_elapsed: 0.221s
+ram usage: 13408 KB
 </pre>
 <pre class="log">
 
@@ -61,23 +61,16 @@ module bsg_fsb_node_level_shift_node_domain (
 	input node_v_o_i;
 	input [ring_width_p - 1:0] node_data_o_i;
 	output node_yumi_i_o;
-	wire clk_i;
-	wire clk_o;
 	bsg_level_shift_up_down_sink #(.width_p(1)) clk_ls_inst(
 		.v1_en_i(1&#39;b1),
 		.v0_data_i(clk_i),
 		.v1_data_o(clk_o)
 	);
-	wire reset_i;
-	wire reset_o;
 	bsg_level_shift_up_down_sink #(.width_p(1)) reset_ls_inst(
 		.v1_en_i(1&#39;b1),
 		.v0_data_i(reset_i),
 		.v1_data_o(reset_o)
 	);
-	wire en_ls_i;
-	wire node_v_o_i;
-	wire fsb_v_i_o;
 	bsg_level_shift_up_down_source #(.width_p(1)) n2f_v_ls_inst(
 		.v0_en_i(en_ls_i),
 		.v0_data_i(node_v_o_i),
@@ -88,15 +81,11 @@ module bsg_fsb_node_level_shift_node_domain (
 		.v0_data_i(node_data_o_i),
 		.v1_data_o(fsb_data_i_o)
 	);
-	wire fsb_yumi_o_i;
-	wire node_yumi_i_o;
 	bsg_level_shift_up_down_sink #(.width_p(1)) f2n_yumi_ls_inst(
 		.v1_en_i(en_ls_i),
 		.v0_data_i(fsb_yumi_o_i),
 		.v1_data_o(node_yumi_i_o)
 	);
-	wire fsb_v_o_i;
-	wire node_v_i_o;
 	bsg_level_shift_up_down_sink #(.width_p(1)) f2n_v_ls_inst(
 		.v1_en_i(en_ls_i),
 		.v0_data_i(fsb_v_o_i),
@@ -107,8 +96,6 @@ module bsg_fsb_node_level_shift_node_domain (
 		.v0_data_i(fsb_data_o_i),
 		.v1_data_o(node_data_i_o)
 	);
-	wire node_ready_o_i;
-	wire fsb_ready_i_o;
 	bsg_level_shift_up_down_source #(.width_p(1)) n2f_ready_ls_inst(
 		.v0_en_i(en_ls_i),
 		.v0_data_i(node_ready_o_i),

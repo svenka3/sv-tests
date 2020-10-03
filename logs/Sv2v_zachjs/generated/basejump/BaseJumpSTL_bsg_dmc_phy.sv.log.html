@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_dmc/bsg_dmc_phy.v</a>
 defines: 
-time_elapsed: 0.434s
-ram usage: 17228 KB
+time_elapsed: 0.488s
+ram usage: 17128 KB
 </pre>
 <pre class="log">
 
@@ -110,10 +110,6 @@ module bsg_dmc_phy_bit_slice (
 	input [1:0] read_pointer_i;
 	output rddata_even_o;
 	output rddata_odd_o;
-	wire clk_2x_i;
-	wire wrdata_en_90_i;
-	wire dq_o;
-	wire dq_oe_n_o;
 	bsg_dmc_phy_tx_bit_slice tx_bit_slice(
 		.clk_2x_i(clk_2x_i),
 		.wrdata_en_90_i(wrdata_en_90_i),
@@ -121,12 +117,6 @@ module bsg_dmc_phy_bit_slice (
 		.dq_o(dq_o),
 		.dq_oe_n_o(dq_oe_n_o)
 	);
-	wire clk_1x_i;
-	wire dq_i;
-	wire dqs_p_i;
-	wire dqs_n_i;
-	wire rddata_even_o;
-	wire rddata_odd_o;
 	bsg_dmc_phy_rx_bit_slice rx_bit_slice(
 		.clk_1x_i(clk_1x_i),
 		.write_pointer_i(write_pointer_i),
@@ -221,10 +211,6 @@ module bsg_dmc_phy_byte_lane (
 			read_pointer &lt;= read_pointer + 1&#39;b1;
 	generate
 		for (i = 0; i &lt; 8; i = i + 1) begin : bs
-			wire clk_1x_i;
-			wire clk_2x_i;
-			wire dqs_p_i;
-			wire dqs_n_i;
 			bsg_dmc_phy_bit_slice dq_bit_slice(
 				.clk_1x_i(clk_1x_i),
 				.clk_2x_i(clk_2x_i),
@@ -242,9 +228,6 @@ module bsg_dmc_phy_byte_lane (
 			);
 		end
 	endgenerate
-	wire clk_2x_i;
-	wire dm_o;
-	wire dm_oe_n_o;
 	bsg_dmc_phy_tx_bit_slice dm_bit_slice(
 		.clk_2x_i(clk_2x_i),
 		.wrdata_en_90_i(wrdata_en_90),
@@ -420,9 +403,7 @@ module bsg_dmc_phy (
 			dfi_rddata_valid_o &lt;= 1&#39;b0;
 		else
 			dfi_rddata_valid_o &lt;= rp_inc;
-	wire ck_p_o;
 	assign ck_p_o = clk_1x_p;
-	wire ck_n_o;
 	assign ck_n_o = clk_1x_n;
 	assign dqs_p_ie_n = ~{dq_group_lp {dqs_select}};
 	assign dqs_n_ie_n = ~{dq_group_lp {dqs_select}};
@@ -446,8 +427,6 @@ module bsg_dmc_phy (
 	);
 	generate
 		for (i = 0; i &lt; dq_group_lp; i = i + 1) begin : lane
-			wire dfi_rst_i;
-			wire dfi_wrdata_en_i;
 			bsg_dmc_phy_byte_lane byte_lane(
 				.reset_i(dfi_rst_i),
 				.clk_1x_i(clk_1x_p),

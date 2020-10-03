@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_out.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_comm_link/bsg_assembler_out.v</a>
 defines: 
-time_elapsed: 0.154s
-ram usage: 14260 KB
+time_elapsed: 0.166s
+ram usage: 13592 KB
 </pre>
 <pre class="log">
 
@@ -59,13 +59,10 @@ module bsg_assembler_out (
 	wire [num_in_p - 1:0] fifo_deq_vec;
 	wire [(num_in_p * width_p) - 1:0] fifo_data_vec;
 	wire ready_o_tmp = &amp;fifo_not_full_vec &amp; calibration_done_i;
-	wire ready_o;
 	assign ready_o = ready_o_tmp;
 	genvar i;
 	generate
 		for (i = 0; i &lt; num_in_p; i = i + 1) begin : fifos
-			wire clk;
-			wire reset;
 			bsg_two_fifo #(
 				.width_p(width_p),
 				.ready_THEN_valid_p(1)
@@ -81,8 +78,6 @@ module bsg_assembler_out (
 			);
 		end
 	endgenerate
-	wire clk;
-	wire reset;
 	bsg_round_robin_fifo_to_fifo #(
 		.width_p(width_p),
 		.num_in_p(num_in_p),

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_async_buffer.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_fsb/bsg_fsb_node_async_buffer.v</a>
 defines: 
-time_elapsed: 0.172s
-ram usage: 14048 KB
+time_elapsed: 0.266s
+ram usage: 13544 KB
 </pre>
 <pre class="log">
 
@@ -66,13 +66,7 @@ module bsg_fsb_node_async_buffer (
 	input R_yumi_i;
 	localparam fifo_lg_size_lp = (fifo_els_p == 1 ? 1 : $clog2(fifo_els_p));
 	wire R_w_full_lo;
-	wire R_ready_o;
 	assign R_ready_o = ~R_w_full_lo;
-	wire R_clk_i;
-	wire R_reset_i;
-	wire L_clk_i;
-	wire L_reset_i;
-	wire L_v_o;
 	bsg_async_fifo #(
 		.lg_size_p(fifo_lg_size_lp),
 		.width_p(ring_width_p)
@@ -89,10 +83,7 @@ module bsg_fsb_node_async_buffer (
 		.r_valid_o(L_v_o)
 	);
 	wire L_w_full_lo;
-	wire L_yumi_o;
 	assign L_yumi_o = ~L_w_full_lo &amp; L_v_i;
-	wire R_yumi_i;
-	wire R_v_o;
 	bsg_async_fifo #(
 		.lg_size_p(fifo_lg_size_lp),
 		.width_p(ring_width_p)
@@ -108,8 +99,6 @@ module bsg_fsb_node_async_buffer (
 		.r_data_o(R_data_o),
 		.r_valid_o(R_v_o)
 	);
-	wire R_en_i;
-	wire L_en_o;
 	bsg_sync_sync #(.width_p(1)) fsb_en_sync(
 		.oclk_i(L_clk_i),
 		.iclk_data_i(R_en_i),

@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_async/bsg_async_credit_counter.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_async/bsg_async_credit_counter.v</a>
 defines: 
-time_elapsed: 0.324s
-ram usage: 14536 KB
+time_elapsed: 0.184s
+ram usage: 14560 KB
 </pre>
 <pre class="log">
 
@@ -61,10 +61,6 @@ module bsg_async_credit_counter (
 			r_counter_r &lt;= {-max_tokens_p * start_full_p, {lg_credit_to_token_decimation_p {1&#39;b0}}};
 		else
 			r_counter_r &lt;= r_counter_r + r_dec_credit_i;
-	wire w_clk_i;
-	wire w_reset_i;
-	wire w_inc_token_i;
-	wire r_clk_i;
 	bsg_async_ptr_gray #(
 		.lg_size_p(w_counter_width_lp),
 		.use_negedge_for_launch_p(count_negedge_p),
@@ -81,7 +77,6 @@ module bsg_async_credit_counter (
 	wire [w_counter_width_lp - 1:0] r_counter_r_hi_bits = r_counter_r[lg_credit_to_token_decimation_p+:w_counter_width_lp];
 	wire r_counter_r_lo_bits_nonzero = |r_counter_r[0+:lg_credit_to_token_decimation_p];
 	wire [w_counter_width_lp - 1:0] r_counter_r_hi_bits_gray = (r_counter_r_hi_bits &gt;&gt; 1) ^ r_counter_r_hi_bits;
-	wire r_credits_avail_o;
 	assign r_credits_avail_o = (r_infinite_credits_i | r_counter_r_lo_bits_nonzero) | (r_counter_r_hi_bits_gray != w_counter_gray_r_rsync);
 	bsg_gray_to_binary #(.width_p(w_counter_width_lp)) bsg_g2b(
 		.gray_i(w_counter_gray_r_rsync),

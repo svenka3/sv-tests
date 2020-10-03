@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/ivtest/ivltests/pr2018235b.v.html" target="file-frame">third_party/tests/ivtest/ivltests/pr2018235b.v</a>
 defines: 
-time_elapsed: 0.007s
-ram usage: 10640 KB
+time_elapsed: 0.008s
+ram usage: 10616 KB
 </pre>
 <pre class="log">
 
@@ -39,27 +39,24 @@ proc %top.initial.87.0 (i1$ %out) -&gt; (i1$ %pass, [1 x i1]$ %in) {
 0:
     %1 = prb i1$ %pass
     %pass.shadow = var i1 %1
-    %2 = const i32 1
+    %2 = extf i1$, [1 x i1]$ %in, 0
     %3 = const i1 0
-    %4 = [1 x i1 %3]
-    %5 = sig [1 x i1] %4
-    %6 = shr [1 x i1]$ %in, [1 x i1]$ %5, i32 %2
-    %7 = extf i1$, [1 x i1]$ %6, 0
-    %8 = const time 0s 1e
-    drv i1$ %7, %3, %8
-    wait %9 for %2
-9:
-    %10 = prb i1$ %pass
-    st i1* %pass.shadow, %10
+    %4 = const time 0s 1e
+    drv i1$ %2, %3, %4
+    %5 = const i32 1
+    wait %6 for %5
+6:
+    %7 = prb i1$ %pass
+    st i1* %pass.shadow, %7
     %out.prb = prb i1$ %out
-    %11 = const i1 0
-    %12 = neq i1 %out.prb, %11
-    %13 = neq i1 %12, %11
-    br %13, %if_exit, %if_true
+    %8 = const i1 0
+    %9 = neq i1 %out.prb, %8
+    %10 = neq i1 %9, %8
+    br %10, %if_exit, %if_true
 if_true:
-    %14 = const time 0s 1e
-    drv i1$ %pass, %11, %14
-    st i1* %pass.shadow, %11
+    %11 = const time 0s 1e
+    drv i1$ %pass, %8, %11
+    st i1* %pass.shadow, %8
     br %if_exit
 if_exit:
     halt
@@ -72,10 +69,12 @@ entity @top () -&gt; () {
     %2 = [i1 %1]
     %in = sig [1 x i1] %2
     %out = sig i1 %1
-    %3 = sig i1 %1
-    %4 = const time 0s 1d
-    drv i1$ %3, %1, %4
-    con i1$ %out, %3
+    %in.prb = prb [1 x i1]$ %in
+    %3 = extf i1, [1 x i1] %in.prb, 0
+    %4 = sig i1 %1
+    %5 = const time 0s 1d
+    drv i1$ %4, %3, %5
+    con i1$ %out, %4
     inst %top.initial.87.0 (i1$ %out) -&gt; (i1$ %pass, [1 x i1]$ %in)
 }
 

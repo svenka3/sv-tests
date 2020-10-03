@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/spu_maexp.v.html" target="file-frame">third_party/tests/utd-sv/spu_maexp.v</a>
 defines: 
-time_elapsed: 0.118s
-ram usage: 11756 KB
+time_elapsed: 0.180s
+ram usage: 11636 KB
 </pre>
 <pre class="log">
 
@@ -81,9 +81,6 @@ module spu_maexp (
 	wire local_stxa_abort;
 	wire spu_maexp_done_wen = ((spu_maexp_exp_done | spu_mactl_kill_op) | local_stxa_abort) &amp; spu_mactl_expop;
 	wire spu_maexp_done_rst = reset | spu_mactl_iss_pulse_dly;
-	wire spu_maexp_done_set;
-	wire rclk;
-	wire se;
 	dffre_s #(1) spu_maexp_done_ff(
 		.din(1&#39;b1),
 		.q(spu_maexp_done_set),
@@ -177,23 +174,14 @@ module spu_maexp (
 	assign tr2esmax_frm_gotomulred2 = cur_gotomulred2_state &amp; spu_mared_red_done;
 	assign tr2esmax_frm_echk = cur_echk_state &amp; ~spu_madp_e_eq_one;
 	assign nxt_esmax_state = tr2esmax_frm_gotomulred2 | tr2esmax_frm_echk;
-	wire spu_maexp_e_rd_oprnd_sel;
 	assign spu_maexp_e_rd_oprnd_sel = tr2rde_frm_idle | tr2rde_frm_esmax;
-	wire spu_maexp_memren;
 	assign spu_maexp_memren = spu_maexp_e_rd_oprnd_sel;
-	wire spu_maexp_shift_e;
 	assign spu_maexp_shift_e = nxt_esmax_state;
-	wire spu_maexp_e_data_wen;
 	assign spu_maexp_e_data_wen = cur_rde_state | nxt_esmax_state;
-	wire spu_maexp_incr_es_ptr;
 	assign spu_maexp_incr_es_ptr = tr2rde_frm_esmax | tr2gotomulred1_frm_esmax;
-	wire spu_maexp_es_max_init;
 	assign spu_maexp_es_max_init = tr2rde_frm_idle;
-	wire spu_maexp_es_e_ptr_rst;
 	assign spu_maexp_es_e_ptr_rst = state_reset;
-	wire spu_maexp_start_mulred_aequb;
 	assign spu_maexp_start_mulred_aequb = tr2gotomulred1_frm_rde | tr2gotomulred1_frm_esmax;
-	wire spu_maexp_start_mulred_anoteqb;
 	assign spu_maexp_start_mulred_anoteqb = tr2gotomulred2_frm_echk;
 endmodule
 

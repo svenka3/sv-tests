@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_link/bsg_link_ddr_upstream.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_link/bsg_link_ddr_upstream.v</a>
 defines: 
-time_elapsed: 0.355s
-ram usage: 14548 KB
+time_elapsed: 0.548s
+ram usage: 14476 KB
 </pre>
 <pre class="log">
 
@@ -61,10 +61,6 @@ module bsg_link_ddr_upstream (
 	wire core_piso_valid_lo;
 	wire core_piso_yumi_li;
 	wire [(num_channels_p * ddr_width_lp) - 1:0] core_piso_data_lo;
-	wire core_clk_i;
-	wire core_link_reset_i;
-	wire core_valid_i;
-	wire core_ready_o;
 	bsg_parallel_in_serial_out #(
 		.width_p(ddr_width_lp * num_channels_p),
 		.els_p(piso_ratio_lp)
@@ -73,7 +69,7 @@ module bsg_link_ddr_upstream (
 		.reset_i(core_link_reset_i),
 		.valid_i(core_valid_i),
 		.data_i(core_data_i),
-		.ready_o(core_ready_o),
+		.ready_and_o(core_ready_o),
 		.valid_o(core_piso_valid_lo),
 		.data_o(core_piso_data_lo),
 		.yumi_i(core_piso_yumi_li)
@@ -87,9 +83,6 @@ module bsg_link_ddr_upstream (
 			wire io_oddr_ready_lo;
 			wire [channel_width_p - 1:0] io_oddr_data_bottom;
 			wire [ddr_width_lp - 1:channel_width_p] io_oddr_data_top;
-			wire io_clk_i;
-			wire io_link_reset_i;
-			wire async_token_reset_i;
 			bsg_link_source_sync_upstream #(
 				.channel_width_p(ddr_width_lp),
 				.lg_fifo_depth_p(lg_fifo_depth_p),

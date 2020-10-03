@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/ctu_clsp_jbusgif.v.html" target="file-frame">third_party/tests/utd-sv/ctu_clsp_jbusgif.v</a>
 defines: 
-time_elapsed: 0.266s
-ram usage: 11900 KB
+time_elapsed: 0.157s
+ram usage: 12072 KB
 </pre>
 <pre class="log">
 
@@ -93,20 +93,14 @@ module ctu_clsp_jbusgif (
 	wire ctu_jbi_cken_muxed;
 	wire ctu_misc_cken_muxed;
 	wire force_cken;
-	wire jbus_arst_l;
 	assign jbus_arst_l = io_pwron_rst_l;
-	wire jbus_adbginit_l;
 	assign jbus_adbginit_l = io_pwron_rst_l;
-	wire jbus_gclk;
-	wire io_pwron_rst_l;
-	wire jbus_gdbginit_out_l;
 	dffrl_async_ns u_dram_dbginit_l(
 		.din(jbus_dbginit_jl_l &amp; start_clk_jl),
 		.clk(jbus_gclk),
 		.rst_l(io_pwron_rst_l),
 		.q(jbus_gdbginit_out_l)
 	);
-	wire jbus_grst_out_l;
 	dffrl_async_ns u_jbus_grst_l(
 		.din(jbus_grst_jl_l &amp; start_clk_jl),
 		.clk(jbus_gclk),
@@ -123,63 +117,54 @@ module ctu_clsp_jbusgif (
 	assign ctu_jbusl_cken_muxed = (force_cken ? 1&#39;b1 : (start_clk_jl &amp; ctu_jbusl_cken_jl) | ~start_clk_jl);
 	assign ctu_dbg_cken_muxed = (force_cken ? 1&#39;b1 : (start_clk_jl &amp; ctu_dbg_cken_jl) | ~start_clk_jl);
 	assign ctu_misc_cken_muxed = (force_cken ? 1&#39;b1 : (start_clk_jl &amp; ctu_misc_cken_jl) | ~start_clk_jl);
-	wire ctu_dram02_jbus_cken;
 	dffrl_async_ns u_ctu_dram02_jbus_cken_nsr(
 		.din(ctu_dram02_cken_muxed),
 		.clk(jbus_gclk),
 		.rst_l(io_pwron_rst_l),
 		.q(ctu_dram02_jbus_cken)
 	);
-	wire ctu_dram13_jbus_cken;
 	dffrl_async_ns u_ctu_dram13_jbus_cken_nsr(
 		.din(ctu_dram13_cken_muxed),
 		.clk(jbus_gclk),
 		.rst_l(io_pwron_rst_l),
 		.q(ctu_dram13_jbus_cken)
 	);
-	wire ctu_iob_jbus_cken;
 	dffrl_async_ns u_ctu_iob_cken_muxed_nsr(
 		.din(ctu_iob_cken_muxed),
 		.clk(jbus_gclk),
 		.rst_l(io_pwron_rst_l),
 		.q(ctu_iob_jbus_cken)
 	);
-	wire ctu_jbi_jbus_cken;
 	dffrl_async_ns u_ctu_jbi_cken_muxed_nsr(
 		.din(ctu_jbi_cken_muxed),
 		.clk(jbus_gclk),
 		.rst_l(io_pwron_rst_l),
 		.q(ctu_jbi_jbus_cken)
 	);
-	wire ctu_jbusr_jbus_cken;
 	dffsl_async_ns u_ctu_jbusr_cken_muxed_nsr(
 		.din(ctu_jbusr_cken_muxed),
 		.clk(jbus_gclk),
 		.set_l(io_pwron_rst_l),
 		.q(ctu_jbusr_jbus_cken)
 	);
-	wire ctu_jbusl_jbus_cken;
 	dffsl_async_ns u_ctu_jbusl_cken_muxed_nsr(
 		.din(ctu_jbusl_cken_muxed),
 		.clk(jbus_gclk),
 		.set_l(io_pwron_rst_l),
 		.q(ctu_jbusl_jbus_cken)
 	);
-	wire ctu_efc_jbus_cken;
 	dffrl_async_ns u_ctu_efc_cken_muxed_nsr(
 		.din(ctu_efc_cken_muxed),
 		.clk(jbus_gclk),
 		.rst_l(io_pwron_rst_l),
 		.q(ctu_efc_jbus_cken)
 	);
-	wire ctu_dbg_jbus_cken;
 	dffsl_async_ns u_ctu_dbg_cken_muxed_nsr(
 		.din(ctu_dbg_cken_muxed),
 		.clk(jbus_gclk),
 		.set_l(io_pwron_rst_l),
 		.q(ctu_dbg_jbus_cken)
 	);
-	wire ctu_misc_jbus_cken;
 	dffsl_async_ns u_ctu_misc_cken_muxed_nsr(
 		.din(ctu_misc_cken_muxed),
 		.clk(jbus_gclk),

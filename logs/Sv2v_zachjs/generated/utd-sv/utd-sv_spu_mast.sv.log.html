@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/tests/utd-sv/spu_mast.v.html" target="file-frame">third_party/tests/utd-sv/spu_mast.v</a>
 defines: 
-time_elapsed: 0.251s
-ram usage: 12024 KB
+time_elapsed: 0.368s
+ram usage: 11756 KB
 </pre>
 <pre class="log">
 
@@ -67,9 +67,6 @@ module spu_mast (
 	wire tr2laststreq_frm_wait4stdrain;
 	wire local_kill_abort;
 	wire streq_ack_dly;
-	wire streq_ack;
-	wire rclk;
-	wire se;
 	dff_s #(1) streq_ack_ff(
 		.din(streq_ack),
 		.q(streq_ack_dly),
@@ -91,7 +88,6 @@ module spu_mast (
 		.si(),
 		.so()
 	);
-	wire spu_mast_done_set;
 	assign spu_mast_done_set = spu_mast_done_set_q &amp; ok_to_signal_cmplt;
 	wire spu_mast_done_wen_dly;
 	dff_s #(1) spu_mast_done_wen_ff(
@@ -185,9 +181,7 @@ module spu_mast (
 		.si(),
 		.so()
 	);
-	wire spu_mast_maaddr_addrinc;
 	assign spu_mast_maaddr_addrinc = cur_rdmem_state;
-	wire spu_mast_memren;
 	assign spu_mast_memren = cur_rdmem_state &amp; ~local_kill_abort;
 	wire cur_rdmem_state_dly;
 	dff_s #(1) cur_rdmem_state_ff(
@@ -208,9 +202,7 @@ module spu_mast (
 		.si(),
 		.so()
 	);
-	wire spu_mast_stbuf_wen;
 	assign spu_mast_stbuf_wen = cur_rdmem_state_dly;
-	wire spu_mast_streq;
 	assign spu_mast_streq = ((((((cur_rdmem_state_dly3 &amp; start_set) &amp; ~rd_cntr_q[1]) | (streq_ack_dly &amp; len_neqz)) | tr2laststreq_frm_wait4stdrain_dly) &amp; ~cur_idle_state) &amp; ~spu_mactl_perr_set) &amp; ~spu_mactl_stxa_force_abort;
 	assign local_kill_abort = ((((cur_rdmem_state_dly3 &amp; start_set) &amp; ~rd_cntr_q[1]) | (streq_ack_dly &amp; len_neqz)) | tr2laststreq_frm_wait4stdrain_dly) &amp; (spu_mactl_perr_set | spu_mactl_stxa_force_abort);
 	wire tr2rdmem_frm_wait4stdrain_dly;
@@ -231,7 +223,6 @@ module spu_mast (
 		.si(),
 		.so()
 	);
-	wire spu_mast_mpa_addrinc;
 	assign spu_mast_mpa_addrinc = tr2rdmem_frm_wait4stdrain_dly2;
 	wire rd_cntr_en = cur_rdmem_state;
 	wire rd_cntr_rst = (state_reset | streq_ack_dly) | start_stop;
