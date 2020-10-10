@@ -656,7 +656,7 @@
 <a name="l-10"></a>
 <a name="l-11"></a><span class="k">module</span> <span class="n">aes_control</span>
 <a name="l-12"></a><span class="p">#(</span>
-<a name="l-13"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">NumDelayCyclesStartTrigger</span> <span class="o">=</span> <span class="mi">0</span>
+<a name="l-13"></a>  <span class="k">parameter</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">SecStartTriggerDelay</span> <span class="o">=</span> <span class="mi">0</span>
 <a name="l-14"></a><span class="p">)</span> <span class="p">(</span>
 <a name="l-15"></a>  <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">clk_i</span><span class="p">,</span>
 <a name="l-16"></a>  <span class="k">input</span>  <span class="kt">logic</span>                    <span class="n">rst_ni</span><span class="p">,</span>
@@ -793,15 +793,15 @@
 <a name="l-147"></a>  <span class="kt">logic</span>       <span class="n">ctrl_we_q</span><span class="p">;</span>
 <a name="l-148"></a>  <span class="kt">logic</span>       <span class="n">clear_in_out_status</span><span class="p">;</span>
 <a name="l-149"></a>
-<a name="l-150"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">NumDelayCyclesStartTrigger</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_start_delay</span>
+<a name="l-150"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">SecStartTriggerDelay</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_start_delay</span>
 <a name="l-151"></a>    <span class="c1">// Delay the manual start trigger input for SCA measurements.</span>
-<a name="l-152"></a>    <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">WidthCounter</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">NumDelayCyclesStartTrigger</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+<a name="l-152"></a>    <span class="k">localparam</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">WidthCounter</span> <span class="o">=</span> <span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">SecStartTriggerDelay</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
 <a name="l-153"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="n">WidthCounter</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count_d</span><span class="p">,</span> <span class="n">count_q</span><span class="p">;</span>
 <a name="l-154"></a>
 <a name="l-155"></a>    <span class="c1">// Clear counter when input goes low. Keep value if the specified delay is reached.</span>
 <a name="l-156"></a>    <span class="k">assign</span> <span class="n">count_d</span> <span class="o">=</span> <span class="o">!</span><span class="n">start_i</span>       <span class="o">?</span> <span class="m">&#39;0</span>      <span class="o">:</span>
 <a name="l-157"></a>                      <span class="n">start_trigger</span> <span class="o">?</span> <span class="n">count_q</span> <span class="o">:</span> <span class="n">count_q</span> <span class="o">+</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
-<a name="l-158"></a>    <span class="k">assign</span> <span class="n">start_trigger</span> <span class="o">=</span> <span class="p">(</span><span class="n">count_q</span> <span class="o">==</span> <span class="n">NumDelayCyclesStartTrigger</span><span class="p">[</span><span class="n">WidthCounter</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">])</span> <span class="o">?</span> <span class="mb">1&#39;b1</span> <span class="o">:</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-158"></a>    <span class="k">assign</span> <span class="n">start_trigger</span> <span class="o">=</span> <span class="p">(</span><span class="n">count_q</span> <span class="o">==</span> <span class="n">SecStartTriggerDelay</span><span class="p">[</span><span class="n">WidthCounter</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">])</span> <span class="o">?</span> <span class="mb">1&#39;b1</span> <span class="o">:</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
 <a name="l-159"></a>
 <a name="l-160"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-161"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>

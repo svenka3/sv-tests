@@ -284,16 +284,7 @@
 <a href="#l-276">276</a>
 <a href="#l-277">277</a>
 <a href="#l-278">278</a>
-<a href="#l-279">279</a>
-<a href="#l-280">280</a>
-<a href="#l-281">281</a>
-<a href="#l-282">282</a>
-<a href="#l-283">283</a>
-<a href="#l-284">284</a>
-<a href="#l-285">285</a>
-<a href="#l-286">286</a>
-<a href="#l-287">287</a>
-<a href="#l-288">288</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-279">279</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -382,7 +373,7 @@
 <a name="l-87"></a>    <span class="n">lod_idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <a name="l-88"></a>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">InW</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-89"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">mask_i</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mb">1&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-90"></a>        <span class="n">lod_idx</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+<a name="l-90"></a>        <span class="n">lod_idx</span> <span class="o">=</span> <span class="p">$</span><span class="kt">unsigned</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
 <a name="l-91"></a>      <span class="k">end</span>
 <a name="l-92"></a>    <span class="k">end</span>
 <a name="l-93"></a>  <span class="k">end</span>
@@ -531,56 +522,47 @@
 <a name="l-236"></a>            <span class="n">valid_i</span> <span class="o">|-&gt;</span> <span class="p">$</span><span class="n">countones</span><span class="p">(</span><span class="n">mask_i</span> <span class="o">^</span> <span class="p">{</span><span class="n">mask_i</span><span class="p">[</span><span class="n">InW</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">],</span><span class="mb">1&#39;b0</span><span class="p">})</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">)</span>
 <a name="l-237"></a>  <span class="k">end</span>
 <a name="l-238"></a>
-<a name="l-239"></a>  <span class="c1">// Assume data and mask patterns to reduce FPV test time</span>
-<a name="l-240"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">InW</span> <span class="o">+</span> <span class="n">OutW</span> <span class="o">&gt;</span> <span class="mi">32</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_fpv_assumption</span>
-<a name="l-241"></a>    <span class="no">`ASSUME_FPV</span><span class="p">(</span><span class="n">FpvDataWithin_M</span><span class="p">,</span> <span class="n">data_i</span> <span class="ow">inside</span> <span class="p">{</span><span class="m">&#39;0</span><span class="p">,</span> <span class="m">&#39;1</span><span class="p">,</span> <span class="mh">32&#39;hDEAD_BEEF</span><span class="p">})</span>
-<a name="l-242"></a>    <span class="no">`ASSUME_FPV</span><span class="p">(</span><span class="n">FpvMaskWithin_M</span><span class="p">,</span> <span class="n">mask_i</span> <span class="ow">inside</span> <span class="p">{</span><span class="m">&#39;0</span><span class="p">,</span> <span class="m">&#39;1</span><span class="p">,</span> <span class="mh">32&#39;h08FF_2E41</span><span class="p">})</span>
-<a name="l-243"></a>  <span class="k">end</span>
-<a name="l-244"></a>
-<a name="l-245"></a>  <span class="c1">// Flush and Write Enable cannot be asserted same time</span>
-<a name="l-246"></a>  <span class="no">`ASSUME</span><span class="p">(</span><span class="n">ExFlushValid_M</span><span class="p">,</span> <span class="n">flush_i</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">valid_i</span><span class="p">)</span>
-<a name="l-247"></a>
-<a name="l-248"></a>  <span class="c1">// While in flush state, new request shouldn&#39;t come</span>
-<a name="l-249"></a>  <span class="no">`ASSUME</span><span class="p">(</span><span class="n">ValidIDeassertedOnFlush_M</span><span class="p">,</span>
-<a name="l-250"></a>          <span class="n">flush_st</span> <span class="o">==</span> <span class="n">FlushSend</span> <span class="o">|-&gt;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">valid_i</span><span class="p">))</span>
-<a name="l-251"></a>
-<a name="l-252"></a>  <span class="c1">// If not acked, input port keeps asserting valid and data</span>
-<a name="l-253"></a>  <span class="no">`ASSUME</span><span class="p">(</span><span class="n">DataIStable_M</span><span class="p">,</span>
-<a name="l-254"></a>          <span class="p">##</span><span class="mi">1</span> <span class="n">valid_i</span> <span class="o">&amp;&amp;</span> <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">valid_i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">ready_o</span><span class="p">)</span>
-<a name="l-255"></a>          <span class="o">|-&gt;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">mask_i</span><span class="p">))</span>
-<a name="l-256"></a>
-<a name="l-257"></a>  <span class="no">`ASSUME</span><span class="p">(</span><span class="n">ValidIPairedWithReadyO_M</span><span class="p">,</span>
-<a name="l-258"></a>          <span class="n">valid_i</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">ready_o</span> <span class="o">|=&gt;</span> <span class="n">valid_i</span><span class="p">)</span>
-<a name="l-259"></a>
-<a name="l-260"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">FlushFollowedByDone_A</span><span class="p">,</span>
-<a name="l-261"></a>          <span class="p">##</span><span class="mi">1</span> <span class="p">$</span><span class="n">rose</span><span class="p">(</span><span class="n">flush_i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">flush_done_o</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">flush_done_o</span> <span class="p">[</span><span class="o">*</span><span class="mi">0</span><span class="o">:</span><span class="p">$]</span> <span class="p">##</span><span class="mi">1</span> <span class="n">flush_done_o</span><span class="p">)</span>
-<a name="l-262"></a>
-<a name="l-263"></a>  <span class="c1">// If not acked, valid_o should keep asserting</span>
-<a name="l-264"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidOPairedWidthReadyI_A</span><span class="p">,</span>
-<a name="l-265"></a>          <span class="n">valid_o</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">ready_i</span> <span class="o">|=&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
+<a name="l-239"></a>  <span class="c1">// Flush and Write Enable cannot be asserted same time</span>
+<a name="l-240"></a>  <span class="no">`ASSUME</span><span class="p">(</span><span class="n">ExFlushValid_M</span><span class="p">,</span> <span class="n">flush_i</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">valid_i</span><span class="p">)</span>
+<a name="l-241"></a>
+<a name="l-242"></a>  <span class="c1">// While in flush state, new request shouldn&#39;t come</span>
+<a name="l-243"></a>  <span class="no">`ASSUME</span><span class="p">(</span><span class="n">ValidIDeassertedOnFlush_M</span><span class="p">,</span>
+<a name="l-244"></a>          <span class="n">flush_st</span> <span class="o">==</span> <span class="n">FlushSend</span> <span class="o">|-&gt;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">valid_i</span><span class="p">))</span>
+<a name="l-245"></a>
+<a name="l-246"></a>  <span class="c1">// If not acked, input port keeps asserting valid and data</span>
+<a name="l-247"></a>  <span class="no">`ASSUME</span><span class="p">(</span><span class="n">DataIStable_M</span><span class="p">,</span>
+<a name="l-248"></a>          <span class="p">##</span><span class="mi">1</span> <span class="n">valid_i</span> <span class="o">&amp;&amp;</span> <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">valid_i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">ready_o</span><span class="p">)</span>
+<a name="l-249"></a>          <span class="o">|-&gt;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">mask_i</span><span class="p">))</span>
+<a name="l-250"></a>
+<a name="l-251"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">FlushFollowedByDone_A</span><span class="p">,</span>
+<a name="l-252"></a>          <span class="p">##</span><span class="mi">1</span> <span class="p">$</span><span class="n">rose</span><span class="p">(</span><span class="n">flush_i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">flush_done_o</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="n">flush_done_o</span> <span class="p">[</span><span class="o">*</span><span class="mi">0</span><span class="o">:</span><span class="p">$]</span> <span class="p">##</span><span class="mi">1</span> <span class="n">flush_done_o</span><span class="p">)</span>
+<a name="l-253"></a>
+<a name="l-254"></a>  <span class="c1">// If not acked, valid_o should keep asserting</span>
+<a name="l-255"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidOPairedWidthReadyI_A</span><span class="p">,</span>
+<a name="l-256"></a>          <span class="n">valid_o</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">ready_i</span> <span class="o">|=&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
+<a name="l-257"></a>
+<a name="l-258"></a>  <span class="c1">// If stored data is greater than the output width, valid should be asserted</span>
+<a name="l-259"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidOAssertedForStoredDataGTEOutW_A</span><span class="p">,</span>
+<a name="l-260"></a>          <span class="p">($</span><span class="n">countones</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">OutW</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
+<a name="l-261"></a>
+<a name="l-262"></a>  <span class="c1">// If output port doesn&#39;t accept the data, the data should be stable</span>
+<a name="l-263"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">DataOStableWhenPending_A</span><span class="p">,</span>
+<a name="l-264"></a>          <span class="p">##</span><span class="mi">1</span> <span class="n">valid_o</span> <span class="o">&amp;&amp;</span> <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">valid_o</span><span class="p">)</span>
+<a name="l-265"></a>          <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">ready_i</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">data_o</span><span class="p">))</span>
 <a name="l-266"></a>
-<a name="l-267"></a>  <span class="c1">// If stored data is greater than the output width, valid should be asserted</span>
-<a name="l-268"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ValidOAssertedForStoredDataGTEOutW_A</span><span class="p">,</span>
-<a name="l-269"></a>          <span class="p">($</span><span class="n">countones</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">OutW</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
-<a name="l-270"></a>
-<a name="l-271"></a>  <span class="c1">// If output port doesn&#39;t accept the data, the data should be stable</span>
-<a name="l-272"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">DataOStableWhenPending_A</span><span class="p">,</span>
-<a name="l-273"></a>          <span class="p">##</span><span class="mi">1</span> <span class="n">valid_o</span> <span class="o">&amp;&amp;</span> <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">valid_o</span><span class="p">)</span>
-<a name="l-274"></a>          <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">ready_i</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">data_o</span><span class="p">))</span>
-<a name="l-275"></a>
-<a name="l-276"></a>  <span class="c1">// If input data &amp; stored data are greater than OutW, remained should be stored</span>
-<a name="l-277"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ExcessiveDataStored_A</span><span class="p">,</span>
-<a name="l-278"></a>          <span class="n">ack_in</span> <span class="o">&amp;&amp;</span> <span class="n">ack_out</span> <span class="o">&amp;&amp;</span> <span class="p">(($</span><span class="n">countones</span><span class="p">(</span><span class="n">mask_i</span><span class="p">)</span> <span class="o">+</span> <span class="p">$</span><span class="n">countones</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">OutW</span><span class="p">)</span>
-<a name="l-279"></a>          <span class="o">|=&gt;</span> <span class="p">(($</span><span class="n">past</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span> <span class="o">&amp;</span>  <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">mask_i</span><span class="p">))</span> <span class="o">&gt;&gt;</span>
-<a name="l-280"></a>               <span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">lod_idx</span><span class="p">)</span><span class="o">+</span><span class="n">OutW</span><span class="o">-</span><span class="p">$</span><span class="n">countones</span><span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))))</span>
-<a name="l-281"></a>               <span class="o">==</span> <span class="n">stored_data</span><span class="p">)</span>
-<a name="l-282"></a>
-<a name="l-283"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ExcessiveMaskStored_A</span><span class="p">,</span>
-<a name="l-284"></a>          <span class="n">ack_in</span> <span class="o">&amp;&amp;</span> <span class="n">ack_out</span> <span class="o">&amp;&amp;</span> <span class="p">(($</span><span class="n">countones</span><span class="p">(</span><span class="n">mask_i</span><span class="p">)</span> <span class="o">+</span> <span class="p">$</span><span class="n">countones</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">OutW</span><span class="p">)</span>
-<a name="l-285"></a>          <span class="o">|=&gt;</span> <span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">mask_i</span><span class="p">)</span> <span class="o">&gt;&gt;</span>
-<a name="l-286"></a>               <span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">lod_idx</span><span class="p">)</span><span class="o">+</span><span class="n">OutW</span><span class="o">-</span><span class="p">$</span><span class="n">countones</span><span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))))</span>
-<a name="l-287"></a>              <span class="o">==</span> <span class="n">stored_mask</span><span class="p">)</span>
-<a name="l-288"></a><span class="k">endmodule</span>
+<a name="l-267"></a>  <span class="c1">// If input data &amp; stored data are greater than OutW, remained should be stored</span>
+<a name="l-268"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ExcessiveDataStored_A</span><span class="p">,</span>
+<a name="l-269"></a>          <span class="n">ack_in</span> <span class="o">&amp;&amp;</span> <span class="n">ack_out</span> <span class="o">&amp;&amp;</span> <span class="p">(($</span><span class="n">countones</span><span class="p">(</span><span class="n">mask_i</span><span class="p">)</span> <span class="o">+</span> <span class="p">$</span><span class="n">countones</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">OutW</span><span class="p">)</span>
+<a name="l-270"></a>          <span class="o">|=&gt;</span> <span class="p">(($</span><span class="n">past</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span> <span class="o">&amp;</span>  <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">mask_i</span><span class="p">))</span> <span class="o">&gt;&gt;</span>
+<a name="l-271"></a>               <span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">lod_idx</span><span class="p">)</span><span class="o">+</span><span class="n">OutW</span><span class="o">-</span><span class="p">$</span><span class="n">countones</span><span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))))</span>
+<a name="l-272"></a>               <span class="o">==</span> <span class="n">stored_data</span><span class="p">)</span>
+<a name="l-273"></a>
+<a name="l-274"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ExcessiveMaskStored_A</span><span class="p">,</span>
+<a name="l-275"></a>          <span class="n">ack_in</span> <span class="o">&amp;&amp;</span> <span class="n">ack_out</span> <span class="o">&amp;&amp;</span> <span class="p">(($</span><span class="n">countones</span><span class="p">(</span><span class="n">mask_i</span><span class="p">)</span> <span class="o">+</span> <span class="p">$</span><span class="n">countones</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">OutW</span><span class="p">)</span>
+<a name="l-276"></a>          <span class="o">|=&gt;</span> <span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">mask_i</span><span class="p">)</span> <span class="o">&gt;&gt;</span>
+<a name="l-277"></a>               <span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">lod_idx</span><span class="p">)</span><span class="o">+</span><span class="n">OutW</span><span class="o">-</span><span class="p">$</span><span class="n">countones</span><span class="p">($</span><span class="n">past</span><span class="p">(</span><span class="n">stored_mask</span><span class="p">))))</span>
+<a name="l-278"></a>              <span class="o">==</span> <span class="n">stored_mask</span><span class="p">)</span>
+<a name="l-279"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

@@ -174,7 +174,8 @@
 <a href="#l-166">166</a>
 <a href="#l-167">167</a>
 <a href="#l-168">168</a>
-<a href="#l-169">169</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-169">169</a>
+<a href="#l-170">170</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -229,120 +230,121 @@
 <a name="l-53"></a>    <span class="c1">// align to powers of 2 for simplicity</span>
 <a name="l-54"></a>    <span class="c1">// a full binary tree with N levels has 2**N + 2**N-1 nodes</span>
 <a name="l-55"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>           <span class="n">req_tree</span><span class="p">;</span>
-<a name="l-56"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>           <span class="n">rdy_tree</span><span class="p">;</span>
-<a name="l-57"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>           <span class="n">gnt_tree</span><span class="p">;</span>
-<a name="l-58"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">IdxW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">idx_tree</span><span class="p">;</span>
-<a name="l-59"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">DW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">data_tree</span><span class="p">;</span>
-<a name="l-60"></a>
-<a name="l-61"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">level</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tree</span>
-<a name="l-62"></a>      <span class="c1">//</span>
-<a name="l-63"></a>      <span class="c1">// level+1   C0   C1   &lt;- &quot;Base1&quot; points to the first node on &quot;level+1&quot;,</span>
-<a name="l-64"></a>      <span class="c1">//            \  /         these nodes are the children of the nodes one level below</span>
-<a name="l-65"></a>      <span class="c1">// level       Pa      &lt;- &quot;Base0&quot;, points to the first node on &quot;level&quot;,</span>
-<a name="l-66"></a>      <span class="c1">//                         these nodes are the parents of the nodes one level above</span>
-<a name="l-67"></a>      <span class="c1">//</span>
-<a name="l-68"></a>      <span class="c1">// hence we have the following indices for the Pa, C0, C1 nodes:</span>
-<a name="l-69"></a>      <span class="c1">// Pa = 2**level     - 1 + offset       = Base0 + offset</span>
-<a name="l-70"></a>      <span class="c1">// C0 = 2**(level+1) - 1 + 2*offset     = Base1 + 2*offset</span>
-<a name="l-71"></a>      <span class="c1">// C1 = 2**(level+1) - 1 + 2*offset + 1 = Base1 + 2*offset + 1</span>
-<a name="l-72"></a>      <span class="c1">//</span>
-<a name="l-73"></a>      <span class="k">localparam</span> <span class="kt">int</span> <span class="n">Base0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">level</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-<a name="l-74"></a>      <span class="k">localparam</span> <span class="kt">int</span> <span class="n">Base1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">level</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-<a name="l-75"></a>
-<a name="l-76"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="n">level</span><span class="p">;</span> <span class="n">offset</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_level</span>
-<a name="l-77"></a>        <span class="k">localparam</span> <span class="kt">int</span> <span class="n">Pa</span> <span class="o">=</span> <span class="n">Base0</span> <span class="o">+</span> <span class="n">offset</span><span class="p">;</span>
-<a name="l-78"></a>        <span class="k">localparam</span> <span class="kt">int</span> <span class="n">C0</span> <span class="o">=</span> <span class="n">Base1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">offset</span><span class="p">;</span>
-<a name="l-79"></a>        <span class="k">localparam</span> <span class="kt">int</span> <span class="n">C1</span> <span class="o">=</span> <span class="n">Base1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">offset</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-<a name="l-80"></a>
-<a name="l-81"></a>        <span class="c1">// this assigns the gated interrupt source signals, their</span>
-<a name="l-82"></a>        <span class="c1">// corresponding IDs and priorities to the tree leafs</span>
-<a name="l-83"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">level</span> <span class="o">==</span> <span class="n">IdxW</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_leafs</span>
-<a name="l-84"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">offset</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_assign</span>
-<a name="l-85"></a>            <span class="c1">// forward path</span>
-<a name="l-86"></a>            <span class="k">assign</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>      <span class="o">=</span> <span class="n">req_i</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
-<a name="l-87"></a>            <span class="k">assign</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>      <span class="o">=</span> <span class="n">offset</span><span class="p">;</span>
-<a name="l-88"></a>            <span class="k">assign</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>     <span class="o">=</span> <span class="n">data_i</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
-<a name="l-89"></a>            <span class="c1">// backward (grant) path</span>
-<a name="l-90"></a>            <span class="k">assign</span> <span class="n">gnt_o</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span>     <span class="o">=</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">];</span>
-<a name="l-91"></a>
-<a name="l-92"></a>          <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tie_off</span>
-<a name="l-93"></a>            <span class="c1">// forward path</span>
-<a name="l-94"></a>            <span class="k">assign</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-95"></a>            <span class="k">assign</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-96"></a>            <span class="k">assign</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-97"></a>          <span class="k">end</span>
-<a name="l-98"></a>        <span class="c1">// this creates the node assignments</span>
-<a name="l-99"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_nodes</span>
-<a name="l-100"></a>          <span class="c1">// forward path</span>
-<a name="l-101"></a>          <span class="kt">logic</span> <span class="n">sel</span><span class="p">;</span> <span class="c1">// local helper variable</span>
-<a name="l-102"></a>          <span class="k">always_comb</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_node</span>
-<a name="l-103"></a>            <span class="c1">// this always gives priority to the left child</span>
-<a name="l-104"></a>            <span class="n">sel</span> <span class="o">=</span> <span class="o">~</span><span class="n">req_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">];</span>
-<a name="l-105"></a>            <span class="c1">// propagate requests</span>
-<a name="l-106"></a>            <span class="n">req_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">]</span> <span class="o">|</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">];</span>
-<a name="l-107"></a>            <span class="c1">// data and index muxes</span>
-<a name="l-108"></a>            <span class="n">idx_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="n">sel</span><span class="p">)</span> <span class="o">?</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span>  <span class="o">:</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">];</span>
-<a name="l-109"></a>            <span class="n">data_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sel</span><span class="p">)</span> <span class="o">?</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span> <span class="o">:</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">];</span>
-<a name="l-110"></a>            <span class="c1">// propagate the grants back to the input</span>
-<a name="l-111"></a>            <span class="n">gnt_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">sel</span><span class="p">;</span>
-<a name="l-112"></a>            <span class="n">gnt_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span> <span class="o">=</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">&amp;</span>  <span class="n">sel</span><span class="p">;</span>
-<a name="l-113"></a>          <span class="k">end</span>
-<a name="l-114"></a>        <span class="k">end</span>
-<a name="l-115"></a>      <span class="k">end</span> <span class="o">:</span> <span class="n">gen_level</span>
-<a name="l-116"></a>    <span class="k">end</span> <span class="o">:</span> <span class="n">gen_tree</span>
-<a name="l-117"></a>
-<a name="l-118"></a>    <span class="c1">// the results can be found at the tree root</span>
-<a name="l-119"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">EnDataPort</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_data_port</span>
-<a name="l-120"></a>      <span class="k">assign</span> <span class="n">data_o</span>      <span class="o">=</span> <span class="n">data_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<a name="l-121"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_no_dataport</span>
-<a name="l-122"></a>      <span class="kt">logic</span> <span class="p">[</span><span class="n">DW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">unused_data</span> <span class="p">[</span><span class="n">N</span><span class="p">];</span>
-<a name="l-123"></a>      <span class="k">assign</span> <span class="n">unused_data</span> <span class="o">=</span> <span class="n">data_i</span><span class="p">;</span>
-<a name="l-124"></a>      <span class="k">assign</span> <span class="n">data_o</span> <span class="o">=</span> <span class="m">&#39;1</span><span class="p">;</span>
-<a name="l-125"></a>    <span class="k">end</span>
-<a name="l-126"></a>
-<a name="l-127"></a>    <span class="k">assign</span> <span class="n">idx_o</span>       <span class="o">=</span> <span class="n">idx_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<a name="l-128"></a>    <span class="k">assign</span> <span class="n">valid_o</span>     <span class="o">=</span> <span class="n">req_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<a name="l-129"></a>
-<a name="l-130"></a>    <span class="c1">// this propagates a grant back to the input</span>
-<a name="l-131"></a>    <span class="k">assign</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">valid_o</span> <span class="o">&amp;</span> <span class="n">ready_i</span><span class="p">;</span>
-<a name="l-132"></a>  <span class="k">end</span>
-<a name="l-133"></a>
-<a name="l-134"></a>  <span class="c1">////////////////</span>
-<a name="l-135"></a>  <span class="c1">// assertions //</span>
-<a name="l-136"></a>  <span class="c1">////////////////</span>
-<a name="l-137"></a>
-<a name="l-138"></a>  <span class="c1">// KNOWN assertions on outputs, except for data as that may be partially X in simulation</span>
-<a name="l-139"></a>  <span class="c1">// e.g. when used on a BUS</span>
-<a name="l-140"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ValidKnown_A</span><span class="p">,</span> <span class="n">valid_o</span><span class="p">)</span>
-<a name="l-141"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">GrantKnown_A</span><span class="p">,</span> <span class="n">gnt_o</span><span class="p">)</span>
-<a name="l-142"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IdxKnown_A</span><span class="p">,</span> <span class="n">idx_o</span><span class="p">)</span>
-<a name="l-143"></a>
-<a name="l-144"></a>  <span class="c1">// Make sure no higher prio req is asserted</span>
-<a name="l-145"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">Priority_A</span><span class="p">,</span> <span class="o">|</span><span class="n">req_i</span> <span class="o">|-&gt;</span> <span class="n">req_i</span><span class="p">[</span><span class="n">idx_o</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="p">(((</span><span class="n">N</span><span class="p">&#39;(</span><span class="mb">1&#39;b1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">idx_o</span><span class="p">)</span> <span class="o">-</span> <span class="mb">1&#39;b1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">req_i</span><span class="p">)</span> <span class="o">==</span> <span class="m">&#39;0</span><span class="p">)</span>
-<a name="l-146"></a>
-<a name="l-147"></a>  <span class="c1">// we can only grant one requestor at a time</span>
-<a name="l-148"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">CheckHotOne_A</span><span class="p">,</span> <span class="p">$</span><span class="n">onehot0</span><span class="p">(</span><span class="n">gnt_o</span><span class="p">))</span>
-<a name="l-149"></a>  <span class="c1">// A grant implies that the sink is ready</span>
-<a name="l-150"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">GntImpliesReady_A</span><span class="p">,</span> <span class="o">|</span><span class="n">gnt_o</span> <span class="o">|-&gt;</span> <span class="n">ready_i</span><span class="p">)</span>
-<a name="l-151"></a>  <span class="c1">// A grant implies that the arbiter asserts valid as well</span>
-<a name="l-152"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">GntImpliesValid_A</span><span class="p">,</span> <span class="o">|</span><span class="n">gnt_o</span> <span class="o">|-&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
-<a name="l-153"></a>  <span class="c1">// A request and a sink that is ready imply a grant</span>
-<a name="l-154"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReqAndReadyImplyGrant_A</span><span class="p">,</span> <span class="o">|</span><span class="n">req_i</span> <span class="o">&amp;&amp;</span> <span class="n">ready_i</span> <span class="o">|-&gt;</span> <span class="o">|</span><span class="n">gnt_o</span><span class="p">)</span>
-<a name="l-155"></a>  <span class="c1">// A request and a sink that is ready imply a grant</span>
-<a name="l-156"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReqImpliesValid_A</span><span class="p">,</span> <span class="o">|</span><span class="n">req_i</span> <span class="o">|-&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
-<a name="l-157"></a>  <span class="c1">// Both conditions above combined and reversed</span>
-<a name="l-158"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReadyAndValidImplyGrant_A</span><span class="p">,</span> <span class="n">ready_i</span> <span class="o">&amp;&amp;</span> <span class="n">valid_o</span> <span class="o">|-&gt;</span> <span class="o">|</span><span class="n">gnt_o</span><span class="p">)</span>
-<a name="l-159"></a>  <span class="c1">// Both conditions above combined and reversed</span>
-<a name="l-160"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">NoReadyValidNoGrant_A</span><span class="p">,</span> <span class="o">!</span><span class="p">(</span><span class="n">ready_i</span> <span class="o">||</span> <span class="n">valid_o</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="n">gnt_o</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-<a name="l-161"></a>  <span class="c1">// check index / grant correspond</span>
-<a name="l-162"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IndexIsCorrect_A</span><span class="p">,</span> <span class="n">ready_i</span> <span class="o">&amp;&amp;</span> <span class="n">valid_o</span> <span class="o">|-&gt;</span> <span class="n">gnt_o</span><span class="p">[</span><span class="n">idx_o</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="n">req_i</span><span class="p">[</span><span class="n">idx_o</span><span class="p">])</span>
-<a name="l-163"></a>
-<a name="l-164"></a><span class="k">if</span> <span class="p">(</span><span class="n">EnDataPort</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">gen_data_port_assertion</span>
-<a name="l-165"></a>  <span class="c1">// data flow</span>
-<a name="l-166"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">DataFlow_A</span><span class="p">,</span> <span class="n">ready_i</span> <span class="o">&amp;&amp;</span> <span class="n">valid_o</span> <span class="o">|-&gt;</span> <span class="n">data_o</span> <span class="o">==</span> <span class="n">data_i</span><span class="p">[</span><span class="n">idx_o</span><span class="p">])</span>
-<a name="l-167"></a><span class="k">end</span>
-<a name="l-168"></a>
-<a name="l-169"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_arbiter_fixed</span>
+<a name="l-56"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>           <span class="n">gnt_tree</span><span class="p">;</span>
+<a name="l-57"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">IdxW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">idx_tree</span><span class="p">;</span>
+<a name="l-58"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="n">DW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">data_tree</span><span class="p">;</span>
+<a name="l-59"></a>
+<a name="l-60"></a>    <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="n">IdxW</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">level</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tree</span>
+<a name="l-61"></a>      <span class="c1">//</span>
+<a name="l-62"></a>      <span class="c1">// level+1   C0   C1   &lt;- &quot;Base1&quot; points to the first node on &quot;level+1&quot;,</span>
+<a name="l-63"></a>      <span class="c1">//            \  /         these nodes are the children of the nodes one level below</span>
+<a name="l-64"></a>      <span class="c1">// level       Pa      &lt;- &quot;Base0&quot;, points to the first node on &quot;level&quot;,</span>
+<a name="l-65"></a>      <span class="c1">//                         these nodes are the parents of the nodes one level above</span>
+<a name="l-66"></a>      <span class="c1">//</span>
+<a name="l-67"></a>      <span class="c1">// hence we have the following indices for the Pa, C0, C1 nodes:</span>
+<a name="l-68"></a>      <span class="c1">// Pa = 2**level     - 1 + offset       = Base0 + offset</span>
+<a name="l-69"></a>      <span class="c1">// C0 = 2**(level+1) - 1 + 2*offset     = Base1 + 2*offset</span>
+<a name="l-70"></a>      <span class="c1">// C1 = 2**(level+1) - 1 + 2*offset + 1 = Base1 + 2*offset + 1</span>
+<a name="l-71"></a>      <span class="c1">//</span>
+<a name="l-72"></a>      <span class="k">localparam</span> <span class="kt">int</span> <span class="n">Base0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">level</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<a name="l-73"></a>      <span class="k">localparam</span> <span class="kt">int</span> <span class="n">Base1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">level</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<a name="l-74"></a>
+<a name="l-75"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">genvar</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="n">level</span><span class="p">;</span> <span class="n">offset</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_level</span>
+<a name="l-76"></a>        <span class="k">localparam</span> <span class="kt">int</span> <span class="n">Pa</span> <span class="o">=</span> <span class="n">Base0</span> <span class="o">+</span> <span class="n">offset</span><span class="p">;</span>
+<a name="l-77"></a>        <span class="k">localparam</span> <span class="kt">int</span> <span class="n">C0</span> <span class="o">=</span> <span class="n">Base1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">offset</span><span class="p">;</span>
+<a name="l-78"></a>        <span class="k">localparam</span> <span class="kt">int</span> <span class="n">C1</span> <span class="o">=</span> <span class="n">Base1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">offset</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<a name="l-79"></a>
+<a name="l-80"></a>        <span class="c1">// this assigns the gated interrupt source signals, their</span>
+<a name="l-81"></a>        <span class="c1">// corresponding IDs and priorities to the tree leafs</span>
+<a name="l-82"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">level</span> <span class="o">==</span> <span class="n">IdxW</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_leafs</span>
+<a name="l-83"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">offset</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_assign</span>
+<a name="l-84"></a>            <span class="c1">// forward path</span>
+<a name="l-85"></a>            <span class="k">assign</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>      <span class="o">=</span> <span class="n">req_i</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
+<a name="l-86"></a>            <span class="k">assign</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>      <span class="o">=</span> <span class="n">offset</span><span class="p">;</span>
+<a name="l-87"></a>            <span class="k">assign</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>     <span class="o">=</span> <span class="n">data_i</span><span class="p">[</span><span class="n">offset</span><span class="p">];</span>
+<a name="l-88"></a>            <span class="c1">// backward (grant) path</span>
+<a name="l-89"></a>            <span class="k">assign</span> <span class="n">gnt_o</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span>     <span class="o">=</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">];</span>
+<a name="l-90"></a>
+<a name="l-91"></a>          <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_tie_off</span>
+<a name="l-92"></a>            <span class="c1">// forward path</span>
+<a name="l-93"></a>            <span class="k">assign</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-94"></a>            <span class="k">assign</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-95"></a>            <span class="k">assign</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-96"></a>            <span class="kt">logic</span> <span class="n">unused_sigs</span><span class="p">;</span>
+<a name="l-97"></a>            <span class="k">assign</span> <span class="n">unused_sigs</span> <span class="o">=</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">];</span>
+<a name="l-98"></a>          <span class="k">end</span>
+<a name="l-99"></a>        <span class="c1">// this creates the node assignments</span>
+<a name="l-100"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_nodes</span>
+<a name="l-101"></a>          <span class="c1">// forward path</span>
+<a name="l-102"></a>          <span class="kt">logic</span> <span class="n">sel</span><span class="p">;</span> <span class="c1">// local helper variable</span>
+<a name="l-103"></a>          <span class="k">always_comb</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_node</span>
+<a name="l-104"></a>            <span class="c1">// this always gives priority to the left child</span>
+<a name="l-105"></a>            <span class="n">sel</span> <span class="o">=</span> <span class="o">~</span><span class="n">req_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">];</span>
+<a name="l-106"></a>            <span class="c1">// propagate requests</span>
+<a name="l-107"></a>            <span class="n">req_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">]</span> <span class="o">|</span> <span class="n">req_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">];</span>
+<a name="l-108"></a>            <span class="c1">// data and index muxes</span>
+<a name="l-109"></a>            <span class="n">idx_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="n">sel</span><span class="p">)</span> <span class="o">?</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span>  <span class="o">:</span> <span class="n">idx_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">];</span>
+<a name="l-110"></a>            <span class="n">data_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sel</span><span class="p">)</span> <span class="o">?</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span> <span class="o">:</span> <span class="n">data_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">];</span>
+<a name="l-111"></a>            <span class="c1">// propagate the grants back to the input</span>
+<a name="l-112"></a>            <span class="n">gnt_tree</span><span class="p">[</span><span class="n">C0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">sel</span><span class="p">;</span>
+<a name="l-113"></a>            <span class="n">gnt_tree</span><span class="p">[</span><span class="n">C1</span><span class="p">]</span> <span class="o">=</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="n">Pa</span><span class="p">]</span> <span class="o">&amp;</span>  <span class="n">sel</span><span class="p">;</span>
+<a name="l-114"></a>          <span class="k">end</span>
+<a name="l-115"></a>        <span class="k">end</span>
+<a name="l-116"></a>      <span class="k">end</span> <span class="o">:</span> <span class="n">gen_level</span>
+<a name="l-117"></a>    <span class="k">end</span> <span class="o">:</span> <span class="n">gen_tree</span>
+<a name="l-118"></a>
+<a name="l-119"></a>    <span class="c1">// the results can be found at the tree root</span>
+<a name="l-120"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">EnDataPort</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_data_port</span>
+<a name="l-121"></a>      <span class="k">assign</span> <span class="n">data_o</span>      <span class="o">=</span> <span class="n">data_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-122"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">gen_no_dataport</span>
+<a name="l-123"></a>      <span class="kt">logic</span> <span class="p">[</span><span class="n">DW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">unused_data</span><span class="p">;</span>
+<a name="l-124"></a>      <span class="k">assign</span> <span class="n">unused_data</span> <span class="o">=</span> <span class="n">data_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-125"></a>      <span class="k">assign</span> <span class="n">data_o</span> <span class="o">=</span> <span class="m">&#39;1</span><span class="p">;</span>
+<a name="l-126"></a>    <span class="k">end</span>
+<a name="l-127"></a>
+<a name="l-128"></a>    <span class="k">assign</span> <span class="n">idx_o</span>       <span class="o">=</span> <span class="n">idx_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-129"></a>    <span class="k">assign</span> <span class="n">valid_o</span>     <span class="o">=</span> <span class="n">req_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-130"></a>
+<a name="l-131"></a>    <span class="c1">// this propagates a grant back to the input</span>
+<a name="l-132"></a>    <span class="k">assign</span> <span class="n">gnt_tree</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">valid_o</span> <span class="o">&amp;</span> <span class="n">ready_i</span><span class="p">;</span>
+<a name="l-133"></a>  <span class="k">end</span>
+<a name="l-134"></a>
+<a name="l-135"></a>  <span class="c1">////////////////</span>
+<a name="l-136"></a>  <span class="c1">// assertions //</span>
+<a name="l-137"></a>  <span class="c1">////////////////</span>
+<a name="l-138"></a>
+<a name="l-139"></a>  <span class="c1">// KNOWN assertions on outputs, except for data as that may be partially X in simulation</span>
+<a name="l-140"></a>  <span class="c1">// e.g. when used on a BUS</span>
+<a name="l-141"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ValidKnown_A</span><span class="p">,</span> <span class="n">valid_o</span><span class="p">)</span>
+<a name="l-142"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">GrantKnown_A</span><span class="p">,</span> <span class="n">gnt_o</span><span class="p">)</span>
+<a name="l-143"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IdxKnown_A</span><span class="p">,</span> <span class="n">idx_o</span><span class="p">)</span>
+<a name="l-144"></a>
+<a name="l-145"></a>  <span class="c1">// Make sure no higher prio req is asserted</span>
+<a name="l-146"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">Priority_A</span><span class="p">,</span> <span class="o">|</span><span class="n">req_i</span> <span class="o">|-&gt;</span> <span class="n">req_i</span><span class="p">[</span><span class="n">idx_o</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="p">(((</span><span class="n">N</span><span class="p">&#39;(</span><span class="mb">1&#39;b1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">idx_o</span><span class="p">)</span> <span class="o">-</span> <span class="mb">1&#39;b1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">req_i</span><span class="p">)</span> <span class="o">==</span> <span class="m">&#39;0</span><span class="p">)</span>
+<a name="l-147"></a>
+<a name="l-148"></a>  <span class="c1">// we can only grant one requestor at a time</span>
+<a name="l-149"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">CheckHotOne_A</span><span class="p">,</span> <span class="p">$</span><span class="n">onehot0</span><span class="p">(</span><span class="n">gnt_o</span><span class="p">))</span>
+<a name="l-150"></a>  <span class="c1">// A grant implies that the sink is ready</span>
+<a name="l-151"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">GntImpliesReady_A</span><span class="p">,</span> <span class="o">|</span><span class="n">gnt_o</span> <span class="o">|-&gt;</span> <span class="n">ready_i</span><span class="p">)</span>
+<a name="l-152"></a>  <span class="c1">// A grant implies that the arbiter asserts valid as well</span>
+<a name="l-153"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">GntImpliesValid_A</span><span class="p">,</span> <span class="o">|</span><span class="n">gnt_o</span> <span class="o">|-&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
+<a name="l-154"></a>  <span class="c1">// A request and a sink that is ready imply a grant</span>
+<a name="l-155"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReqAndReadyImplyGrant_A</span><span class="p">,</span> <span class="o">|</span><span class="n">req_i</span> <span class="o">&amp;&amp;</span> <span class="n">ready_i</span> <span class="o">|-&gt;</span> <span class="o">|</span><span class="n">gnt_o</span><span class="p">)</span>
+<a name="l-156"></a>  <span class="c1">// A request and a sink that is ready imply a grant</span>
+<a name="l-157"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReqImpliesValid_A</span><span class="p">,</span> <span class="o">|</span><span class="n">req_i</span> <span class="o">|-&gt;</span> <span class="n">valid_o</span><span class="p">)</span>
+<a name="l-158"></a>  <span class="c1">// Both conditions above combined and reversed</span>
+<a name="l-159"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReadyAndValidImplyGrant_A</span><span class="p">,</span> <span class="n">ready_i</span> <span class="o">&amp;&amp;</span> <span class="n">valid_o</span> <span class="o">|-&gt;</span> <span class="o">|</span><span class="n">gnt_o</span><span class="p">)</span>
+<a name="l-160"></a>  <span class="c1">// Both conditions above combined and reversed</span>
+<a name="l-161"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">NoReadyValidNoGrant_A</span><span class="p">,</span> <span class="o">!</span><span class="p">(</span><span class="n">ready_i</span> <span class="o">||</span> <span class="n">valid_o</span><span class="p">)</span> <span class="o">|-&gt;</span> <span class="n">gnt_o</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<a name="l-162"></a>  <span class="c1">// check index / grant correspond</span>
+<a name="l-163"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IndexIsCorrect_A</span><span class="p">,</span> <span class="n">ready_i</span> <span class="o">&amp;&amp;</span> <span class="n">valid_o</span> <span class="o">|-&gt;</span> <span class="n">gnt_o</span><span class="p">[</span><span class="n">idx_o</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="n">req_i</span><span class="p">[</span><span class="n">idx_o</span><span class="p">])</span>
+<a name="l-164"></a>
+<a name="l-165"></a><span class="k">if</span> <span class="p">(</span><span class="n">EnDataPort</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">gen_data_port_assertion</span>
+<a name="l-166"></a>  <span class="c1">// data flow</span>
+<a name="l-167"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">DataFlow_A</span><span class="p">,</span> <span class="n">ready_i</span> <span class="o">&amp;&amp;</span> <span class="n">valid_o</span> <span class="o">|-&gt;</span> <span class="n">data_o</span> <span class="o">==</span> <span class="n">data_i</span><span class="p">[</span><span class="n">idx_o</span><span class="p">])</span>
+<a name="l-168"></a><span class="k">end</span>
+<a name="l-169"></a>
+<a name="l-170"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_arbiter_fixed</span>
 </pre></div>
 </td></tr></table>
   </body>
