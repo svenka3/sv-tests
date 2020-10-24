@@ -609,7 +609,9 @@
 <a href="#l-601">601</a>
 <a href="#l-602">602</a>
 <a href="#l-603">603</a>
-<a href="#l-604">604</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-604">604</a>
+<a href="#l-605">605</a>
+<a href="#l-606">606</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna, see also CREDITS.md.</span>
 <a name="l-3"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-4"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
@@ -629,7 +631,7 @@
 <a name="l-18"></a>    <span class="k">parameter</span> <span class="kt">bit</span>          <span class="n">DummyInstructions</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">,</span>
 <a name="l-19"></a>    <span class="k">parameter</span> <span class="kt">bit</span>          <span class="n">ICache</span>            <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">,</span>
 <a name="l-20"></a>    <span class="k">parameter</span> <span class="kt">bit</span>          <span class="n">ICacheECC</span>         <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">,</span>
-<a name="l-21"></a>    <span class="k">parameter</span> <span class="kt">bit</span>          <span class="n">SecureIbex</span>        <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">,</span>
+<a name="l-21"></a>    <span class="k">parameter</span> <span class="kt">bit</span>          <span class="n">PCIncrCheck</span>       <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">,</span>
 <a name="l-22"></a>    <span class="k">parameter</span> <span class="kt">bit</span>          <span class="n">BranchPredictor</span>   <span class="o">=</span> <span class="mb">1&#39;b0</span>
 <a name="l-23"></a><span class="p">)</span> <span class="p">(</span>
 <a name="l-24"></a>    <span class="k">input</span>  <span class="kt">logic</span>                   <span class="n">clk_i</span><span class="p">,</span>
@@ -983,236 +985,238 @@
 <a name="l-372"></a>  <span class="k">end</span>
 <a name="l-373"></a>
 <a name="l-374"></a>  <span class="c1">// Check for expected increments of the PC when security hardening enabled</span>
-<a name="l-375"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">SecureIbex</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_secure_pc</span>
+<a name="l-375"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">PCIncrCheck</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_secure_pc</span>
 <a name="l-376"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">prev_instr_addr_incr</span><span class="p">;</span>
 <a name="l-377"></a>    <span class="kt">logic</span>        <span class="n">prev_instr_seq_q</span><span class="p">,</span> <span class="n">prev_instr_seq_d</span><span class="p">;</span>
 <a name="l-378"></a>
 <a name="l-379"></a>    <span class="c1">// Do not check for sequential increase after a branch, jump, exception, interrupt or debug</span>
-<a name="l-380"></a>    <span class="c1">// request, all of which will set branch_req. Also do not check after reset.</span>
-<a name="l-381"></a>    <span class="k">assign</span> <span class="n">prev_instr_seq_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev_instr_seq_q</span> <span class="o">|</span> <span class="n">instr_new_id_d</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">branch_req</span><span class="p">;</span>
-<a name="l-382"></a>
-<a name="l-383"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-384"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-385"></a>        <span class="n">prev_instr_seq_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-386"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-387"></a>        <span class="n">prev_instr_seq_q</span> <span class="o">&lt;=</span> <span class="n">prev_instr_seq_d</span><span class="p">;</span>
-<a name="l-388"></a>      <span class="k">end</span>
-<a name="l-389"></a>    <span class="k">end</span>
-<a name="l-390"></a>
-<a name="l-391"></a>    <span class="k">assign</span> <span class="n">prev_instr_addr_incr</span> <span class="o">=</span> <span class="n">pc_id_o</span> <span class="o">+</span> <span class="p">(</span><span class="n">instr_is_compressed_id_o</span> <span class="o">?</span> <span class="mi">32&#39;d2</span> <span class="o">:</span> <span class="mi">32&#39;d4</span><span class="p">);</span>
-<a name="l-392"></a>
-<a name="l-393"></a>    <span class="c1">// Check that the address equals the previous address +2/+4</span>
-<a name="l-394"></a>    <span class="k">assign</span> <span class="n">pc_mismatch_alert_o</span> <span class="o">=</span> <span class="n">prev_instr_seq_q</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pc_if_o</span> <span class="o">!=</span> <span class="n">prev_instr_addr_incr</span><span class="p">);</span>
-<a name="l-395"></a>
-<a name="l-396"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_secure_pc</span>
-<a name="l-397"></a>    <span class="k">assign</span> <span class="n">pc_mismatch_alert_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-398"></a>  <span class="k">end</span>
-<a name="l-399"></a>
-<a name="l-400"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">BranchPredictor</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_branch_predictor</span>
-<a name="l-401"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">instr_skid_data_q</span><span class="p">;</span>
-<a name="l-402"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">instr_skid_addr_q</span><span class="p">;</span>
-<a name="l-403"></a>    <span class="kt">logic</span>        <span class="n">instr_skid_bp_taken_q</span><span class="p">;</span>
-<a name="l-404"></a>    <span class="kt">logic</span>        <span class="n">instr_skid_valid_q</span><span class="p">,</span> <span class="n">instr_skid_valid_d</span><span class="p">;</span>
-<a name="l-405"></a>    <span class="kt">logic</span>        <span class="n">instr_skid_en</span><span class="p">;</span>
-<a name="l-406"></a>    <span class="kt">logic</span>        <span class="n">instr_bp_taken_q</span><span class="p">,</span> <span class="n">instr_bp_taken_d</span><span class="p">;</span>
-<a name="l-407"></a>
-<a name="l-408"></a>    <span class="kt">logic</span>        <span class="n">predict_branch_taken_raw</span><span class="p">;</span>
+<a name="l-380"></a>    <span class="c1">// request, all of which will set branch_req. Also do not check after reset or for dummys.</span>
+<a name="l-381"></a>    <span class="k">assign</span> <span class="n">prev_instr_seq_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev_instr_seq_q</span> <span class="o">|</span> <span class="n">instr_new_id_d</span><span class="p">)</span> <span class="o">&amp;</span>
+<a name="l-382"></a>        <span class="o">~</span><span class="n">branch_req</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">stall_dummy_instr</span><span class="p">;</span>
+<a name="l-383"></a>
+<a name="l-384"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-385"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-386"></a>        <span class="n">prev_instr_seq_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-387"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-388"></a>        <span class="n">prev_instr_seq_q</span> <span class="o">&lt;=</span> <span class="n">prev_instr_seq_d</span><span class="p">;</span>
+<a name="l-389"></a>      <span class="k">end</span>
+<a name="l-390"></a>    <span class="k">end</span>
+<a name="l-391"></a>
+<a name="l-392"></a>    <span class="k">assign</span> <span class="n">prev_instr_addr_incr</span> <span class="o">=</span> <span class="n">pc_id_o</span> <span class="o">+</span> <span class="p">((</span><span class="n">instr_is_compressed_id_o</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">instr_fetch_err_o</span><span class="p">)</span> <span class="o">?</span>
+<a name="l-393"></a>                                             <span class="mi">32&#39;d2</span> <span class="o">:</span> <span class="mi">32&#39;d4</span><span class="p">);</span>
+<a name="l-394"></a>
+<a name="l-395"></a>    <span class="c1">// Check that the address equals the previous address +2/+4</span>
+<a name="l-396"></a>    <span class="k">assign</span> <span class="n">pc_mismatch_alert_o</span> <span class="o">=</span> <span class="n">prev_instr_seq_q</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pc_if_o</span> <span class="o">!=</span> <span class="n">prev_instr_addr_incr</span><span class="p">);</span>
+<a name="l-397"></a>
+<a name="l-398"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_secure_pc</span>
+<a name="l-399"></a>    <span class="k">assign</span> <span class="n">pc_mismatch_alert_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-400"></a>  <span class="k">end</span>
+<a name="l-401"></a>
+<a name="l-402"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">BranchPredictor</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_branch_predictor</span>
+<a name="l-403"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">instr_skid_data_q</span><span class="p">;</span>
+<a name="l-404"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">instr_skid_addr_q</span><span class="p">;</span>
+<a name="l-405"></a>    <span class="kt">logic</span>        <span class="n">instr_skid_bp_taken_q</span><span class="p">;</span>
+<a name="l-406"></a>    <span class="kt">logic</span>        <span class="n">instr_skid_valid_q</span><span class="p">,</span> <span class="n">instr_skid_valid_d</span><span class="p">;</span>
+<a name="l-407"></a>    <span class="kt">logic</span>        <span class="n">instr_skid_en</span><span class="p">;</span>
+<a name="l-408"></a>    <span class="kt">logic</span>        <span class="n">instr_bp_taken_q</span><span class="p">,</span> <span class="n">instr_bp_taken_d</span><span class="p">;</span>
 <a name="l-409"></a>
-<a name="l-410"></a>    <span class="c1">// ID stages needs to know if branch was predicted taken so it can signal mispredicts</span>
-<a name="l-411"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-412"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">if_id_pipe_reg_we</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-413"></a>        <span class="n">instr_bp_taken_q</span> <span class="o">&lt;=</span> <span class="n">instr_bp_taken_d</span><span class="p">;</span>
-<a name="l-414"></a>      <span class="k">end</span>
-<a name="l-415"></a>    <span class="k">end</span>
-<a name="l-416"></a>
-<a name="l-417"></a>    <span class="c1">// When branch prediction is enabled a skid buffer between the IF and ID/EX stage is introduced.</span>
-<a name="l-418"></a>    <span class="c1">// If an instruction in IF is predicted to be a taken branch and ID/EX is not ready the</span>
-<a name="l-419"></a>    <span class="c1">// instruction in IF is moved to the skid buffer which becomes the output of the IF stage until</span>
-<a name="l-420"></a>    <span class="c1">// the ID/EX stage accepts the instruction. The skid buffer is required as otherwise the ID/EX</span>
-<a name="l-421"></a>    <span class="c1">// ready signal is coupled to the instr_req_o output which produces a feedthrough path from</span>
-<a name="l-422"></a>    <span class="c1">// data_gnt_i -&gt; instr_req_o (which needs to be avoided as for some interconnects this will</span>
-<a name="l-423"></a>    <span class="c1">// result in a combinational loop).</span>
-<a name="l-424"></a>
-<a name="l-425"></a>    <span class="k">assign</span> <span class="n">instr_skid_en</span> <span class="o">=</span> <span class="n">predicted_branch</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span><span class="p">;</span>
+<a name="l-410"></a>    <span class="kt">logic</span>        <span class="n">predict_branch_taken_raw</span><span class="p">;</span>
+<a name="l-411"></a>
+<a name="l-412"></a>    <span class="c1">// ID stages needs to know if branch was predicted taken so it can signal mispredicts</span>
+<a name="l-413"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-414"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">if_id_pipe_reg_we</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-415"></a>        <span class="n">instr_bp_taken_q</span> <span class="o">&lt;=</span> <span class="n">instr_bp_taken_d</span><span class="p">;</span>
+<a name="l-416"></a>      <span class="k">end</span>
+<a name="l-417"></a>    <span class="k">end</span>
+<a name="l-418"></a>
+<a name="l-419"></a>    <span class="c1">// When branch prediction is enabled a skid buffer between the IF and ID/EX stage is introduced.</span>
+<a name="l-420"></a>    <span class="c1">// If an instruction in IF is predicted to be a taken branch and ID/EX is not ready the</span>
+<a name="l-421"></a>    <span class="c1">// instruction in IF is moved to the skid buffer which becomes the output of the IF stage until</span>
+<a name="l-422"></a>    <span class="c1">// the ID/EX stage accepts the instruction. The skid buffer is required as otherwise the ID/EX</span>
+<a name="l-423"></a>    <span class="c1">// ready signal is coupled to the instr_req_o output which produces a feedthrough path from</span>
+<a name="l-424"></a>    <span class="c1">// data_gnt_i -&gt; instr_req_o (which needs to be avoided as for some interconnects this will</span>
+<a name="l-425"></a>    <span class="c1">// result in a combinational loop).</span>
 <a name="l-426"></a>
-<a name="l-427"></a>    <span class="k">assign</span> <span class="n">instr_skid_valid_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">instr_skid_valid_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">stall_dummy_instr</span><span class="p">)</span> <span class="o">|</span>
-<a name="l-428"></a>                                <span class="n">instr_skid_en</span><span class="p">;</span>
-<a name="l-429"></a>
-<a name="l-430"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-431"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-432"></a>        <span class="n">instr_skid_valid_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-433"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-434"></a>        <span class="n">instr_skid_valid_q</span> <span class="o">&lt;=</span> <span class="n">instr_skid_valid_d</span><span class="p">;</span>
-<a name="l-435"></a>      <span class="k">end</span>
-<a name="l-436"></a>    <span class="k">end</span>
-<a name="l-437"></a>
-<a name="l-438"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-439"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">instr_skid_en</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-440"></a>        <span class="n">instr_skid_bp_taken_q</span> <span class="o">&lt;=</span> <span class="n">predict_branch_taken</span><span class="p">;</span>
-<a name="l-441"></a>        <span class="n">instr_skid_data_q</span>     <span class="o">&lt;=</span> <span class="n">fetch_rdata</span><span class="p">;</span>
-<a name="l-442"></a>        <span class="n">instr_skid_addr_q</span>     <span class="o">&lt;=</span> <span class="n">fetch_addr</span><span class="p">;</span>
-<a name="l-443"></a>      <span class="k">end</span>
-<a name="l-444"></a>    <span class="k">end</span>
-<a name="l-445"></a>
-<a name="l-446"></a>    <span class="n">ibex_branch_predict</span> <span class="n">branch_predict_i</span> <span class="p">(</span>
-<a name="l-447"></a>      <span class="p">.</span><span class="n">clk_i</span>                  <span class="p">(</span> <span class="n">clk_i</span>                    <span class="p">),</span>
-<a name="l-448"></a>      <span class="p">.</span><span class="n">rst_ni</span>                 <span class="p">(</span> <span class="n">rst_ni</span>                   <span class="p">),</span>
-<a name="l-449"></a>      <span class="p">.</span><span class="n">fetch_rdata_i</span>          <span class="p">(</span> <span class="n">fetch_rdata</span>              <span class="p">),</span>
-<a name="l-450"></a>      <span class="p">.</span><span class="n">fetch_pc_i</span>             <span class="p">(</span> <span class="n">fetch_addr</span>               <span class="p">),</span>
-<a name="l-451"></a>      <span class="p">.</span><span class="n">fetch_valid_i</span>          <span class="p">(</span> <span class="n">fetch_valid</span>              <span class="p">),</span>
-<a name="l-452"></a>
-<a name="l-453"></a>      <span class="p">.</span><span class="n">predict_branch_taken_o</span> <span class="p">(</span> <span class="n">predict_branch_taken_raw</span> <span class="p">),</span>
-<a name="l-454"></a>      <span class="p">.</span><span class="n">predict_branch_pc_o</span>    <span class="p">(</span> <span class="n">predict_branch_pc</span>        <span class="p">)</span>
-<a name="l-455"></a>    <span class="p">);</span>
-<a name="l-456"></a>
-<a name="l-457"></a>    <span class="c1">// If there is an instruction in the skid buffer there must be no branch prediction.</span>
-<a name="l-458"></a>    <span class="c1">// Instructions are only placed in the skid after they have been predicted to be a taken branch</span>
-<a name="l-459"></a>    <span class="c1">// so with the skid valid any prediction has already occurred.</span>
-<a name="l-460"></a>    <span class="c1">// Do not branch predict on instruction errors.</span>
-<a name="l-461"></a>    <span class="k">assign</span> <span class="n">predict_branch_taken</span> <span class="o">=</span> <span class="n">predict_branch_taken_raw</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">fetch_err</span><span class="p">;</span>
-<a name="l-462"></a>
-<a name="l-463"></a>    <span class="c1">// pc_set_i takes precendence over branch prediction</span>
-<a name="l-464"></a>    <span class="k">assign</span> <span class="n">predicted_branch</span> <span class="o">=</span> <span class="n">predict_branch_taken</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">pc_set_i</span><span class="p">;</span>
-<a name="l-465"></a>
-<a name="l-466"></a>    <span class="k">assign</span> <span class="n">if_instr_valid</span>   <span class="o">=</span> <span class="n">fetch_valid</span> <span class="o">|</span> <span class="n">instr_skid_valid_q</span><span class="p">;</span>
-<a name="l-467"></a>    <span class="k">assign</span> <span class="n">if_instr_rdata</span>   <span class="o">=</span> <span class="n">instr_skid_valid_q</span> <span class="o">?</span> <span class="n">instr_skid_data_q</span> <span class="o">:</span> <span class="n">fetch_rdata</span><span class="p">;</span>
-<a name="l-468"></a>    <span class="k">assign</span> <span class="n">if_instr_addr</span>    <span class="o">=</span> <span class="n">instr_skid_valid_q</span> <span class="o">?</span> <span class="n">instr_skid_addr_q</span> <span class="o">:</span> <span class="n">fetch_addr</span><span class="p">;</span>
-<a name="l-469"></a>
-<a name="l-470"></a>    <span class="c1">// Don&#39;t branch predict on instruction error so only instructions without errors end up in the</span>
-<a name="l-471"></a>    <span class="c1">// skid buffer.</span>
-<a name="l-472"></a>    <span class="k">assign</span> <span class="n">if_instr_err</span>     <span class="o">=</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span> <span class="o">&amp;</span> <span class="n">fetch_err</span><span class="p">;</span>
-<a name="l-473"></a>    <span class="k">assign</span> <span class="n">instr_bp_taken_d</span> <span class="o">=</span> <span class="n">instr_skid_valid_q</span> <span class="o">?</span> <span class="n">instr_skid_bp_taken_q</span> <span class="o">:</span> <span class="n">predict_branch_taken</span><span class="p">;</span>
-<a name="l-474"></a>
-<a name="l-475"></a>    <span class="k">assign</span> <span class="n">fetch_ready</span> <span class="o">=</span> <span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">stall_dummy_instr</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span><span class="p">;</span>
+<a name="l-427"></a>    <span class="k">assign</span> <span class="n">instr_skid_en</span> <span class="o">=</span> <span class="n">predicted_branch</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span><span class="p">;</span>
+<a name="l-428"></a>
+<a name="l-429"></a>    <span class="k">assign</span> <span class="n">instr_skid_valid_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">instr_skid_valid_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">stall_dummy_instr</span><span class="p">)</span> <span class="o">|</span>
+<a name="l-430"></a>                                <span class="n">instr_skid_en</span><span class="p">;</span>
+<a name="l-431"></a>
+<a name="l-432"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-433"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-434"></a>        <span class="n">instr_skid_valid_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-435"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-436"></a>        <span class="n">instr_skid_valid_q</span> <span class="o">&lt;=</span> <span class="n">instr_skid_valid_d</span><span class="p">;</span>
+<a name="l-437"></a>      <span class="k">end</span>
+<a name="l-438"></a>    <span class="k">end</span>
+<a name="l-439"></a>
+<a name="l-440"></a>    <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-441"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">instr_skid_en</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-442"></a>        <span class="n">instr_skid_bp_taken_q</span> <span class="o">&lt;=</span> <span class="n">predict_branch_taken</span><span class="p">;</span>
+<a name="l-443"></a>        <span class="n">instr_skid_data_q</span>     <span class="o">&lt;=</span> <span class="n">fetch_rdata</span><span class="p">;</span>
+<a name="l-444"></a>        <span class="n">instr_skid_addr_q</span>     <span class="o">&lt;=</span> <span class="n">fetch_addr</span><span class="p">;</span>
+<a name="l-445"></a>      <span class="k">end</span>
+<a name="l-446"></a>    <span class="k">end</span>
+<a name="l-447"></a>
+<a name="l-448"></a>    <span class="n">ibex_branch_predict</span> <span class="n">branch_predict_i</span> <span class="p">(</span>
+<a name="l-449"></a>      <span class="p">.</span><span class="n">clk_i</span>                  <span class="p">(</span> <span class="n">clk_i</span>                    <span class="p">),</span>
+<a name="l-450"></a>      <span class="p">.</span><span class="n">rst_ni</span>                 <span class="p">(</span> <span class="n">rst_ni</span>                   <span class="p">),</span>
+<a name="l-451"></a>      <span class="p">.</span><span class="n">fetch_rdata_i</span>          <span class="p">(</span> <span class="n">fetch_rdata</span>              <span class="p">),</span>
+<a name="l-452"></a>      <span class="p">.</span><span class="n">fetch_pc_i</span>             <span class="p">(</span> <span class="n">fetch_addr</span>               <span class="p">),</span>
+<a name="l-453"></a>      <span class="p">.</span><span class="n">fetch_valid_i</span>          <span class="p">(</span> <span class="n">fetch_valid</span>              <span class="p">),</span>
+<a name="l-454"></a>
+<a name="l-455"></a>      <span class="p">.</span><span class="n">predict_branch_taken_o</span> <span class="p">(</span> <span class="n">predict_branch_taken_raw</span> <span class="p">),</span>
+<a name="l-456"></a>      <span class="p">.</span><span class="n">predict_branch_pc_o</span>    <span class="p">(</span> <span class="n">predict_branch_pc</span>        <span class="p">)</span>
+<a name="l-457"></a>    <span class="p">);</span>
+<a name="l-458"></a>
+<a name="l-459"></a>    <span class="c1">// If there is an instruction in the skid buffer there must be no branch prediction.</span>
+<a name="l-460"></a>    <span class="c1">// Instructions are only placed in the skid after they have been predicted to be a taken branch</span>
+<a name="l-461"></a>    <span class="c1">// so with the skid valid any prediction has already occurred.</span>
+<a name="l-462"></a>    <span class="c1">// Do not branch predict on instruction errors.</span>
+<a name="l-463"></a>    <span class="k">assign</span> <span class="n">predict_branch_taken</span> <span class="o">=</span> <span class="n">predict_branch_taken_raw</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">fetch_err</span><span class="p">;</span>
+<a name="l-464"></a>
+<a name="l-465"></a>    <span class="c1">// pc_set_i takes precendence over branch prediction</span>
+<a name="l-466"></a>    <span class="k">assign</span> <span class="n">predicted_branch</span> <span class="o">=</span> <span class="n">predict_branch_taken</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">pc_set_i</span><span class="p">;</span>
+<a name="l-467"></a>
+<a name="l-468"></a>    <span class="k">assign</span> <span class="n">if_instr_valid</span>   <span class="o">=</span> <span class="n">fetch_valid</span> <span class="o">|</span> <span class="n">instr_skid_valid_q</span><span class="p">;</span>
+<a name="l-469"></a>    <span class="k">assign</span> <span class="n">if_instr_rdata</span>   <span class="o">=</span> <span class="n">instr_skid_valid_q</span> <span class="o">?</span> <span class="n">instr_skid_data_q</span> <span class="o">:</span> <span class="n">fetch_rdata</span><span class="p">;</span>
+<a name="l-470"></a>    <span class="k">assign</span> <span class="n">if_instr_addr</span>    <span class="o">=</span> <span class="n">instr_skid_valid_q</span> <span class="o">?</span> <span class="n">instr_skid_addr_q</span> <span class="o">:</span> <span class="n">fetch_addr</span><span class="p">;</span>
+<a name="l-471"></a>
+<a name="l-472"></a>    <span class="c1">// Don&#39;t branch predict on instruction error so only instructions without errors end up in the</span>
+<a name="l-473"></a>    <span class="c1">// skid buffer.</span>
+<a name="l-474"></a>    <span class="k">assign</span> <span class="n">if_instr_err</span>     <span class="o">=</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span> <span class="o">&amp;</span> <span class="n">fetch_err</span><span class="p">;</span>
+<a name="l-475"></a>    <span class="k">assign</span> <span class="n">instr_bp_taken_d</span> <span class="o">=</span> <span class="n">instr_skid_valid_q</span> <span class="o">?</span> <span class="n">instr_skid_bp_taken_q</span> <span class="o">:</span> <span class="n">predict_branch_taken</span><span class="p">;</span>
 <a name="l-476"></a>
-<a name="l-477"></a>    <span class="k">assign</span> <span class="n">instr_bp_taken_o</span> <span class="o">=</span> <span class="n">instr_bp_taken_q</span><span class="p">;</span>
+<a name="l-477"></a>    <span class="k">assign</span> <span class="n">fetch_ready</span> <span class="o">=</span> <span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">stall_dummy_instr</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">instr_skid_valid_q</span><span class="p">;</span>
 <a name="l-478"></a>
-<a name="l-479"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">NoPredictSkid</span><span class="p">,</span> <span class="n">instr_skid_valid_q</span> <span class="o">|-&gt;</span> <span class="o">~</span><span class="n">predict_branch_taken</span><span class="p">);</span>
-<a name="l-480"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">NoPredictIllegal</span><span class="p">,</span> <span class="n">predict_branch_taken</span> <span class="o">|-&gt;</span> <span class="o">~</span><span class="n">illegal_c_insn</span><span class="p">);</span>
-<a name="l-481"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_branch_predictor</span>
-<a name="l-482"></a>    <span class="k">assign</span> <span class="n">instr_bp_taken_o</span>     <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-483"></a>    <span class="k">assign</span> <span class="n">predict_branch_taken</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-484"></a>    <span class="k">assign</span> <span class="n">predicted_branch</span>     <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-485"></a>    <span class="k">assign</span> <span class="n">predict_branch_pc</span>    <span class="o">=</span> <span class="mb">32&#39;b0</span><span class="p">;</span>
-<a name="l-486"></a>
-<a name="l-487"></a>    <span class="k">assign</span> <span class="n">if_instr_valid</span> <span class="o">=</span> <span class="n">fetch_valid</span><span class="p">;</span>
-<a name="l-488"></a>    <span class="k">assign</span> <span class="n">if_instr_rdata</span> <span class="o">=</span> <span class="n">fetch_rdata</span><span class="p">;</span>
-<a name="l-489"></a>    <span class="k">assign</span> <span class="n">if_instr_addr</span>  <span class="o">=</span> <span class="n">fetch_addr</span><span class="p">;</span>
-<a name="l-490"></a>    <span class="k">assign</span> <span class="n">if_instr_err</span>   <span class="o">=</span> <span class="n">fetch_err</span><span class="p">;</span>
-<a name="l-491"></a>    <span class="k">assign</span> <span class="n">fetch_ready</span> <span class="o">=</span> <span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">stall_dummy_instr</span><span class="p">;</span>
-<a name="l-492"></a>  <span class="k">end</span>
-<a name="l-493"></a>
-<a name="l-494"></a>  <span class="c1">////////////////</span>
-<a name="l-495"></a>  <span class="c1">// Assertions //</span>
+<a name="l-479"></a>    <span class="k">assign</span> <span class="n">instr_bp_taken_o</span> <span class="o">=</span> <span class="n">instr_bp_taken_q</span><span class="p">;</span>
+<a name="l-480"></a>
+<a name="l-481"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">NoPredictSkid</span><span class="p">,</span> <span class="n">instr_skid_valid_q</span> <span class="o">|-&gt;</span> <span class="o">~</span><span class="n">predict_branch_taken</span><span class="p">);</span>
+<a name="l-482"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">NoPredictIllegal</span><span class="p">,</span> <span class="n">predict_branch_taken</span> <span class="o">|-&gt;</span> <span class="o">~</span><span class="n">illegal_c_insn</span><span class="p">);</span>
+<a name="l-483"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_branch_predictor</span>
+<a name="l-484"></a>    <span class="k">assign</span> <span class="n">instr_bp_taken_o</span>     <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-485"></a>    <span class="k">assign</span> <span class="n">predict_branch_taken</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-486"></a>    <span class="k">assign</span> <span class="n">predicted_branch</span>     <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-487"></a>    <span class="k">assign</span> <span class="n">predict_branch_pc</span>    <span class="o">=</span> <span class="mb">32&#39;b0</span><span class="p">;</span>
+<a name="l-488"></a>
+<a name="l-489"></a>    <span class="k">assign</span> <span class="n">if_instr_valid</span> <span class="o">=</span> <span class="n">fetch_valid</span><span class="p">;</span>
+<a name="l-490"></a>    <span class="k">assign</span> <span class="n">if_instr_rdata</span> <span class="o">=</span> <span class="n">fetch_rdata</span><span class="p">;</span>
+<a name="l-491"></a>    <span class="k">assign</span> <span class="n">if_instr_addr</span>  <span class="o">=</span> <span class="n">fetch_addr</span><span class="p">;</span>
+<a name="l-492"></a>    <span class="k">assign</span> <span class="n">if_instr_err</span>   <span class="o">=</span> <span class="n">fetch_err</span><span class="p">;</span>
+<a name="l-493"></a>    <span class="k">assign</span> <span class="n">fetch_ready</span> <span class="o">=</span> <span class="n">id_in_ready_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">stall_dummy_instr</span><span class="p">;</span>
+<a name="l-494"></a>  <span class="k">end</span>
+<a name="l-495"></a>
 <a name="l-496"></a>  <span class="c1">////////////////</span>
-<a name="l-497"></a>
-<a name="l-498"></a>  <span class="c1">// Selectors must be known/valid.</span>
-<a name="l-499"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IbexExcPcMuxKnown</span><span class="p">,</span> <span class="n">exc_pc_mux_i</span><span class="p">)</span>
-<a name="l-500"></a>
-<a name="l-501"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">BranchPredictor</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_branch_predictor_asserts</span>
-<a name="l-502"></a>    <span class="no">`ASSERT_IF</span><span class="p">(</span><span class="n">IbexPcMuxValid</span><span class="p">,</span> <span class="n">pc_mux_internal</span> <span class="ow">inside</span> <span class="p">{</span>
-<a name="l-503"></a>        <span class="n">PC_BOOT</span><span class="p">,</span>
-<a name="l-504"></a>        <span class="n">PC_JUMP</span><span class="p">,</span>
-<a name="l-505"></a>        <span class="n">PC_EXC</span><span class="p">,</span>
-<a name="l-506"></a>        <span class="n">PC_ERET</span><span class="p">,</span>
-<a name="l-507"></a>        <span class="n">PC_DRET</span><span class="p">,</span>
-<a name="l-508"></a>        <span class="n">PC_BP</span><span class="p">},</span>
-<a name="l-509"></a>      <span class="n">pc_set_i</span><span class="p">)</span>
-<a name="l-510"></a>
-<a name="l-511"></a><span class="no">`ifdef</span> <span class="n">INC_ASSERT</span>
-<a name="l-512"></a>    <span class="cm">/**</span>
-<a name="l-513"></a><span class="cm">     * Checks for branch prediction interface to fetch_fifo/icache</span>
-<a name="l-514"></a><span class="cm">     *</span>
-<a name="l-515"></a><span class="cm">     * The interface has two signals:</span>
-<a name="l-516"></a><span class="cm">     * - predicted_branch_i: When set with a branch (branch_i) indicates the branch is a predicted</span>
-<a name="l-517"></a><span class="cm">     *   one, it should be ignored when a branch_i isn&#39;t set.</span>
-<a name="l-518"></a><span class="cm">     * - branch_mispredict_i: Indicates the previously predicted branch was mis-predicted and</span>
-<a name="l-519"></a><span class="cm">     *   execution should resume with the not-taken side of the branch (i.e. continue with the PC</span>
-<a name="l-520"></a><span class="cm">     *   that followed the predicted branch). This must be raised before the instruction that is</span>
-<a name="l-521"></a><span class="cm">     *   made available following a predicted branch is accepted (Following a cycle with branch_i</span>
-<a name="l-522"></a><span class="cm">     *   &amp; predicted_branch_i, branch_mispredict_i can only be asserted before or on the same cycle</span>
-<a name="l-523"></a><span class="cm">     *   as seeing fetch_valid &amp; fetch_ready). When branch_mispredict_i is asserted, fetch_valid may</span>
-<a name="l-524"></a><span class="cm">     *   be asserted in response. If fetch_valid is asserted on the same cycle as</span>
-<a name="l-525"></a><span class="cm">     *   branch_mispredict_i this indicates the fetch_fifo/icache has the not-taken side of the</span>
-<a name="l-526"></a><span class="cm">     *   branch immediately ready for use</span>
-<a name="l-527"></a><span class="cm">     */</span>
-<a name="l-528"></a>    <span class="kt">logic</span>        <span class="n">predicted_branch_live_q</span><span class="p">,</span> <span class="n">predicted_branch_live_d</span><span class="p">;</span>
-<a name="l-529"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">predicted_branch_nt_pc_q</span><span class="p">,</span> <span class="n">predicted_branch_nt_pc_d</span><span class="p">;</span>
-<a name="l-530"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">awaiting_instr_after_mispredict_q</span><span class="p">,</span> <span class="n">awaiting_instr_after_mispredict_d</span><span class="p">;</span>
-<a name="l-531"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">next_pc</span><span class="p">;</span>
-<a name="l-532"></a>
-<a name="l-533"></a>    <span class="kt">logic</span> <span class="n">mispredicted</span><span class="p">,</span> <span class="n">mispredicted_d</span><span class="p">,</span> <span class="n">mispredicted_q</span><span class="p">;</span>
+<a name="l-497"></a>  <span class="c1">// Assertions //</span>
+<a name="l-498"></a>  <span class="c1">////////////////</span>
+<a name="l-499"></a>
+<a name="l-500"></a>  <span class="c1">// Selectors must be known/valid.</span>
+<a name="l-501"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IbexExcPcMuxKnown</span><span class="p">,</span> <span class="n">exc_pc_mux_i</span><span class="p">)</span>
+<a name="l-502"></a>
+<a name="l-503"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">BranchPredictor</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_branch_predictor_asserts</span>
+<a name="l-504"></a>    <span class="no">`ASSERT_IF</span><span class="p">(</span><span class="n">IbexPcMuxValid</span><span class="p">,</span> <span class="n">pc_mux_internal</span> <span class="ow">inside</span> <span class="p">{</span>
+<a name="l-505"></a>        <span class="n">PC_BOOT</span><span class="p">,</span>
+<a name="l-506"></a>        <span class="n">PC_JUMP</span><span class="p">,</span>
+<a name="l-507"></a>        <span class="n">PC_EXC</span><span class="p">,</span>
+<a name="l-508"></a>        <span class="n">PC_ERET</span><span class="p">,</span>
+<a name="l-509"></a>        <span class="n">PC_DRET</span><span class="p">,</span>
+<a name="l-510"></a>        <span class="n">PC_BP</span><span class="p">},</span>
+<a name="l-511"></a>      <span class="n">pc_set_i</span><span class="p">)</span>
+<a name="l-512"></a>
+<a name="l-513"></a><span class="no">`ifdef</span> <span class="n">INC_ASSERT</span>
+<a name="l-514"></a>    <span class="cm">/**</span>
+<a name="l-515"></a><span class="cm">     * Checks for branch prediction interface to fetch_fifo/icache</span>
+<a name="l-516"></a><span class="cm">     *</span>
+<a name="l-517"></a><span class="cm">     * The interface has two signals:</span>
+<a name="l-518"></a><span class="cm">     * - predicted_branch_i: When set with a branch (branch_i) indicates the branch is a predicted</span>
+<a name="l-519"></a><span class="cm">     *   one, it should be ignored when a branch_i isn&#39;t set.</span>
+<a name="l-520"></a><span class="cm">     * - branch_mispredict_i: Indicates the previously predicted branch was mis-predicted and</span>
+<a name="l-521"></a><span class="cm">     *   execution should resume with the not-taken side of the branch (i.e. continue with the PC</span>
+<a name="l-522"></a><span class="cm">     *   that followed the predicted branch). This must be raised before the instruction that is</span>
+<a name="l-523"></a><span class="cm">     *   made available following a predicted branch is accepted (Following a cycle with branch_i</span>
+<a name="l-524"></a><span class="cm">     *   &amp; predicted_branch_i, branch_mispredict_i can only be asserted before or on the same cycle</span>
+<a name="l-525"></a><span class="cm">     *   as seeing fetch_valid &amp; fetch_ready). When branch_mispredict_i is asserted, fetch_valid may</span>
+<a name="l-526"></a><span class="cm">     *   be asserted in response. If fetch_valid is asserted on the same cycle as</span>
+<a name="l-527"></a><span class="cm">     *   branch_mispredict_i this indicates the fetch_fifo/icache has the not-taken side of the</span>
+<a name="l-528"></a><span class="cm">     *   branch immediately ready for use</span>
+<a name="l-529"></a><span class="cm">     */</span>
+<a name="l-530"></a>    <span class="kt">logic</span>        <span class="n">predicted_branch_live_q</span><span class="p">,</span> <span class="n">predicted_branch_live_d</span><span class="p">;</span>
+<a name="l-531"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">predicted_branch_nt_pc_q</span><span class="p">,</span> <span class="n">predicted_branch_nt_pc_d</span><span class="p">;</span>
+<a name="l-532"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">awaiting_instr_after_mispredict_q</span><span class="p">,</span> <span class="n">awaiting_instr_after_mispredict_d</span><span class="p">;</span>
+<a name="l-533"></a>    <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">next_pc</span><span class="p">;</span>
 <a name="l-534"></a>
-<a name="l-535"></a>    <span class="k">assign</span> <span class="n">next_pc</span> <span class="o">=</span> <span class="n">fetch_addr</span> <span class="o">+</span> <span class="p">(</span><span class="n">instr_is_compressed_out</span> <span class="o">?</span> <span class="mi">32&#39;d2</span> <span class="o">:</span> <span class="mi">32&#39;d4</span><span class="p">);</span>
+<a name="l-535"></a>    <span class="kt">logic</span> <span class="n">mispredicted</span><span class="p">,</span> <span class="n">mispredicted_d</span><span class="p">,</span> <span class="n">mispredicted_q</span><span class="p">;</span>
 <a name="l-536"></a>
-<a name="l-537"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
-<a name="l-538"></a>      <span class="n">predicted_branch_live_d</span> <span class="o">=</span> <span class="n">predicted_branch_live_q</span><span class="p">;</span>
-<a name="l-539"></a>      <span class="n">mispredicted_d</span>          <span class="o">=</span> <span class="n">mispredicted_q</span><span class="p">;</span>
-<a name="l-540"></a>
-<a name="l-541"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">branch_req</span> <span class="o">&amp;</span> <span class="n">predicted_branch</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-542"></a>        <span class="n">predicted_branch_live_d</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
-<a name="l-543"></a>        <span class="n">mispredicted_d</span>          <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-544"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">predicted_branch_live_q</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-545"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">fetch_valid</span> <span class="o">&amp;</span> <span class="n">fetch_ready</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-546"></a>          <span class="n">predicted_branch_live_d</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-547"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">nt_branch_mispredict_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-548"></a>          <span class="n">mispredicted_d</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
-<a name="l-549"></a>        <span class="k">end</span>
-<a name="l-550"></a>      <span class="k">end</span>
-<a name="l-551"></a>    <span class="k">end</span>
-<a name="l-552"></a>
-<a name="l-553"></a>    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-554"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-555"></a>        <span class="n">predicted_branch_live_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-556"></a>        <span class="n">mispredicted_q</span>          <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-557"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-558"></a>        <span class="n">predicted_branch_live_q</span> <span class="o">&lt;=</span> <span class="n">predicted_branch_live_d</span><span class="p">;</span>
-<a name="l-559"></a>        <span class="n">mispredicted_q</span>          <span class="o">&lt;=</span> <span class="n">mispredicted_d</span><span class="p">;</span>
-<a name="l-560"></a>      <span class="k">end</span>
-<a name="l-561"></a>    <span class="k">end</span>
-<a name="l-562"></a>
-<a name="l-563"></a>    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-564"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">branch_req</span> <span class="o">&amp;</span> <span class="n">predicted_branch</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-565"></a>        <span class="n">predicted_branch_nt_pc_q</span> <span class="o">&lt;=</span> <span class="n">next_pc</span><span class="p">;</span>
-<a name="l-566"></a>      <span class="k">end</span>
-<a name="l-567"></a>    <span class="k">end</span>
-<a name="l-568"></a>
-<a name="l-569"></a>    <span class="c1">// Must only see mispredict after we&#39;ve performed a predicted branch but before we&#39;ve accepted</span>
-<a name="l-570"></a>    <span class="c1">// any instruction (with fetch_ready &amp; fetch_valid) that follows that predicted branch.</span>
-<a name="l-571"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MispredictOnlyImmediatelyAfterPredictedBranch</span><span class="p">,</span>
-<a name="l-572"></a>      <span class="n">nt_branch_mispredict_i</span> <span class="o">|-&gt;</span> <span class="n">predicted_branch_live_q</span><span class="p">);</span>
-<a name="l-573"></a>    <span class="c1">// Check that on mispredict we get the correct PC for the non-taken side of the branch when</span>
-<a name="l-574"></a>    <span class="c1">// prefetch buffer/icache makes that PC available.</span>
-<a name="l-575"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">CorrectPCOnMispredict</span><span class="p">,</span>
-<a name="l-576"></a>      <span class="n">predicted_branch_live_q</span> <span class="o">&amp;</span> <span class="n">mispredicted_d</span> <span class="o">&amp;</span> <span class="n">fetch_valid</span> <span class="o">|-&gt;</span> <span class="n">fetch_addr</span> <span class="o">==</span> <span class="n">predicted_branch_nt_pc_q</span><span class="p">);</span>
-<a name="l-577"></a>    <span class="c1">// Must not signal mispredict over multiple cycles but it&#39;s possible to have back to back</span>
-<a name="l-578"></a>    <span class="c1">// mispredicts for different branches (core signals mispredict, prefetch buffer/icache immediate</span>
-<a name="l-579"></a>    <span class="c1">// has not-taken side of the mispredicted branch ready, which itself is a predicted branch,</span>
-<a name="l-580"></a>    <span class="c1">// following cycle core signal that that branch has mispredicted).</span>
-<a name="l-581"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MispredictSingleCycle</span><span class="p">,</span>
-<a name="l-582"></a>      <span class="n">nt_branch_mispredict_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">fetch_valid</span> <span class="o">&amp;</span> <span class="n">fetch_ready</span><span class="p">)</span> <span class="o">|=&gt;</span> <span class="o">~</span><span class="n">nt_branch_mispredict_i</span><span class="p">);</span>
-<a name="l-583"></a><span class="no">`endif</span>
-<a name="l-584"></a>
-<a name="l-585"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_branch_predictor_asserts</span>
-<a name="l-586"></a>    <span class="no">`ASSERT_IF</span><span class="p">(</span><span class="n">IbexPcMuxValid</span><span class="p">,</span> <span class="n">pc_mux_internal</span> <span class="ow">inside</span> <span class="p">{</span>
-<a name="l-587"></a>        <span class="n">PC_BOOT</span><span class="p">,</span>
-<a name="l-588"></a>        <span class="n">PC_JUMP</span><span class="p">,</span>
-<a name="l-589"></a>        <span class="n">PC_EXC</span><span class="p">,</span>
-<a name="l-590"></a>        <span class="n">PC_ERET</span><span class="p">,</span>
-<a name="l-591"></a>        <span class="n">PC_DRET</span><span class="p">},</span>
-<a name="l-592"></a>      <span class="n">pc_set_i</span><span class="p">)</span>
-<a name="l-593"></a>  <span class="k">end</span>
-<a name="l-594"></a>
-<a name="l-595"></a>  <span class="c1">// Boot address must be aligned to 256 bytes.</span>
-<a name="l-596"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexBootAddrUnaligned</span><span class="p">,</span> <span class="n">boot_addr_i</span><span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">8&#39;h00</span><span class="p">)</span>
-<a name="l-597"></a>
-<a name="l-598"></a>  <span class="c1">// Address must not contain X when request is sent.</span>
-<a name="l-599"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexInstrAddrUnknown</span><span class="p">,</span> <span class="n">instr_req_o</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">(</span><span class="n">instr_addr_o</span><span class="p">))</span>
-<a name="l-600"></a>
-<a name="l-601"></a>  <span class="c1">// Address must be word aligned when request is sent.</span>
-<a name="l-602"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexInstrAddrUnaligned</span><span class="p">,</span> <span class="n">instr_req_o</span> <span class="o">|-&gt;</span> <span class="p">(</span><span class="n">instr_addr_o</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mb">2&#39;b00</span><span class="p">))</span>
-<a name="l-603"></a>
-<a name="l-604"></a><span class="k">endmodule</span>
+<a name="l-537"></a>    <span class="k">assign</span> <span class="n">next_pc</span> <span class="o">=</span> <span class="n">fetch_addr</span> <span class="o">+</span> <span class="p">(</span><span class="n">instr_is_compressed_out</span> <span class="o">?</span> <span class="mi">32&#39;d2</span> <span class="o">:</span> <span class="mi">32&#39;d4</span><span class="p">);</span>
+<a name="l-538"></a>
+<a name="l-539"></a>    <span class="k">always_comb</span> <span class="k">begin</span>
+<a name="l-540"></a>      <span class="n">predicted_branch_live_d</span> <span class="o">=</span> <span class="n">predicted_branch_live_q</span><span class="p">;</span>
+<a name="l-541"></a>      <span class="n">mispredicted_d</span>          <span class="o">=</span> <span class="n">mispredicted_q</span><span class="p">;</span>
+<a name="l-542"></a>
+<a name="l-543"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">branch_req</span> <span class="o">&amp;</span> <span class="n">predicted_branch</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-544"></a>        <span class="n">predicted_branch_live_d</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-545"></a>        <span class="n">mispredicted_d</span>          <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-546"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">predicted_branch_live_q</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-547"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">fetch_valid</span> <span class="o">&amp;</span> <span class="n">fetch_ready</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-548"></a>          <span class="n">predicted_branch_live_d</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-549"></a>        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">nt_branch_mispredict_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-550"></a>          <span class="n">mispredicted_d</span> <span class="o">=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-551"></a>        <span class="k">end</span>
+<a name="l-552"></a>      <span class="k">end</span>
+<a name="l-553"></a>    <span class="k">end</span>
+<a name="l-554"></a>
+<a name="l-555"></a>    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-556"></a>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-557"></a>        <span class="n">predicted_branch_live_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-558"></a>        <span class="n">mispredicted_q</span>          <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-559"></a>      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-560"></a>        <span class="n">predicted_branch_live_q</span> <span class="o">&lt;=</span> <span class="n">predicted_branch_live_d</span><span class="p">;</span>
+<a name="l-561"></a>        <span class="n">mispredicted_q</span>          <span class="o">&lt;=</span> <span class="n">mispredicted_d</span><span class="p">;</span>
+<a name="l-562"></a>      <span class="k">end</span>
+<a name="l-563"></a>    <span class="k">end</span>
+<a name="l-564"></a>
+<a name="l-565"></a>    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-566"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">branch_req</span> <span class="o">&amp;</span> <span class="n">predicted_branch</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-567"></a>        <span class="n">predicted_branch_nt_pc_q</span> <span class="o">&lt;=</span> <span class="n">next_pc</span><span class="p">;</span>
+<a name="l-568"></a>      <span class="k">end</span>
+<a name="l-569"></a>    <span class="k">end</span>
+<a name="l-570"></a>
+<a name="l-571"></a>    <span class="c1">// Must only see mispredict after we&#39;ve performed a predicted branch but before we&#39;ve accepted</span>
+<a name="l-572"></a>    <span class="c1">// any instruction (with fetch_ready &amp; fetch_valid) that follows that predicted branch.</span>
+<a name="l-573"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MispredictOnlyImmediatelyAfterPredictedBranch</span><span class="p">,</span>
+<a name="l-574"></a>      <span class="n">nt_branch_mispredict_i</span> <span class="o">|-&gt;</span> <span class="n">predicted_branch_live_q</span><span class="p">);</span>
+<a name="l-575"></a>    <span class="c1">// Check that on mispredict we get the correct PC for the non-taken side of the branch when</span>
+<a name="l-576"></a>    <span class="c1">// prefetch buffer/icache makes that PC available.</span>
+<a name="l-577"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">CorrectPCOnMispredict</span><span class="p">,</span>
+<a name="l-578"></a>      <span class="n">predicted_branch_live_q</span> <span class="o">&amp;</span> <span class="n">mispredicted_d</span> <span class="o">&amp;</span> <span class="n">fetch_valid</span> <span class="o">|-&gt;</span> <span class="n">fetch_addr</span> <span class="o">==</span> <span class="n">predicted_branch_nt_pc_q</span><span class="p">);</span>
+<a name="l-579"></a>    <span class="c1">// Must not signal mispredict over multiple cycles but it&#39;s possible to have back to back</span>
+<a name="l-580"></a>    <span class="c1">// mispredicts for different branches (core signals mispredict, prefetch buffer/icache immediate</span>
+<a name="l-581"></a>    <span class="c1">// has not-taken side of the mispredicted branch ready, which itself is a predicted branch,</span>
+<a name="l-582"></a>    <span class="c1">// following cycle core signal that that branch has mispredicted).</span>
+<a name="l-583"></a>    <span class="no">`ASSERT</span><span class="p">(</span><span class="n">MispredictSingleCycle</span><span class="p">,</span>
+<a name="l-584"></a>      <span class="n">nt_branch_mispredict_i</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">fetch_valid</span> <span class="o">&amp;</span> <span class="n">fetch_ready</span><span class="p">)</span> <span class="o">|=&gt;</span> <span class="o">~</span><span class="n">nt_branch_mispredict_i</span><span class="p">);</span>
+<a name="l-585"></a><span class="no">`endif</span>
+<a name="l-586"></a>
+<a name="l-587"></a>  <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">g_no_branch_predictor_asserts</span>
+<a name="l-588"></a>    <span class="no">`ASSERT_IF</span><span class="p">(</span><span class="n">IbexPcMuxValid</span><span class="p">,</span> <span class="n">pc_mux_internal</span> <span class="ow">inside</span> <span class="p">{</span>
+<a name="l-589"></a>        <span class="n">PC_BOOT</span><span class="p">,</span>
+<a name="l-590"></a>        <span class="n">PC_JUMP</span><span class="p">,</span>
+<a name="l-591"></a>        <span class="n">PC_EXC</span><span class="p">,</span>
+<a name="l-592"></a>        <span class="n">PC_ERET</span><span class="p">,</span>
+<a name="l-593"></a>        <span class="n">PC_DRET</span><span class="p">},</span>
+<a name="l-594"></a>      <span class="n">pc_set_i</span><span class="p">)</span>
+<a name="l-595"></a>  <span class="k">end</span>
+<a name="l-596"></a>
+<a name="l-597"></a>  <span class="c1">// Boot address must be aligned to 256 bytes.</span>
+<a name="l-598"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexBootAddrUnaligned</span><span class="p">,</span> <span class="n">boot_addr_i</span><span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">8&#39;h00</span><span class="p">)</span>
+<a name="l-599"></a>
+<a name="l-600"></a>  <span class="c1">// Address must not contain X when request is sent.</span>
+<a name="l-601"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexInstrAddrUnknown</span><span class="p">,</span> <span class="n">instr_req_o</span> <span class="o">|-&gt;</span> <span class="o">!</span><span class="p">$</span><span class="n">isunknown</span><span class="p">(</span><span class="n">instr_addr_o</span><span class="p">))</span>
+<a name="l-602"></a>
+<a name="l-603"></a>  <span class="c1">// Address must be word aligned when request is sent.</span>
+<a name="l-604"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexInstrAddrUnaligned</span><span class="p">,</span> <span class="n">instr_req_o</span> <span class="o">|-&gt;</span> <span class="p">(</span><span class="n">instr_addr_o</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mb">2&#39;b00</span><span class="p">))</span>
+<a name="l-605"></a>
+<a name="l-606"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>
