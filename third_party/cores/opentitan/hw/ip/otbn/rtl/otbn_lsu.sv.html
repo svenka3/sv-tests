@@ -109,7 +109,20 @@
 <a href="#l-101">101</a>
 <a href="#l-102">102</a>
 <a href="#l-103">103</a>
-<a href="#l-104">104</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-104">104</a>
+<a href="#l-105">105</a>
+<a href="#l-106">106</a>
+<a href="#l-107">107</a>
+<a href="#l-108">108</a>
+<a href="#l-109">109</a>
+<a href="#l-110">110</a>
+<a href="#l-111">111</a>
+<a href="#l-112">112</a>
+<a href="#l-113">113</a>
+<a href="#l-114">114</a>
+<a href="#l-115">115</a>
+<a href="#l-116">116</a>
+<a href="#l-117">117</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a>
@@ -209,10 +222,23 @@
 <a name="l-98"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">LsuLoadAddrStable</span><span class="p">,</span> <span class="n">lsu_load_req_i</span> <span class="o">|=&gt;</span> <span class="p">$</span><span class="n">stable</span><span class="p">(</span><span class="n">lsu_addr_i</span><span class="p">));</span>
 <a name="l-99"></a>  <span class="no">`ASSERT_KNOWN_IF</span><span class="p">(</span><span class="n">LsuAddrKnown</span><span class="p">,</span> <span class="n">lsu_addr_i</span><span class="p">,</span> <span class="n">lsu_load_req_i</span> <span class="o">|</span> <span class="n">lsu_store_req_i</span><span class="p">);</span>
 <a name="l-100"></a>
-<a name="l-101"></a>  <span class="k">assign</span> <span class="n">lsu_bignum_rdata_o</span> <span class="o">=</span> <span class="n">dmem_rdata_i</span><span class="p">;</span>
-<a name="l-102"></a>  <span class="k">assign</span> <span class="n">lsu_rdata_err_o</span>    <span class="o">=</span> <span class="n">dmem_rerror_i</span><span class="p">;</span>
+<a name="l-101"></a>  <span class="c1">// TODO: Produce an error/alert if this doesn&#39;t hold?</span>
+<a name="l-102"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">DMemRValidAfterReq</span><span class="p">,</span> <span class="n">dmem_req_o</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">dmem_write_o</span> <span class="o">|=&gt;</span> <span class="n">dmem_rvalid_i</span><span class="p">);</span>
 <a name="l-103"></a>
-<a name="l-104"></a><span class="k">endmodule</span>
+<a name="l-104"></a>  <span class="k">assign</span> <span class="n">lsu_bignum_rdata_o</span> <span class="o">=</span> <span class="n">dmem_rdata_i</span><span class="p">;</span>
+<a name="l-105"></a>  <span class="k">assign</span> <span class="n">lsu_rdata_err_o</span>    <span class="o">=</span> <span class="n">dmem_rerror_i</span><span class="p">;</span>
+<a name="l-106"></a>
+<a name="l-107"></a>  <span class="c1">// clk_i, rst_ni and dmem_rvalid_i are only used by assertions</span>
+<a name="l-108"></a>  <span class="kt">logic</span> <span class="n">unused_clk</span><span class="p">;</span>
+<a name="l-109"></a>  <span class="kt">logic</span> <span class="n">unused_rst_n</span><span class="p">;</span>
+<a name="l-110"></a>  <span class="kt">logic</span> <span class="n">unused_dmem_rvalid</span><span class="p">;</span>
+<a name="l-111"></a>
+<a name="l-112"></a>  <span class="k">assign</span> <span class="n">unused_clk</span> <span class="o">=</span> <span class="n">clk_i</span><span class="p">;</span>
+<a name="l-113"></a>  <span class="k">assign</span> <span class="n">unused_rst_n</span> <span class="o">=</span> <span class="n">rst_ni</span><span class="p">;</span>
+<a name="l-114"></a>  <span class="k">assign</span> <span class="n">unused_dmem_rvalid</span> <span class="o">=</span> <span class="n">dmem_rvalid_i</span><span class="p">;</span>
+<a name="l-115"></a>
+<a name="l-116"></a>
+<a name="l-117"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

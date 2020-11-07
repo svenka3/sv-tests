@@ -345,7 +345,9 @@
 <a href="#l-337">337</a>
 <a href="#l-338">338</a>
 <a href="#l-339">339</a>
-<a href="#l-340">340</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-340">340</a>
+<a href="#l-341">341</a>
+<a href="#l-342">342</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a>
@@ -360,7 +362,7 @@
 <a name="l-13"></a>  <span class="k">parameter</span>  <span class="kt">int</span> <span class="n">ErrWidth</span>    <span class="o">=</span> <span class="n">otp_ctrl_pkg</span><span class="o">::</span><span class="n">OtpErrWidth</span><span class="p">,</span>
 <a name="l-14"></a>  <span class="c1">// Width of the power sequencing signal.</span>
 <a name="l-15"></a>  <span class="k">parameter</span>  <span class="kt">int</span> <span class="n">PwrSeqWidth</span> <span class="o">=</span> <span class="n">otp_ctrl_pkg</span><span class="o">::</span><span class="n">OtpPwrSeqWidth</span><span class="p">,</span>
-<a name="l-16"></a><span class="c1">// Number of Test TL-UL words</span>
+<a name="l-16"></a>  <span class="c1">// Number of Test TL-UL words</span>
 <a name="l-17"></a>  <span class="k">parameter</span>  <span class="kt">int</span> <span class="n">TlDepth</span>     <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
 <a name="l-18"></a>  <span class="c1">// Derived parameters</span>
 <a name="l-19"></a>  <span class="k">localparam</span> <span class="kt">int</span> <span class="n">AddrWidth</span>   <span class="o">=</span> <span class="n">prim_util_pkg</span><span class="o">::</span><span class="n">vbits</span><span class="p">(</span><span class="n">Depth</span><span class="p">),</span>
@@ -386,7 +388,7 @@
 <a name="l-39"></a>  <span class="c1">// Response channel</span>
 <a name="l-40"></a>  <span class="k">output</span> <span class="kt">logic</span>                   <span class="n">valid_o</span><span class="p">,</span>
 <a name="l-41"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">IfWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>     <span class="n">rdata_o</span><span class="p">,</span>
-<a name="l-42"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">ErrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>    <span class="n">err_o</span>
+<a name="l-42"></a>  <span class="k">output</span> <span class="n">otp_ctrl_pkg</span><span class="o">::</span><span class="n">otp_err_e</span> <span class="n">err_o</span>
 <a name="l-43"></a><span class="p">);</span>
 <a name="l-44"></a>
 <a name="l-45"></a>  <span class="c1">// Not supported in open-source emulation model.</span>
@@ -479,8 +481,8 @@
 <a name="l-132"></a>  <span class="p">}</span> <span class="n">state_e</span><span class="p">;</span>
 <a name="l-133"></a>
 <a name="l-134"></a>  <span class="n">state_e</span> <span class="n">state_d</span><span class="p">,</span> <span class="n">state_q</span><span class="p">;</span>
-<a name="l-135"></a>  <span class="kt">logic</span>  <span class="n">valid_d</span><span class="p">,</span> <span class="n">valid_q</span><span class="p">;</span>
-<a name="l-136"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">ErrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">err_d</span><span class="p">,</span> <span class="n">err_q</span><span class="p">;</span>
+<a name="l-135"></a>  <span class="n">otp_ctrl_pkg</span><span class="o">::</span><span class="n">otp_err_e</span> <span class="n">err_d</span><span class="p">,</span> <span class="n">err_q</span><span class="p">;</span>
+<a name="l-136"></a>  <span class="kt">logic</span> <span class="n">valid_d</span><span class="p">,</span> <span class="n">valid_q</span><span class="p">;</span>
 <a name="l-137"></a>  <span class="kt">logic</span> <span class="n">req</span><span class="p">,</span> <span class="n">wren</span><span class="p">,</span> <span class="n">rvalid</span><span class="p">;</span>
 <a name="l-138"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rerror</span><span class="p">;</span>
 <a name="l-139"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">Width</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rdata_d</span><span class="p">;</span>
@@ -650,41 +652,43 @@
 <a name="l-303"></a>
 <a name="l-304"></a>  <span class="c1">// This primitive is used to place a size-only constraint on the</span>
 <a name="l-305"></a>  <span class="c1">// flops in order to prevent FSM state encoding optimizations.</span>
-<a name="l-306"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
-<a name="l-307"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
-<a name="l-308"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
-<a name="l-309"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
-<a name="l-310"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
-<a name="l-311"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-312"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span> <span class="p">),</span>
-<a name="l-313"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_q</span> <span class="p">)</span>
-<a name="l-314"></a>  <span class="p">);</span>
-<a name="l-315"></a>
-<a name="l-316"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
-<a name="l-317"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-318"></a>      <span class="n">valid_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-319"></a>      <span class="n">err_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-320"></a>      <span class="n">addr_q</span>  <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-321"></a>      <span class="n">wdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-322"></a>      <span class="n">rdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-323"></a>      <span class="n">cnt_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-324"></a>      <span class="n">size_q</span>  <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-325"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-326"></a>      <span class="n">valid_q</span> <span class="o">&lt;=</span> <span class="n">valid_d</span><span class="p">;</span>
-<a name="l-327"></a>      <span class="n">err_q</span>   <span class="o">&lt;=</span> <span class="n">err_d</span><span class="p">;</span>
-<a name="l-328"></a>      <span class="n">cnt_q</span>   <span class="o">&lt;=</span> <span class="n">cnt_d</span><span class="p">;</span>
-<a name="l-329"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">ready_o</span> <span class="o">&amp;&amp;</span> <span class="n">valid_i</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-330"></a>        <span class="n">addr_q</span>  <span class="o">&lt;=</span> <span class="n">addr_i</span><span class="p">;</span>
-<a name="l-331"></a>        <span class="n">wdata_q</span> <span class="o">&lt;=</span> <span class="n">wdata_i</span><span class="p">;</span>
-<a name="l-332"></a>        <span class="n">size_q</span>  <span class="o">&lt;=</span> <span class="n">size_i</span><span class="p">;</span>
-<a name="l-333"></a>      <span class="k">end</span>
-<a name="l-334"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">rvalid</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-335"></a>        <span class="n">rdata_q</span><span class="p">[</span><span class="n">cnt_q</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">rdata_d</span><span class="p">;</span>
-<a name="l-336"></a>      <span class="k">end</span>
-<a name="l-337"></a>    <span class="k">end</span>
-<a name="l-338"></a>  <span class="k">end</span>
-<a name="l-339"></a>
-<a name="l-340"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_generic_otp</span>
+<a name="l-306"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">StateWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">state_raw_q</span><span class="p">;</span>
+<a name="l-307"></a>  <span class="k">assign</span> <span class="n">state_q</span> <span class="o">=</span> <span class="n">state_e</span><span class="p">&#39;(</span><span class="n">state_raw_q</span><span class="p">);</span>
+<a name="l-308"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
+<a name="l-309"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
+<a name="l-310"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
+<a name="l-311"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
+<a name="l-312"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
+<a name="l-313"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-314"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span>     <span class="p">),</span>
+<a name="l-315"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_raw_q</span> <span class="p">)</span>
+<a name="l-316"></a>  <span class="p">);</span>
+<a name="l-317"></a>
+<a name="l-318"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
+<a name="l-319"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-320"></a>      <span class="n">valid_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-321"></a>      <span class="n">err_q</span>   <span class="o">&lt;=</span> <span class="n">otp_ctrl_pkg</span><span class="o">::</span><span class="n">NoError</span><span class="p">;</span>
+<a name="l-322"></a>      <span class="n">addr_q</span>  <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-323"></a>      <span class="n">wdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-324"></a>      <span class="n">rdata_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-325"></a>      <span class="n">cnt_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-326"></a>      <span class="n">size_q</span>  <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-327"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-328"></a>      <span class="n">valid_q</span> <span class="o">&lt;=</span> <span class="n">valid_d</span><span class="p">;</span>
+<a name="l-329"></a>      <span class="n">err_q</span>   <span class="o">&lt;=</span> <span class="n">err_d</span><span class="p">;</span>
+<a name="l-330"></a>      <span class="n">cnt_q</span>   <span class="o">&lt;=</span> <span class="n">cnt_d</span><span class="p">;</span>
+<a name="l-331"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">ready_o</span> <span class="o">&amp;&amp;</span> <span class="n">valid_i</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-332"></a>        <span class="n">addr_q</span>  <span class="o">&lt;=</span> <span class="n">addr_i</span><span class="p">;</span>
+<a name="l-333"></a>        <span class="n">wdata_q</span> <span class="o">&lt;=</span> <span class="n">wdata_i</span><span class="p">;</span>
+<a name="l-334"></a>        <span class="n">size_q</span>  <span class="o">&lt;=</span> <span class="n">size_i</span><span class="p">;</span>
+<a name="l-335"></a>      <span class="k">end</span>
+<a name="l-336"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">rvalid</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-337"></a>        <span class="n">rdata_q</span><span class="p">[</span><span class="n">cnt_q</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">rdata_d</span><span class="p">;</span>
+<a name="l-338"></a>      <span class="k">end</span>
+<a name="l-339"></a>    <span class="k">end</span>
+<a name="l-340"></a>  <span class="k">end</span>
+<a name="l-341"></a>
+<a name="l-342"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">prim_generic_otp</span>
 </pre></div>
 </td></tr></table>
   </body>

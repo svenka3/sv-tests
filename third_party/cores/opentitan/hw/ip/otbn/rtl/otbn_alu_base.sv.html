@@ -120,7 +120,25 @@
 <a href="#l-112">112</a>
 <a href="#l-113">113</a>
 <a href="#l-114">114</a>
-<a href="#l-115">115</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-115">115</a>
+<a href="#l-116">116</a>
+<a href="#l-117">117</a>
+<a href="#l-118">118</a>
+<a href="#l-119">119</a>
+<a href="#l-120">120</a>
+<a href="#l-121">121</a>
+<a href="#l-122">122</a>
+<a href="#l-123">123</a>
+<a href="#l-124">124</a>
+<a href="#l-125">125</a>
+<a href="#l-126">126</a>
+<a href="#l-127">127</a>
+<a href="#l-128">128</a>
+<a href="#l-129">129</a>
+<a href="#l-130">130</a>
+<a href="#l-131">131</a>
+<a href="#l-132">132</a>
+<a href="#l-133">133</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a>
@@ -147,7 +165,7 @@
 <a name="l-25"></a>
 <a name="l-26"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">32</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">adder_op_a</span><span class="p">,</span> <span class="n">adder_op_b</span><span class="p">;</span>
 <a name="l-27"></a>  <span class="kt">logic</span>        <span class="n">adder_op_b_negate</span><span class="p">;</span>
-<a name="l-28"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">33</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">adder_result</span><span class="p">;</span>
+<a name="l-28"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">32</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">adder_result</span><span class="p">;</span>
 <a name="l-29"></a>
 <a name="l-30"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">and_result</span><span class="p">;</span>
 <a name="l-31"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">or_result</span><span class="p">;</span>
@@ -234,7 +252,25 @@
 <a name="l-112"></a>  <span class="k">assign</span> <span class="n">is_equal</span> <span class="o">=</span> <span class="n">comparison_i</span><span class="p">.</span><span class="n">operand_a</span> <span class="o">==</span> <span class="n">comparison_i</span><span class="p">.</span><span class="n">operand_b</span><span class="p">;</span>
 <a name="l-113"></a>
 <a name="l-114"></a>  <span class="k">assign</span> <span class="n">comparison_result_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">comparison_i</span><span class="p">.</span><span class="n">op</span> <span class="o">==</span> <span class="n">ComparisonOpBaseEq</span><span class="p">)</span> <span class="o">?</span> <span class="n">is_equal</span> <span class="o">:</span> <span class="o">~</span><span class="n">is_equal</span><span class="p">;</span>
-<a name="l-115"></a><span class="k">endmodule</span>
+<a name="l-115"></a>
+<a name="l-116"></a>  <span class="c1">// The bottom bit of adder_result is discarded. It simply corresponds to the carry in used to produce</span>
+<a name="l-117"></a>  <span class="c1">// twos complement subtraction from an addition.</span>
+<a name="l-118"></a>  <span class="kt">logic</span> <span class="n">unused_adder_result_bit</span><span class="p">;</span>
+<a name="l-119"></a>
+<a name="l-120"></a>  <span class="c1">// The top bit of shift_out is discarded. shift_in contains an extra bit to deal with sign</span>
+<a name="l-121"></a>  <span class="c1">// extension which isn&#39;t needed in the shift_out result.</span>
+<a name="l-122"></a>  <span class="kt">logic</span> <span class="n">unused_shift_out_result_bit</span><span class="p">;</span>
+<a name="l-123"></a>  <span class="k">assign</span> <span class="n">unused_shift_out_result_bit</span> <span class="o">=</span> <span class="n">shift_out</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+<a name="l-124"></a>
+<a name="l-125"></a>  <span class="k">assign</span> <span class="n">unused_adder_result_bit</span> <span class="o">=</span> <span class="n">adder_result</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="l-126"></a>
+<a name="l-127"></a>  <span class="c1">// clk_i, rst_ni are only used by assertions</span>
+<a name="l-128"></a>  <span class="kt">logic</span> <span class="n">unused_clk</span><span class="p">;</span>
+<a name="l-129"></a>  <span class="kt">logic</span> <span class="n">unused_rst_n</span><span class="p">;</span>
+<a name="l-130"></a>
+<a name="l-131"></a>  <span class="k">assign</span> <span class="n">unused_clk</span> <span class="o">=</span> <span class="n">clk_i</span><span class="p">;</span>
+<a name="l-132"></a>  <span class="k">assign</span> <span class="n">unused_rst_n</span> <span class="o">=</span> <span class="n">rst_ni</span><span class="p">;</span>
+<a name="l-133"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

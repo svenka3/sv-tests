@@ -332,7 +332,9 @@
 <a href="#l-324">324</a>
 <a href="#l-325">325</a>
 <a href="#l-326">326</a>
-<a href="#l-327">327</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-327">327</a>
+<a href="#l-328">328</a>
+<a href="#l-329">329</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -354,7 +356,7 @@
 <a name="l-20"></a><span class="c1">// an alert via the error logic.</span>
 <a name="l-21"></a><span class="c1">//</span>
 <a name="l-22"></a><span class="c1">// The EntropyWidth LSBs of the LFSR are periodically reseeded with fresh entropy from</span>
-<a name="l-23"></a><span class="c1">// CSRNG every 2^ReseedTimerWidth cycles.</span>
+<a name="l-23"></a><span class="c1">// CSRNG every 2^ReseedLfsrWidth cycles.</span>
 <a name="l-24"></a><span class="c1">//</span>
 <a name="l-25"></a><span class="c1">// It is also possible to trigger one-off checks via integ_chk_trig_i and cnsty_chk_trig_i.</span>
 <a name="l-26"></a><span class="c1">// This can be useful if SW chooses to leave the periodic checks disabled.</span>
@@ -362,102 +364,102 @@
 <a name="l-28"></a>
 <a name="l-29"></a><span class="no">`include</span> <span class="s">&quot;prim_assert.sv&quot;</span>
 <a name="l-30"></a>
-<a name="l-31"></a><span class="k">module</span> <span class="n">otp_ctrl_lfsr_timer</span> <span class="k">import</span> <span class="n">otp_ctrl_pkg</span><span class="o">::*</span><span class="p">;</span> <span class="p">#(</span>
-<a name="l-32"></a>  <span class="c1">// Entropy reseeding is triggered every time this counter expires.</span>
-<a name="l-33"></a>  <span class="k">parameter</span> <span class="kt">int</span>                          <span class="n">ReseedTimerWidth</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
-<a name="l-34"></a>  <span class="k">parameter</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">LfsrSeed</span>           <span class="o">=</span> <span class="n">TimerWidth</span><span class="p">&#39;(</span><span class="mb">1&#39;b1</span><span class="p">),</span>
-<a name="l-35"></a>  <span class="k">parameter</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">][</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">LfsrPerm</span>           <span class="o">=</span> <span class="p">{</span>
-<a name="l-36"></a>    <span class="mi">32&#39;d13</span><span class="p">,</span> <span class="mi">32&#39;d17</span><span class="p">,</span> <span class="mi">32&#39;d29</span><span class="p">,</span> <span class="mi">32&#39;d11</span><span class="p">,</span> <span class="mi">32&#39;d28</span><span class="p">,</span> <span class="mi">32&#39;d12</span><span class="p">,</span> <span class="mi">32&#39;d33</span><span class="p">,</span> <span class="mi">32&#39;d27</span><span class="p">,</span>
-<a name="l-37"></a>    <span class="mi">32&#39;d05</span><span class="p">,</span> <span class="mi">32&#39;d39</span><span class="p">,</span> <span class="mi">32&#39;d31</span><span class="p">,</span> <span class="mi">32&#39;d21</span><span class="p">,</span> <span class="mi">32&#39;d15</span><span class="p">,</span> <span class="mi">32&#39;d01</span><span class="p">,</span> <span class="mi">32&#39;d24</span><span class="p">,</span> <span class="mi">32&#39;d37</span><span class="p">,</span>
-<a name="l-38"></a>    <span class="mi">32&#39;d32</span><span class="p">,</span> <span class="mi">32&#39;d38</span><span class="p">,</span> <span class="mi">32&#39;d26</span><span class="p">,</span> <span class="mi">32&#39;d34</span><span class="p">,</span> <span class="mi">32&#39;d08</span><span class="p">,</span> <span class="mi">32&#39;d10</span><span class="p">,</span> <span class="mi">32&#39;d04</span><span class="p">,</span> <span class="mi">32&#39;d02</span><span class="p">,</span>
-<a name="l-39"></a>    <span class="mi">32&#39;d19</span><span class="p">,</span> <span class="mi">32&#39;d00</span><span class="p">,</span> <span class="mi">32&#39;d20</span><span class="p">,</span> <span class="mi">32&#39;d06</span><span class="p">,</span> <span class="mi">32&#39;d25</span><span class="p">,</span> <span class="mi">32&#39;d22</span><span class="p">,</span> <span class="mi">32&#39;d03</span><span class="p">,</span> <span class="mi">32&#39;d35</span><span class="p">,</span>
-<a name="l-40"></a>    <span class="mi">32&#39;d16</span><span class="p">,</span> <span class="mi">32&#39;d14</span><span class="p">,</span> <span class="mi">32&#39;d23</span><span class="p">,</span> <span class="mi">32&#39;d07</span><span class="p">,</span> <span class="mi">32&#39;d30</span><span class="p">,</span> <span class="mi">32&#39;d09</span><span class="p">,</span> <span class="mi">32&#39;d18</span><span class="p">,</span> <span class="mi">32&#39;d36</span>
-<a name="l-41"></a>  <span class="p">}</span>
-<a name="l-42"></a><span class="p">)</span> <span class="p">(</span>
-<a name="l-43"></a>  <span class="k">input</span>                            <span class="n">clk_i</span><span class="p">,</span>
-<a name="l-44"></a>  <span class="k">input</span>                            <span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-45"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">edn_req_o</span><span class="p">,</span>          <span class="c1">// request to EDN</span>
-<a name="l-46"></a>  <span class="k">input</span>                            <span class="n">edn_ack_i</span><span class="p">,</span>          <span class="c1">// ack from EDN</span>
-<a name="l-47"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">EdnDataWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">edn_data_i</span><span class="p">,</span>         <span class="c1">// from EDN</span>
-<a name="l-48"></a>  <span class="k">input</span>                            <span class="n">timer_en_i</span><span class="p">,</span>         <span class="c1">// enable timer</span>
-<a name="l-49"></a>  <span class="k">input</span>                            <span class="n">integ_chk_trig_i</span><span class="p">,</span>   <span class="c1">// one-off trigger for integrity check</span>
-<a name="l-50"></a>  <span class="k">input</span>                            <span class="n">cnsty_chk_trig_i</span><span class="p">,</span>   <span class="c1">// one-off trigger for consistency check</span>
-<a name="l-51"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">chk_pending_o</span><span class="p">,</span>      <span class="c1">// indicates whether there are pending checks</span>
-<a name="l-52"></a>  <span class="k">input</span>        <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">timeout_i</span><span class="p">,</span>          <span class="c1">// check timeout</span>
-<a name="l-53"></a>  <span class="k">input</span>        <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">integ_period_msk_i</span><span class="p">,</span> <span class="c1">// maximum integrity check mask</span>
-<a name="l-54"></a>  <span class="k">input</span>        <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">cnsty_period_msk_i</span><span class="p">,</span> <span class="c1">// maximum consistency check mask</span>
-<a name="l-55"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">integ_chk_req_o</span><span class="p">,</span>    <span class="c1">// request to all partitions</span>
-<a name="l-56"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">cnsty_chk_req_o</span><span class="p">,</span>    <span class="c1">// request to all partitions</span>
-<a name="l-57"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">integ_chk_ack_i</span><span class="p">,</span>    <span class="c1">// response from partitions</span>
-<a name="l-58"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">cnsty_chk_ack_i</span><span class="p">,</span>    <span class="c1">// response from partitions</span>
-<a name="l-59"></a>  <span class="k">input</span>  <span class="n">lc_ctrl_pkg</span><span class="o">::</span><span class="n">lc_tx_t</span>      <span class="n">escalate_en_i</span><span class="p">,</span>      <span class="c1">// escalation input, moves FSM into ErrorSt</span>
-<a name="l-60"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">chk_timeout_o</span><span class="p">,</span>      <span class="c1">// a check has timed out</span>
-<a name="l-61"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">fsm_err_o</span>           <span class="c1">// the FSM has reached an invalid state</span>
-<a name="l-62"></a><span class="p">);</span>
-<a name="l-63"></a>
+<a name="l-31"></a><span class="k">module</span> <span class="n">otp_ctrl_lfsr_timer</span>
+<a name="l-32"></a>  <span class="kn">import</span> <span class="nn">otp_ctrl_pkg::*</span><span class="p">;</span>
+<a name="l-33"></a>  <span class="kn">import</span> <span class="nn">otp_ctrl_reg_pkg::*</span><span class="p">;</span>
+<a name="l-34"></a><span class="p">#(</span>
+<a name="l-35"></a>  <span class="c1">// Entropy reseeding is triggered every time this counter expires.</span>
+<a name="l-36"></a>  <span class="k">parameter</span> <span class="kt">int</span>         <span class="n">ReseedLfsrWidth</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+<a name="l-37"></a>  <span class="c1">// Compile time random constants, to be overriden by topgen.</span>
+<a name="l-38"></a>  <span class="k">parameter</span> <span class="n">lfsr_seed_t</span> <span class="n">RndCnstLfsrSeed</span> <span class="o">=</span> <span class="n">RndCnstLfsrSeedDefault</span><span class="p">,</span>
+<a name="l-39"></a>  <span class="k">parameter</span> <span class="n">lfsr_perm_t</span> <span class="n">RndCnstLfsrPerm</span> <span class="o">=</span> <span class="n">RndCnstLfsrPermDefault</span>
+<a name="l-40"></a><span class="p">)</span> <span class="p">(</span>
+<a name="l-41"></a>  <span class="k">input</span>                            <span class="n">clk_i</span><span class="p">,</span>
+<a name="l-42"></a>  <span class="k">input</span>                            <span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-43"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">edn_req_o</span><span class="p">,</span>          <span class="c1">// request to EDN</span>
+<a name="l-44"></a>  <span class="k">input</span>                            <span class="n">edn_ack_i</span><span class="p">,</span>          <span class="c1">// ack from EDN</span>
+<a name="l-45"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">EdnDataWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">edn_data_i</span><span class="p">,</span>         <span class="c1">// from EDN</span>
+<a name="l-46"></a>  <span class="k">input</span>                            <span class="n">timer_en_i</span><span class="p">,</span>         <span class="c1">// enable timer</span>
+<a name="l-47"></a>  <span class="k">input</span>                            <span class="n">integ_chk_trig_i</span><span class="p">,</span>   <span class="c1">// one-off trigger for integrity check</span>
+<a name="l-48"></a>  <span class="k">input</span>                            <span class="n">cnsty_chk_trig_i</span><span class="p">,</span>   <span class="c1">// one-off trigger for consistency check</span>
+<a name="l-49"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">chk_pending_o</span><span class="p">,</span>      <span class="c1">// indicates whether there are pending checks</span>
+<a name="l-50"></a>  <span class="k">input</span>        <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">timeout_i</span><span class="p">,</span>          <span class="c1">// check timeout</span>
+<a name="l-51"></a>  <span class="k">input</span>        <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">integ_period_msk_i</span><span class="p">,</span> <span class="c1">// maximum integrity check mask</span>
+<a name="l-52"></a>  <span class="k">input</span>        <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>              <span class="n">cnsty_period_msk_i</span><span class="p">,</span> <span class="c1">// maximum consistency check mask</span>
+<a name="l-53"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">integ_chk_req_o</span><span class="p">,</span>    <span class="c1">// request to all partitions</span>
+<a name="l-54"></a>  <span class="k">output</span> <span class="kt">logic</span> <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">cnsty_chk_req_o</span><span class="p">,</span>    <span class="c1">// request to all partitions</span>
+<a name="l-55"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">integ_chk_ack_i</span><span class="p">,</span>    <span class="c1">// response from partitions</span>
+<a name="l-56"></a>  <span class="k">input</span>        <span class="p">[</span><span class="n">NumPart</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>       <span class="n">cnsty_chk_ack_i</span><span class="p">,</span>    <span class="c1">// response from partitions</span>
+<a name="l-57"></a>  <span class="k">input</span>  <span class="n">lc_ctrl_pkg</span><span class="o">::</span><span class="n">lc_tx_t</span>      <span class="n">escalate_en_i</span><span class="p">,</span>      <span class="c1">// escalation input, moves FSM into ErrorSt</span>
+<a name="l-58"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">chk_timeout_o</span><span class="p">,</span>      <span class="c1">// a check has timed out</span>
+<a name="l-59"></a>  <span class="k">output</span> <span class="kt">logic</span>                     <span class="n">fsm_err_o</span>           <span class="c1">// the FSM has reached an invalid state</span>
+<a name="l-60"></a><span class="p">);</span>
+<a name="l-61"></a>
+<a name="l-62"></a>  <span class="c1">////////////////////</span>
+<a name="l-63"></a>  <span class="c1">// Reseed counter //</span>
 <a name="l-64"></a>  <span class="c1">////////////////////</span>
-<a name="l-65"></a>  <span class="c1">// Reseed counter //</span>
-<a name="l-66"></a>  <span class="c1">////////////////////</span>
-<a name="l-67"></a>
-<a name="l-68"></a>  <span class="kt">logic</span> <span class="n">reseed_en</span><span class="p">;</span>
-<a name="l-69"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">ReseedTimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">reseed_timer_d</span><span class="p">,</span> <span class="n">reseed_timer_q</span><span class="p">;</span>
-<a name="l-70"></a>
-<a name="l-71"></a>  <span class="k">assign</span> <span class="n">reseed_timer_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">reseed_timer_q</span> <span class="o">&gt;</span> <span class="m">&#39;0</span><span class="p">)</span> <span class="o">?</span> <span class="n">reseed_timer_q</span> <span class="o">-</span> <span class="mb">1&#39;b1</span>    <span class="o">:</span>
-<a name="l-72"></a>                          <span class="p">(</span><span class="n">reseed_en</span><span class="p">)</span>           <span class="o">?</span> <span class="p">{</span><span class="n">ReseedTimerWidth</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}}</span> <span class="o">:</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-73"></a>  <span class="k">assign</span> <span class="n">edn_req_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">reseed_timer_q</span> <span class="o">==</span> <span class="m">&#39;0</span><span class="p">);</span>
-<a name="l-74"></a>  <span class="k">assign</span> <span class="n">reseed_en</span> <span class="o">=</span> <span class="n">edn_req_o</span> <span class="o">&amp;</span> <span class="n">edn_ack_i</span><span class="p">;</span>
-<a name="l-75"></a>
+<a name="l-65"></a>
+<a name="l-66"></a>  <span class="kt">logic</span> <span class="n">reseed_en</span><span class="p">;</span>
+<a name="l-67"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">ReseedLfsrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">reseed_timer_d</span><span class="p">,</span> <span class="n">reseed_timer_q</span><span class="p">;</span>
+<a name="l-68"></a>
+<a name="l-69"></a>  <span class="k">assign</span> <span class="n">reseed_timer_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">reseed_timer_q</span> <span class="o">&gt;</span> <span class="m">&#39;0</span><span class="p">)</span> <span class="o">?</span> <span class="n">reseed_timer_q</span> <span class="o">-</span> <span class="mb">1&#39;b1</span>   <span class="o">:</span>
+<a name="l-70"></a>                          <span class="p">(</span><span class="n">reseed_en</span><span class="p">)</span>           <span class="o">?</span> <span class="p">{</span><span class="n">ReseedLfsrWidth</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}}</span> <span class="o">:</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-71"></a>  <span class="k">assign</span> <span class="n">edn_req_o</span> <span class="o">=</span> <span class="p">(</span><span class="n">reseed_timer_q</span> <span class="o">==</span> <span class="m">&#39;0</span><span class="p">);</span>
+<a name="l-72"></a>  <span class="k">assign</span> <span class="n">reseed_en</span> <span class="o">=</span> <span class="n">edn_req_o</span> <span class="o">&amp;</span> <span class="n">edn_ack_i</span><span class="p">;</span>
+<a name="l-73"></a>
+<a name="l-74"></a>  <span class="c1">//////////</span>
+<a name="l-75"></a>  <span class="c1">// PRNG //</span>
 <a name="l-76"></a>  <span class="c1">//////////</span>
-<a name="l-77"></a>  <span class="c1">// PRNG //</span>
-<a name="l-78"></a>  <span class="c1">//////////</span>
-<a name="l-79"></a>
-<a name="l-80"></a>  <span class="kt">logic</span> <span class="n">lfsr_en</span><span class="p">;</span>
-<a name="l-81"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">lfsr_state</span><span class="p">;</span>
-<a name="l-82"></a>
-<a name="l-83"></a>  <span class="n">prim_lfsr</span> <span class="p">#(</span>
-<a name="l-84"></a>    <span class="p">.</span><span class="n">LfsrDw</span>      <span class="p">(</span> <span class="n">TimerWidth</span>   <span class="p">),</span>
-<a name="l-85"></a>    <span class="p">.</span><span class="n">EntropyDw</span>   <span class="p">(</span> <span class="n">TimerWidth</span>   <span class="p">),</span>
-<a name="l-86"></a>    <span class="p">.</span><span class="n">StateOutDw</span>  <span class="p">(</span> <span class="n">TimerWidth</span>   <span class="p">),</span>
-<a name="l-87"></a>    <span class="p">.</span><span class="n">DefaultSeed</span> <span class="p">(</span> <span class="n">LfsrSeed</span>     <span class="p">),</span>
-<a name="l-88"></a>    <span class="p">.</span><span class="n">StatePermEn</span> <span class="p">(</span> <span class="mb">1&#39;b1</span>         <span class="p">),</span>
-<a name="l-89"></a>    <span class="p">.</span><span class="n">StatePerm</span>   <span class="p">(</span> <span class="n">LfsrPerm</span>     <span class="p">),</span>
-<a name="l-90"></a>    <span class="p">.</span><span class="n">ExtSeedSVA</span>  <span class="p">(</span> <span class="mb">1&#39;b0</span>         <span class="p">)</span> <span class="c1">// ext seed is unused</span>
-<a name="l-91"></a>  <span class="p">)</span> <span class="n">i_prim_lfsr</span> <span class="p">(</span>
-<a name="l-92"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
-<a name="l-93"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-94"></a>    <span class="p">.</span><span class="n">seed_en_i</span>  <span class="p">(</span> <span class="mb">1&#39;b0</span>       <span class="p">),</span>
-<a name="l-95"></a>    <span class="p">.</span><span class="n">seed_i</span>     <span class="p">(</span> <span class="m">&#39;0</span>         <span class="p">),</span>
-<a name="l-96"></a>    <span class="p">.</span><span class="n">lfsr_en_i</span>  <span class="p">(</span> <span class="n">lfsr_en</span> <span class="o">|</span> <span class="n">reseed_en</span>                                  <span class="p">),</span>
-<a name="l-97"></a>    <span class="p">.</span><span class="n">entropy_i</span>  <span class="p">(</span> <span class="n">edn_data_i</span><span class="p">[</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">{</span><span class="n">TimerWidth</span><span class="p">{</span><span class="n">reseed_en</span><span class="p">}}</span> <span class="p">),</span>
-<a name="l-98"></a>    <span class="p">.</span><span class="n">state_o</span>    <span class="p">(</span> <span class="n">lfsr_state</span> <span class="p">)</span>
-<a name="l-99"></a>  <span class="p">);</span>
-<a name="l-100"></a>
-<a name="l-101"></a>  <span class="c1">// Not all entropy bits are used.</span>
-<a name="l-102"></a>  <span class="kt">logic</span> <span class="n">unused_seed</span><span class="p">;</span>
-<a name="l-103"></a>  <span class="k">assign</span> <span class="n">unused_seed</span> <span class="o">=</span> <span class="o">^</span><span class="n">edn_data_i</span><span class="p">;</span>
+<a name="l-77"></a>
+<a name="l-78"></a>  <span class="kt">logic</span> <span class="n">lfsr_en</span><span class="p">;</span>
+<a name="l-79"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">LfsrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">lfsr_state</span><span class="p">;</span>
+<a name="l-80"></a>
+<a name="l-81"></a>  <span class="n">prim_lfsr</span> <span class="p">#(</span>
+<a name="l-82"></a>    <span class="p">.</span><span class="n">LfsrDw</span>      <span class="p">(</span> <span class="n">LfsrWidth</span>      <span class="p">),</span>
+<a name="l-83"></a>    <span class="p">.</span><span class="n">EntropyDw</span>   <span class="p">(</span> <span class="n">LfsrWidth</span>      <span class="p">),</span>
+<a name="l-84"></a>    <span class="p">.</span><span class="n">StateOutDw</span>  <span class="p">(</span> <span class="n">LfsrWidth</span>      <span class="p">),</span>
+<a name="l-85"></a>    <span class="p">.</span><span class="n">DefaultSeed</span> <span class="p">(</span> <span class="n">RndCnstLfsrSeed</span> <span class="p">),</span>
+<a name="l-86"></a>    <span class="p">.</span><span class="n">StatePermEn</span> <span class="p">(</span> <span class="mb">1&#39;b1</span>            <span class="p">),</span>
+<a name="l-87"></a>    <span class="p">.</span><span class="n">StatePerm</span>   <span class="p">(</span> <span class="n">RndCnstLfsrPerm</span> <span class="p">),</span>
+<a name="l-88"></a>    <span class="p">.</span><span class="n">ExtSeedSVA</span>  <span class="p">(</span> <span class="mb">1&#39;b0</span>            <span class="p">)</span> <span class="c1">// ext seed is unused</span>
+<a name="l-89"></a>  <span class="p">)</span> <span class="n">i_prim_lfsr</span> <span class="p">(</span>
+<a name="l-90"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
+<a name="l-91"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-92"></a>    <span class="p">.</span><span class="n">seed_en_i</span>  <span class="p">(</span> <span class="mb">1&#39;b0</span>       <span class="p">),</span>
+<a name="l-93"></a>    <span class="p">.</span><span class="n">seed_i</span>     <span class="p">(</span> <span class="m">&#39;0</span>         <span class="p">),</span>
+<a name="l-94"></a>    <span class="p">.</span><span class="n">lfsr_en_i</span>  <span class="p">(</span> <span class="n">lfsr_en</span> <span class="o">|</span> <span class="n">reseed_en</span>                                <span class="p">),</span>
+<a name="l-95"></a>    <span class="p">.</span><span class="n">entropy_i</span>  <span class="p">(</span> <span class="n">edn_data_i</span><span class="p">[</span><span class="n">LfsrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">{</span><span class="n">LfsrWidth</span><span class="p">{</span><span class="n">reseed_en</span><span class="p">}}</span> <span class="p">),</span>
+<a name="l-96"></a>    <span class="p">.</span><span class="n">state_o</span>    <span class="p">(</span> <span class="n">lfsr_state</span> <span class="p">)</span>
+<a name="l-97"></a>  <span class="p">);</span>
+<a name="l-98"></a>
+<a name="l-99"></a>  <span class="c1">// Not all entropy bits are used.</span>
+<a name="l-100"></a>  <span class="kt">logic</span> <span class="n">unused_seed</span><span class="p">;</span>
+<a name="l-101"></a>  <span class="k">assign</span> <span class="n">unused_seed</span> <span class="o">=</span> <span class="o">^</span><span class="n">edn_data_i</span><span class="p">;</span>
+<a name="l-102"></a>
+<a name="l-103"></a>  <span class="no">`ASSERT_INIT</span><span class="p">(</span><span class="n">EdnIsWideEnough_A</span><span class="p">,</span> <span class="n">EdnDataWidth</span> <span class="o">&gt;=</span> <span class="n">LfsrWidth</span><span class="p">)</span>
 <a name="l-104"></a>
 <a name="l-105"></a>  <span class="c1">//////////////</span>
 <a name="l-106"></a>  <span class="c1">// Counters //</span>
 <a name="l-107"></a>  <span class="c1">//////////////</span>
 <a name="l-108"></a>
-<a name="l-109"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">integ_cnt_d</span><span class="p">,</span> <span class="n">integ_cnt_q</span><span class="p">;</span>
-<a name="l-110"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">cnsty_cnt_d</span><span class="p">,</span> <span class="n">cnsty_cnt_q</span><span class="p">;</span>
-<a name="l-111"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">integ_mask</span><span class="p">,</span> <span class="n">cnsty_mask</span><span class="p">;</span>
+<a name="l-109"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">LfsrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">integ_cnt_d</span><span class="p">,</span> <span class="n">integ_cnt_q</span><span class="p">;</span>
+<a name="l-110"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">LfsrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">cnsty_cnt_d</span><span class="p">,</span> <span class="n">cnsty_cnt_q</span><span class="p">;</span>
+<a name="l-111"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">LfsrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">integ_mask</span><span class="p">,</span> <span class="n">cnsty_mask</span><span class="p">;</span>
 <a name="l-112"></a>  <span class="kt">logic</span> <span class="n">integ_load_period</span><span class="p">,</span> <span class="n">integ_load_timeout</span><span class="p">,</span> <span class="n">integ_cnt_zero</span><span class="p">;</span>
 <a name="l-113"></a>  <span class="kt">logic</span> <span class="n">cnsty_load_period</span><span class="p">,</span> <span class="n">cnsty_load_timeout</span><span class="p">,</span> <span class="n">cnsty_cnt_zero</span><span class="p">;</span>
 <a name="l-114"></a>  <span class="kt">logic</span> <span class="n">timeout_zero</span><span class="p">,</span> <span class="n">integ_msk_zero</span><span class="p">,</span> <span class="n">cnsty_msk_zero</span><span class="p">;</span>
 <a name="l-115"></a>
-<a name="l-116"></a>  <span class="k">assign</span> <span class="n">integ_mask</span>  <span class="o">=</span> <span class="p">{</span><span class="n">integ_period_msk_i</span><span class="p">,</span> <span class="p">{</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">32</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}}};</span>
-<a name="l-117"></a>  <span class="k">assign</span> <span class="n">cnsty_mask</span>  <span class="o">=</span> <span class="p">{</span><span class="n">cnsty_period_msk_i</span><span class="p">,</span> <span class="p">{</span><span class="n">TimerWidth</span><span class="o">-</span><span class="mi">32</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}}};</span>
+<a name="l-116"></a>  <span class="k">assign</span> <span class="n">integ_mask</span>  <span class="o">=</span> <span class="p">{</span><span class="n">integ_period_msk_i</span><span class="p">,</span> <span class="p">{</span><span class="n">LfsrWidth</span><span class="o">-</span><span class="mi">32</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}}};</span>
+<a name="l-117"></a>  <span class="k">assign</span> <span class="n">cnsty_mask</span>  <span class="o">=</span> <span class="p">{</span><span class="n">cnsty_period_msk_i</span><span class="p">,</span> <span class="p">{</span><span class="n">LfsrWidth</span><span class="o">-</span><span class="mi">32</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}}};</span>
 <a name="l-118"></a>
 <a name="l-119"></a>  <span class="k">assign</span> <span class="n">integ_cnt_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">integ_load_period</span><span class="p">)</span>  <span class="o">?</span> <span class="n">lfsr_state</span> <span class="o">&amp;</span> <span class="n">integ_mask</span> <span class="o">:</span>
-<a name="l-120"></a>                       <span class="p">(</span><span class="n">integ_load_timeout</span><span class="p">)</span> <span class="o">?</span> <span class="n">TimerWidth</span><span class="p">&#39;(</span><span class="n">timeout_i</span><span class="p">)</span>  <span class="o">:</span>
+<a name="l-120"></a>                       <span class="p">(</span><span class="n">integ_load_timeout</span><span class="p">)</span> <span class="o">?</span> <span class="n">LfsrWidth</span><span class="p">&#39;(</span><span class="n">timeout_i</span><span class="p">)</span>  <span class="o">:</span>
 <a name="l-121"></a>                       <span class="p">(</span><span class="n">integ_cnt_zero</span><span class="p">)</span>     <span class="o">?</span> <span class="m">&#39;0</span>                      <span class="o">:</span>
 <a name="l-122"></a>                                              <span class="n">integ_cnt_q</span> <span class="o">-</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-123"></a>
 <a name="l-124"></a>
 <a name="l-125"></a>  <span class="k">assign</span> <span class="n">cnsty_cnt_d</span> <span class="o">=</span> <span class="p">(</span><span class="n">cnsty_load_period</span><span class="p">)</span>  <span class="o">?</span> <span class="n">lfsr_state</span> <span class="o">&amp;</span> <span class="n">cnsty_mask</span> <span class="o">:</span>
-<a name="l-126"></a>                       <span class="p">(</span><span class="n">cnsty_load_timeout</span><span class="p">)</span> <span class="o">?</span> <span class="n">TimerWidth</span><span class="p">&#39;(</span><span class="n">timeout_i</span><span class="p">)</span>  <span class="o">:</span>
+<a name="l-126"></a>                       <span class="p">(</span><span class="n">cnsty_load_timeout</span><span class="p">)</span> <span class="o">?</span> <span class="n">LfsrWidth</span><span class="p">&#39;(</span><span class="n">timeout_i</span><span class="p">)</span>  <span class="o">:</span>
 <a name="l-127"></a>                       <span class="p">(</span><span class="n">cnsty_cnt_zero</span><span class="p">)</span>     <span class="o">?</span> <span class="m">&#39;0</span>                      <span class="o">:</span>
 <a name="l-128"></a>                                              <span class="n">cnsty_cnt_q</span> <span class="o">-</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
 <a name="l-129"></a>
@@ -518,7 +520,7 @@
 <a name="l-184"></a>  <span class="k">assign</span> <span class="n">chk_timeout_o</span> <span class="o">=</span> <span class="n">chk_timeout_q</span><span class="p">;</span>
 <a name="l-185"></a>
 <a name="l-186"></a>  <span class="k">always_comb</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_fsm</span>
-<a name="l-187"></a>    <span class="n">state_d</span> <span class="o">=</span> <span class="n">state_q</span><span class="p">;</span>
+<a name="l-187"></a>    <span class="n">state_d</span> <span class="o">=</span> <span class="n">state_e</span><span class="p">&#39;(</span><span class="n">state_q</span><span class="p">);</span>
 <a name="l-188"></a>
 <a name="l-189"></a>    <span class="c1">// LFSR and counter signals</span>
 <a name="l-190"></a>    <span class="n">lfsr_en</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
@@ -620,45 +622,47 @@
 <a name="l-286"></a>
 <a name="l-287"></a>  <span class="c1">// This primitive is used to place a size-only constraint on the</span>
 <a name="l-288"></a>  <span class="c1">// flops in order to prevent FSM state encoding optimizations.</span>
-<a name="l-289"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
-<a name="l-290"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
-<a name="l-291"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
-<a name="l-292"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
-<a name="l-293"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
-<a name="l-294"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-295"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span> <span class="p">),</span>
-<a name="l-296"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_q</span> <span class="p">)</span>
-<a name="l-297"></a>  <span class="p">);</span>
-<a name="l-298"></a>
-<a name="l-299"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
-<a name="l-300"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-301"></a>      <span class="n">integ_cnt_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-302"></a>      <span class="n">cnsty_cnt_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-303"></a>      <span class="n">integ_chk_req_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-304"></a>      <span class="n">cnsty_chk_req_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-305"></a>      <span class="n">chk_timeout_q</span>   <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-306"></a>      <span class="n">reseed_timer_q</span>  <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-307"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-308"></a>      <span class="n">integ_cnt_q</span> <span class="o">&lt;=</span> <span class="n">integ_cnt_d</span><span class="p">;</span>
-<a name="l-309"></a>      <span class="n">cnsty_cnt_q</span> <span class="o">&lt;=</span> <span class="n">cnsty_cnt_d</span><span class="p">;</span>
-<a name="l-310"></a>      <span class="n">integ_chk_req_q</span> <span class="o">&lt;=</span> <span class="n">integ_chk_req_d</span><span class="p">;</span>
-<a name="l-311"></a>      <span class="n">cnsty_chk_req_q</span> <span class="o">&lt;=</span> <span class="n">cnsty_chk_req_d</span><span class="p">;</span>
-<a name="l-312"></a>      <span class="n">chk_timeout_q</span>   <span class="o">&lt;=</span> <span class="n">chk_timeout_d</span><span class="p">;</span>
-<a name="l-313"></a>      <span class="n">reseed_timer_q</span>  <span class="o">&lt;=</span> <span class="n">reseed_timer_d</span><span class="p">;</span>
-<a name="l-314"></a>    <span class="k">end</span>
-<a name="l-315"></a>  <span class="k">end</span>
-<a name="l-316"></a>
-<a name="l-317"></a>  <span class="c1">////////////////</span>
-<a name="l-318"></a>  <span class="c1">// Assertions //</span>
+<a name="l-289"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">StateWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">state_raw_q</span><span class="p">;</span>
+<a name="l-290"></a>  <span class="k">assign</span> <span class="n">state_q</span> <span class="o">=</span> <span class="n">state_e</span><span class="p">&#39;(</span><span class="n">state_raw_q</span><span class="p">);</span>
+<a name="l-291"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
+<a name="l-292"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
+<a name="l-293"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
+<a name="l-294"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
+<a name="l-295"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
+<a name="l-296"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-297"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span>     <span class="p">),</span>
+<a name="l-298"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_raw_q</span> <span class="p">)</span>
+<a name="l-299"></a>  <span class="p">);</span>
+<a name="l-300"></a>
+<a name="l-301"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
+<a name="l-302"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-303"></a>      <span class="n">integ_cnt_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-304"></a>      <span class="n">cnsty_cnt_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-305"></a>      <span class="n">integ_chk_req_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-306"></a>      <span class="n">cnsty_chk_req_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-307"></a>      <span class="n">chk_timeout_q</span>   <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-308"></a>      <span class="n">reseed_timer_q</span>  <span class="o">&lt;=</span> <span class="p">{</span><span class="n">ReseedLfsrWidth</span><span class="p">{</span><span class="mb">1&#39;b1</span><span class="p">}};</span>
+<a name="l-309"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-310"></a>      <span class="n">integ_cnt_q</span> <span class="o">&lt;=</span> <span class="n">integ_cnt_d</span><span class="p">;</span>
+<a name="l-311"></a>      <span class="n">cnsty_cnt_q</span> <span class="o">&lt;=</span> <span class="n">cnsty_cnt_d</span><span class="p">;</span>
+<a name="l-312"></a>      <span class="n">integ_chk_req_q</span> <span class="o">&lt;=</span> <span class="n">integ_chk_req_d</span><span class="p">;</span>
+<a name="l-313"></a>      <span class="n">cnsty_chk_req_q</span> <span class="o">&lt;=</span> <span class="n">cnsty_chk_req_d</span><span class="p">;</span>
+<a name="l-314"></a>      <span class="n">chk_timeout_q</span>   <span class="o">&lt;=</span> <span class="n">chk_timeout_d</span><span class="p">;</span>
+<a name="l-315"></a>      <span class="n">reseed_timer_q</span>  <span class="o">&lt;=</span> <span class="n">reseed_timer_d</span><span class="p">;</span>
+<a name="l-316"></a>    <span class="k">end</span>
+<a name="l-317"></a>  <span class="k">end</span>
+<a name="l-318"></a>
 <a name="l-319"></a>  <span class="c1">////////////////</span>
-<a name="l-320"></a>
-<a name="l-321"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">EdnReqKnown_A</span><span class="p">,</span>      <span class="n">edn_req_o</span><span class="p">)</span>
-<a name="l-322"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ChkPendingKnown_A</span><span class="p">,</span>  <span class="n">chk_pending_o</span><span class="p">)</span>
-<a name="l-323"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntegChkReqKnown_A</span><span class="p">,</span> <span class="n">integ_chk_req_o</span><span class="p">)</span>
-<a name="l-324"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">CnstyChkReqKnown_A</span><span class="p">,</span> <span class="n">cnsty_chk_req_o</span><span class="p">)</span>
-<a name="l-325"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ChkTimeoutKnown_A</span><span class="p">,</span>  <span class="n">chk_timeout_o</span><span class="p">)</span>
-<a name="l-326"></a>
-<a name="l-327"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">otp_ctrl_lfsr_timer</span>
+<a name="l-320"></a>  <span class="c1">// Assertions //</span>
+<a name="l-321"></a>  <span class="c1">////////////////</span>
+<a name="l-322"></a>
+<a name="l-323"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">EdnReqKnown_A</span><span class="p">,</span>      <span class="n">edn_req_o</span><span class="p">)</span>
+<a name="l-324"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ChkPendingKnown_A</span><span class="p">,</span>  <span class="n">chk_pending_o</span><span class="p">)</span>
+<a name="l-325"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">IntegChkReqKnown_A</span><span class="p">,</span> <span class="n">integ_chk_req_o</span><span class="p">)</span>
+<a name="l-326"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">CnstyChkReqKnown_A</span><span class="p">,</span> <span class="n">cnsty_chk_req_o</span><span class="p">)</span>
+<a name="l-327"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ChkTimeoutKnown_A</span><span class="p">,</span>  <span class="n">chk_timeout_o</span><span class="p">)</span>
+<a name="l-328"></a>
+<a name="l-329"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">otp_ctrl_lfsr_timer</span>
 </pre></div>
 </td></tr></table>
   </body>

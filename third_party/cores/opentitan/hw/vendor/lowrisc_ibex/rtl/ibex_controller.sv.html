@@ -848,7 +848,10 @@
 <a href="#l-840">840</a>
 <a href="#l-841">841</a>
 <a href="#l-842">842</a>
-<a href="#l-843">843</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-843">843</a>
+<a href="#l-844">844</a>
+<a href="#l-845">845</a>
+<a href="#l-846">846</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Copyright 2018 ETH Zurich and University of Bologna, see also CREDITS.md.</span>
 <a name="l-3"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-4"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
@@ -1154,7 +1157,7 @@
 <a name="l-304"></a>                      <span class="n">ebrk_insn_prio</span><span class="p">,</span>
 <a name="l-305"></a>                      <span class="n">store_err_prio</span><span class="p">,</span>
 <a name="l-306"></a>                      <span class="n">load_err_prio</span><span class="p">}),</span>
-<a name="l-307"></a>             <span class="p">(</span><span class="n">ctrl_fsm_cs</span> <span class="o">==</span> <span class="n">FLUSH</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">exc_req_q</span><span class="p">);</span>
+<a name="l-307"></a>             <span class="p">(</span><span class="n">ctrl_fsm_cs</span> <span class="o">==</span> <span class="n">FLUSH</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">exc_req_q</span><span class="p">)</span>
 <a name="l-308"></a>
 <a name="l-309"></a>  <span class="c1">////////////////</span>
 <a name="l-310"></a>  <span class="c1">// Interrupts //</span>
@@ -1616,81 +1619,84 @@
 <a name="l-766"></a>        <span class="c1">// Leave all other signals as is to ensure CSRs and PC get set as if</span>
 <a name="l-767"></a>        <span class="c1">// core was entering exception handler, entry to debug mode will then</span>
 <a name="l-768"></a>        <span class="c1">// see the appropriate state and setup dpc correctly.</span>
-<a name="l-769"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">enter_debug_mode</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-770"></a>          <span class="n">ctrl_fsm_ns</span> <span class="o">=</span> <span class="n">DBG_TAKEN_IF</span><span class="p">;</span>
-<a name="l-771"></a>        <span class="k">end</span>
-<a name="l-772"></a>      <span class="k">end</span> <span class="c1">// FLUSH</span>
-<a name="l-773"></a>
-<a name="l-774"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
-<a name="l-775"></a>        <span class="n">instr_req_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-776"></a>        <span class="n">ctrl_fsm_ns</span> <span class="o">=</span> <span class="n">RESET</span><span class="p">;</span>
-<a name="l-777"></a>      <span class="k">end</span>
-<a name="l-778"></a>    <span class="k">endcase</span>
-<a name="l-779"></a>  <span class="k">end</span>
-<a name="l-780"></a>
-<a name="l-781"></a>  <span class="k">assign</span> <span class="n">flush_id_o</span> <span class="o">=</span> <span class="n">flush_id</span><span class="p">;</span>
-<a name="l-782"></a>
-<a name="l-783"></a>  <span class="c1">// signal to CSR when in debug mode</span>
-<a name="l-784"></a>  <span class="k">assign</span> <span class="n">debug_mode_o</span> <span class="o">=</span> <span class="n">debug_mode_q</span><span class="p">;</span>
+<a name="l-769"></a>        <span class="c1">// If an EBREAK instruction is causing us to enter debug mode on the</span>
+<a name="l-770"></a>        <span class="c1">// same cycle as a debug_req or single step, honor the EBREAK and</span>
+<a name="l-771"></a>        <span class="c1">// proceed to DBG_TAKEN_ID.</span>
+<a name="l-772"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">enter_debug_mode</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">ebrk_insn_prio</span> <span class="o">&amp;&amp;</span> <span class="n">ebreak_into_debug</span><span class="p">))</span> <span class="k">begin</span>
+<a name="l-773"></a>          <span class="n">ctrl_fsm_ns</span> <span class="o">=</span> <span class="n">DBG_TAKEN_IF</span><span class="p">;</span>
+<a name="l-774"></a>        <span class="k">end</span>
+<a name="l-775"></a>      <span class="k">end</span> <span class="c1">// FLUSH</span>
+<a name="l-776"></a>
+<a name="l-777"></a>      <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+<a name="l-778"></a>        <span class="n">instr_req_o</span> <span class="o">=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-779"></a>        <span class="n">ctrl_fsm_ns</span> <span class="o">=</span> <span class="n">RESET</span><span class="p">;</span>
+<a name="l-780"></a>      <span class="k">end</span>
+<a name="l-781"></a>    <span class="k">endcase</span>
+<a name="l-782"></a>  <span class="k">end</span>
+<a name="l-783"></a>
+<a name="l-784"></a>  <span class="k">assign</span> <span class="n">flush_id_o</span> <span class="o">=</span> <span class="n">flush_id</span><span class="p">;</span>
 <a name="l-785"></a>
-<a name="l-786"></a>  <span class="c1">// signal to CSR when in an NMI handler (for nested exception handling)</span>
-<a name="l-787"></a>  <span class="k">assign</span> <span class="n">nmi_mode_o</span> <span class="o">=</span> <span class="n">nmi_mode_q</span><span class="p">;</span>
+<a name="l-786"></a>  <span class="c1">// signal to CSR when in debug mode</span>
+<a name="l-787"></a>  <span class="k">assign</span> <span class="n">debug_mode_o</span> <span class="o">=</span> <span class="n">debug_mode_q</span><span class="p">;</span>
 <a name="l-788"></a>
-<a name="l-789"></a>  <span class="c1">///////////////////</span>
-<a name="l-790"></a>  <span class="c1">// Stall control //</span>
-<a name="l-791"></a>  <span class="c1">///////////////////</span>
-<a name="l-792"></a>
-<a name="l-793"></a>  <span class="c1">// If high current instruction cannot complete this cycle. Either because it needs more cycles to</span>
-<a name="l-794"></a>  <span class="c1">// finish (stall_id_i) or because the writeback stage cannot accept it yet (stall_wb_i). If there</span>
-<a name="l-795"></a>  <span class="c1">// is no writeback stage stall_wb_i is a constant 0.</span>
-<a name="l-796"></a>  <span class="k">assign</span> <span class="n">stall</span> <span class="o">=</span> <span class="n">stall_id_i</span> <span class="o">|</span> <span class="n">stall_wb_i</span><span class="p">;</span>
-<a name="l-797"></a>
-<a name="l-798"></a>  <span class="c1">// signal to IF stage that ID stage is ready for next instr</span>
-<a name="l-799"></a>  <span class="k">assign</span> <span class="n">id_in_ready_o</span> <span class="o">=</span> <span class="o">~</span><span class="n">stall</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">halt_if</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">retain_id</span><span class="p">;</span>
+<a name="l-789"></a>  <span class="c1">// signal to CSR when in an NMI handler (for nested exception handling)</span>
+<a name="l-790"></a>  <span class="k">assign</span> <span class="n">nmi_mode_o</span> <span class="o">=</span> <span class="n">nmi_mode_q</span><span class="p">;</span>
+<a name="l-791"></a>
+<a name="l-792"></a>  <span class="c1">///////////////////</span>
+<a name="l-793"></a>  <span class="c1">// Stall control //</span>
+<a name="l-794"></a>  <span class="c1">///////////////////</span>
+<a name="l-795"></a>
+<a name="l-796"></a>  <span class="c1">// If high current instruction cannot complete this cycle. Either because it needs more cycles to</span>
+<a name="l-797"></a>  <span class="c1">// finish (stall_id_i) or because the writeback stage cannot accept it yet (stall_wb_i). If there</span>
+<a name="l-798"></a>  <span class="c1">// is no writeback stage stall_wb_i is a constant 0.</span>
+<a name="l-799"></a>  <span class="k">assign</span> <span class="n">stall</span> <span class="o">=</span> <span class="n">stall_id_i</span> <span class="o">|</span> <span class="n">stall_wb_i</span><span class="p">;</span>
 <a name="l-800"></a>
-<a name="l-801"></a>  <span class="c1">// kill instr in IF-ID pipeline reg that are done, or if a</span>
-<a name="l-802"></a>  <span class="c1">// multicycle instr causes an exception for example</span>
-<a name="l-803"></a>  <span class="c1">// retain_id is another kind of stall, where the instr_valid bit must remain</span>
-<a name="l-804"></a>  <span class="c1">// set (unless flush_id is set also). It cannot be factored directly into</span>
-<a name="l-805"></a>  <span class="c1">// stall as this causes a combinational loop.</span>
-<a name="l-806"></a>  <span class="k">assign</span> <span class="n">instr_valid_clear_o</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">stall</span> <span class="o">|</span> <span class="n">retain_id</span><span class="p">)</span> <span class="o">|</span> <span class="n">flush_id</span><span class="p">;</span>
-<a name="l-807"></a>
-<a name="l-808"></a>  <span class="c1">// update registers</span>
-<a name="l-809"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">update_regs</span>
-<a name="l-810"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-811"></a>      <span class="n">ctrl_fsm_cs</span>    <span class="o">&lt;=</span> <span class="n">RESET</span><span class="p">;</span>
-<a name="l-812"></a>      <span class="n">nmi_mode_q</span>     <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-813"></a>      <span class="n">debug_mode_q</span>   <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-814"></a>      <span class="n">load_err_q</span>     <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-815"></a>      <span class="n">store_err_q</span>    <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-816"></a>      <span class="n">exc_req_q</span>      <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-817"></a>      <span class="n">illegal_insn_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-818"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-819"></a>      <span class="n">ctrl_fsm_cs</span>    <span class="o">&lt;=</span> <span class="n">ctrl_fsm_ns</span><span class="p">;</span>
-<a name="l-820"></a>      <span class="n">nmi_mode_q</span>     <span class="o">&lt;=</span> <span class="n">nmi_mode_d</span><span class="p">;</span>
-<a name="l-821"></a>      <span class="n">debug_mode_q</span>   <span class="o">&lt;=</span> <span class="n">debug_mode_d</span><span class="p">;</span>
-<a name="l-822"></a>      <span class="n">load_err_q</span>     <span class="o">&lt;=</span> <span class="n">load_err_d</span><span class="p">;</span>
-<a name="l-823"></a>      <span class="n">store_err_q</span>    <span class="o">&lt;=</span> <span class="n">store_err_d</span><span class="p">;</span>
-<a name="l-824"></a>      <span class="n">exc_req_q</span>      <span class="o">&lt;=</span> <span class="n">exc_req_d</span><span class="p">;</span>
-<a name="l-825"></a>      <span class="n">illegal_insn_q</span> <span class="o">&lt;=</span> <span class="n">illegal_insn_d</span><span class="p">;</span>
-<a name="l-826"></a>    <span class="k">end</span>
-<a name="l-827"></a>  <span class="k">end</span>
-<a name="l-828"></a>
-<a name="l-829"></a>  <span class="c1">////////////////</span>
-<a name="l-830"></a>  <span class="c1">// Assertions //</span>
-<a name="l-831"></a>  <span class="c1">////////////////</span>
-<a name="l-832"></a>
-<a name="l-833"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">AlwaysInstrClearOnMispredict</span><span class="p">,</span> <span class="n">nt_branch_mispredict_o</span> <span class="o">-&gt;</span> <span class="n">instr_valid_clear_o</span><span class="p">);</span>
-<a name="l-834"></a>
-<a name="l-835"></a>  <span class="c1">// Selectors must be known/valid.</span>
-<a name="l-836"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexCtrlStateValid</span><span class="p">,</span> <span class="n">ctrl_fsm_cs</span> <span class="ow">inside</span> <span class="p">{</span>
-<a name="l-837"></a>      <span class="n">RESET</span><span class="p">,</span> <span class="n">BOOT_SET</span><span class="p">,</span> <span class="n">WAIT_SLEEP</span><span class="p">,</span> <span class="n">SLEEP</span><span class="p">,</span> <span class="n">FIRST_FETCH</span><span class="p">,</span> <span class="n">DECODE</span><span class="p">,</span> <span class="n">FLUSH</span><span class="p">,</span>
-<a name="l-838"></a>      <span class="n">IRQ_TAKEN</span><span class="p">,</span> <span class="n">DBG_TAKEN_IF</span><span class="p">,</span> <span class="n">DBG_TAKEN_ID</span><span class="p">})</span>
-<a name="l-839"></a>
-<a name="l-840"></a>  <span class="c1">// The speculative branch signal should be set whenever the actual branch signal is set</span>
-<a name="l-841"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexSpecImpliesSetPC</span><span class="p">,</span> <span class="n">pc_set_o</span> <span class="o">|-&gt;</span> <span class="n">pc_set_spec_o</span><span class="p">)</span>
+<a name="l-801"></a>  <span class="c1">// signal to IF stage that ID stage is ready for next instr</span>
+<a name="l-802"></a>  <span class="k">assign</span> <span class="n">id_in_ready_o</span> <span class="o">=</span> <span class="o">~</span><span class="n">stall</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">halt_if</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">retain_id</span><span class="p">;</span>
+<a name="l-803"></a>
+<a name="l-804"></a>  <span class="c1">// kill instr in IF-ID pipeline reg that are done, or if a</span>
+<a name="l-805"></a>  <span class="c1">// multicycle instr causes an exception for example</span>
+<a name="l-806"></a>  <span class="c1">// retain_id is another kind of stall, where the instr_valid bit must remain</span>
+<a name="l-807"></a>  <span class="c1">// set (unless flush_id is set also). It cannot be factored directly into</span>
+<a name="l-808"></a>  <span class="c1">// stall as this causes a combinational loop.</span>
+<a name="l-809"></a>  <span class="k">assign</span> <span class="n">instr_valid_clear_o</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">stall</span> <span class="o">|</span> <span class="n">retain_id</span><span class="p">)</span> <span class="o">|</span> <span class="n">flush_id</span><span class="p">;</span>
+<a name="l-810"></a>
+<a name="l-811"></a>  <span class="c1">// update registers</span>
+<a name="l-812"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">update_regs</span>
+<a name="l-813"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-814"></a>      <span class="n">ctrl_fsm_cs</span>    <span class="o">&lt;=</span> <span class="n">RESET</span><span class="p">;</span>
+<a name="l-815"></a>      <span class="n">nmi_mode_q</span>     <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-816"></a>      <span class="n">debug_mode_q</span>   <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-817"></a>      <span class="n">load_err_q</span>     <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-818"></a>      <span class="n">store_err_q</span>    <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-819"></a>      <span class="n">exc_req_q</span>      <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-820"></a>      <span class="n">illegal_insn_q</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-821"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-822"></a>      <span class="n">ctrl_fsm_cs</span>    <span class="o">&lt;=</span> <span class="n">ctrl_fsm_ns</span><span class="p">;</span>
+<a name="l-823"></a>      <span class="n">nmi_mode_q</span>     <span class="o">&lt;=</span> <span class="n">nmi_mode_d</span><span class="p">;</span>
+<a name="l-824"></a>      <span class="n">debug_mode_q</span>   <span class="o">&lt;=</span> <span class="n">debug_mode_d</span><span class="p">;</span>
+<a name="l-825"></a>      <span class="n">load_err_q</span>     <span class="o">&lt;=</span> <span class="n">load_err_d</span><span class="p">;</span>
+<a name="l-826"></a>      <span class="n">store_err_q</span>    <span class="o">&lt;=</span> <span class="n">store_err_d</span><span class="p">;</span>
+<a name="l-827"></a>      <span class="n">exc_req_q</span>      <span class="o">&lt;=</span> <span class="n">exc_req_d</span><span class="p">;</span>
+<a name="l-828"></a>      <span class="n">illegal_insn_q</span> <span class="o">&lt;=</span> <span class="n">illegal_insn_d</span><span class="p">;</span>
+<a name="l-829"></a>    <span class="k">end</span>
+<a name="l-830"></a>  <span class="k">end</span>
+<a name="l-831"></a>
+<a name="l-832"></a>  <span class="c1">////////////////</span>
+<a name="l-833"></a>  <span class="c1">// Assertions //</span>
+<a name="l-834"></a>  <span class="c1">////////////////</span>
+<a name="l-835"></a>
+<a name="l-836"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">AlwaysInstrClearOnMispredict</span><span class="p">,</span> <span class="n">nt_branch_mispredict_o</span> <span class="o">-&gt;</span> <span class="n">instr_valid_clear_o</span><span class="p">)</span>
+<a name="l-837"></a>
+<a name="l-838"></a>  <span class="c1">// Selectors must be known/valid.</span>
+<a name="l-839"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexCtrlStateValid</span><span class="p">,</span> <span class="n">ctrl_fsm_cs</span> <span class="ow">inside</span> <span class="p">{</span>
+<a name="l-840"></a>      <span class="n">RESET</span><span class="p">,</span> <span class="n">BOOT_SET</span><span class="p">,</span> <span class="n">WAIT_SLEEP</span><span class="p">,</span> <span class="n">SLEEP</span><span class="p">,</span> <span class="n">FIRST_FETCH</span><span class="p">,</span> <span class="n">DECODE</span><span class="p">,</span> <span class="n">FLUSH</span><span class="p">,</span>
+<a name="l-841"></a>      <span class="n">IRQ_TAKEN</span><span class="p">,</span> <span class="n">DBG_TAKEN_IF</span><span class="p">,</span> <span class="n">DBG_TAKEN_ID</span><span class="p">})</span>
 <a name="l-842"></a>
-<a name="l-843"></a><span class="k">endmodule</span>
+<a name="l-843"></a>  <span class="c1">// The speculative branch signal should be set whenever the actual branch signal is set</span>
+<a name="l-844"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">IbexSpecImpliesSetPC</span><span class="p">,</span> <span class="n">pc_set_o</span> <span class="o">|-&gt;</span> <span class="n">pc_set_spec_o</span><span class="p">)</span>
+<a name="l-845"></a>
+<a name="l-846"></a><span class="k">endmodule</span>
 </pre></div>
 </td></tr></table>
   </body>

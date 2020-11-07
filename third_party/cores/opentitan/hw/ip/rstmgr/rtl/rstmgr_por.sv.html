@@ -82,7 +82,9 @@
 <a href="#l-74">74</a>
 <a href="#l-75">75</a>
 <a href="#l-76">76</a>
-<a href="#l-77">77</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-77">77</a>
+<a href="#l-78">78</a>
+<a href="#l-79">79</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -133,32 +135,34 @@
 <a name="l-49"></a>  <span class="c1">// The stable is a vote of all filter stages.</span>
 <a name="l-50"></a>  <span class="c1">// Only when all the stages agree is the reset considered stable and count allowed.</span>
 <a name="l-51"></a>
-<a name="l-52"></a>  <span class="n">prim_clock_mux2</span> <span class="n">u_rst_clean_mux</span> <span class="p">(</span>
-<a name="l-53"></a>    <span class="p">.</span><span class="n">clk0_i</span><span class="p">(</span><span class="n">rst_filter_n</span><span class="p">[</span><span class="n">FilterStages</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
-<a name="l-54"></a>    <span class="p">.</span><span class="n">clk1_i</span><span class="p">(</span><span class="n">scan_rst_ni</span><span class="p">),</span>
-<a name="l-55"></a>    <span class="p">.</span><span class="n">sel_i</span><span class="p">(</span><span class="n">scanmode_i</span><span class="p">),</span>
-<a name="l-56"></a>    <span class="p">.</span><span class="n">clk_o</span><span class="p">(</span><span class="n">rst_clean_n</span><span class="p">)</span>
-<a name="l-57"></a>  <span class="p">);</span>
-<a name="l-58"></a>
-<a name="l-59"></a>  <span class="k">assign</span> <span class="n">rst_stable</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">rst_filter_n</span><span class="p">;</span>
-<a name="l-60"></a>  <span class="k">assign</span> <span class="n">cnt_en</span> <span class="o">=</span> <span class="n">rst_stable</span> <span class="o">&amp;</span> <span class="o">!</span><span class="n">rst_no</span><span class="p">;</span>
-<a name="l-61"></a>
-<a name="l-62"></a>  <span class="c1">// stretch the POR</span>
-<a name="l-63"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_clean_n</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-64"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_clean_n</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-65"></a>      <span class="n">cnt</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-66"></a>      <span class="n">rst_no</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-67"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_stable</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-68"></a>      <span class="n">cnt</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-69"></a>      <span class="n">rst_no</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-70"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">cnt_en</span> <span class="o">&amp;&amp;</span> <span class="n">cnt</span> <span class="o">==</span> <span class="n">StretchCount</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-71"></a>      <span class="n">rst_no</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
-<a name="l-72"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">cnt_en</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-73"></a>      <span class="n">cnt</span> <span class="o">&lt;=</span> <span class="n">cnt</span> <span class="o">+</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
-<a name="l-74"></a>    <span class="k">end</span>
-<a name="l-75"></a>  <span class="k">end</span>
-<a name="l-76"></a>
-<a name="l-77"></a><span class="k">endmodule</span> <span class="c1">// rstmgr_por</span>
+<a name="l-52"></a>  <span class="n">prim_clock_mux2</span> <span class="p">#(</span>
+<a name="l-53"></a>    <span class="p">.</span><span class="n">NoFpgaBufG</span><span class="p">(</span><span class="mb">1&#39;b1</span><span class="p">)</span>
+<a name="l-54"></a>  <span class="p">)</span> <span class="n">u_rst_clean_mux</span> <span class="p">(</span>
+<a name="l-55"></a>    <span class="p">.</span><span class="n">clk0_i</span><span class="p">(</span><span class="n">rst_filter_n</span><span class="p">[</span><span class="n">FilterStages</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+<a name="l-56"></a>    <span class="p">.</span><span class="n">clk1_i</span><span class="p">(</span><span class="n">scan_rst_ni</span><span class="p">),</span>
+<a name="l-57"></a>    <span class="p">.</span><span class="n">sel_i</span><span class="p">(</span><span class="n">scanmode_i</span><span class="p">),</span>
+<a name="l-58"></a>    <span class="p">.</span><span class="n">clk_o</span><span class="p">(</span><span class="n">rst_clean_n</span><span class="p">)</span>
+<a name="l-59"></a>  <span class="p">);</span>
+<a name="l-60"></a>
+<a name="l-61"></a>  <span class="k">assign</span> <span class="n">rst_stable</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">rst_filter_n</span><span class="p">;</span>
+<a name="l-62"></a>  <span class="k">assign</span> <span class="n">cnt_en</span> <span class="o">=</span> <span class="n">rst_stable</span> <span class="o">&amp;</span> <span class="o">!</span><span class="n">rst_no</span><span class="p">;</span>
+<a name="l-63"></a>
+<a name="l-64"></a>  <span class="c1">// stretch the POR</span>
+<a name="l-65"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_clean_n</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-66"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_clean_n</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-67"></a>      <span class="n">cnt</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-68"></a>      <span class="n">rst_no</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-69"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_stable</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-70"></a>      <span class="n">cnt</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-71"></a>      <span class="n">rst_no</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-72"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">cnt_en</span> <span class="o">&amp;&amp;</span> <span class="n">cnt</span> <span class="o">==</span> <span class="n">StretchCount</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-73"></a>      <span class="n">rst_no</span> <span class="o">&lt;=</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-74"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">cnt_en</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-75"></a>      <span class="n">cnt</span> <span class="o">&lt;=</span> <span class="n">cnt</span> <span class="o">+</span> <span class="mb">1&#39;b1</span><span class="p">;</span>
+<a name="l-76"></a>    <span class="k">end</span>
+<a name="l-77"></a>  <span class="k">end</span>
+<a name="l-78"></a>
+<a name="l-79"></a><span class="k">endmodule</span> <span class="c1">// rstmgr_por</span>
 </pre></div>
 </td></tr></table>
   </body>

@@ -524,7 +524,9 @@
 <a href="#l-516">516</a>
 <a href="#l-517">517</a>
 <a href="#l-518">518</a>
-<a href="#l-519">519</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-519">519</a>
+<a href="#l-520">520</a>
+<a href="#l-521">521</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -1000,49 +1002,51 @@
 <a name="l-474"></a>
 <a name="l-475"></a>  <span class="c1">// This primitive is used to place a size-only constraint on the</span>
 <a name="l-476"></a>  <span class="c1">// flops in order to prevent FSM state encoding optimizations.</span>
-<a name="l-477"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
-<a name="l-478"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
-<a name="l-479"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
-<a name="l-480"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
-<a name="l-481"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
-<a name="l-482"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-483"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span> <span class="p">),</span>
-<a name="l-484"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_q</span> <span class="p">)</span>
-<a name="l-485"></a>  <span class="p">);</span>
-<a name="l-486"></a>
-<a name="l-487"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
-<a name="l-488"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-489"></a>      <span class="n">seed_cnt_q</span>    <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-490"></a>      <span class="n">entropy_cnt_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-491"></a>      <span class="n">key_out_q</span>     <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-492"></a>      <span class="n">nonce_out_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-493"></a>      <span class="n">seed_valid_q</span>  <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
-<a name="l-494"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-495"></a>      <span class="n">seed_cnt_q</span>    <span class="o">&lt;=</span> <span class="n">seed_cnt_d</span><span class="p">;</span>
-<a name="l-496"></a>      <span class="n">entropy_cnt_q</span> <span class="o">&lt;=</span> <span class="n">entropy_cnt_d</span><span class="p">;</span>
-<a name="l-497"></a>      <span class="n">key_out_q</span>     <span class="o">&lt;=</span> <span class="n">key_out_d</span><span class="p">;</span>
-<a name="l-498"></a>      <span class="n">nonce_out_q</span>   <span class="o">&lt;=</span> <span class="n">nonce_out_d</span><span class="p">;</span>
-<a name="l-499"></a>      <span class="n">seed_valid_q</span>  <span class="o">&lt;=</span> <span class="n">seed_valid_d</span><span class="p">;</span>
-<a name="l-500"></a>    <span class="k">end</span>
-<a name="l-501"></a>  <span class="k">end</span>
-<a name="l-502"></a>
-<a name="l-503"></a>  <span class="c1">////////////////</span>
-<a name="l-504"></a>  <span class="c1">// Assertions //</span>
+<a name="l-477"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">StateWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">state_raw_q</span><span class="p">;</span>
+<a name="l-478"></a>  <span class="k">assign</span> <span class="n">state_q</span> <span class="o">=</span> <span class="n">state_e</span><span class="p">&#39;(</span><span class="n">state_raw_q</span><span class="p">);</span>
+<a name="l-479"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
+<a name="l-480"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
+<a name="l-481"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
+<a name="l-482"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
+<a name="l-483"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
+<a name="l-484"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-485"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span>     <span class="p">),</span>
+<a name="l-486"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_raw_q</span> <span class="p">)</span>
+<a name="l-487"></a>  <span class="p">);</span>
+<a name="l-488"></a>
+<a name="l-489"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
+<a name="l-490"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-491"></a>      <span class="n">seed_cnt_q</span>    <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-492"></a>      <span class="n">entropy_cnt_q</span> <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-493"></a>      <span class="n">key_out_q</span>     <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-494"></a>      <span class="n">nonce_out_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-495"></a>      <span class="n">seed_valid_q</span>  <span class="o">&lt;=</span> <span class="mb">1&#39;b0</span><span class="p">;</span>
+<a name="l-496"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-497"></a>      <span class="n">seed_cnt_q</span>    <span class="o">&lt;=</span> <span class="n">seed_cnt_d</span><span class="p">;</span>
+<a name="l-498"></a>      <span class="n">entropy_cnt_q</span> <span class="o">&lt;=</span> <span class="n">entropy_cnt_d</span><span class="p">;</span>
+<a name="l-499"></a>      <span class="n">key_out_q</span>     <span class="o">&lt;=</span> <span class="n">key_out_d</span><span class="p">;</span>
+<a name="l-500"></a>      <span class="n">nonce_out_q</span>   <span class="o">&lt;=</span> <span class="n">nonce_out_d</span><span class="p">;</span>
+<a name="l-501"></a>      <span class="n">seed_valid_q</span>  <span class="o">&lt;=</span> <span class="n">seed_valid_d</span><span class="p">;</span>
+<a name="l-502"></a>    <span class="k">end</span>
+<a name="l-503"></a>  <span class="k">end</span>
+<a name="l-504"></a>
 <a name="l-505"></a>  <span class="c1">////////////////</span>
-<a name="l-506"></a>
-<a name="l-507"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">FsmErrKnown_A</span><span class="p">,</span>             <span class="n">fsm_err_o</span><span class="p">)</span>
-<a name="l-508"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">EdnReqKnown_A</span><span class="p">,</span>             <span class="n">edn_req_o</span><span class="p">)</span>
-<a name="l-509"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">LcOtpTokenRspKnown_A</span><span class="p">,</span>      <span class="n">lc_otp_token_o</span><span class="p">)</span>
-<a name="l-510"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">FlashOtpKeyRspKnown_A</span><span class="p">,</span>     <span class="n">flash_otp_key_o</span><span class="p">)</span>
-<a name="l-511"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">SramOtpKeyRspKnown_A</span><span class="p">,</span>      <span class="n">sram_otp_key_o</span><span class="p">)</span>
-<a name="l-512"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtbnOtpKeyRspKnown_A</span><span class="p">,</span>      <span class="n">otbn_otp_key_o</span><span class="p">)</span>
-<a name="l-513"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblMtxReqKnown_A</span><span class="p">,</span>       <span class="n">scrmbl_mtx_req_o</span><span class="p">)</span>
-<a name="l-514"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblCmdKnown_A</span><span class="p">,</span>          <span class="n">scrmbl_cmd_o</span><span class="p">)</span>
-<a name="l-515"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblSelKnown_A</span><span class="p">,</span>          <span class="n">scrmbl_sel_o</span><span class="p">)</span>
-<a name="l-516"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblDataKnown_A</span><span class="p">,</span>         <span class="n">scrmbl_data_o</span><span class="p">)</span>
-<a name="l-517"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblValidKnown_A</span><span class="p">,</span>        <span class="n">scrmbl_valid_o</span><span class="p">)</span>
-<a name="l-518"></a>
-<a name="l-519"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">otp_ctrl_kdi</span>
+<a name="l-506"></a>  <span class="c1">// Assertions //</span>
+<a name="l-507"></a>  <span class="c1">////////////////</span>
+<a name="l-508"></a>
+<a name="l-509"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">FsmErrKnown_A</span><span class="p">,</span>             <span class="n">fsm_err_o</span><span class="p">)</span>
+<a name="l-510"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">EdnReqKnown_A</span><span class="p">,</span>             <span class="n">edn_req_o</span><span class="p">)</span>
+<a name="l-511"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">LcOtpTokenRspKnown_A</span><span class="p">,</span>      <span class="n">lc_otp_token_o</span><span class="p">)</span>
+<a name="l-512"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">FlashOtpKeyRspKnown_A</span><span class="p">,</span>     <span class="n">flash_otp_key_o</span><span class="p">)</span>
+<a name="l-513"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">SramOtpKeyRspKnown_A</span><span class="p">,</span>      <span class="n">sram_otp_key_o</span><span class="p">)</span>
+<a name="l-514"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtbnOtpKeyRspKnown_A</span><span class="p">,</span>      <span class="n">otbn_otp_key_o</span><span class="p">)</span>
+<a name="l-515"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblMtxReqKnown_A</span><span class="p">,</span>       <span class="n">scrmbl_mtx_req_o</span><span class="p">)</span>
+<a name="l-516"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblCmdKnown_A</span><span class="p">,</span>          <span class="n">scrmbl_cmd_o</span><span class="p">)</span>
+<a name="l-517"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblSelKnown_A</span><span class="p">,</span>          <span class="n">scrmbl_sel_o</span><span class="p">)</span>
+<a name="l-518"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblDataKnown_A</span><span class="p">,</span>         <span class="n">scrmbl_data_o</span><span class="p">)</span>
+<a name="l-519"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ScrmblValidKnown_A</span><span class="p">,</span>        <span class="n">scrmbl_valid_o</span><span class="p">)</span>
+<a name="l-520"></a>
+<a name="l-521"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">otp_ctrl_kdi</span>
 </pre></div>
 </td></tr></table>
   </body>

@@ -426,7 +426,9 @@
 <a href="#l-418">418</a>
 <a href="#l-419">419</a>
 <a href="#l-420">420</a>
-<a href="#l-421">421</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
+<a href="#l-421">421</a>
+<a href="#l-422">422</a>
+<a href="#l-423">423</a></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="l-1"></a><span class="c1">// Copyright lowRISC contributors.</span>
 <a name="l-2"></a><span class="c1">// Licensed under the Apache License, Version 2.0, see LICENSE for details.</span>
 <a name="l-3"></a><span class="c1">// SPDX-License-Identifier: Apache-2.0</span>
 <a name="l-4"></a><span class="c1">//</span>
@@ -440,7 +442,7 @@
 <a name="l-12"></a>  <span class="kn">import</span> <span class="nn">otp_ctrl_reg_pkg::*</span><span class="p">;</span>
 <a name="l-13"></a><span class="p">#(</span>
 <a name="l-14"></a>  <span class="c1">// Partition information.</span>
-<a name="l-15"></a>  <span class="k">parameter</span> <span class="n">part_info_t</span> <span class="n">Info</span>
+<a name="l-15"></a>  <span class="k">parameter</span> <span class="n">part_info_t</span> <span class="n">Info</span> <span class="o">=</span> <span class="n">part_info_t</span><span class="p">&#39;(</span><span class="mi">0</span><span class="p">)</span>
 <a name="l-16"></a><span class="p">)</span> <span class="p">(</span>
 <a name="l-17"></a>  <span class="k">input</span>                               <span class="n">clk_i</span><span class="p">,</span>
 <a name="l-18"></a>  <span class="k">input</span>                               <span class="n">rst_ni</span><span class="p">,</span>
@@ -535,7 +537,7 @@
 <a name="l-107"></a>  <span class="n">otp_err_e</span> <span class="n">error_d</span><span class="p">,</span> <span class="n">error_q</span><span class="p">;</span>
 <a name="l-108"></a>
 <a name="l-109"></a>  <span class="kt">logic</span> <span class="n">digest_reg_en</span><span class="p">;</span>
-<a name="l-110"></a>  <span class="kt">logic</span> <span class="n">parity_err</span><span class="p">;</span>
+<a name="l-110"></a>  <span class="kt">logic</span> <span class="n">ecc_err</span><span class="p">;</span>
 <a name="l-111"></a>
 <a name="l-112"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">SwWindowAddrWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">tlul_addr_d</span><span class="p">,</span> <span class="n">tlul_addr_q</span><span class="p">;</span>
 <a name="l-113"></a>
@@ -686,8 +688,8 @@
 <a name="l-258"></a>    <span class="k">endcase</span> <span class="c1">// state_q</span>
 <a name="l-259"></a>
 <a name="l-260"></a>    <span class="c1">// Unconditionally jump into the terminal error state in case of</span>
-<a name="l-261"></a>    <span class="c1">// a parity error or escalation, and lock access to the partition down.</span>
-<a name="l-262"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">parity_err</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-261"></a>    <span class="c1">// an ECC error or escalation, and lock access to the partition down.</span>
+<a name="l-262"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">ecc_err</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-263"></a>      <span class="n">state_d</span> <span class="o">=</span> <span class="n">ErrorSt</span><span class="p">;</span>
 <a name="l-264"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">state_q</span> <span class="o">!=</span> <span class="n">ErrorSt</span><span class="p">)</span> <span class="k">begin</span>
 <a name="l-265"></a>        <span class="n">error_d</span> <span class="o">=</span> <span class="n">CheckFailError</span><span class="p">;</span>
@@ -721,17 +723,17 @@
 <a name="l-293"></a>  <span class="c1">// Digest Reg //</span>
 <a name="l-294"></a>  <span class="c1">////////////////</span>
 <a name="l-295"></a>
-<a name="l-296"></a>  <span class="n">otp_ctrl_parity_reg</span> <span class="p">#(</span>
+<a name="l-296"></a>  <span class="n">otp_ctrl_ecc_reg</span> <span class="p">#(</span>
 <a name="l-297"></a>    <span class="p">.</span><span class="n">Width</span> <span class="p">(</span> <span class="n">ScrmblBlockWidth</span> <span class="p">),</span>
 <a name="l-298"></a>    <span class="p">.</span><span class="n">Depth</span> <span class="p">(</span> <span class="mi">1</span>                <span class="p">)</span>
-<a name="l-299"></a>  <span class="p">)</span> <span class="n">u_otp_ctrl_parity_reg</span> <span class="p">(</span>
+<a name="l-299"></a>  <span class="p">)</span> <span class="n">u_otp_ctrl_ecc_reg</span> <span class="p">(</span>
 <a name="l-300"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
 <a name="l-301"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-302"></a>    <span class="p">.</span><span class="n">wren_i</span>        <span class="p">(</span> <span class="n">digest_reg_en</span> <span class="p">),</span>
-<a name="l-303"></a>    <span class="p">.</span><span class="n">addr_i</span>        <span class="p">(</span> <span class="m">&#39;0</span>            <span class="p">),</span>
-<a name="l-304"></a>    <span class="p">.</span><span class="n">wdata_i</span>       <span class="p">(</span> <span class="n">otp_rdata_i</span>   <span class="p">),</span>
-<a name="l-305"></a>    <span class="p">.</span><span class="n">data_o</span>        <span class="p">(</span> <span class="n">digest_o</span>      <span class="p">),</span>
-<a name="l-306"></a>    <span class="p">.</span><span class="n">parity_err_o</span>  <span class="p">(</span> <span class="n">parity_err</span>    <span class="p">)</span>
+<a name="l-302"></a>    <span class="p">.</span><span class="n">wren_i</span>     <span class="p">(</span> <span class="n">digest_reg_en</span> <span class="p">),</span>
+<a name="l-303"></a>    <span class="p">.</span><span class="n">addr_i</span>     <span class="p">(</span> <span class="m">&#39;0</span>            <span class="p">),</span>
+<a name="l-304"></a>    <span class="p">.</span><span class="n">wdata_i</span>    <span class="p">(</span> <span class="n">otp_rdata_i</span>   <span class="p">),</span>
+<a name="l-305"></a>    <span class="p">.</span><span class="n">data_o</span>     <span class="p">(</span> <span class="n">digest_o</span>      <span class="p">),</span>
+<a name="l-306"></a>    <span class="p">.</span><span class="n">ecc_err_o</span>  <span class="p">(</span> <span class="n">ecc_err</span>       <span class="p">)</span>
 <a name="l-307"></a>  <span class="p">);</span>
 <a name="l-308"></a>
 <a name="l-309"></a>  <span class="c1">////////////////////////</span>
@@ -770,83 +772,85 @@
 <a name="l-342"></a>
 <a name="l-343"></a>  <span class="c1">// This primitive is used to place a size-only constraint on the</span>
 <a name="l-344"></a>  <span class="c1">// flops in order to prevent FSM state encoding optimizations.</span>
-<a name="l-345"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
-<a name="l-346"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
-<a name="l-347"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
-<a name="l-348"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
-<a name="l-349"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
-<a name="l-350"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
-<a name="l-351"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span> <span class="p">),</span>
-<a name="l-352"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_q</span> <span class="p">)</span>
-<a name="l-353"></a>  <span class="p">);</span>
-<a name="l-354"></a>
-<a name="l-355"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
-<a name="l-356"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-357"></a>      <span class="n">error_q</span>       <span class="o">&lt;=</span> <span class="n">NoError</span><span class="p">;</span>
-<a name="l-358"></a>      <span class="n">tlul_addr_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
-<a name="l-359"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-<a name="l-360"></a>      <span class="n">error_q</span>       <span class="o">&lt;=</span> <span class="n">error_d</span><span class="p">;</span>
-<a name="l-361"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">tlul_gnt_o</span><span class="p">)</span> <span class="k">begin</span>
-<a name="l-362"></a>        <span class="n">tlul_addr_q</span> <span class="o">&lt;=</span> <span class="n">tlul_addr_d</span><span class="p">;</span>
-<a name="l-363"></a>      <span class="k">end</span>
-<a name="l-364"></a>    <span class="k">end</span>
-<a name="l-365"></a>  <span class="k">end</span>
-<a name="l-366"></a>
-<a name="l-367"></a>  <span class="c1">////////////////</span>
-<a name="l-368"></a>  <span class="c1">// Assertions //</span>
+<a name="l-345"></a>  <span class="kt">logic</span> <span class="p">[</span><span class="n">StateWidth</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">state_raw_q</span><span class="p">;</span>
+<a name="l-346"></a>  <span class="k">assign</span> <span class="n">state_q</span> <span class="o">=</span> <span class="n">state_e</span><span class="p">&#39;(</span><span class="n">state_raw_q</span><span class="p">);</span>
+<a name="l-347"></a>  <span class="n">prim_flop</span> <span class="p">#(</span>
+<a name="l-348"></a>    <span class="p">.</span><span class="n">Width</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">),</span>
+<a name="l-349"></a>    <span class="p">.</span><span class="n">ResetValue</span><span class="p">(</span><span class="n">StateWidth</span><span class="p">&#39;(</span><span class="n">ResetSt</span><span class="p">))</span>
+<a name="l-350"></a>  <span class="p">)</span> <span class="n">u_state_regs</span> <span class="p">(</span>
+<a name="l-351"></a>    <span class="p">.</span><span class="n">clk_i</span><span class="p">,</span>
+<a name="l-352"></a>    <span class="p">.</span><span class="n">rst_ni</span><span class="p">,</span>
+<a name="l-353"></a>    <span class="p">.</span><span class="n">d_i</span> <span class="p">(</span> <span class="n">state_d</span>     <span class="p">),</span>
+<a name="l-354"></a>    <span class="p">.</span><span class="n">q_o</span> <span class="p">(</span> <span class="n">state_raw_q</span> <span class="p">)</span>
+<a name="l-355"></a>  <span class="p">);</span>
+<a name="l-356"></a>
+<a name="l-357"></a>  <span class="k">always_ff</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk_i</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">p_regs</span>
+<a name="l-358"></a>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_ni</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-359"></a>      <span class="n">error_q</span>       <span class="o">&lt;=</span> <span class="n">NoError</span><span class="p">;</span>
+<a name="l-360"></a>      <span class="n">tlul_addr_q</span>   <span class="o">&lt;=</span> <span class="m">&#39;0</span><span class="p">;</span>
+<a name="l-361"></a>    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+<a name="l-362"></a>      <span class="n">error_q</span>       <span class="o">&lt;=</span> <span class="n">error_d</span><span class="p">;</span>
+<a name="l-363"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">tlul_gnt_o</span><span class="p">)</span> <span class="k">begin</span>
+<a name="l-364"></a>        <span class="n">tlul_addr_q</span> <span class="o">&lt;=</span> <span class="n">tlul_addr_d</span><span class="p">;</span>
+<a name="l-365"></a>      <span class="k">end</span>
+<a name="l-366"></a>    <span class="k">end</span>
+<a name="l-367"></a>  <span class="k">end</span>
+<a name="l-368"></a>
 <a name="l-369"></a>  <span class="c1">////////////////</span>
-<a name="l-370"></a>
-<a name="l-371"></a>  <span class="c1">// Known assertions</span>
-<a name="l-372"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">InitDoneKnown_A</span><span class="p">,</span>   <span class="n">init_done_o</span><span class="p">)</span>
-<a name="l-373"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ErrorKnown_A</span><span class="p">,</span>      <span class="n">error_o</span><span class="p">)</span>
-<a name="l-374"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">AccessKnown_A</span><span class="p">,</span>     <span class="n">access_o</span><span class="p">)</span>
-<a name="l-375"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">DigestKnown_A</span><span class="p">,</span>     <span class="n">digest_o</span><span class="p">)</span>
-<a name="l-376"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulGntKnown_A</span><span class="p">,</span>    <span class="n">tlul_gnt_o</span><span class="p">)</span>
-<a name="l-377"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulRerrorKnown_A</span><span class="p">,</span> <span class="n">tlul_rerror_o</span><span class="p">)</span>
-<a name="l-378"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulRvalidKnown_A</span><span class="p">,</span> <span class="n">tlul_rvalid_o</span><span class="p">)</span>
-<a name="l-379"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulRdataKnown_A</span><span class="p">,</span>  <span class="n">tlul_rdata_o</span><span class="p">)</span>
-<a name="l-380"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpReqKnown_A</span><span class="p">,</span>     <span class="n">otp_req_o</span><span class="p">)</span>
-<a name="l-381"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpCmdKnown_A</span><span class="p">,</span>     <span class="n">otp_cmd_o</span><span class="p">)</span>
-<a name="l-382"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpSizeKnown_A</span><span class="p">,</span>    <span class="n">otp_size_o</span><span class="p">)</span>
-<a name="l-383"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpWdataKnown_A</span><span class="p">,</span>   <span class="n">otp_wdata_o</span><span class="p">)</span>
-<a name="l-384"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpAddrKnown_A</span><span class="p">,</span>    <span class="n">otp_addr_o</span><span class="p">)</span>
-<a name="l-385"></a>
-<a name="l-386"></a>  <span class="c1">// Uninitialized partitions should always be locked, no matter what.</span>
-<a name="l-387"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">InitWriteLocksPartition_A</span><span class="p">,</span>
-<a name="l-388"></a>      <span class="o">~</span><span class="n">init_done_o</span>
-<a name="l-389"></a>      <span class="o">|-&gt;</span>
-<a name="l-390"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">write_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
-<a name="l-391"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">InitReadLocksPartition_A</span><span class="p">,</span>
-<a name="l-392"></a>      <span class="o">~</span><span class="n">init_done_o</span>
-<a name="l-393"></a>      <span class="o">|-&gt;</span>
-<a name="l-394"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
-<a name="l-395"></a>  <span class="c1">// Incoming Lock propagation</span>
-<a name="l-396"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">WriteLockPropagation_A</span><span class="p">,</span>
-<a name="l-397"></a>      <span class="n">access_i</span><span class="p">.</span><span class="n">write_lock</span> <span class="o">!=</span> <span class="n">Unlocked</span>
-<a name="l-398"></a>      <span class="o">|-&gt;</span>
-<a name="l-399"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">write_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
-<a name="l-400"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReadLockPropagation_A</span><span class="p">,</span>
-<a name="l-401"></a>      <span class="n">access_i</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">!=</span> <span class="n">Unlocked</span>
-<a name="l-402"></a>      <span class="o">|-&gt;</span>
-<a name="l-403"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
-<a name="l-404"></a>  <span class="c1">// If the partition is read locked, the TL-UL access must error out</span>
-<a name="l-405"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">TlulReadOnReadLock_A</span><span class="p">,</span>
-<a name="l-406"></a>      <span class="n">tlul_req_i</span> <span class="o">&amp;&amp;</span> <span class="n">tlul_gnt_o</span> <span class="p">##</span><span class="mi">1</span> <span class="n">access_o</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">!=</span> <span class="n">Unlocked</span>
-<a name="l-407"></a>      <span class="o">|=&gt;</span>
-<a name="l-408"></a>      <span class="n">tlul_rerror_o</span> <span class="o">&gt;</span> <span class="m">&#39;0</span> <span class="o">&amp;&amp;</span> <span class="n">tlul_rvalid_o</span><span class="p">)</span>
-<a name="l-409"></a>  <span class="c1">// Parity error</span>
-<a name="l-410"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ParityErrorState_A</span><span class="p">,</span>
-<a name="l-411"></a>      <span class="n">parity_err</span>
-<a name="l-412"></a>      <span class="o">|=&gt;</span>
-<a name="l-413"></a>      <span class="n">state_q</span> <span class="o">==</span> <span class="n">ErrorSt</span><span class="p">)</span>
-<a name="l-414"></a>  <span class="c1">// OTP error response</span>
-<a name="l-415"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">OtpErrorState_A</span><span class="p">,</span>
-<a name="l-416"></a>      <span class="n">state_q</span> <span class="ow">inside</span> <span class="p">{</span><span class="n">InitWaitSt</span><span class="p">,</span> <span class="n">ReadWaitSt</span><span class="p">}</span> <span class="o">&amp;&amp;</span> <span class="n">otp_rvalid_i</span> <span class="o">&amp;&amp;</span>
-<a name="l-417"></a>      <span class="o">!</span><span class="p">(</span><span class="n">otp_err_i</span> <span class="ow">inside</span> <span class="p">{</span><span class="n">NoError</span><span class="p">,</span> <span class="n">MacroEccCorrError</span><span class="p">})</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">parity_err</span>
-<a name="l-418"></a>      <span class="o">|=&gt;</span>
-<a name="l-419"></a>      <span class="n">state_q</span> <span class="o">==</span> <span class="n">ErrorSt</span> <span class="o">&amp;&amp;</span> <span class="n">error_o</span> <span class="o">==</span> <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">otp_err_i</span><span class="p">))</span>
-<a name="l-420"></a>
-<a name="l-421"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">otp_ctrl_part_unbuf</span>
+<a name="l-370"></a>  <span class="c1">// Assertions //</span>
+<a name="l-371"></a>  <span class="c1">////////////////</span>
+<a name="l-372"></a>
+<a name="l-373"></a>  <span class="c1">// Known assertions</span>
+<a name="l-374"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">InitDoneKnown_A</span><span class="p">,</span>   <span class="n">init_done_o</span><span class="p">)</span>
+<a name="l-375"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">ErrorKnown_A</span><span class="p">,</span>      <span class="n">error_o</span><span class="p">)</span>
+<a name="l-376"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">AccessKnown_A</span><span class="p">,</span>     <span class="n">access_o</span><span class="p">)</span>
+<a name="l-377"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">DigestKnown_A</span><span class="p">,</span>     <span class="n">digest_o</span><span class="p">)</span>
+<a name="l-378"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulGntKnown_A</span><span class="p">,</span>    <span class="n">tlul_gnt_o</span><span class="p">)</span>
+<a name="l-379"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulRerrorKnown_A</span><span class="p">,</span> <span class="n">tlul_rerror_o</span><span class="p">)</span>
+<a name="l-380"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulRvalidKnown_A</span><span class="p">,</span> <span class="n">tlul_rvalid_o</span><span class="p">)</span>
+<a name="l-381"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">TlulRdataKnown_A</span><span class="p">,</span>  <span class="n">tlul_rdata_o</span><span class="p">)</span>
+<a name="l-382"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpReqKnown_A</span><span class="p">,</span>     <span class="n">otp_req_o</span><span class="p">)</span>
+<a name="l-383"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpCmdKnown_A</span><span class="p">,</span>     <span class="n">otp_cmd_o</span><span class="p">)</span>
+<a name="l-384"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpSizeKnown_A</span><span class="p">,</span>    <span class="n">otp_size_o</span><span class="p">)</span>
+<a name="l-385"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpWdataKnown_A</span><span class="p">,</span>   <span class="n">otp_wdata_o</span><span class="p">)</span>
+<a name="l-386"></a>  <span class="no">`ASSERT_KNOWN</span><span class="p">(</span><span class="n">OtpAddrKnown_A</span><span class="p">,</span>    <span class="n">otp_addr_o</span><span class="p">)</span>
+<a name="l-387"></a>
+<a name="l-388"></a>  <span class="c1">// Uninitialized partitions should always be locked, no matter what.</span>
+<a name="l-389"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">InitWriteLocksPartition_A</span><span class="p">,</span>
+<a name="l-390"></a>      <span class="o">~</span><span class="n">init_done_o</span>
+<a name="l-391"></a>      <span class="o">|-&gt;</span>
+<a name="l-392"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">write_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
+<a name="l-393"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">InitReadLocksPartition_A</span><span class="p">,</span>
+<a name="l-394"></a>      <span class="o">~</span><span class="n">init_done_o</span>
+<a name="l-395"></a>      <span class="o">|-&gt;</span>
+<a name="l-396"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
+<a name="l-397"></a>  <span class="c1">// Incoming Lock propagation</span>
+<a name="l-398"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">WriteLockPropagation_A</span><span class="p">,</span>
+<a name="l-399"></a>      <span class="n">access_i</span><span class="p">.</span><span class="n">write_lock</span> <span class="o">!=</span> <span class="n">Unlocked</span>
+<a name="l-400"></a>      <span class="o">|-&gt;</span>
+<a name="l-401"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">write_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
+<a name="l-402"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">ReadLockPropagation_A</span><span class="p">,</span>
+<a name="l-403"></a>      <span class="n">access_i</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">!=</span> <span class="n">Unlocked</span>
+<a name="l-404"></a>      <span class="o">|-&gt;</span>
+<a name="l-405"></a>      <span class="n">access_o</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">==</span> <span class="n">Locked</span><span class="p">)</span>
+<a name="l-406"></a>  <span class="c1">// If the partition is read locked, the TL-UL access must error out</span>
+<a name="l-407"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">TlulReadOnReadLock_A</span><span class="p">,</span>
+<a name="l-408"></a>      <span class="n">tlul_req_i</span> <span class="o">&amp;&amp;</span> <span class="n">tlul_gnt_o</span> <span class="p">##</span><span class="mi">1</span> <span class="n">access_o</span><span class="p">.</span><span class="n">read_lock</span> <span class="o">!=</span> <span class="n">Unlocked</span>
+<a name="l-409"></a>      <span class="o">|=&gt;</span>
+<a name="l-410"></a>      <span class="n">tlul_rerror_o</span> <span class="o">&gt;</span> <span class="m">&#39;0</span> <span class="o">&amp;&amp;</span> <span class="n">tlul_rvalid_o</span><span class="p">)</span>
+<a name="l-411"></a>  <span class="c1">// ECC error in buffer regs.</span>
+<a name="l-412"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">EccErrorState_A</span><span class="p">,</span>
+<a name="l-413"></a>      <span class="n">ecc_err</span>
+<a name="l-414"></a>      <span class="o">|=&gt;</span>
+<a name="l-415"></a>      <span class="n">state_q</span> <span class="o">==</span> <span class="n">ErrorSt</span><span class="p">)</span>
+<a name="l-416"></a>  <span class="c1">// OTP error response</span>
+<a name="l-417"></a>  <span class="no">`ASSERT</span><span class="p">(</span><span class="n">OtpErrorState_A</span><span class="p">,</span>
+<a name="l-418"></a>      <span class="n">state_q</span> <span class="ow">inside</span> <span class="p">{</span><span class="n">InitWaitSt</span><span class="p">,</span> <span class="n">ReadWaitSt</span><span class="p">}</span> <span class="o">&amp;&amp;</span> <span class="n">otp_rvalid_i</span> <span class="o">&amp;&amp;</span>
+<a name="l-419"></a>      <span class="o">!</span><span class="p">(</span><span class="n">otp_err_i</span> <span class="ow">inside</span> <span class="p">{</span><span class="n">NoError</span><span class="p">,</span> <span class="n">MacroEccCorrError</span><span class="p">})</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">ecc_err</span>
+<a name="l-420"></a>      <span class="o">|=&gt;</span>
+<a name="l-421"></a>      <span class="n">state_q</span> <span class="o">==</span> <span class="n">ErrorSt</span> <span class="o">&amp;&amp;</span> <span class="n">error_o</span> <span class="o">==</span> <span class="p">$</span><span class="n">past</span><span class="p">(</span><span class="n">otp_err_i</span><span class="p">))</span>
+<a name="l-422"></a>
+<a name="l-423"></a><span class="k">endmodule</span> <span class="o">:</span> <span class="n">otp_ctrl_part_unbuf</span>
 </pre></div>
 </td></tr></table>
   </body>
