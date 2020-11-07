@@ -17,8 +17,8 @@ type: parsing
 mode: parsing
 files: <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_non_blocking_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_cache/bsg_cache_pkg.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_defines.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_defines.v</a> <a href="../../../../third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v.html" target="file-frame">third_party/cores/basejump_stl/bsg_misc/bsg_encode_one_hot.v</a>
 defines: 
-time_elapsed: 0.023s
-ram usage: 12636 KB
+time_elapsed: 0.019s
+ram usage: 12336 KB
 </pre>
 <pre class="log">
 
@@ -28,15 +28,15 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %1 = [i8 %0, %0, %0, %0]
     %addr = sig [4 x i8] %1
     %v = sig [4 x i8] %1
-    %2 = extf i8$, [4 x i8]$ %v, 0
+    %2 = const time 0s 1e
+    %3 = extf i8$, [4 x i8]$ %v, 0
     %i.prb = prb i8$ %i
-    %3 = [i8 %i.prb, %i.prb]
-    %4 = extf i8, [2 x i8] %3, 1
-    %5 = const time 0s 1e
-    drv i8$ %2, %4, %5
+    %4 = [i8 %i.prb, %i.prb]
+    %5 = extf i8, [2 x i8] %4, 1
+    drv i8$ %3, %5, %2
     %6 = extf i8$, [4 x i8]$ %addr, 0
     %7 = const i8 1
-    drv i8$ %6, %7, %5
+    drv i8$ %6, %7, %2
     %8 = const i3 0
     %v.prb = prb [4 x i8]$ %v
     %9 = [4 x i8 %0]
@@ -47,7 +47,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %14 = extf i8, [4 x i8] %13, 0
     %15 = exts i1, i8 %14, 0, 1
     %zext = inss i3 %8, i1 %15, 0, 1
-    drv i3$ %v_o, %zext, %5
+    drv i3$ %v_o, %zext, %2
     %16 = const i32 0
     %zext1 = inss i32 %16, i8 %i.prb, 0, 8
     %17 = const i32 1
@@ -63,7 +63,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %26 = exts i3, i8 %25, 0, 3
     %27 = [i3 %8, %26]
     %28 = mux [2 x i3] %27, i1 %22
-    drv i3$ %addr_o, %28, %5
+    drv i3$ %addr_o, %28, %2
     %29 = const i2 0
     %vs = sig i2 %29
     %30 = extf i8, [4 x i8] %v.prb, 0
@@ -85,14 +85,14 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %42 = exts i1, i2 %vs.prb, 0, 1
     %43 = exts i1, i2 %vs.prb, 1, 1
     %44 = or i1 %42, %43
-    drv i1$ %41, %44, %5
+    drv i1$ %41, %44, %2
     %45 = sig [4 x i8] %9
     %46 = shr [4 x i8]$ %addr, [4 x i8]$ %45, i32 %17
     %47 = extf i8$, [4 x i8]$ %46, 0
     %48 = exts i1$, i8$ %47, 0, 1
     %49 = inss i2 %29, i1 %43, 0, 1
     %concat1 = exts i1, i2 %49, 0, 1
-    drv i1$ %48, %concat1, %5
+    drv i1$ %48, %concat1, %2
     %vs1 = sig i2 %29
     %50 = exts i6, i8 %30, 2, 6
     %51 = inss i8 %0, i6 %50, 0, 6
@@ -116,7 +116,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %65 = exts i1, i2 %vs.prb1, 0, 1
     %66 = exts i1, i2 %vs.prb1, 1, 1
     %67 = or i1 %65, %66
-    drv i1$ %64, %67, %5
+    drv i1$ %64, %67, %2
     %68 = sig [4 x i8] %9
     %69 = shr [4 x i8]$ %addr, [4 x i8]$ %68, i32 %17
     %70 = extf i8$, [4 x i8]$ %69, 0
@@ -125,7 +125,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %73 = exts i1$, i8$ %72, 0, 1
     %74 = inss i2 %29, i1 %66, 0, 1
     %concat3 = exts i1, i2 %74, 0, 1
-    drv i1$ %73, %concat3, %5
+    drv i1$ %73, %concat3, %2
     %vs2 = sig i2 %29
     %75 = exts i4, i8 %30, 4, 4
     %76 = inss i8 %0, i4 %75, 0, 4
@@ -149,7 +149,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %90 = exts i1, i2 %vs.prb2, 0, 1
     %91 = exts i1, i2 %vs.prb2, 1, 1
     %92 = or i1 %90, %91
-    drv i1$ %89, %92, %5
+    drv i1$ %89, %92, %2
     %93 = sig [4 x i8] %9
     %94 = shr [4 x i8]$ %addr, [4 x i8]$ %93, i32 %17
     %95 = extf i8$, [4 x i8]$ %94, 0
@@ -158,7 +158,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %98 = exts i1$, i8$ %97, 0, 1
     %99 = inss i2 %29, i1 %91, 0, 1
     %concat5 = exts i1, i2 %99, 0, 1
-    drv i1$ %98, %concat5, %5
+    drv i1$ %98, %concat5, %2
     %vs3 = sig i2 %29
     %100 = exts i2, i8 %30, 6, 2
     %101 = inss i8 %0, i2 %100, 0, 2
@@ -182,7 +182,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %115 = exts i1, i2 %vs.prb3, 0, 1
     %116 = exts i1, i2 %vs.prb3, 1, 1
     %117 = or i1 %115, %116
-    drv i1$ %114, %117, %5
+    drv i1$ %114, %117, %2
     %118 = sig [4 x i8] %9
     %119 = shr [4 x i8]$ %addr, [4 x i8]$ %118, i32 %17
     %120 = extf i8$, [4 x i8]$ %119, 0
@@ -191,7 +191,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %123 = exts i1$, i8$ %122, 0, 1
     %124 = inss i2 %29, i1 %116, 0, 1
     %concat7 = exts i1, i2 %124, 0, 1
-    drv i1$ %123, %concat7, %5
+    drv i1$ %123, %concat7, %2
     %vs4 = sig i2 %29
     %125 = exts [1 x i8], [4 x i8] %9, 0, 1
     %126 = exts [3 x i8], [4 x i8] %v.prb, 1, 3
@@ -215,7 +215,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %140 = exts i1, i2 %vs.prb4, 0, 1
     %141 = exts i1, i2 %vs.prb4, 1, 1
     %142 = or i1 %140, %141
-    drv i1$ %139, %142, %5
+    drv i1$ %139, %142, %2
     %143 = sig [4 x i8] %9
     %144 = shr [4 x i8]$ %addr, [4 x i8]$ %143, i32 %61
     %145 = extf i8$, [4 x i8]$ %144, 0
@@ -232,7 +232,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %156 = inss i2 %29, i1 %141, 0, 1
     %157 = exts i1, i2 %156, 0, 1
     %concat9 = inss i2 %155, i1 %157, 1, 1
-    drv i2$ %146, %concat9, %5
+    drv i2$ %146, %concat9, %2
     %vs5 = sig i2 %29
     %158 = exts i4, i8 %129, 4, 4
     %159 = inss i8 %0, i4 %158, 0, 4
@@ -255,7 +255,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %172 = exts i1, i2 %vs.prb5, 0, 1
     %173 = exts i1, i2 %vs.prb5, 1, 1
     %174 = or i1 %172, %173
-    drv i1$ %171, %174, %5
+    drv i1$ %171, %174, %2
     %175 = sig [4 x i8] %9
     %176 = shr [4 x i8]$ %addr, [4 x i8]$ %175, i32 %61
     %177 = extf i8$, [4 x i8]$ %176, 0
@@ -273,7 +273,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %189 = inss i2 %29, i1 %173, 0, 1
     %190 = exts i1, i2 %189, 0, 1
     %concat11 = inss i2 %188, i1 %190, 1, 1
-    drv i2$ %180, %concat11, %5
+    drv i2$ %180, %concat11, %2
     %vs6 = sig i2 %29
     %191 = exts [2 x i8], [4 x i8] %9, 0, 2
     %192 = exts [2 x i8], [4 x i8] %v.prb, 2, 2
@@ -298,7 +298,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %207 = exts i1, i2 %vs.prb6, 0, 1
     %208 = exts i1, i2 %vs.prb6, 1, 1
     %209 = or i1 %207, %208
-    drv i1$ %206, %209, %5
+    drv i1$ %206, %209, %2
     %210 = sig [4 x i8] %9
     %211 = shr [4 x i8]$ %addr, [4 x i8]$ %210, i32 %202
     %212 = extf i8$, [4 x i8]$ %211, 0
@@ -315,7 +315,7 @@ entity @bsg_encode_one_hot (i8$ %i) -&gt; (i3$ %addr_o, i3$ %v_o) {
     %223 = inss i2 %29, i1 %208, 0, 1
     %224 = exts i1, i2 %223, 0, 1
     %concat13 = inss i3 %222, i1 %224, 2, 1
-    drv i3$ %213, %concat13, %5
+    drv i3$ %213, %concat13, %2
 }
 
 </pre>

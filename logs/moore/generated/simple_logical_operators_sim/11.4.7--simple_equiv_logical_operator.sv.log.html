@@ -9,7 +9,7 @@
 <h3><a href="http://llhd.io/" target="_blank">moore</a></h3>
 <pre class="test-failed">
 description: minimal &lt;-&gt; operator simulation test (without result verification)
-rc: 1 (means success: 0)
+rc: 101 (means success: 0)
 tags: 11.4.7
 incdirs: /tmpfs/src/github/sv-tests/tests/generated/simple_logical_operators_sim
 top_module: 
@@ -17,8 +17,8 @@ type: simulation parsing
 mode: parsing
 files: <a href="../../../../tests/generated/simple_logical_operators_sim/11.4.7--simple_equiv_logical_operator.sv.html" target="file-frame">tests/generated/simple_logical_operators_sim/11.4.7--simple_equiv_logical_operator.sv</a>
 defines: 
-time_elapsed: 0.005s
-ram usage: 10528 KB
+time_elapsed: 0.004s
+ram usage: 10480 KB
 </pre>
 <pre class="log">
 
@@ -29,11 +29,21 @@ error: `&lt;-&gt;` is not a valid binary operator
    |     assign c = a &lt;-&gt; b;
    |                ^^^^^^^ 
 
-entity @top (i1$ %a, i1$ %b) -&gt; (i1$ %c) {
-    %0 = const i1 0
-    %1 = const time 0s
-    drv i1$ %c, %0, %1
-}
+compiler bug: type assertion failed: `&lt;error&gt;` != `logic`
+  --&gt; <a href="../../../../tests/generated/simple_logical_operators_sim/11.4.7--simple_equiv_logical_operator.sv.html#l-8" target="file-frame">tests/generated/simple_logical_operators_sim/11.4.7--simple_equiv_logical_operator.sv:8</a>:16-23:
+   | 
+   |     assign c = a &lt;-&gt; b;
+   |                ^^^^^^^ 
+   = note: Type mismatch:
+   = note:     Left-hand side:  `&lt;error&gt;`
+   = note:     Right-hand side: `logic`
+   = note: Encountered at src/svlog/codegen.rs:838
+
+You have encountered a compiler bug. Sorry about that! We would appreciate if you open an issue [1] and describe how you triggered the bug, together with a minimal snippet of code to reproduce it. Thanks!
+[1]: https://github.com/fabianschuiki/moore
+
+thread &#39;main&#39; panicked at &#39;type assertion failed: `&lt;error&gt;` != `logic`&#39;, /tmp/really-really-really-really-really-really-really-really-really-really-really-really-really-long-path/conda/conda-bld/moore_1604605936199/work/src/svlog/codegen.rs:838:17
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 </pre>
 </body>
